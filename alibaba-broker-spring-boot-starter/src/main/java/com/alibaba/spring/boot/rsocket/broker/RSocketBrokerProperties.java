@@ -23,7 +23,7 @@ public class RSocketBrokerProperties {
     /**
      * auth required
      */
-    private boolean authRequired;
+    private boolean authRequired = true;
     @NestedConfigurationProperty
     private RSocketSSL ssl;
 
