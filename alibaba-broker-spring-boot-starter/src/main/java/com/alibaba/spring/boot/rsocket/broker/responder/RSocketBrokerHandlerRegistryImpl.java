@@ -16,11 +16,11 @@ import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
+import com.alibaba.spring.boot.rsocket.broker.security.JwtPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
@@ -66,14 +66,15 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     private Multimap<String, RSocketBrokerResponderHandler> appHandlers = MultimapBuilder.treeKeys().hashSetValues().build();
     private RSocketBrokerManager rSocketBrokerManager;
     private ServiceMeshInspector serviceMeshInspector;
-    //todo 基于 org, service account 进行服务编排
+    private boolean authRequired;
 
     public RSocketBrokerHandlerRegistryImpl(LocalReactiveServiceCaller localReactiveServiceCaller, RSocketFilterChain rsocketFilterChain,
                                             ServiceRoutingSelector routingSelector,
                                             TopicProcessor<CloudEventImpl> eventProcessor,
                                             AuthenticationService authenticationService,
                                             RSocketBrokerManager rSocketBrokerManager,
-                                            ServiceMeshInspector serviceMeshInspector) {
+                                            ServiceMeshInspector serviceMeshInspector,
+                                            boolean authRequired) {
         this.localReactiveServiceCaller = localReactiveServiceCaller;
         this.rsocketFilterChain = rsocketFilterChain;
         this.routingSelector = routingSelector;
@@ -81,6 +82,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         this.authenticationService = authenticationService;
         this.rSocketBrokerManager = rSocketBrokerManager;
         this.serviceMeshInspector = serviceMeshInspector;
+        this.authRequired = authRequired;
         if (!rSocketBrokerManager.isStandAlone()) {
             this.rSocketBrokerManager.requestAll().flatMap(this::broadcastClusterTopology).subscribe();
         }
@@ -92,20 +94,25 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         //parse setup payload
         RSocketCompositeMetadata compositeMetadata;
         AppMetadata appMetadata = null;
-        BearerTokenMetadata bearerTokenMetadata = null;
+        String credentials = "";
         RSocketAppPrincipal principal = null;
         try {
             compositeMetadata = RSocketCompositeMetadata.from(setupPayload.metadata());
             if (compositeMetadata.contains(RSocketMimeType.BearerToken)) {
-                bearerTokenMetadata = BearerTokenMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.BearerToken));
+                BearerTokenMetadata bearerTokenMetadata = BearerTokenMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.BearerToken));
+                credentials = bearerTokenMetadata.getCredentials();
                 principal = authenticationService.auth("JWT", bearerTokenMetadata.getCredentials());
+            }
+            if (!authRequired) {
+                principal = appNameBasedPrincipal("MockApp");
+                credentials = UUID.randomUUID().toString();
             }
             //validate application information
             if (principal != null && compositeMetadata.contains(RSocketMimeType.Application)) {
                 AppMetadata temp = AppMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.Application));
                 //App registration validation: app id: UUID and unique in server
                 String appId = temp.getUuid();
-                Integer instanceId = MurmurHash3.hash32(bearerTokenMetadata.getCredentials() + ":" + temp.getUuid());
+                Integer instanceId = MurmurHash3.hash32(credentials + ":" + temp.getUuid());
                 temp.setId(instanceId);
                 if (appId != null && appId.length() >= 32 && !routingSelector.containInstance(instanceId)) {
                     appMetadata = temp;
@@ -270,5 +277,15 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 return fireEvent.delayElement(Duration.ofSeconds(30));
             }
         });
+    }
+
+    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
+    public JwtPrincipal appNameBasedPrincipal(String appName) {
+        return new JwtPrincipal(appName,
+                Arrays.asList("mock_owner"),
+                new HashSet<>(Arrays.asList("admin")),
+                new HashSet<>(Arrays.asList("default")),
+                new HashSet<>(Arrays.asList("1"))
+        );
     }
 }
