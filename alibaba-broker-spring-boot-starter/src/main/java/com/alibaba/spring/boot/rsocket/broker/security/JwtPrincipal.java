@@ -22,6 +22,10 @@ public class JwtPrincipal implements RSocketAppPrincipal {
     private Set<String> serviceAccounts;
     private Set<String> organizations;
 
+    public JwtPrincipal() {
+
+    }
+
     public JwtPrincipal(DecodedJWT decodedJWT, String credentials) {
         this.hashcode = MurmurHash3.hash32(credentials);
         this.subject = decodedJWT.getSubject();
@@ -29,6 +33,15 @@ public class JwtPrincipal implements RSocketAppPrincipal {
         this.roles = new HashSet<>(decodedJWT.getClaim("roles").asList(String.class));
         this.serviceAccounts = new HashSet<>(decodedJWT.getClaim("sas").asList(String.class));
         this.organizations = new HashSet<>(decodedJWT.getClaim("orgs").asList(String.class));
+    }
+
+    public JwtPrincipal(String subject, List<String> audience, Set<String> roles, Set<String> serviceAccounts, Set<String> organizations) {
+        this.hashcode = MurmurHash3.hash32(subject);
+        this.subject = subject;
+        this.audience = audience;
+        this.roles = roles;
+        this.serviceAccounts = serviceAccounts;
+        this.organizations = organizations;
     }
 
     @Override
@@ -60,7 +73,7 @@ public class JwtPrincipal implements RSocketAppPrincipal {
     public boolean implies(Subject subject) {
         return false;
     }
-    
+
 
     @Override
     public boolean equals(Object o) {
