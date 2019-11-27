@@ -18,7 +18,7 @@ RSocket Broker Config Client
 
 ```
 rsocket.brokers=tcp://127.0.0.1:9999
-#rsocket.jwt-token=your_token_here
+rsocket.jwt-token=your_token_here
 ```
 
 ### 工作原理
