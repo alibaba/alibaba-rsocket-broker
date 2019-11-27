@@ -20,6 +20,10 @@ public class RSocketBrokerProperties {
      * topology: vip, k8s, standalone
      */
     private String topology;
+    /**
+     * auth required
+     */
+    private boolean authRequired;
     @NestedConfigurationProperty
     private RSocketSSL ssl;
 
@@ -29,6 +33,14 @@ public class RSocketBrokerProperties {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public boolean isAuthRequired() {
+        return authRequired;
+    }
+
+    public void setAuthRequired(boolean authRequired) {
+        this.authRequired = authRequired;
     }
 
     public String getTopology() {
