@@ -134,8 +134,7 @@ public class GSVRoutingMetadata implements MetadataAware {
         String serviceFullName = service + SERVICE_METHOD_SEPARATOR + method;
         builder.append(serviceFullName);
         builder.append("\n").append("g:").append(group);
-        builder.append("\n").append("v:").append("version");
-        builder.append(version);
+        builder.append("\n").append("v:").append(version);
         if (endpoint != null) {
             builder.append("\n").append("e:").append(endpoint);
         }
