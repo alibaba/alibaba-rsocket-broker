@@ -1,0 +1,146 @@
+package com.alibaba.spring.boot.rsocket;
+
+import com.alibaba.rsocket.RSocketRequesterSupport;
+import com.alibaba.rsocket.health.RSocketServiceHealth;
+import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
+import com.alibaba.rsocket.observability.MetricsService;
+import com.alibaba.rsocket.route.RSocketFilter;
+import com.alibaba.rsocket.route.RSocketFilterChain;
+import com.alibaba.rsocket.route.RoutingEndpoint;
+import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
+import com.alibaba.rsocket.rpc.RSocketResponderHandler;
+import com.alibaba.rsocket.upstream.UpstreamCluster;
+import com.alibaba.rsocket.upstream.UpstreamManager;
+import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
+import com.alibaba.spring.boot.rsocket.health.RSocketServicesHealthImpl;
+import com.alibaba.spring.boot.rsocket.observability.MetricsServicePrometheusImpl;
+import com.alibaba.spring.boot.rsocket.responder.RSocketServicesPublishHook;
+import com.alibaba.spring.boot.rsocket.responder.invocation.RSocketServiceAnnotationProcessor;
+import com.alibaba.spring.boot.rsocket.upstream.JwtTokenNotFoundException;
+import com.alibaba.spring.boot.rsocket.upstream.RSocketRequesterSupportBuilderImpl;
+import com.alibaba.spring.boot.rsocket.upstream.RSocketRequesterSupportCustomizer;
+import io.cloudevents.v1.CloudEventImpl;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.rsocket.SocketAcceptor;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import reactor.core.publisher.Mono;
+import reactor.extra.processor.TopicProcessor;
+
+import java.util.stream.Collectors;
+
+/**
+ * RSocket Auto configuration: listen, upstream manager, handler etc
+ *
+ * @author leijuan
+ */
+@SuppressWarnings("deprecation")
+@Configuration
+@EnableConfigurationProperties(RSocketProperties.class)
+public class RSocketAutoConfiguration {
+    @Autowired
+    private RSocketProperties properties;
+
+    @Bean
+    public TopicProcessor<CloudEventImpl> reactiveCloudEventProcessor() {
+        return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
+    }
+
+    @Bean(initMethod = "init")
+    public RequesterCloudEventProcessor requesterCloudEventProcessor() {
+        return new RequesterCloudEventProcessor();
+    }
+
+    @Bean
+    public RSocketFilterChain rsocketFilterChain(ObjectProvider<RSocketFilter> rsocketFilters) {
+        return new RSocketFilterChain(rsocketFilters.orderedStream().collect(Collectors.toList()));
+    }
+
+    /**
+     * socket responder handler as SocketAcceptor bean
+     *
+     * @param serviceCaller      service caller
+     * @param eventProcessor     event processor
+     * @param rsocketFilterChain rsocket filter chain
+     * @return handler factor
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public RSocketResponderHandlerFactory rsocketResponderHandlerFactory(@Autowired LocalReactiveServiceCaller serviceCaller,
+                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
+                                                                         @Autowired RSocketFilterChain rsocketFilterChain) {
+        return (setup, peerSocket) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, rsocketFilterChain, peerSocket));
+    }
+
+    @Bean
+    public RSocketRequesterSupport rsocketRequesterSupport(@Autowired RSocketProperties properties,
+                                                           @Autowired Environment environment,
+                                                           @Autowired SocketAcceptor socketAcceptor,
+                                                           @Autowired ObjectProvider<RSocketRequesterSupportCustomizer> customizers) {
+        RSocketRequesterSupportBuilderImpl builder = new RSocketRequesterSupportBuilderImpl(properties, new EnvironmentProperties(environment), socketAcceptor);
+        customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+        return builder.build();
+    }
+
+    @Bean
+    public RSocketServiceAnnotationProcessor rSocketServiceAnnotationProcessor(RSocketProperties rsocketProperties) {
+        return new RSocketServiceAnnotationProcessor(rsocketProperties);
+    }
+
+    @Bean(initMethod = "init", destroyMethod = "close")
+    public UpstreamManager rSocketUpstreamManager(@Autowired RSocketRequesterSupport rsocketRequesterSupport) throws JwtTokenNotFoundException {
+        UpstreamManager upstreamManager = new UpstreamManagerImpl(rsocketRequesterSupport);
+        if (properties.getBrokers() != null && !properties.getBrokers().isEmpty()) {
+            if (properties.getJwtToken() == null || properties.getJwtToken().isEmpty()) {
+                throw new JwtTokenNotFoundException();
+            }
+            UpstreamCluster cluster = new UpstreamCluster(null, "*", null);
+            cluster.setUris(properties.getBrokers());
+            upstreamManager.add(cluster);
+        }
+        if (properties.getRoutes() != null && !properties.getRoutes().isEmpty()) {
+            for (RoutingEndpoint route : properties.getRoutes()) {
+                UpstreamCluster cluster = new UpstreamCluster(route.getGroup(), route.getService(), route.getVersion());
+                cluster.setUris(route.getUris());
+                upstreamManager.add(cluster);
+            }
+        }
+        return upstreamManager;
+    }
+
+    @Bean
+    @ConditionalOnProperty("rsocket.brokers")
+    public RSocketBrokerHealthIndicator rsocketBrokerHealth(UpstreamManager upstreamManager, @Value("${rsocket.brokers}") String brokers) {
+        return new RSocketBrokerHealthIndicator(upstreamManager, brokers);
+    }
+
+    @Bean
+    public RSocketEndpoint rsocketEndpoint(@Autowired UpstreamManager upstreamManager, @Autowired LocalReactiveServiceCaller localReactiveServiceCaller) {
+        return new RSocketEndpoint(properties, upstreamManager, localReactiveServiceCaller);
+    }
+
+    @Bean
+    @ConditionalOnBean(PrometheusMeterRegistry.class)
+    public MetricsService metricsService(PrometheusMeterRegistry meterRegistry) {
+        return new MetricsServicePrometheusImpl(meterRegistry);
+    }
+
+    @Bean
+    public RSocketServiceHealth rsocketServicesHealth() {
+        return new RSocketServicesHealthImpl();
+    }
+
+    @Bean
+    public RSocketServicesPublishHook rsocketServicesPublishHook() {
+        return new RSocketServicesPublishHook();
+    }
+}
