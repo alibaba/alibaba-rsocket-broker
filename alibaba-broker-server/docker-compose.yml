@@ -1,0 +1,7 @@
+version: "3"
+services:
+  toxiproxy:
+    image: shopify/toxiproxy
+    ports:
+      - "8474:8474"
+      - "19999:19999"

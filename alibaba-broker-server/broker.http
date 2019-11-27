@@ -1,0 +1,23 @@
+### broker services
+GET http://localhost:9998/ops/services
+
+### broker connections
+GET http://localhost:9998/ops/connections
+
+### brokers
+GET http://localhost:9998/ops/brokers
+
+### update config
+POST http://localhost:9998/config/refresh/rsocket-config-client
+Authorization: Bearer your_jwt_token_here
+Content-Type: text/plain
+
+developer=leijuan
+
+### Get last config
+GET http://localhost:9998/config/last/rsocket-config-client
+Authorization: Bearer your_jwt_token_here
+
+
+
+

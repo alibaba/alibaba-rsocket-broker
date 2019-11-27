@@ -1,0 +1,86 @@
+Alibaba RSocket Broker Server
+=============================
+RSocket Broker Server，包含图形化控制台
+
+### UI
+RSocket Broker控制台默认采用Vaadin 14编写，主要是基于以下考虑：
+
+* Vaadin特性比较丰富，而且比较简单，只要是Java程序员，就可以编写
+* 扩展容易，如果你需要扩展，你需要添加一个view，或者扩展之前的Java Class就可以啦
+* 目前采用最新的Vaadin 14版本，可以进行Web Component输出
+
+##### 导航栏
+
+* Dashboard:
+
+    * top: service count, app count, connections etc, request count in last 1 minute
+    * widgets: last 10 apps connected with broker
+    * request/streams
+    * channels
+
+* Services: exposed service
+* Apps: connected apps
+* DNS: connected apps
+* Broker: connected apps
+* ServiceMesh: connected apps
+* JWT: 生成RSocket应用连接到Broker时需要的JWT Token
+* System: broker information, metrics, connections etc
+
+### 配置推送
+
+RSocket Broker内置支持配置推送功能，基于KV存储
+
+### JWT验证
+
+RSocket Broker使用JWT RSA进行安全验证，你需要在用户根目录下的.rsocket子目录下放置一个jwt_rsa.pub的公钥文件，生成步骤如下：
+
+```
+# generate a 2048-bit RSA private key
+$ openssl genrsa -out private_key.pem 2048
+
+# convert private Key to PKCS#8 format (so Java can read it)
+$ openssl pkcs8 -topk8 -inform PEM -outform DER -in private_key.pem -out jwt_rsa.key -nocrypt
+
+# output public key portion in DER format (so Java can read it)
+$ openssl rsa -in private_key.pem -pubout -outform DER -out jwt_rsa.pub
+
+```
+
+如果你将jwt_rsa.key放置在~/.rsocket目录下，则RSocket Broker会帮助你生成JWT Token
+
+如果你不做任何事情，RSocket Broker也会自动jwt_rsa.key 和 jwt_rsa.pub
+
+### TLS通讯加密
+RSocket Broker 默认是不开启TLS的，如果你需要启动TLS，则需要为RSocket Broker生成一个key store文件，如下：
+
+```
+$ keytool -genkey -alias rsocket-broker -keyalg RSA –keysize 2048 -keypass changeit -storepass changeit -keystore rsocket.p12
+$ cp rsocket.p12 ~/.rsocket/
+```
+
+然后将rsocket.p12文件拷贝到用户根目录的".rsocket" 子目录下，接下来在application.properties开启ssl就可以，如下：
+
+```
+rsocket.broker.ssl.enable=true
+```
+
+### Gossip设置
+RSocket broker默认是开发者模式，也就是单机运行模式，如果你要开启基于Gossip广播的集群模式，请进行如下配置。
+
+```
+rsocket.broker.topology=gossip
+rsocket.broker.seeds=192.168.1.2,192.168.1.3,192.168.1.4
+```
+
+基于Gossip广播，你只要需要设置一下种子节点列表就可以啦，然后再启动这些种子服务器就可以。Gossip的广播端口为42254，请确保该端口能够被访问。
+
+### Vaadin Flow
+
+* Vaadin App Layout: https://vaadin.com/tutorials/app-layout/vaadin  https://vaadin.com/tutorials/app-layout/appreciated
+* Vaadin key concepts: https://vaadin.com/tutorials/vaadin-key-concepts
+* Vaadin Platform: https://github.com/vaadin/platform
+* Vaadin Flow Document: https://vaadin.com/docs/flow/Overview.html
+* Vaadin Tutorials: https://vaadin.com/tutorials
+* Reactive Chat App with Spring Boot, Project Reactor, and Vaadin: https://vaadin.com/tutorials/reactive-chat-app
+* App layout: https://vaadin.com/components/vaadin-app-layout/java-examples  https://vaadin.com/api/com.vaadin/vaadin-app-layout-flow/1.0.3/com/vaadin/flow/component/applayout/package-summary.html
+* Vaadin Icons: https://vaadin.com/components/vaadin-icons/java-examples
