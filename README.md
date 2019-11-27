@@ -21,11 +21,9 @@ Alibaba RSocket Broker是一款基于RSocket协议的响应式程控消息交换
 
 ### 如何运行Example
 
-RSocket Broker默认就是安全保护的，禁止无token接入Broker，所以在连接到Broker前，你需要生成JWT Token。 在启动Broker，你可以通过控制台为应用生成JWT Token。
-
 项目提供了RSocket Broker Example，你可以在example模块下找到。以下是如何在IDE中运行样例的步骤：
 
-* 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker。 访问 http://localhost:9998/ 控制台，点击JWT，准备为接入应用生成token。
+* 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker
 * 找到RSocketResponderServer类，运行main函数，启动RSocket Responder对外提供Reactive服务
 * 找到RSocketRequesterApp类，运行main函数，启动RSocket Requester, 进行Reactive Service消费
 * 在IDEA中，找到example.http，运行 "GET http://localhost:8181/user/2" 或者运行以下命令，进行服务调用测试。
