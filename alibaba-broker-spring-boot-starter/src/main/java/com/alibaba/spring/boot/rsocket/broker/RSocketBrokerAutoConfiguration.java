@@ -28,7 +28,6 @@ import com.alibaba.spring.boot.rsocket.broker.smi.TrafficSplit;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficAccessControlImpl;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficSplitImpl;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalServiceAnnotationProcessor;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import org.springframework.beans.factory.ObjectProvider;
@@ -90,8 +89,10 @@ public class RSocketBrokerAutoConfiguration {
                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
                                                                         @Autowired AuthenticationService authenticationService,
                                                                         @Autowired RSocketBrokerManager rSocketBrokerManager,
-                                                                        @Autowired ServiceMeshInspector serviceMeshInspector) {
-        return new RSocketBrokerHandlerRegistryImpl(localReactiveServiceCaller, rsocketFilterChain, routingSelector, eventProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector);
+                                                                        @Autowired ServiceMeshInspector serviceMeshInspector,
+                                                                        @Autowired RSocketBrokerProperties properties) {
+        return new RSocketBrokerHandlerRegistryImpl(localReactiveServiceCaller, rsocketFilterChain, routingSelector,
+                eventProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector, properties.isAuthRequired());
     }
 
     @Bean
