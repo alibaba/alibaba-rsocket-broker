@@ -30,9 +30,16 @@ RSocket Broker控制台默认采用Vaadin 14编写，主要是基于以下考虑
 
 RSocket Broker内置支持配置推送功能，基于KV存储
 
-### JWT验证
+### 产品环境下的JWT验证
 
-RSocket Broker使用JWT RSA进行安全验证，你需要在用户根目录下的.rsocket子目录下放置一个jwt_rsa.pub的公钥文件，生成步骤如下：
+为了开发的方便，你可以在RSocket Broker Server的application.properties文件中添加以下配置，这样就可以取消JWT Token的验证。
+
+```
+rsocket.broker.auth-required=false
+
+```
+
+在产品环境下，RSocket Broker使用JWT RSA进行安全验证，你需要在用户根目录下的.rsocket子目录下放置一个jwt_rsa.pub的公钥文件，生成步骤如下：
 
 ```
 # generate a 2048-bit RSA private key
