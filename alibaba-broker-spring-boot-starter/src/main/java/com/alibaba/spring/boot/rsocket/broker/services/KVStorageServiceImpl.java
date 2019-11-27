@@ -1,0 +1,86 @@
+package com.alibaba.spring.boot.rsocket.broker.services;
+
+import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.ReplayProcessor;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * configuration service implementation in memory
+ *
+ * @author leijuan
+ */
+@RSocketLocalService(serviceInterface = ConfigurationService.class)
+public class KVStorageServiceImpl implements ConfigurationService {
+    private Set<String> appNames = new HashSet<>();
+    private Map<String, String> snapshotStore = new ConcurrentHashMap<>();
+    private Map<String, ReplayProcessor<String>> watchNotification = new ConcurrentHashMap<>();
+
+    public KVStorageServiceImpl() {
+        //add test data for unit test
+        appNames.add("rsocket-config-client");
+        appNames.add("rsocket-user-client");
+        appNames.add("rsocket-user-service");
+        snapshotStore.put("rsocket-config-client:application.properties", "developer=leijuan");
+    }
+
+    @Override
+    public Flux<String> getGroups() {
+        return Flux.fromIterable(appNames).sort();
+    }
+
+    @Override
+    public Flux<String> findNamesByGroup(String groupName) {
+        return Flux.fromIterable(snapshotStore.keySet())
+                .filter(name -> name.startsWith(groupName + ":"));
+    }
+
+    @Override
+    public Mono<Void> put(String key, String value) {
+        return Mono.fromRunnable(() -> {
+            snapshotStore.put(key, value);
+            if (key.contains(":")) {
+                appNames.add(key.substring(0, key.indexOf(":")));
+            }
+            if (!watchNotification.containsKey(key)) {
+                initNotification(key);
+            }
+            watchNotification.get(key).onNext(value);
+        });
+    }
+
+    @Override
+    public Mono<Void> delete(String key) {
+        return Mono.fromRunnable(() -> {
+            snapshotStore.remove(key);
+            if (watchNotification.containsKey(key)) {
+                watchNotification.get(key).onNext("");
+            }
+        });
+    }
+
+    @Override
+    public Mono<String> get(String key) {
+        if (snapshotStore.containsKey(key)) {
+            return Mono.just(snapshotStore.get(key));
+        }
+        return Mono.empty();
+    }
+
+    @Override
+    public Flux<String> watch(String key) {
+        if (!watchNotification.containsKey(key)) {
+            initNotification(key);
+        }
+        return Flux.create(sink -> watchNotification.get(key).subscribe(sink::next));
+    }
+
+    private void initNotification(String appName) {
+        watchNotification.put(appName, ReplayProcessor.cacheLast());
+    }
+}

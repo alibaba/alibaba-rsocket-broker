@@ -1,0 +1,24 @@
+package com.alibaba.spring.boot.rsocket.broker.security;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * RSocket APP Principal: 接入认证信息
+ *
+ * @author leijuan
+ */
+public interface RSocketAppPrincipal extends Principal {
+
+    String getSubject();
+
+    List<String> getAudience();
+
+    Set<String> getRoles();
+
+    Set<String> getServiceAccounts();
+
+    Set<String> getOrganizations();
+
+}
