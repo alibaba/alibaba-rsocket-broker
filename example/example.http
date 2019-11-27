@@ -1,0 +1,28 @@
+### get user info
+GET http://localhost:8181/user/2
+
+### get account info
+GET http://localhost:8181/account/1
+
+### get user info with rx api
+GET http://localhost:8181/rx/user/2
+
+### get all user
+GET http://localhost:8181/users
+
+### save user
+POST http://localhost:8181/user/save
+Content-Type: application/json
+
+{
+  "id": "1",
+  "nick": "Jackie"
+}
+
+### get app name
+GET http://localhost:8181/appName
+
+### enable flux
+GET http://localhost:8181/flux
+
+###
