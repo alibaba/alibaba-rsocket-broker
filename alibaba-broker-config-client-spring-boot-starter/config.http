@@ -1,0 +1,11 @@
+### Get confi from broker
+GET http://localhost:9998/config/last/rsocket-config-client
+Authorization: Bearer your_jwt_token_here
+
+###  display config
+GET http://localhost:61111/config/display
+
+### display config item
+GET http://localhost:61111/config/developer
+
+### end
