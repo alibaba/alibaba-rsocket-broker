@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 import static com.alibaba.rsocket.encoding.ObjectEncodingHandler.EMPTY_BUFFER;
 
@@ -27,12 +28,10 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     public static RSocketEncodingFacade Instance = new RSocketEncodingFacadeImpl();
 
     public RSocketEncodingFacadeImpl() {
-        handlerMap.put(RSocketMimeType.Json, new ObjectEncodingHandlerJsonImpl());
-        handlerMap.put(RSocketMimeType.Hessian, new ObjectEncodingHandlerHessianImpl());
-        handlerMap.put(RSocketMimeType.Protobuf, new ObjectEncodingHandlerProtobufImpl());
-        handlerMap.put(RSocketMimeType.CBOR, new ObjectEncodingHandlerCborImpl());
-        handlerMap.put(RSocketMimeType.Java_Object, new ObjectEncodingHandlerSerializationImpl());
-        handlerMap.put(RSocketMimeType.Avor, new ObjectEncodingHandlerAvorImpl());
+        ServiceLoader<ObjectEncodingHandler> serviceLoader = ServiceLoader.load(ObjectEncodingHandler.class);
+        for (ObjectEncodingHandler objectEncodingHandler : serviceLoader) {
+            handlerMap.put(objectEncodingHandler.mimeType(), objectEncodingHandler);
+        }
     }
 
     @NotNull
