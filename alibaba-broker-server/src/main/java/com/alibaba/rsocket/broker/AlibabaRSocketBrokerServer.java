@@ -21,10 +21,4 @@ public class AlibabaRSocketBrokerServer {
         //BlockHound.install();
         SpringApplication.run(AlibabaRSocketBrokerServer.class, args);
     }
-
-    @Bean
-    Flux<Long> fiveSecondsTimer() {
-        return Flux.interval(Duration.ofSeconds(3));
-    }
-
 }
