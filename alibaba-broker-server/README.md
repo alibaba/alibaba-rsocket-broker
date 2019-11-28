@@ -43,19 +43,21 @@ rsocket.broker.auth-required=false
 
 ```
 # generate a 2048-bit RSA private key
-$ openssl genrsa -out private_key.pem 2048
+$ openssl genrsa -out jwt_private_key.pem 2048
 
 # convert private Key to PKCS#8 format (so Java can read it)
-$ openssl pkcs8 -topk8 -inform PEM -outform DER -in private_key.pem -out jwt_rsa.key -nocrypt
+$ openssl pkcs8 -topk8 -inform PEM -outform DER -in jwt_private_key.pem -out jwt_rsa.key -nocrypt
 
 # output public key portion in DER format (so Java can read it)
-$ openssl rsa -in private_key.pem -pubout -outform DER -out jwt_rsa.pub
+$ openssl rsa -in jwt_private_key.pem -pubout -outform DER -out jwt_rsa.pub
 
 ```
 
 如果你将jwt_rsa.key放置在~/.rsocket目录下，则RSocket Broker会帮助你生成JWT Token
 
 如果你不做任何事情，RSocket Broker也会自动jwt_rsa.key 和 jwt_rsa.pub
+
+如果你想自行控制JWT Token的生成，请参考 AuthenticationServiceJwtImpl 为应用生成token。
 
 ### TLS通讯加密
 RSocket Broker 默认是不开启TLS的，如果你需要启动TLS，则需要为RSocket Broker生成一个key store文件，如下：
