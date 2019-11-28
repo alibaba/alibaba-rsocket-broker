@@ -45,22 +45,19 @@ public class MainLayout extends AppLayout implements DisposableBean {
     private DnsResolveService resolveService;
     private ConfigurationService configurationService;
     private AuthenticationService authenticationService;
-    private Flux<Long> fiveSecondsTimer;
 
     public MainLayout(@Autowired RSocketBrokerHandlerRegistry handlerRegistry,
                       @Autowired ServiceRoutingSelector serviceRoutingSelector,
                       @Autowired RSocketBrokerManager rSocketBrokerManager,
                       @Autowired DnsResolveService resolveService,
                       @Autowired ConfigurationService configurationService,
-                      @Autowired AuthenticationService authenticationService,
-                      @Autowired Flux<Long> fiveSecondsTimer) {
+                      @Autowired AuthenticationService authenticationService) {
         this.handlerRegistry = handlerRegistry;
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.rSocketBrokerManager = rSocketBrokerManager;
         this.resolveService = resolveService;
         this.configurationService = configurationService;
         this.authenticationService = authenticationService;
-        this.fiveSecondsTimer = fiveSecondsTimer;
         //init the Layout
         Image logo = new Image("/rsocket-logo.svg", "RSocket Logo");
         logo.setHeight("44px");
@@ -82,7 +79,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
         final Span label = new Span("Dashboard");
         final Icon icon = DASHBOARD.create();
         final Tab tab = new Tab(new HorizontalLayout(icon, label));
-        tab2Workspace.put(tab, new DashboardView(handlerRegistry, serviceRoutingSelector, rSocketBrokerManager, fiveSecondsTimer));
+        tab2Workspace.put(tab, new DashboardView(handlerRegistry, serviceRoutingSelector, rSocketBrokerManager));
         return tab;
     }
 
