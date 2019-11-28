@@ -14,10 +14,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import io.micrometer.core.instrument.Metrics;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,14 +27,12 @@ import static com.alibaba.rsocket.broker.web.ui.DashboardView.NAV;
  * @author leijuan
  */
 @Route(value = NAV, layout = MainLayout.class)
-public class DashboardView extends VerticalLayout implements DisposableBean {
+public class DashboardView extends VerticalLayout {
     public static final String NAV = "";
-    private Disposable timerSubscriber;
 
     public DashboardView(@Autowired RSocketBrokerHandlerRegistry handlerRegistry,
                          @Autowired ServiceRoutingSelector serviceRoutingSelector,
-                         @Autowired RSocketBrokerManager rSocketBrokerManager,
-                         Flux<Long> fiveSecondsTimer) {
+                         @Autowired RSocketBrokerManager rSocketBrokerManager) {
         setAlignItems(Alignment.CENTER);
         //---- top
         HorizontalLayout top = new HorizontalLayout();
@@ -67,15 +62,6 @@ public class DashboardView extends VerticalLayout implements DisposableBean {
         Text requestsCounter = new Text(metricsCounterValue("rsocket.request.count"));
         requestsPanel.add(requestsCounter);
         top.add(requestsPanel);
-        //subscribe and update statics
-        timerSubscriber = fiveSecondsTimer.subscribe(timestamp -> {
-            getUI().ifPresent(ui -> ui.access(() -> {
-                requestsCounter.setText(metricsCounterValue("rsocket.request.count"));
-                servicesText.setText(String.valueOf(serviceRoutingSelector.findAllServices().size()));
-                appsText.setText(String.valueOf(handlerRegistry.appHandlers().size()));
-                connectionsText.setText(String.valueOf(handlerRegistry.findAll().size()));
-            }));
-        });
         //--- last ten apps
         Div div2 = new Div();
         div2.add(new H3("Last apps"));
@@ -99,12 +85,5 @@ public class DashboardView extends VerticalLayout implements DisposableBean {
 
     public String metricsCounterValue(String name) {
         return String.valueOf(((long) (Metrics.counter(name).count())));
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (timerSubscriber != null) {
-            timerSubscriber.dispose();
-        }
     }
 }
