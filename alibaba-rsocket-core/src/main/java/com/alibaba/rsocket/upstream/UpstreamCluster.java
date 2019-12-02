@@ -7,7 +7,6 @@ import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
