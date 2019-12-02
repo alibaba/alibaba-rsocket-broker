@@ -16,7 +16,7 @@
         <dependency>
             <groupId>io.cloudevents</groupId>
             <artifactId>cloudevents-api</artifactId>
-            <version>1.0.0</version>
+            <version>${cloudevents.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.cache</groupId>
