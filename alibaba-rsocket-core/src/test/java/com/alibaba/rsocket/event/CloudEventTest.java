@@ -5,10 +5,10 @@ import com.alibaba.rsocket.events.CloudEventSupport;
 import com.alibaba.rsocket.events.ConfigEvent;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
-import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +44,8 @@ public class CloudEventTest {
         String text = Json.encode(cloudEvent);
         System.out.println(text);
         text = text.replace("欢迎", "leijuan");
-        JsonUtils.updateJsonValue(Unpooled.wrappedBuffer(text.getBytes()), cloudEvent);
+        Json.decodeValue(text, new TypeReference<CloudEventImpl<String>>() {
+        });
         System.out.println(cloudEvent.getData().get());
     }
 
@@ -69,7 +70,7 @@ public class CloudEventTest {
         CloudEventImpl<UpstreamClusterChangedEvent> event2 = Json.decodeValue(text, new TypeReference<CloudEventImpl<UpstreamClusterChangedEvent>>() {
         });
         UpstreamClusterChangedEvent upstreamClusterChangedEvent1 = CloudEventSupport.unwrapData(event2, UpstreamClusterChangedEvent.class);
-        System.out.println(JsonUtils.toJsonText(upstreamClusterChangedEvent1));
+        System.out.println(Json.encode(upstreamClusterChangedEvent1));
         Assertions.assertEquals(upstreamClusterChangedEvent.getInterfaceName(), upstreamClusterChangedEvent1.getInterfaceName());
     }
 
@@ -81,7 +82,6 @@ public class CloudEventTest {
         System.out.println(jsonText);
         CloudEventImpl<ConfigEvent> configurationEvent2 = Json.decodeValue(jsonText, new TypeReference<CloudEventImpl<ConfigEvent>>() {
         });
-        System.out.println(JsonUtils.toJsonText(configurationEvent2));
-        Assertions.assertEquals(configurationEvent.getId(), configurationEvent2.getAttributes().getId());
+        System.out.println(Json.encode(configurationEvent2));
     }
 }
