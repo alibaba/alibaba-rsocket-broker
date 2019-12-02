@@ -1,19 +1,26 @@
 package com.alibaba.spring.boot.rsocket;
 
 import com.alibaba.rsocket.RSocketAppContext;
+import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
+import io.cloudevents.v1.CloudEventBuilder;
+import io.cloudevents.v1.CloudEventImpl;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -61,18 +68,29 @@ public class RSocketEndpoint {
     @WriteOperation
     public Mono<String> operate(@Selector String action) {
         if ("online".equalsIgnoreCase(action)) {
-            return Mono.just("Succeed to online!");
+            return sendAppStatus(AppStatusEvent.STATUS_SERVING).thenReturn("Succeed to online!");
         } else if ("offline".equalsIgnoreCase(action)) {
-            return Mono.just("Succeed to offline!");
+            return sendAppStatus(AppStatusEvent.STATUS_OUT_OF_SERVICE).thenReturn("Succeed to offline!");
         } else if ("shutdown".equalsIgnoreCase(action)) {
-            return Mono.just("Succeed to shutdown!")
+            return sendAppStatus(AppStatusEvent.STATUS_STOPPED)
                     .delayElement(Duration.ofSeconds(15))
-                    .doOnNext(s -> {
-                        //todo shutdown logic
-                    });
+                    .thenReturn("Succeed to shutdown!");
         } else {
             return Mono.just("Unknown action, please use online, offline and shutdown");
         }
+    }
+
+
+    public Mono<Void> sendAppStatus(Integer status) {
+        final CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = CloudEventBuilder.<AppStatusEvent>builder()
+                .withId(UUID.randomUUID().toString())
+                .withTime(ZonedDateTime.now())
+                .withSource(URI.create("app://" + RSocketAppContext.ID))
+                .withType(AppStatusEvent.class.getCanonicalName())
+                .withDataContentType("application/json")
+                .withData(new AppStatusEvent(RSocketAppContext.ID, status))
+                .build();
+        return Flux.fromIterable(upstreamManager.findAllClusters()).flatMap(upstreamCluster -> upstreamCluster.fireCloudEventToUpstreamAll(appStatusEventCloudEvent)).then();
     }
 
 
