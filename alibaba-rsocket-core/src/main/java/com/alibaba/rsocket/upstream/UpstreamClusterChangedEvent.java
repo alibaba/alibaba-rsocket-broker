@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.upstream;
 
 import com.alibaba.rsocket.events.CloudEventSupport;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class UpstreamClusterChangedEvent implements CloudEventSupport<UpstreamCl
         this.uris = uris;
     }
 
+    @JsonIgnore
     public boolean isBrokerCluster() {
         return "*".equals(interfaceName);
     }
