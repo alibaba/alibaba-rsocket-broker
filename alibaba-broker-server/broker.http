@@ -18,6 +18,5 @@ developer=leijuan
 GET http://localhost:9998/config/last/rsocket-config-client
 Authorization: Bearer your_jwt_token_here
 
-
-
-
+### metrics with prometheus
+GET http://localhost:9997/actuator/prometheus
