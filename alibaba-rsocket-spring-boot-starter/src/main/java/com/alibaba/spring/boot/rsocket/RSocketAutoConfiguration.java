@@ -135,11 +135,6 @@ public class RSocketAutoConfiguration {
     }
 
     @Bean
-    public RSocketServiceHealth rsocketServicesHealth() {
-        return new RSocketServicesHealthImpl();
-    }
-
-    @Bean
     public RSocketServicesPublishHook rsocketServicesPublishHook() {
         return new RSocketServicesPublishHook();
     }
