@@ -25,4 +25,7 @@ GET http://localhost:8181/appName
 ### enable flux
 GET http://localhost:8181/flux
 
+### metrics with prometheus format
+GET http://localhost:8181/actuator/prometheus
+
 ###
