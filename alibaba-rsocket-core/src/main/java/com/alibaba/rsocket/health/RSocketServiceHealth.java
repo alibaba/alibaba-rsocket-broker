@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
  */
 public interface RSocketServiceHealth {
     /**
-     * health status: 0:unknown, 1: serving, 2: out of service
+     * health status: 0:unknown, 1: serving, -1: out of service
      *
      * @param serviceName service name
      * @return health status
