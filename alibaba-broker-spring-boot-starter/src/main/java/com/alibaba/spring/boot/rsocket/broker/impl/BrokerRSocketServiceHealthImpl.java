@@ -1,7 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.impl;
 
 import com.alibaba.rsocket.health.RSocketServiceHealth;
-import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import reactor.core.publisher.Flux;
@@ -15,23 +14,21 @@ import reactor.core.publisher.Mono;
  */
 @RSocketLocalService(serviceInterface = RSocketServiceHealth.class)
 public class BrokerRSocketServiceHealthImpl implements RSocketServiceHealth {
-    private LocalReactiveServiceCaller localReactiveServiceCaller;
     private ServiceRoutingSelector routingSelector;
 
-    public BrokerRSocketServiceHealthImpl(LocalReactiveServiceCaller localReactiveServiceCaller,
-                                          ServiceRoutingSelector routingSelector) {
-        this.localReactiveServiceCaller = localReactiveServiceCaller;
+    public BrokerRSocketServiceHealthImpl(ServiceRoutingSelector routingSelector) {
         this.routingSelector = routingSelector;
     }
 
     @Override
     public Mono<Integer> check(String serviceName) {
-        if (localReactiveServiceCaller.contains(serviceName)) {
+        //health check
+        if (serviceName.equals("com.alibaba.rsocket.health.Health")) {
             return Mono.just(1);
-        } else {
+        } else { //remote service check
             return Flux.fromIterable(routingSelector.findAllServices())
                     .any(serviceId -> serviceId.contains("" + serviceName + ":"))
-                    .map(result -> result ? 1 : 2);
+                    .map(result -> result ? 1 : 0);
         }
     }
 }

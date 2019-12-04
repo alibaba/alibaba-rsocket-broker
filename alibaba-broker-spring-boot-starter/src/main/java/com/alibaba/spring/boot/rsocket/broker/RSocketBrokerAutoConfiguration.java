@@ -153,8 +153,8 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
-    public RSocketServiceHealth brokRSocketServiceHealth(@Autowired LocalReactiveServiceCaller localReactiveServiceCaller, @Autowired ServiceRoutingSelector routingSelector) {
-        return new BrokerRSocketServiceHealthImpl(localReactiveServiceCaller, routingSelector);
+    public RSocketServiceHealth brokRSocketServiceHealth(@Autowired ServiceRoutingSelector routingSelector) {
+        return new BrokerRSocketServiceHealthImpl(routingSelector);
     }
 
     @Bean
