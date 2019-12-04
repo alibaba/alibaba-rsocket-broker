@@ -55,6 +55,6 @@ public class PortalController {
 
     @RequestMapping("/")
     public String index() {
-        return "welcome";
+        return "This is RSocket Requester App!";
     }
 }
