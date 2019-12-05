@@ -3,6 +3,7 @@ package com.alibaba.rsocket.broker.web.ui;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Pre;
 
 /**
  * App Detail Panel
@@ -12,7 +13,7 @@ import com.vaadin.flow.component.html.Paragraph;
 public class AppDetailPanel extends Div {
     private H3 title = new H3("App Detail");
     private Paragraph description = new Paragraph();
-    private Paragraph humans = new Paragraph();
+    private Pre humans = new Pre();
 
     public AppDetailPanel() {
         add(title);
