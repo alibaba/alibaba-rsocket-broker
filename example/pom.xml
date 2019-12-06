@@ -18,8 +18,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <spring-boot.version>2.2.1.RELEASE</spring-boot.version>
-        <reactor-bom.version>Dysprosium-SR1</reactor-bom.version>
+        <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+        <reactor-bom.version>Dysprosium-SR2</reactor-bom.version>
         <netty.version>4.1.43.Final</netty.version>
         <rsocket.version>1.0.0-RC5</rsocket.version>
         <alibaba-cloud-broker.version>0.1.0-SNAPSHOT</alibaba-cloud-broker.version>
