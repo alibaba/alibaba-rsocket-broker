@@ -23,6 +23,7 @@ Alibaba RSocket Broker是一款基于RSocket协议的响应式程控消息交换
 
 项目提供了RSocket Broker Example，你可以在example模块下找到。以下是如何在IDE中运行样例的步骤：
 
+* Git clone代码后续，首先执行Maven编译，主要是protobuf的编译，还有Vaadin的生成: mvn -DskipTests clean package
 * 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker
 * 找到RSocketResponderServer类，运行main函数，启动RSocket Responder对外提供Reactive服务
 * 找到RSocketRequesterApp类，运行main函数，启动RSocket Requester, 进行Reactive Service消费
