@@ -19,11 +19,17 @@ Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换
 * alibaba-broker-config-client-spring-boot-starter: 通过RSocket Broker对外提供配置推送服务
 * rsocket-broker-gateway-http: RSocket Broker HTTP网关，将HTTP转换为RSocket协议
 
+### 开发环境要求
+
+* JDK 1.8.0+
+* Maven 3.5.x
+* Node 10+: RSocket Broker采用Vaadin 14构建控制界面，所以你需要安装Node 10以上版本
+
 ### 如何运行Example
 
 项目提供了RSocket Broker Example，你可以在example模块下找到。以下是如何在IDE中运行样例的步骤：
 
-* Git clone代码后续，首先执行Maven编译，主要是protobuf的编译，还有Vaadin的生成: mvn -DskipTests clean package
+* Git clone代码后续，首先执行Maven编译，主要是protobuf的编译，还有Vaadin的生成(Node 10+需要): mvn -DskipTests clean package
 * 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker
 * 找到RSocketResponderServer类，运行main函数，启动RSocket Responder对外提供Reactive服务
 * 找到RSocketRequesterApp类，运行main函数，启动RSocket Requester, 进行Reactive Service消费
