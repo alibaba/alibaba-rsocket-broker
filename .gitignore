@@ -96,3 +96,6 @@ alibaba-broker-server/package.json
 alibaba-broker-server/package-lock.json
 alibaba-broker-server/webpack.config.js
 alibaba-broker-server/webpack.generated.js
+
+.DS_Store
+*/.DS_Store
