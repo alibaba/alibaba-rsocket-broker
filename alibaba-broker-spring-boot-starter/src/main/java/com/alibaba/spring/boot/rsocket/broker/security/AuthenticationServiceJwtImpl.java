@@ -1,12 +1,10 @@
 package com.alibaba.spring.boot.rsocket.broker.security;
 
-import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
@@ -35,9 +33,15 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
     private static String iss = "RSocketBroker";
 
     public AuthenticationServiceJwtImpl() throws Exception {
-        File privateKeyFile = new File(System.getProperty("user.home"), ".rsocket/jwt_rsa.pub");
-        if (!privateKeyFile.exists()) {
-            generateRSAKeyPairs(System.getProperty("user.home") + "/.rsocket/jwt_rsa");
+        File rsocketKeysDir = new File(System.getProperty("user.home"), ".rsocket");
+        File publicKeyFile = new File(rsocketKeysDir, "jwt_rsa.pub");
+        // generate RSA key pairs automatically
+        if (!publicKeyFile.exists()) {
+            if (!rsocketKeysDir.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                rsocketKeysDir.mkdir();
+            }
+            generateRSAKeyPairs(rsocketKeysDir);
         }
         Algorithm algorithmRSA256Public = Algorithm.RSA256(readPublicKey(), null);
         this.verifiers.add(JWT.require(algorithmRSA256Public).withIssuer(iss).build());
@@ -96,17 +100,16 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
         return bytes;
     }
 
-    private void generateRSAKeyPairs(String outFile) throws Exception {
+    private void generateRSAKeyPairs(File rsocketKeysDir) throws Exception {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(2048);
         KeyPair keyPair = kpg.generateKeyPair();
         Key pub = keyPair.getPublic();
         Key pvt = keyPair.getPrivate();
-        new File(outFile).getParentFile().mkdirs();
-        OutputStream out = new FileOutputStream(outFile + ".key");
+        OutputStream out = new FileOutputStream(new File(rsocketKeysDir, "jwt_rsa.key"));
         out.write(pvt.getEncoded());
         out.close();
-        out = new FileOutputStream(outFile + ".pub");
+        out = new FileOutputStream(new File(rsocketKeysDir, "jwt_rsa.pub"));
         out.write(pub.getEncoded());
         out.close();
     }
