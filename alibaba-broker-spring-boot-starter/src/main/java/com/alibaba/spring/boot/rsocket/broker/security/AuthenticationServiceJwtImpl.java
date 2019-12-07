@@ -102,6 +102,7 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
         KeyPair keyPair = kpg.generateKeyPair();
         Key pub = keyPair.getPublic();
         Key pvt = keyPair.getPrivate();
+        new File(outFile).getParentFile().mkdirs();
         OutputStream out = new FileOutputStream(outFile + ".key");
         out.write(pvt.getEncoded());
         out.close();
