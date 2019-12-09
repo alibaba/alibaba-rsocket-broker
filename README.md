@@ -25,12 +25,21 @@ Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换
 * Maven 3.5.x
 * Node 10+: RSocket Broker采用Vaadin 14构建控制界面，所以你需要安装Node 10以上版本
 
-### 如何运行Example
+### 如何运行Example?
 
-项目提供了RSocket Broker Example，你可以在example模块下找到。以下是如何在IDE中运行样例的步骤：
+项目提供了RSocket Broker Example，你可以在example模块下找到.
 
-* Git clone代码后续，首先执行Maven编译，主要是protobuf的编译，还有Vaadin的生成(Node 10+需要): mvn -DskipTests clean package
+##### Docker Compose运行RSocket Broker
+
+如果你本机已经安装了Docker和Docker Compose，建议直接运行 'docker-compose up -d' 启动RSocket Broker，当然你也可以手动运行RSocket Broker.
+
+##### 手动运行RSocket Broker
+
+* 首先执行Maven编译，主要是protobuf的编译，还有Vaadin的生成(Node 10+需要): mvn -DskipTests clean package
 * 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker
+
+##### 运行 RSocket Responder & Requester
+
 * 找到RSocketResponderServer类，运行main函数，启动RSocket Responder对外提供Reactive服务
 * 找到RSocketRequesterApp类，运行main函数，启动RSocket Requester, 进行Reactive Service消费
 * 在IDEA中，找到example.http，运行 "GET http://localhost:8181/user/2" 或者运行以下命令，进行服务调用测试。
