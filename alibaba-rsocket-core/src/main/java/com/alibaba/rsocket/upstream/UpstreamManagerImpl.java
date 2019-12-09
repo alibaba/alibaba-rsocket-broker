@@ -17,6 +17,7 @@ import java.util.*;
 public class UpstreamManagerImpl implements UpstreamManager {
     private Logger log = LoggerFactory.getLogger(UpstreamManagerImpl.class);
     private Map<String, UpstreamCluster> clusters = new HashMap<>();
+    private UpstreamCluster brokerCluster;
     private RSocketRequesterSupport rsocketRequesterSupport;
 
     public UpstreamManagerImpl(RSocketRequesterSupport rsocketRequesterSupport) {
@@ -26,6 +27,9 @@ public class UpstreamManagerImpl implements UpstreamManager {
     @Override
     public void add(UpstreamCluster cluster) {
         clusters.put(cluster.getServiceId(), cluster);
+        if (cluster.isBroker()) {
+            this.brokerCluster = cluster;
+        }
     }
 
     @Override
@@ -36,6 +40,11 @@ public class UpstreamManagerImpl implements UpstreamManager {
     @Override
     public UpstreamCluster findClusterByServiceId(String serviceId) {
         return clusters.get(serviceId);
+    }
+
+    @Override
+    public UpstreamCluster findBroker() {
+        return this.brokerCluster;
     }
 
     @Override

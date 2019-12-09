@@ -2,7 +2,6 @@ package com.alibaba.rsocket.upstream;
 
 import com.alibaba.rsocket.Initializable;
 import io.rsocket.RSocket;
-import reactor.core.publisher.Mono;
 
 import java.io.Closeable;
 import java.util.Collection;
@@ -20,6 +19,8 @@ public interface UpstreamManager extends Initializable, Closeable {
     Collection<UpstreamCluster> findAllClusters();
 
     UpstreamCluster findClusterByServiceId(String serviceId);
+
+    UpstreamCluster findBroker();
 
     /**
      * get rsocket for service id with load balance support
