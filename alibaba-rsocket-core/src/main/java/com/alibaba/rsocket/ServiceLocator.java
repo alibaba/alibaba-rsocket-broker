@@ -90,13 +90,6 @@ public class ServiceLocator {
     }
 
     public static String serviceId(String group, String service, String version) {
-        String serviceId = service;
-        if (group != null && !group.isEmpty()) {
-            serviceId = group + ":" + serviceId;
-        }
-        if (version != null && !version.isEmpty()) {
-            serviceId = serviceId + ":" + version;
-        }
-        return serviceId;
+        return (group == null ? "" : group) + ":" + service + ":" + (version == null ? "" : version);
     }
 }
