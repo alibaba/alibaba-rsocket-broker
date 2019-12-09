@@ -6,29 +6,29 @@ import io.netty.buffer.Unpooled;
 import java.nio.charset.StandardCharsets;
 
 /**
- * bearer token metadata, please refer https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
+ * bearer token metadata, please refer https://github.com/rsocket/rsocket/blob/master/Extensions/Security/Authentication.md
  *
  * @author leijuan
  */
 public class BearerTokenMetadata implements MetadataAware {
     /**
-     * credentials,
+     * Bearer Token
      */
-    private String credentials;
+    private String bearerToken;
 
-    public String getCredentials() {
-        return credentials;
+    public String getBearerToken() {
+        return bearerToken;
     }
 
-    public void setCredentials(String credentials) {
-        this.credentials = credentials;
+    public void setBearerToken(String bearerToken) {
+        this.bearerToken = bearerToken;
     }
 
     public BearerTokenMetadata() {
     }
 
-    public BearerTokenMetadata(String credentials) {
-        this.credentials = credentials;
+    public BearerTokenMetadata(String bearerToken) {
+        this.bearerToken = bearerToken;
     }
 
     @Override
@@ -43,7 +43,11 @@ public class BearerTokenMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        return Unpooled.wrappedBuffer(credentials.getBytes());
+        byte[] credentialsBytes = bearerToken.getBytes();
+        ByteBuf byteBuf = Unpooled.buffer(1 + credentialsBytes.length);
+        byteBuf.writeByte(0x81); //bearer type
+        byteBuf.writeBytes(credentialsBytes);
+        return byteBuf;
     }
 
     /**
@@ -52,7 +56,7 @@ public class BearerTokenMetadata implements MetadataAware {
      * @return data format
      */
     private String formatData() {
-        return credentials;
+        return bearerToken;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class BearerTokenMetadata implements MetadataAware {
      */
     public void load(ByteBuf byteBuf) throws Exception {
         //don't us regex because of performance
-        String text = byteBuf.toString(StandardCharsets.US_ASCII);
+        String text = byteBuf.slice(1, byteBuf.capacity() - 1).toString(StandardCharsets.US_ASCII);
         load(text);
     }
 
@@ -79,7 +83,7 @@ public class BearerTokenMetadata implements MetadataAware {
 
     @Override
     public void load(String text) throws Exception {
-        this.credentials = text;
+        this.bearerToken = text;
     }
 
     public static BearerTokenMetadata jwt(String credentials) {
