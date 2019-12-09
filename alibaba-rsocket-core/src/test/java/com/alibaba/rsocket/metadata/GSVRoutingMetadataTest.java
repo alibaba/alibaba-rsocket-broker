@@ -25,4 +25,17 @@ public class GSVRoutingMetadataTest {
         System.out.println(routingStr2);
         Assertions.assertEquals(routingStr, routingStr2);
     }
+
+    @Test
+    public void testEmptyGroupAndVersion() {
+        GSVRoutingMetadata routing = new GSVRoutingMetadata();
+        routing.setService("com.alibaba.UserService");
+        routing.setMethod("findById");
+        String routingStr = routing.formatData();
+        System.out.println(routingStr);
+        GSVRoutingMetadata routing2 = GSVRoutingMetadata.from(routing.getContent());
+        String routingStr2 = routing2.formatData();
+        System.out.println(routingStr2);
+        Assertions.assertEquals(routingStr, routingStr2);
+    }
 }
