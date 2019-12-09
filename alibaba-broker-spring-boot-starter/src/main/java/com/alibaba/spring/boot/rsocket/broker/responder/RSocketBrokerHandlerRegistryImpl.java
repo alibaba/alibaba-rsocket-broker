@@ -98,14 +98,13 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         RSocketAppPrincipal principal = null;
         try {
             compositeMetadata = RSocketCompositeMetadata.from(setupPayload.metadata());
-            if (compositeMetadata.contains(RSocketMimeType.BearerToken)) {
-                BearerTokenMetadata bearerTokenMetadata = BearerTokenMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.BearerToken));
-                credentials = bearerTokenMetadata.getCredentials();
-                principal = authenticationService.auth("JWT", bearerTokenMetadata.getCredentials());
-            }
-            if (!authRequired) {
+            if (!authRequired) {  //authentication not required
                 principal = appNameBasedPrincipal("MockApp");
                 credentials = UUID.randomUUID().toString();
+            } else if (compositeMetadata.contains(RSocketMimeType.BearerToken)) {
+                BearerTokenMetadata bearerTokenMetadata = BearerTokenMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.BearerToken));
+                credentials = bearerTokenMetadata.getBearerToken();
+                principal = authenticationService.auth("JWT", bearerTokenMetadata.getBearerToken());
             }
             //validate application information
             if (principal != null && compositeMetadata.contains(RSocketMimeType.Application)) {
