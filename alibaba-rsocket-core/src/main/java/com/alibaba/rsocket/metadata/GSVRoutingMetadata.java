@@ -17,8 +17,6 @@ import java.util.List;
  * @author leijuan
  */
 public class GSVRoutingMetadata implements MetadataAware {
-    public static String SERVICE_METHOD_SEPARATOR = "-";
-    public static int SERVICE_METHOD_SEPARATOR_LENGTH = SERVICE_METHOD_SEPARATOR.length();
     /**
      * group: region, datacenter, virtual group in datacenter
      */
@@ -44,10 +42,10 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     public GSVRoutingMetadata(String group, String service, String method, String version) {
-        this.group = group;
+        this.group = group == null ? "" : group;
         this.service = service;
         this.method = method;
-        this.version = version;
+        this.version = version == null ? "" : version;
     }
 
     public String getGroup() {
@@ -111,32 +109,30 @@ public class GSVRoutingMetadata implements MetadataAware {
     @Override
     public ByteBuf getContent() {
         List<String> tags = new ArrayList<>();
-        tags.add(service + SERVICE_METHOD_SEPARATOR + method);
-        if (group != null && !group.isEmpty()) {
-            tags.add("g:" + group);
-        }
-        if (version != null && !version.isEmpty()) {
-            tags.add("v:" + version);
+        tags.add((group == null ? "" : group) + ":" + service + ":" + (version == null ? "" : version));
+        if (method != null && !method.isEmpty()) {
+            tags.add("m=" + method);
         }
         if (endpoint != null && !endpoint.isEmpty()) {
-            tags.add("e:" + endpoint);
+            tags.add("e=" + endpoint);
         }
         return TaggingMetadataFlyweight.createTaggingContent(ByteBufAllocator.DEFAULT, tags);
     }
 
     /**
-     * format routing as "group:service:version:endpoint", separated by colon style
+     * format routing as "group:service:version?m=login&e=xxxx"
      *
      * @return data format
      */
     public String formatData() {
         StringBuilder builder = new StringBuilder();
-        String serviceFullName = service + SERVICE_METHOD_SEPARATOR + method;
+        String serviceFullName = group + ":" + service + ":" + version;
         builder.append(serviceFullName);
-        builder.append("\n").append("g:").append(group);
-        builder.append("\n").append("v:").append(version);
+        if (method != null) {
+            builder.append("?").append("m=").append(method);
+        }
         if (endpoint != null) {
-            builder.append("\n").append("e:").append(endpoint);
+            builder.append("&").append("e=").append(endpoint);
         }
         return builder.toString();
     }
@@ -155,22 +151,13 @@ public class GSVRoutingMetadata implements MetadataAware {
         Iterator<String> iterator = new RoutingMetadata(byteBuf).iterator();
         //first tag is routing for service name or method
         if (iterator.hasNext()) {
-            String routing = iterator.next();
-            if (routing.contains(SERVICE_METHOD_SEPARATOR)) {
-                int poundIndex = routing.lastIndexOf(SERVICE_METHOD_SEPARATOR);
-                this.service = routing.substring(0, poundIndex);
-                this.method = routing.substring(poundIndex + SERVICE_METHOD_SEPARATOR_LENGTH);
-            } else {
-                this.service = routing;
-            }
+            parseRoutingKey(iterator.next());
         }
         while (iterator.hasNext()) {
             String tag = iterator.next();
-            if (tag.startsWith("g:")) {
-                this.group = tag.substring(2);
-            } else if (tag.startsWith("v:")) {
-                this.version = tag.substring(2);
-            } else if (tag.startsWith("e:")) {
+            if (tag.startsWith("m=")) {
+                this.method = tag.substring(2);
+            } else if (tag.startsWith("e=")) {
                 this.endpoint = tag.substring(2);
             }
         }
@@ -183,19 +170,37 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     @Override
     public void load(String text) {
-        String[] parts = text.split(":", 4);
-        group = parts[0];
-        String fullServiceName = parts[1];
-        if (fullServiceName.contains(SERVICE_METHOD_SEPARATOR)) {
-            int poundIndex = fullServiceName.lastIndexOf(SERVICE_METHOD_SEPARATOR);
-            this.service = fullServiceName.substring(0, poundIndex);
-            this.method = fullServiceName.substring(poundIndex + SERVICE_METHOD_SEPARATOR_LENGTH);
+        String routing;
+        String tags = null;
+        if (text.contains("?")) {
+            routing = text.substring(0, text.indexOf("?"));
+            tags = text.substring(text.indexOf("?") + 1);
         } else {
-            this.service = fullServiceName;
+            routing = text;
         }
-        version = parts[2];
-        if (parts.length > 3) {
-            endpoint = parts[3];
+        //routing
+        parseRoutingKey(routing);
+        if (tags != null) {
+            for (String tag : tags.split("&")) {
+                if (tag.startsWith("m=")) {
+                    this.method = tag.substring(2);
+                } else if (tag.startsWith("e=")) {
+                    this.endpoint = tag.substring(2);
+                }
+            }
+        }
+    }
+
+    private void parseRoutingKey(String routing) {
+        if (routing.contains(":")) {
+            String[] parts = routing.split(":");
+            this.group = parts[0];
+            this.service = parts[1];
+            if (parts.length > 2) {
+                this.version = parts[2];
+            }
+        } else {
+            this.service = routing;
         }
     }
 
