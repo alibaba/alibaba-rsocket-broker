@@ -15,6 +15,7 @@
     <properties>
         <vaadin.version>14.1.1</vaadin.version>
         <vaadin.productionMode>true</vaadin.productionMode>
+        <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
 
     <dependencies>
@@ -121,6 +122,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>${mainClass}</mainClass>
                     <jvmArguments>-Dvaadin.productionMode</jvmArguments>
                 </configuration>
             </plugin>
@@ -128,10 +130,23 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
+                    <from>
+                        <image>openjdk:8-jdk-slim</image>
+                    </from>
                     <to>
                         <image>linuxchina/alibaba-rsocket-broker</image>
                     </to>
                     <container>
+                        <useCurrentTimestamp>true</useCurrentTimestamp>
+                        <mainClass>${mainClass}</mainClass>
+                        <entrypoint>/bin/sh,/app/run-java.sh</entrypoint>
+                        <environment>
+                            <JAVA_APP_DIR>/app</JAVA_APP_DIR>
+                            <JAVA_CLASSPATH>
+                                /app/libs/alibaba-rsocket-core-${project.version}.jar:/app/resources:/app/classes:/app/libs/*
+                            </JAVA_CLASSPATH>
+                            <JAVA_MAIN_CLASS>${mainClass}</JAVA_MAIN_CLASS>
+                        </environment>
                         <ports>
                             <port>9997</port>
                             <port>9998</port>
