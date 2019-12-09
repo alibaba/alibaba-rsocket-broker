@@ -20,7 +20,7 @@ docker_build: artifacts_install
 
 # start rsocket broker
 start_broker:
-  java -jar alibaba-broker-server/target/alibaba-broker-server.jar
+  java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar
 
 clean:
    mvn clean
