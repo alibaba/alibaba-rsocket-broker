@@ -72,7 +72,7 @@ public class RSocketRemoteServiceBuilder<T> {
         String serviceId = ServiceLocator.serviceId(group, service, version);
         UpstreamCluster upstream = upstreamManager.findClusterByServiceId(serviceId);
         if (upstream == null) {
-            upstream = upstreamManager.findClusterByServiceId("*");
+            upstream = upstreamManager.findBroker();
         }
         this.upstreamCluster = upstream;
         return this;
