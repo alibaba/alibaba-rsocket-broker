@@ -107,4 +107,4 @@ public class PortalController {
 * RSocket Java: https://github.com/rsocket/rsocket-java
 * RSocket with Spring Boot: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-rsocket
 * Reactor: http://projectreactor.io/
-* RSocket Protocol: https://github.com/rsocket/rsocket/blob/master/Protocol.md
+* Reactive Foundation: https://reactive.foundation/
