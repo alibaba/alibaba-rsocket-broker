@@ -13,10 +13,10 @@ public class NetworkUtil {
     public static String getLocalIP() {
         String ip = null;
         try {
-            Enumeration e = NetworkInterface.getNetworkInterfaces();
+            Enumeration<?> e = NetworkInterface.getNetworkInterfaces();
             while (e.hasMoreElements()) {
                 NetworkInterface n = (NetworkInterface) e.nextElement();
-                Enumeration ee = n.getInetAddresses();
+                Enumeration<?> ee = n.getInetAddresses();
                 while (ee.hasMoreElements()) {
                     InetAddress inetAddress = (InetAddress) ee.nextElement();
                     String hostAddress = inetAddress.getHostAddress();
