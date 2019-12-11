@@ -7,7 +7,6 @@ import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.listen.CompositeMetadataInterceptor;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
@@ -90,7 +89,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                             .subscribe(entry -> {
                                 try {
                                     entry.getValue().dispose();
-                                    log.info("Close stale rsocket: " + entry.getKey());
+                                    log.info(RsocketErrorCode.message("RST-200011", entry.getKey()));
                                 } catch (Exception ignore) {
 
                                 }
