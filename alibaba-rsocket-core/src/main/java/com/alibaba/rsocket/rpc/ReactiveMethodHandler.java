@@ -17,12 +17,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author leijuan
  */
 public class ReactiveMethodHandler {
-    private static Map<Type, Class> genericTypesCache = new ConcurrentHashMap<>();
+    private static Map<Type, Class<?>> genericTypesCache = new ConcurrentHashMap<>();
     private Method method;
     private int parameterCount;
     private boolean asyncReturn = false;
 
-    public ReactiveMethodHandler(Class serviceInterface, Method method) {
+    public ReactiveMethodHandler(Class<?> serviceInterface, Method method) {
         this.method = method;
         this.parameterCount = method.getParameterCount();
         Class<?> returnType = this.method.getReturnType();
@@ -46,11 +46,11 @@ public class ReactiveMethodHandler {
         return method.getParameterTypes();
     }
 
-    public Class getInferredClassForResult() {
+    public Class<?> getInferredClassForResult() {
         return getInferredClassForGeneric(method.getGenericReturnType());
     }
 
-    public Class getInferredClassForParameter(int paramIndex) {
+    public Class<?> getInferredClassForParameter(int paramIndex) {
         return getInferredClassForGeneric(method.getGenericParameterTypes()[paramIndex]);
     }
 
@@ -60,16 +60,16 @@ public class ReactiveMethodHandler {
      * @param genericType generic type
      * @return inferred class
      */
-    private static Class getInferredClassForGeneric(Type genericType) {
+    private static Class<?> getInferredClassForGeneric(Type genericType) {
         //performance promotion by cache
         if (!genericTypesCache.containsKey(genericType)) {
             try {
-                Class typeParameterClass = null;
+                Class<?> typeParameterClass = null;
                 if (genericType instanceof ParameterizedType) {
                     ParameterizedType type = (ParameterizedType) genericType;
                     Type[] typeArguments = type.getActualTypeArguments();
                     if (typeArguments.length > 0) {
-                        typeParameterClass = (Class) typeArguments[0];
+                        typeParameterClass = (Class<?>) typeArguments[0];
                     }
                 }
                 if (typeParameterClass == null) {
