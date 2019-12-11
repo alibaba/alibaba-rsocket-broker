@@ -13,7 +13,6 @@ import java.lang.reflect.Type;
  * @author leijuan
  */
 public class ReactiveMethodMetadata {
-    private static byte[] EMPTY_BODY = new byte[]{0};
     private String classFullName;
     private String name;
     private int parameterCount;
@@ -32,7 +31,7 @@ public class ReactiveMethodMetadata {
     /**
      * inferred class for result type
      */
-    private Class inferredClassForResult;
+    private Class<?> inferredClassForResult;
 
     public ReactiveMethodMetadata(Method method, RSocketMimeType defaultEncoding) {
         this.classFullName = method.getDeclaringClass().getCanonicalName();
@@ -46,7 +45,7 @@ public class ReactiveMethodMetadata {
                 ParameterizedType type = (ParameterizedType) genericReturnType;
                 Type[] typeArguments = type.getActualTypeArguments();
                 if (typeArguments.length > 0) {
-                    this.inferredClassForResult = (Class) typeArguments[0];
+                    this.inferredClassForResult = (Class<?>) typeArguments[0];
                 }
             }
             if (this.inferredClassForResult == null) {

@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.cloudevents;
 
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.RSocket;
 import reactor.core.publisher.Mono;
