@@ -146,7 +146,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 } catch (Exception e) {
                     return Flux.error(e);
                 } finally {
-                    // ReferenceCountUtil.safeRelease(payload);
+                    ReferenceCountUtil.safeRelease(payload);
                 }
             }).subscriberContext(mutableContext::putAll);
         } else {
