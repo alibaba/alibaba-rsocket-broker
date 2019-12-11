@@ -15,6 +15,13 @@ Alibaba RSocket Broker变更记录
 
 ### bug修复
 
+* 自动创建RSA Key Pair错误
+
 ### 接口调整
 
+* BearerTokenMetadata调整为官方标准格式
+* GSVRoutingMetadata结构进行调整，Method调整为tag，GSV为路由key
+
 ### 文档
+
+* 基于Hugo创建站点
