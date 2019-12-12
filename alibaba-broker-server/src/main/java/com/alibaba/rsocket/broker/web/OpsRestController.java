@@ -65,8 +65,15 @@ public class OpsRestController {
         return handlerRegistry.broadcast("*", cloudEvent);
     }
 
+
+    @PostMapping("/shutdown_local")
+    public Mono<String> shutdownLocal() throws Exception {
+        brokerManager.shutDownLocal();
+        return Mono.just("Succeed to shutdown local broker from Cluster!");
+    }
+
     private CloudEventImpl<UpstreamClusterChangedEvent> getUpstreamClusterChangedEventCloudEvent(@RequestBody String uris) {
-        UpstreamClusterChangedEvent upstreamClusterChangedEvent = new UpstreamClusterChangedEvent("","*","",Arrays.asList(uris.split(",")));
+        UpstreamClusterChangedEvent upstreamClusterChangedEvent = new UpstreamClusterChangedEvent("", "*", "", Arrays.asList(uris.split(",")));
 
         // passing in the given attributes
         return CloudEventBuilder.<UpstreamClusterChangedEvent>builder()
