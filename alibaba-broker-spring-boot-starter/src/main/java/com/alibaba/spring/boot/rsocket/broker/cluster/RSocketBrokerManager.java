@@ -5,7 +5,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * RSocket Broker Manager
@@ -23,4 +22,6 @@ public interface RSocketBrokerManager {
     Flux<ServiceLocator> findServices(String ip);
 
     Boolean isStandAlone();
+
+    void shutDownLocal();
 }

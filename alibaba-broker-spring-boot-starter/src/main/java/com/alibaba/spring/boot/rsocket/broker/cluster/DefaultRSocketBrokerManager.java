@@ -4,12 +4,9 @@ import com.alibaba.rsocket.ServiceLocator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.stream.Collectors;
 
 import static com.alibaba.rsocket.transport.NetworkUtil.getLocalIP;
@@ -57,6 +54,11 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
     @Override
     public Boolean isStandAlone() {
         return true;
+    }
+
+    @Override
+    public void shutDownLocal() {
+
     }
 
     public Collection<RSocketBroker> hostsToBrokers() {

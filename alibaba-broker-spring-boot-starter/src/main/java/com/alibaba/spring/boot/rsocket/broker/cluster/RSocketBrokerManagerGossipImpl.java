@@ -2,8 +2,6 @@ package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.transport.NetworkUtil;
-import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
-import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import io.scalecube.cluster.Cluster;
 import io.scalecube.cluster.ClusterImpl;
 import io.scalecube.cluster.ClusterMessageHandler;
@@ -120,5 +118,10 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
         RSocketBroker broker = new RSocketBroker();
         broker.setIp(member.address().host());
         return broker;
+    }
+
+    @Override
+    public void shutDownLocal() {
+        this.cluster.shutdown();
     }
 }
