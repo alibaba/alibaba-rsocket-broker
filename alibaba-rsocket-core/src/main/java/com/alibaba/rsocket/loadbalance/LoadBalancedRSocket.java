@@ -221,7 +221,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 clientRSocketFactory = clientRSocketFactory.addResponderPlugin(responderInterceptor);
             }
             return clientRSocketFactory
-                    .keepAlive(Duration.ofSeconds(5), Duration.ofSeconds(5), 12)
+                    .keepAliveMissedAcks(12)
                     .setupPayload(requesterSupport.setupPayload().get())
                     .metadataMimeType(RSocketAppContext.DEFAULT_METADATA_TYPE)
                     .dataMimeType(RSocketAppContext.DEFAULT_DATA_TYPE)
