@@ -9,6 +9,7 @@ import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.spring.boot.rsocket.broker.cluster.DefaultRSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
+import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManagerGossipImpl;
 import com.alibaba.spring.boot.rsocket.broker.impl.BrokerRSocketServiceHealthImpl;
 import com.alibaba.spring.boot.rsocket.broker.impl.DiscoveryServiceImpl;
 import com.alibaba.spring.boot.rsocket.broker.responder.AppStatusCloudEventProcessor;
@@ -33,11 +34,13 @@ import io.rsocket.frame.decoder.PayloadDecoder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import reactor.extra.processor.TopicProcessor;
@@ -158,9 +161,16 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(RSocketBrokerManager.class)
     public RSocketBrokerManager rsocketBrokerManager() {
         return new DefaultRSocketBrokerManager();
+    }
+
+    @Bean
+    @ConditionalOnExpression("'${rsocket.broker.topology}'=='gossip'")
+    @Primary
+    public RSocketBrokerManager rsocketGossipBrokerManager() {
+        return new RSocketBrokerManagerGossipImpl();
     }
 
     @Bean
