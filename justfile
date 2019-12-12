@@ -22,6 +22,9 @@ docker_build: artifacts_install
 start_broker:
   java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar
 
+start_gossip_broker:
+   java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar --rsocket.broker.topology=gossip --rsocket.broker.seeds=192.168.11.11,192.168.11.12,192.168.11.13
+
 clean:
    mvn clean
    rm -rf alibaba-broker-server/node_modules
