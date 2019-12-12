@@ -12,6 +12,7 @@ import io.scalecube.net.Address;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -45,6 +46,10 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
      * rsocket brokers, key is ip address
      */
     private Map<String, RSocketBroker> brokers = new HashMap<>();
+    /**
+     * brokers changes emitter processor
+     */
+    private EmitterProcessor<Collection<RSocketBroker>> brokersEmitterProcessor = EmitterProcessor.create();
 
     @PostConstruct
     public void init() {
@@ -55,11 +60,12 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .transport(transportConfig -> transportConfig.host(localIp).port(gossipListenPort))
                 .handler(cluster1 -> this)
                 .startAwait();
+        brokers.put(localIp, new RSocketBroker(localIp));
     }
 
     @Override
     public Flux<Collection<RSocketBroker>> requestAll() {
-        return null;
+        return brokersEmitterProcessor;
     }
 
     @Override
@@ -112,6 +118,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
         } else if (event.isLeaving()) {
             brokers.remove(broker.getIp());
         }
+        brokersEmitterProcessor.onNext(brokers.values());
     }
 
     private RSocketBroker memberToBroker(Member member) {
