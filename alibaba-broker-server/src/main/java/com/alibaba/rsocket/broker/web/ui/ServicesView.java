@@ -44,10 +44,10 @@ public class ServicesView extends VerticalLayout {
         return routingSelector.findAllServices()
                 .stream()
                 .map(serviceId -> {
-                    ServiceInfo serviceInfo = null;
+                    ServiceInfo serviceInfo;
                     if (serviceId.contains(":")) {
                         String[] parts = serviceId.split(":");
-                        serviceInfo = new ServiceInfo(parts[0], parts[1], parts[2],
+                        serviceInfo = new ServiceInfo(parts[0], parts[1], parts.length > 2 ? parts[2] : "",
                                 ((long) (Metrics.counter(parts[1] + ".all").count())),
                                 routingSelector.getInstanceCount(MurmurHash3.hash32(serviceId)));
 
