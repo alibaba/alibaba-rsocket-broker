@@ -23,7 +23,7 @@ start_broker:
   java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar
 
 start_gossip_broker:
-   java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar --rsocket.broker.topology=gossip --rsocket.broker.seeds=192.168.11.11,192.168.11.12,192.168.11.13
+   java -jar -Drsocket.broker.topology=gossip -Drsocket.broker.seeds=192.168.11.11,192.168.11.12,192.168.11.13 alibaba-broker-server/target/alibaba-rsocket-broker.jar
 
 clean:
    mvn clean
