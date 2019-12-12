@@ -74,6 +74,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     for (Tuple2<String, RSocket> tuple : tupleRsockets) {
                         newActiveRSockets.put(tuple.getT1(), tuple.getT2());
                     }
+                    @SuppressWarnings("DuplicatedCode")
                     Map<String, RSocket> staleRSockets = new HashMap<>();
                     //get all stale rsockets
                     for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
@@ -81,21 +82,30 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                             staleRSockets.put(entry.getKey(), entry.getValue());
                         }
                     }
+                    Map<String, RSocket> newAddedRSockets = new HashMap<>();
+                    //get all new added rsockets
+                    for (Map.Entry<String, RSocket> entry : newActiveRSockets.entrySet()) {
+                        if (!activeSockets.containsKey(entry.getKey())) {
+                            newAddedRSockets.put(entry.getKey(), entry.getValue());
+                        }
+                    }
                     this.activeSockets = newActiveRSockets;
                     this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
                     //close all stale rsocket after 15 for drain mode
-                    Flux.fromIterable(staleRSockets.entrySet())
-                            .delaySubscription(Duration.ofSeconds(15))
-                            .subscribe(entry -> {
-                                try {
-                                    entry.getValue().dispose();
-                                    log.info(RsocketErrorCode.message("RST-200011", entry.getKey()));
-                                } catch (Exception ignore) {
+                    if (!staleRSockets.isEmpty()) {
+                        Flux.fromIterable(staleRSockets.entrySet())
+                                .delaySubscription(Duration.ofSeconds(15))
+                                .subscribe(entry -> {
+                                    try {
+                                        entry.getValue().dispose();
+                                        log.info(RsocketErrorCode.message("RST-200011", entry.getKey()));
+                                    } catch (Exception ignore) {
 
-                                }
-                            });
+                                    }
+                                });
+                    }
                     //subscribe rsocket close event
-                    for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
+                    for (Map.Entry<String, RSocket> entry : newAddedRSockets.entrySet()) {
                         entry.getValue().onClose().subscribe(aVoid -> {
                             onRSocketClosed(entry.getKey(), entry.getValue());
                         });
@@ -169,10 +179,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void onRSocketClosed(String rsocketUri, RSocket rsocket) {
-        activeSockets.remove(rsocketUri);
-        this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
-        log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
-        tryToReconnect(rsocketUri);
+        if (activeSockets.containsKey(rsocketUri)) {
+            activeSockets.remove(rsocketUri);
+            this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
+            log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
+            tryToReconnect(rsocketUri);
+        }
     }
 
     public void onRSocketReconnected(String rsocketUri, RSocket rsocket) {
