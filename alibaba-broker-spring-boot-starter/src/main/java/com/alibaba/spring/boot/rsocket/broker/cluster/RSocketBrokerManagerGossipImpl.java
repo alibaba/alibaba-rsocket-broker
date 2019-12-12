@@ -13,8 +13,6 @@ import io.scalecube.net.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,8 +30,6 @@ import java.util.stream.Stream;
  *
  * @author leijuan
  */
-@Component("rsocketBrokerManager")
-@ConditionalOnExpression("'${rsocket.broker.topology}'=='gossip'")
 public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, ClusterMessageHandler {
     private Logger log = LoggerFactory.getLogger(RSocketBrokerManagerGossipImpl.class);
     /**
@@ -65,6 +61,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .handler(cluster1 -> this)
                 .startAwait();
         brokers.put(localIp, new RSocketBroker(localIp));
+        log.info("Start cluster with Gossip support!");
     }
 
     @Override
