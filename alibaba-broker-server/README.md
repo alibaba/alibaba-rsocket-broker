@@ -83,7 +83,20 @@ rsocket.broker.seeds=192.168.1.2,192.168.1.3,192.168.1.4
 
 基于Gossip广播，你只要需要设置一下种子节点列表就可以啦，然后再启动这些种子服务器就可以。Gossip的广播端口为42254，请确保该端口能够被访问。
 
+### 产品环境部署
+如果你在产品环境部署的话， 你需要注意以下一些事项：
+
+* 开启JWT认证，给每一个应用分配特定的JWT token
+* SSL开启选配，如果内部网络，可以考虑不开启，如果是从互联网外的应用对接，建议使用使用SSL
+* 基于Gossip的集群管理，我们建议一个集群的最低配置为三台服务
+* 优雅关闭Broker: 在关闭broker时，如broker程序更新，先调用 http://localhost:9998/ops/stop_local_broker 将该broker从集群摘除，然后再停止应用
+
+##### 产品环境部署实践
+
+* WebSocket开启: 如果有从外部网络接入的应用，建议Broker使用多端口监听，TCP + WebSocket，外部应用通过WebSocket接入，内部网络依然走TCP
+
 ### Vaadin Flow
+Alibaba RSocket Broker的Web控制台使用Vaadin 14开发，为了方便你扩展界面，将Vaadin的开发资源列一下，方便二次开发。
 
 * Vaadin App Layout: https://vaadin.com/tutorials/app-layout/vaadin  https://vaadin.com/tutorials/app-layout/appreciated
 * Vaadin key concepts: https://vaadin.com/tutorials/vaadin-key-concepts
