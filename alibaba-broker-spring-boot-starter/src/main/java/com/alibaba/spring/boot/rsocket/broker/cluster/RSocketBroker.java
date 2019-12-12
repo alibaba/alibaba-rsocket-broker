@@ -13,6 +13,13 @@ public class RSocketBroker {
     private Integer status = 1;
     private long startedAt;
 
+    public RSocketBroker() {
+    }
+
+    public RSocketBroker(String ip) {
+        this.ip = ip;
+    }
+
     public String getId() {
         return id;
     }
