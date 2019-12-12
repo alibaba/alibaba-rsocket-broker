@@ -121,7 +121,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     }
 
     @Override
-    public void shutDownLocal() {
+    public void stopLocalBroker() {
         this.cluster.shutdown();
     }
 }

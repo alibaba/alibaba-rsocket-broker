@@ -23,5 +23,5 @@ public interface RSocketBrokerManager {
 
     Boolean isStandAlone();
 
-    void shutDownLocal();
+    void stopLocalBroker();
 }

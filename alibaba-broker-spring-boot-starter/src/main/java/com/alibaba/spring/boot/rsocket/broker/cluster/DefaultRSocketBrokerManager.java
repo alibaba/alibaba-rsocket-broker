@@ -57,7 +57,7 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
     }
 
     @Override
-    public void shutDownLocal() {
+    public void stopLocalBroker() {
 
     }
 
