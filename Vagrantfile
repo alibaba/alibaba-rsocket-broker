@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
       echo "\n----- Installing Java 8 ------\n"
       apt-get -y install openjdk-8-jdk
       update-alternatives --config java
+      curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git casey/just --target x86_64-unknown-linux-musl --to /usr/bin
     SHELL
 
   config.vm.define "broker1" do |broker|
