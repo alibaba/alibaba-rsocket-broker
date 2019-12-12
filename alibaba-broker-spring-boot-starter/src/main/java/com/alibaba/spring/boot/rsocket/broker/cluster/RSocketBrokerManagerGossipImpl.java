@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.transport.NetworkUtil;
 import io.scalecube.cluster.Cluster;
 import io.scalecube.cluster.ClusterImpl;
@@ -9,6 +10,8 @@ import io.scalecube.cluster.Member;
 import io.scalecube.cluster.membership.MembershipEvent;
 import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.net.Address;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
@@ -32,6 +35,7 @@ import java.util.stream.Stream;
 @Component("rsocketBrokerManager")
 @ConditionalOnExpression("'${rsocket.broker.topology}'=='gossip'")
 public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, ClusterMessageHandler {
+    private Logger log = LoggerFactory.getLogger(RSocketBrokerManagerGossipImpl.class);
     /**
      * Gossip listen port
      */
@@ -113,10 +117,13 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
         RSocketBroker broker = memberToBroker(event.member());
         if (event.isAdded()) {
             brokers.put(broker.getIp(), broker);
+            log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "added"));
         } else if (event.isRemoved()) {
             brokers.remove(broker.getIp());
+            log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "removed"));
         } else if (event.isLeaving()) {
             brokers.remove(broker.getIp());
+            log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "left"));
         }
         brokersEmitterProcessor.onNext(brokers.values());
     }
