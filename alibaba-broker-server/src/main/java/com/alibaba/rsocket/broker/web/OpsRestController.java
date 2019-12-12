@@ -66,10 +66,10 @@ public class OpsRestController {
     }
 
 
-    @PostMapping("/shutdown_local")
-    public Mono<String> shutdownLocal() throws Exception {
-        brokerManager.shutDownLocal();
-        return Mono.just("Succeed to shutdown local broker from Cluster!");
+    @PostMapping("/stop_local_broker")
+    public Mono<String> stopLocalBroker() throws Exception {
+        brokerManager.stopLocalBroker();
+        return Mono.just("Succeed to stop local broker from Cluster! Please shutdown app after 15 seconds!");
     }
 
     private CloudEventImpl<UpstreamClusterChangedEvent> getUpstreamClusterChangedEventCloudEvent(@RequestBody String uris) {
