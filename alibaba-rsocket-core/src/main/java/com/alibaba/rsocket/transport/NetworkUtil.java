@@ -2,7 +2,9 @@ package com.alibaba.rsocket.transport;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Network Util
@@ -10,6 +12,11 @@ import java.util.Enumeration;
  * @author leijuan
  */
 public class NetworkUtil {
+    /**
+     * ip black list. 10.0.2.15 is default ip for virtual box vm
+     */
+    public static List<String> IP_BLACK_LIST = Arrays.asList("10.0.2.15");
+
     public static String getLocalIP() {
         String ip = null;
         try {
@@ -20,7 +27,7 @@ public class NetworkUtil {
                 while (ee.hasMoreElements()) {
                     InetAddress inetAddress = (InetAddress) ee.nextElement();
                     String hostAddress = inetAddress.getHostAddress();
-                    if (hostAddress.contains(".") && !inetAddress.isLoopbackAddress()) {
+                    if (hostAddress.contains(".") && !IP_BLACK_LIST.contains(hostAddress) && !inetAddress.isLoopbackAddress()) {
                         ip = hostAddress;
                         break;
                     }
