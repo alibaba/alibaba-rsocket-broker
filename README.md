@@ -14,7 +14,7 @@ Broker会针对所有的连接和服务列表建立对应的映射关系。
 当一个应用需要调用其他服务时，应用会将请求以消息的方式发给Broker，然后Broker会解析消息的元信息，然后根据路由表将请求转发给服务提供者，然后将处理结果后的消息再转发给调用方。
 Broker完全是异步化的，没有线程池这些概念，而且消息转发都是基于Zero Copy，所以性能非常高，这也是不用担心中心化Broker成为性能瓶颈的主要原因。
 
-![RSocket Broker Structure](alibaba-rsocket-broker-structure.png)
+![RSocket Broker Structure](https://github.com/alibaba/alibaba-rsocket-broker/raw/master/alibaba-rsocket-broker-structure.png)
 
 通过上述的架构图，RSocket Broker解决了传统设计中众多的问题：
 
