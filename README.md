@@ -7,7 +7,25 @@ Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换
 * 消息：面向消息通讯，路由、过滤、observability都非常简单
 * 交换系统：分布式、异构系统支持
 
+### RSocket Broker工作原理
+RSocket Broker是桥接应用间通讯的双方，相当于一个中间人的角色。  
+应用在启动后，和Broker创建一个长连接，在连接创建的时候需要标明自己的身份，如果是服务提供者，需要提交发布的服务信息。
+Broker会针对所有的连接和服务列表建立对应的映射关系。
+当一个应用需要调用其他服务时，应用会将请求以消息的方式发给Broker，然后Broker会解析消息的元信息，然后根据路由表将请求转发给服务提供者，然后将处理结果后的消息再转发给调用方。
+Broker完全是异步化的，没有线程池这些概念，而且消息转发都是基于Zero Copy，所以性能非常高，这也是不用担心中心化Broker成为性能瓶颈的主要原因。
+
 ![RSocket Broker Structure](alibaba-rsocket-broker-structure.png)
+
+通过上述的架构图，RSocket Broker解决了传统设计中众多的问题：
+
+* 配置推送: 通过RSocket的metadataPush可以完成配置推送
+* 服务注册和发现：应用和Broker建立连接后，这个长连接就是服务注册和发现，你不需要额外的服务注册中心
+* 透明路由: 应用在调用服务时，不需要知道服务对应的应用信息， Broker会完成路由
+* Service-to-service调用: 就是RSocket的服务之间通讯的4个模型
+* Load balancing: 应用和Broker建立长连接后，负载均衡就非常简单啦。
+* Circuit Breakers: 断路保护，现在调整为Back Pressure支持
+* Distributed messaging: RSocket就是基于消息推送的
+* 多语言支持: RSocket是一套标准协议，主流语言的SDK都有支持
 
 ### 项目模块
 
