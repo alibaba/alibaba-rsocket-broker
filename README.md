@@ -91,6 +91,8 @@ public class UserServiceImpl implements UserService {
 }
 ```
 
+不少开发者会问道，如果是MySQL数据库，如何和Reactive集成。目前R2DBC有对MySQL的支持，你可以参考一个Spring Cloud RSocket + R2DBC + MySQL的Demo实现: https://github.com/linux-china/spring-cloud-function-demo/
+
 * 在RSocket Requester，以Proxy方式创建Reactive服务接口对应的Spring bean, 如下：
 
 ```
