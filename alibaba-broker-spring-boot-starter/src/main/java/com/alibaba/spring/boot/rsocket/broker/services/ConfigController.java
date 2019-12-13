@@ -6,12 +6,13 @@ import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
+import com.alibaba.spring.boot.rsocket.broker.security.JwtPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.exceptions.InvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -19,6 +20,8 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
@@ -35,6 +38,8 @@ public class ConfigController {
     private AuthenticationService authenticationService;
     @Autowired
     private RSocketBrokerHandlerRegistry handlerRegistry;
+    @Value("${rsocket.broker.auth-required:true}")
+    private boolean authRequired;
 
     @PostMapping("/refresh/{appName}")
     public Mono<String> refresh(@PathVariable(name = "appName") String appName,
@@ -77,6 +82,14 @@ public class ConfigController {
     }
 
     private RSocketAppPrincipal parseAppPrincipal(String jwtToken) {
-        return authenticationService.auth("Bearer", jwtToken.substring(jwtToken.indexOf(" ") + 1));
+        if (authRequired) {
+            return authenticationService.auth("Bearer", jwtToken.substring(jwtToken.indexOf(" ") + 1));
+        } else {
+            return new JwtPrincipal("rsocket-admin",
+                    Collections.singletonList("mock_owner"),
+                    new HashSet<>(Collections.singletonList("admin")),
+                    new HashSet<>(Collections.singletonList("default")),
+                    new HashSet<>(Collections.singletonList("1")));
+        }
     }
 }
