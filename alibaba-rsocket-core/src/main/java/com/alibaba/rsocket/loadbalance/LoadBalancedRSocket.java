@@ -206,7 +206,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     public void tryToReconnect(String rsocketUri) {
         //try to reconnect every 5 seconds in 1 minute
-        Flux.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+        Flux.range(1, 12)
                 .delayElements(Duration.ofSeconds(5))
                 .subscribe(number -> {
                     if (!activeSockets.containsKey(rsocketUri)) {
