@@ -89,7 +89,7 @@ rsocket.broker.seeds=192.168.1.2,192.168.1.3,192.168.1.4
 * 开启JWT认证，给每一个应用分配特定的JWT token
 * SSL开启选配，如果内部网络，可以考虑不开启，如果是从互联网外的应用对接，建议使用使用SSL
 * 基于Gossip的集群管理，我们建议一个集群的最低配置为三台服务
-* 优雅关闭Broker: 在关闭broker时，如broker程序更新，先调用 http://localhost:9998/ops/stop_local_broker 将该broker从集群摘除，然后再停止应用
+* 优雅关闭Broker: 在关闭broker时，如broker程序更新，先调用 http://localhost:9998/ops/stop_local_broker 将该broker从集群摘除，然后再停止应用。我们建议在线上发布扩容时候，一台台进行，这样对SDK的通知简单不少。
 
 ##### 产品环境部署实践
 
