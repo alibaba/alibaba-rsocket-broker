@@ -1,7 +1,7 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
+import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
-import com.alibaba.rsocket.metadata.DataEncodingMetadata;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import io.netty.buffer.Unpooled;
 import io.rsocket.RSocket;
@@ -42,8 +42,8 @@ public class UserServiceTest {
         GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata();
         routingMetadata.load("g:,s:com.alibaba.UserService,m:findById,v:1.0.0,e:");
         compositeMetadata.addMetadata(routingMetadata);
-        DataEncodingMetadata dataEncodingMetadata = new DataEncodingMetadata();
-        dataEncodingMetadata.load("5:5");
+        MessageMimeTypeMetadata dataEncodingMetadata = new MessageMimeTypeMetadata();
+        dataEncodingMetadata.load("5");
         compositeMetadata.addMetadata(dataEncodingMetadata);
         rsocket.requestResponse(DefaultPayload.create(Unpooled.wrappedBuffer(data.getBytes()), compositeMetadata.getContent()))
                 .subscribe(payload -> {

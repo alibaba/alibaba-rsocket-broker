@@ -1,9 +1,6 @@
 package com.alibaba.rsocket.gateway;
 
-import com.alibaba.rsocket.metadata.DataEncodingMetadata;
-import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
-import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
-import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -25,7 +22,7 @@ import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
  */
 @Controller
 public class MainController {
-    private static DataEncodingMetadata jsonMetaEncoding = new DataEncodingMetadata(RSocketMimeType.Json, RSocketMimeType.Json);
+    private static MessageMimeTypeMetadata jsonMetaEncoding = new MessageMimeTypeMetadata(RSocketMimeType.Json);
     private RSocket rSocketMono;
 
     public MainController(UpstreamManager upstreamManager) {

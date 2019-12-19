@@ -4,8 +4,8 @@ import com.alibaba.rsocket.PayloadUtils;
 import com.alibaba.rsocket.RSocketExchange;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
-import com.alibaba.rsocket.metadata.DataEncodingMetadata;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
+import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilterChain;
@@ -52,7 +52,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         return Mono.deferWithContext(context -> {
             RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
             GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
             if (dataEncodingMetadata == null) {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
@@ -71,7 +71,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         return Mono.deferWithContext(context -> {
             RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
             GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
             if (dataEncodingMetadata == null) {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
@@ -96,7 +96,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         return Flux.deferWithContext(context -> {
             RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
             GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
             if (dataEncodingMetadata == null) {
                 ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
@@ -110,7 +110,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         return Flux.deferWithContext(context -> {
             RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
             GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
             if (dataEncodingMetadata == null) {
                 ReferenceCountUtil.safeRelease(signal);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));

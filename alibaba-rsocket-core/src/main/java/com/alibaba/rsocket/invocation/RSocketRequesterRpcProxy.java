@@ -120,7 +120,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routing);
         //add param encoding & make hessian as result type
         if (methodMetadata.getParamEncoding() != null) {
-            compositeMetadata.addMetadata(new DataEncodingMetadata(methodMetadata.getParamEncoding(), encodingType));
+            compositeMetadata.addMetadata(new MessageMimeTypeMetadata(methodMetadata.getParamEncoding()));
+            //todo add accepted mime types
         }
         //metadata data content
         ByteBuf compositeMetadataBuf = compositeMetadata.getContent();

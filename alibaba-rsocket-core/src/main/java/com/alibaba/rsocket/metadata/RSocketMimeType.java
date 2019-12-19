@@ -25,7 +25,7 @@ public enum RSocketMimeType {
     CacheControl("Meta-CacheControl", WellKnownMimeType.MESSAGE_RSOCKET_DATA_CACHE_CONTROL),
     ServiceRegistry("Meta-Service-Registry", WellKnownMimeType.MESSAGE_RSOCKET_SERVICE_REGISTRY),
     BearerToken("Meta-BearerToken", WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION),
-    DataEncoding("Meta-DataEncoding", WellKnownMimeType.MESSAGE_RSOCKET_DATA_ENCODING),
+    //DataEncoding("Meta-DataEncoding", WellKnownMimeType.MESSAGE_RSOCKET_DATA_ENCODING),
     Tracing("Meta-Tracing", WellKnownMimeType.MESSAGE_RSOCKET_TRACING_ZIPKIN),
     Routing("Meta-Routing", WellKnownMimeType.MESSAGE_RSOCKET_ROUTING),
     MessageMimeType("Message-MimeType", WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE),
