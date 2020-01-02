@@ -43,6 +43,21 @@
         <junit5.version>5.5.2</junit5.version>
     </properties>
 
+    <licenses>
+        <license>
+            <name>Apache License</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</connection>
+        <developerConnection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</developerConnection>
+        <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <developers>
         <developer>
             <id>leijuan</id>
