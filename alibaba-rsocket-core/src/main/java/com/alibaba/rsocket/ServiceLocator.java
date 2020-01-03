@@ -5,7 +5,7 @@ import com.alibaba.rsocket.utils.MurmurHash3;
 import java.util.Objects;
 
 /**
- * service locator: group, service full name, version and lables
+ * service locator: group, service full name, version and tags
  *
  * @author leijuan
  */
@@ -13,7 +13,7 @@ public class ServiceLocator {
     private String group;
     private String service;
     private String version;
-    private String[] labels;
+    private String[] tags;
 
     public ServiceLocator() {
     }
@@ -24,9 +24,9 @@ public class ServiceLocator {
         this.version = version;
     }
 
-    public ServiceLocator(String group, String service, String version, String[] labels) {
+    public ServiceLocator(String group, String service, String version, String[] tags) {
         this(group, service, version);
-        this.labels = labels;
+        this.tags = tags;
     }
 
     public String getGroup() {
@@ -53,12 +53,12 @@ public class ServiceLocator {
         this.version = version;
     }
 
-    public String[] getLabels() {
-        return labels;
+    public String[] getTags() {
+        return tags;
     }
 
-    public void setLabels(String[] labels) {
-        this.labels = labels;
+    public void setTags(String[] tags) {
+        this.tags = tags;
     }
 
     public String routing() {

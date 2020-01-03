@@ -15,7 +15,6 @@ import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
@@ -50,9 +49,9 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      */
     private RSocketFilterChain filterChain;
     /**
-     * default data encoding metadata
+     * default message mime type metadata
      */
-    private DataEncodingMetadata defaultDataEncodingMetaData;
+    private MessageMimeTypeMetadata defaultMessageMimeType;
     /**
      * app metadata
      */
@@ -108,7 +107,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         try {
             RSocketMimeType dataType = RSocketMimeType.valueOfType(setupPayload.dataMimeType());
             if (dataType != null) {
-                this.defaultDataEncodingMetaData = new DataEncodingMetadata(dataType, dataType);
+                this.defaultMessageMimeType = new MessageMimeTypeMetadata(dataType);
             }
             this.id = appMetadata.getId();
             this.appMetadata = appMetadata;
@@ -173,9 +172,9 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             // broker local service call check: don't introduce interceptor, performance consideration
             //noinspection ConstantConditions
             if (localServiceCaller.contains(routingMetaData.getService(), routingMetaData.getMethod())) {
-                DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+                MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
                 if (dataEncodingMetadata == null) {
-                    dataEncodingMetadata = defaultDataEncodingMetaData;
+                    dataEncodingMetadata = defaultMessageMimeType;
                 }
                 return localRequestResponse(routingMetaData, dataEncodingMetadata, payload);
             }
@@ -201,9 +200,9 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return Mono.deferWithContext(context -> {
             RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
             GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-            DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
             if (dataEncodingMetadata == null) {
-                dataEncodingMetadata = defaultDataEncodingMetaData;
+                dataEncodingMetadata = defaultMessageMimeType;
             }
             // broker local service call check: don't introduce interceptor, performance consideration
             //noinspection ConstantConditions
@@ -244,9 +243,9 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             // broker local service call check: don't introduce interceptor, performance consideration
             //noinspection ConstantConditions
             if (localServiceCaller.contains(routingMetaData.getService(), routingMetaData.getMethod())) {
-                DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+                MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
                 if (dataEncodingMetadata == null) {
-                    dataEncodingMetadata = defaultDataEncodingMetaData;
+                    dataEncodingMetadata = defaultMessageMimeType;
                 }
                 return localRequestStream(routingMetaData, dataEncodingMetadata, payload);
             }
@@ -354,7 +353,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      * @return payload
      */
     public Payload payloadWithDataEncoding(RSocketCompositeMetadata compositeMetadata, Payload payload) {
-        return PayloadUtils.payloadWithDataEncoding(compositeMetadata, defaultDataEncodingMetaData, payload);
+        return PayloadUtils.payloadWithDataEncoding(compositeMetadata, defaultMessageMimeType, payload);
     }
 
     @Nullable

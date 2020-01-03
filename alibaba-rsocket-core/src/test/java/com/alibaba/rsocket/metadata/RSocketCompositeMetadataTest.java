@@ -34,7 +34,7 @@ public class RSocketCompositeMetadataTest {
         tempMap.put("first", "second");
         appMetadata.setMetadata(tempMap);
         compositeMetadata.addMetadata(appMetadata);
-        compositeMetadata.addMetadata(new DataEncodingMetadata(RSocketMimeType.Hessian));
+        compositeMetadata.addMetadata(new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
         compositeMetadata.addMetadata(new BearerTokenMetadata("xxx.yyy.zz"));
         compositeMetadata.addMetadata(new GSVRoutingMetadata("", "com.alibaba.UserService", "findById", "1.0.0"));
         ByteBuf buffer = compositeMetadata.getContent();
@@ -79,8 +79,8 @@ public class RSocketCompositeMetadataTest {
         Payload payload = PayloadUtils.cloudEventToPayload(cloudEvent);
         payload.getMetadata().rewind();
         RSocketCompositeMetadata compositeMetadata =  RSocketCompositeMetadata.from(payload.metadata());
-        DataEncodingMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         Assertions.assertNotNull(dataEncodingMetadata);
-        System.out.println(dataEncodingMetadata.getAcceptType());
+        System.out.println(dataEncodingMetadata.getMimeType());
     }
 }

@@ -30,7 +30,7 @@ public class RSocketCompositeMetadata implements MetadataAware {
     /**
      * data encoding metadata, cached to avoid parse again
      */
-    private DataEncodingMetadata encodingMetadata;
+    private MessageMimeTypeMetadata encodingMetadata;
 
     public static RSocketCompositeMetadata from(ByteBuf content) {
         RSocketCompositeMetadata temp = new RSocketCompositeMetadata();
@@ -108,10 +108,10 @@ public class RSocketCompositeMetadata implements MetadataAware {
     }
 
     @Nullable
-    public DataEncodingMetadata getDataEncodingMetadata() {
-        if (this.encodingMetadata == null && metadataStore.containsKey(RSocketMimeType.DataEncoding.getType())) {
-            this.encodingMetadata = new DataEncodingMetadata();
-            ByteBuf byteBuf = metadataStore.get(RSocketMimeType.DataEncoding.getType());
+    public MessageMimeTypeMetadata getDataEncodingMetadata() {
+        if (this.encodingMetadata == null && metadataStore.containsKey(RSocketMimeType.MessageMimeType.getType())) {
+            this.encodingMetadata = new MessageMimeTypeMetadata();
+            ByteBuf byteBuf = metadataStore.get(RSocketMimeType.MessageMimeType.getType());
             this.encodingMetadata.load(byteBuf);
         }
         return encodingMetadata;
@@ -130,8 +130,8 @@ public class RSocketCompositeMetadata implements MetadataAware {
                     lines.add(metadataType.getName() + ":" + metadata.toText());
                     break;
                 }
-                case DataEncoding: {
-                    DataEncodingMetadata metadata = new DataEncodingMetadata();
+                case MessageMimeType: {
+                    MessageMimeTypeMetadata metadata = new MessageMimeTypeMetadata();
                     metadata.load(byteBuf);
                     lines.add(metadataType.getName() + ":" + metadata.toText());
                     break;
@@ -179,8 +179,8 @@ public class RSocketCompositeMetadata implements MetadataAware {
                         addMetadata(metadata);
                         break;
                     }
-                    case DataEncoding: {
-                        DataEncodingMetadata metadata = new DataEncodingMetadata();
+                    case MessageMimeType: {
+                        MessageMimeTypeMetadata metadata = new MessageMimeTypeMetadata();
                         metadata.load(parts[1].trim());
                         addMetadata(metadata);
                         break;

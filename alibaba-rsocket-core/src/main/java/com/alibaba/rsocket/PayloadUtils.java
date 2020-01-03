@@ -1,9 +1,8 @@
 package com.alibaba.rsocket;
 
-import com.alibaba.rsocket.metadata.DataEncodingMetadata;
+import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
@@ -22,33 +21,33 @@ import static io.netty.buffer.Unpooled.buffer;
  * @author leijuan
  */
 public class PayloadUtils {
-    public static Payload cloudEventToPayload(CloudEventImpl<?> cloudEvent) throws Exception {
-        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(new DataEncodingMetadata(RSocketMimeType.CloudEventsJson));
+    
+    public static Payload cloudEventToPayload(CloudEventImpl<?> cloudEvent) {
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(RSocketMimeType.CloudEventsJson));
         return DefaultPayload.create(Unpooled.wrappedBuffer(Json.binaryEncode(cloudEvent)), compositeMetadata.getContent());
     }
 
-    public static Payload cloudEventToMetadataPushPayload(CloudEventImpl<?> cloudEvent) throws Exception {
+    public static Payload cloudEventToMetadataPushPayload(CloudEventImpl<?> cloudEvent) {
         return DefaultPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(Json.binaryEncode(cloudEvent)));
     }
 
     /**
-     * payload with data encoding if
+     * payload with data encoding if data encoding absent
      *
      * @param compositeMetadata composite metadata
      * @param payload           payload
      * @return payload
      */
-    public static Payload payloadWithDataEncoding(RSocketCompositeMetadata compositeMetadata, DataEncodingMetadata dataEncodingMetadata, Payload payload) {
-        if (compositeMetadata.contains(RSocketMimeType.DataEncoding)) {
+    public static Payload payloadWithDataEncoding(RSocketCompositeMetadata compositeMetadata, MessageMimeTypeMetadata dataEncodingMetadata, Payload payload) {
+        if (compositeMetadata.contains(RSocketMimeType.MessageMimeType)) {
             return payload;
         } else {
-            ByteBuf buf = buffer(6);
-            buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_DATA_ENCODING.getIdentifier() | 128));
+            ByteBuf buf = buffer(5);
+            buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
             buf.writeByte(0);
             buf.writeByte(0);
-            buf.writeByte(2);
-            buf.writeByte(dataEncodingMetadata.getDataType().getId());
-            buf.writeByte(dataEncodingMetadata.getAcceptType().getId());
+            buf.writeByte(1);
+            buf.writeByte(dataEncodingMetadata.getRSocketMimeType().getId() | 0x80);
             CompositeByteBuf compositeByteBuf = new CompositeByteBuf(ByteBufAllocator.DEFAULT, true, 3, payload.metadata(), buf);
             return DefaultPayload.create(payload.data(), compositeByteBuf);
         }

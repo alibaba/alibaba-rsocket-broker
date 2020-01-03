@@ -21,7 +21,13 @@ Alibaba RSocket Broker变更记录
 
 * BearerTokenMetadata调整为官方标准格式
 * GSVRoutingMetadata结构进行调整，Method调整为tag，GSV为路由key
+* Data MIME Type per stream规范实现
 
 ### 文档
 
 * 基于Hugo创建站点
+
+### 三方包更新
+
+* Roaring Bitmap 0.8.12
+* Netty 4.1.44

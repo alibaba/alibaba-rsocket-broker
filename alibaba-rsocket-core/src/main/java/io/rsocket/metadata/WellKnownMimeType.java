@@ -83,6 +83,8 @@ public enum WellKnownMimeType {
     MESSAGE_RSOCKET_MESSAGE_ORIGIN("message/x.rsocket.message.origin", (byte) 0x58),
 
     // ... reserved for future use ...
+    MESSAGE_RSOCKET_MIMETYPE("message/x.rsocket.mime-type.v0", (byte) 0x7A),
+    MESSAGE_RSOCKET_ACCEPT_MIMETYPES("message/x.rsocket.accept-mime-types.v0", (byte) 0x7B),
     MESSAGE_RSOCKET_AUTHENTICATION("message/x.rsocket.authentication.v0", (byte) 0x7C),
     MESSAGE_RSOCKET_TRACING_ZIPKIN("message/x.rsocket.tracing-zipkin.v0", (byte) 0x7D),
     MESSAGE_RSOCKET_ROUTING("message/x.rsocket.routing.v0", (byte) 0x7E),
