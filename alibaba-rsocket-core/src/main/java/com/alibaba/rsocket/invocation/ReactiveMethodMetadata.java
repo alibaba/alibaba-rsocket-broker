@@ -49,7 +49,7 @@ public class ReactiveMethodMetadata {
                     if (typeArgument instanceof  ParameterizedType){
                         this.inferredClassForResult = (Class<?>) ((ParameterizedType) typeArgument).getActualTypeArguments()[0];
                     }else{
-                        this.inferredClassForResult = (Class<?>) typeArguments[0];
+                        this.inferredClassForResult = (Class<?>) typeArgument;
                     }
                 }
             }
