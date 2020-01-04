@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<List<User>> findAll() {
-        System.out.println("test");
         return Mono.just(Arrays.asList(new User(1, "first"), new User(2, "second")));
     }
 

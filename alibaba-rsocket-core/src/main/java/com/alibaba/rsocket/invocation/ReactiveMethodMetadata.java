@@ -45,12 +45,7 @@ public class ReactiveMethodMetadata {
                 ParameterizedType type = (ParameterizedType) genericReturnType;
                 Type[] typeArguments = type.getActualTypeArguments();
                 if (typeArguments.length > 0) {
-                    final Type typeArgument = typeArguments[0];
-                    if (typeArgument instanceof  ParameterizedType){
-                        this.inferredClassForResult = (Class<?>) ((ParameterizedType) typeArgument).getActualTypeArguments()[0];
-                    }else{
-                        this.inferredClassForResult = (Class<?>) typeArguments[0];
-                    }
+                    this.inferredClassForResult = (Class<?>) typeArguments[0];
                 }
             }
             if (this.inferredClassForResult == null) {
