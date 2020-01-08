@@ -39,6 +39,7 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
     public Mono<Void> fireAndForget(Payload payload) {
         MutableContext reactiveContext = new MutableContext();
         try {
+            //todo fast routing: 1 byte for routing mimetype, 3 bytes for routing metadata length, 1 byte routing key byte length, then read routing key
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
             GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
             if (routingMetaData == null) {

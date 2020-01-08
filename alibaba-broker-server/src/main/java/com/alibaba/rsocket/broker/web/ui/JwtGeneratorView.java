@@ -64,7 +64,7 @@ public class JwtGeneratorView extends VerticalLayout {
             String[] owners = ownersText.getValue().trim().split("[,;\\s]*");
             String[] roles = rolesText.getValue().trim().split("[,;\\s]*");
             try {
-                String token = authenticationService.generateCredentials(orgIds, serviceAccounts, roles, appName, owners);
+                String token = authenticationService.generateCredentials(orgIds, serviceAccounts, roles, null, appName, owners);
                 tokenTextArea.setValue(token);
             } catch (Exception ignore) {
 

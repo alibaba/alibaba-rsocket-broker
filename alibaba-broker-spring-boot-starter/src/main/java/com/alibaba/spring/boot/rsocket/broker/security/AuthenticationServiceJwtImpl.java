@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker.security;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.JWTVerifier;
@@ -60,20 +61,25 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
         return null;
     }
 
-    public String generateCredentials(String[] organizations, String[] serviceAccounts, String[] roles, String sub, String[] audience) throws Exception {
+    public String generateCredentials(String[] organizations, String[] serviceAccounts, String[] roles, String[] authorities, String sub, String[] audience) throws Exception {
         Algorithm algorithmRSA256Private = Algorithm.RSA256(null, readPrivateKey());
-        Arrays.sort(roles);
         Arrays.sort(audience);
         Arrays.sort(organizations);
-        return JWT.create()
+        JWTCreator.Builder builder = JWT.create()
                 .withIssuer(iss)
                 .withSubject(sub)
                 .withAudience(audience)
                 .withIssuedAt(new Date())
-                .withArrayClaim("roles", roles)
                 .withArrayClaim("sas", serviceAccounts)
-                .withArrayClaim("orgs", organizations)
-                .sign(algorithmRSA256Private);
+                .withArrayClaim("orgs", organizations);
+        if (roles != null && roles.length > 0) {
+            Arrays.sort(roles);
+            builder = builder.withArrayClaim("roles", roles);
+        }
+        if (authorities != null && authorities.length > 0) {
+            builder = builder.withArrayClaim("authorities", authorities);
+        }
+        return builder.sign(algorithmRSA256Private);
     }
 
 

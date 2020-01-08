@@ -23,7 +23,7 @@ public class AuthenticationServiceJwtImplTest {
     @Test
     public void testAuth() throws Exception {
         String subject = "testing-only";
-        String credentials = authenticationService.generateCredentials(new String[]{"alibaba"}, new String[]{"default"}, new String[]{"internal"}, subject, new String[]{"leijuan"});
+        String credentials = authenticationService.generateCredentials(new String[]{"alibaba"}, new String[]{"default"}, new String[]{"internal"}, null, subject, new String[]{"leijuan"});
         System.out.println(credentials);
         Principal principal = authenticationService.auth("JWT", credentials);
         Assertions.assertNotNull(principal);
