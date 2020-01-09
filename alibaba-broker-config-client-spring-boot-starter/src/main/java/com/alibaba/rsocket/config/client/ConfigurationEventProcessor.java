@@ -44,6 +44,8 @@ public class ConfigurationEventProcessor {
     }
 
     public void handleConfigurationEvent(CloudEventImpl<?> cloudEvent) {
+        // replyto support
+        // cloudEvent.getExtensions().get("replyto"); rsocket:///REQUEST_FNF/com.xxxx.XxxService#method
         ConfigEvent configEvent = CloudEventSupport.unwrapData(cloudEvent, ConfigEvent.class);
         // validate config content
         if (configEvent.getAppName().equalsIgnoreCase(applicationName)
