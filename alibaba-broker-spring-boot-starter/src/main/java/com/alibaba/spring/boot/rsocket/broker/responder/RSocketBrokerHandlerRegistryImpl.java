@@ -283,6 +283,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         return new JwtPrincipal(appName,
                 Arrays.asList("mock_owner"),
                 new HashSet<>(Arrays.asList("admin")),
+                Collections.emptySet(),
                 new HashSet<>(Arrays.asList("default")),
                 new HashSet<>(Arrays.asList("1"))
         );

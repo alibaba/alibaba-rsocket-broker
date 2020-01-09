@@ -88,6 +88,7 @@ public class ConfigController {
             return new JwtPrincipal("rsocket-admin",
                     Collections.singletonList("mock_owner"),
                     new HashSet<>(Collections.singletonList("admin")),
+                    Collections.emptySet(),
                     new HashSet<>(Collections.singletonList("default")),
                     new HashSet<>(Collections.singletonList("1")));
         }

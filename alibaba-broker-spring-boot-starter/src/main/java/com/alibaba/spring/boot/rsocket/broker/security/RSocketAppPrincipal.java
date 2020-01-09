@@ -17,6 +17,8 @@ public interface RSocketAppPrincipal extends Principal {
 
     Set<String> getRoles();
 
+    Set<String> getAuthorities();
+
     Set<String> getServiceAccounts();
 
     Set<String> getOrganizations();

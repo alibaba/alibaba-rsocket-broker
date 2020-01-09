@@ -38,6 +38,11 @@ public class RSocketAppPrincipalMock implements RSocketAppPrincipal {
     }
 
     @Override
+    public Set<String> getAuthorities() {
+        return Collections.EMPTY_SET;
+    }
+
+    @Override
     public Set<String> getServiceAccounts() {
         return this.serviceAccounts;
     }

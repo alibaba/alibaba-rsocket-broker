@@ -12,6 +12,6 @@ public interface AuthenticationService {
     @Nullable
     RSocketAppPrincipal auth(String type, String credentials);
 
-    String generateCredentials(String[] organizations, String[] serviceAccounts, String[] roles, String sub, String[] audience) throws Exception;
+    String generateCredentials(String[] organizations, String[] serviceAccounts, String[] roles, String[] authorities, String sub, String[] audience) throws Exception;
 
 }
