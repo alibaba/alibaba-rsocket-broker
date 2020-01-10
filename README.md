@@ -35,7 +35,7 @@ Broker完全是异步化的，没有线程池这些概念，而且消息转发�
 * alibaba-rsocket-broker: Alibaba RSocket Broker参考实现
 * alibaba-broker-registry-client-spring-boot-starter: 通过RSocket Broker对外提供服务发现服务
 * alibaba-broker-config-client-spring-boot-starter: 通过RSocket Broker对外提供配置推送服务
-* rsocket-broker- http-gateway: RSocket Broker HTTP网关，将HTTP转换为RSocket协议
+* rsocket-broker-http-gateway: RSocket Broker HTTP网关，将HTTP转换为RSocket协议
 
 ### 开发环境要求
 
