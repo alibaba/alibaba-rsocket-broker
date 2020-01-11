@@ -14,6 +14,7 @@
 
     <properties>
         <vaadin.version>14.1.4</vaadin.version>
+        <flexmark-all.version>0.50.44</flexmark-all.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
@@ -27,6 +28,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-all</artifactId>
+            <version>${flexmark-all.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>

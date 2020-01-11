@@ -9,6 +9,7 @@ import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -33,6 +34,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.*;
  *
  * @author leijuan
  */
+@StyleSheet("styles/styles.css")
 @Theme(Lumo.class)
 @Viewport("width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes, viewport-fit=cover")
 @Push
