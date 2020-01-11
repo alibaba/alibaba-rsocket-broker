@@ -6,6 +6,7 @@ Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换
 * 程控：程序控制，可定制，如扩展支持等
 * 消息：面向消息通讯，路由、过滤、observability都非常简单
 * 交换系统：分布式、异构系统支持
+* 更多RSocket架构方案，请访问 http://rsocketbyexample.info
 
 ### RSocket Broker工作原理
 RSocket Broker是桥接应用间通讯的双方，相当于一个中间人的角色。  
