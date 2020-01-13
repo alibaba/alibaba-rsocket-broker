@@ -1,0 +1,5 @@
+language: java
+jdk:
+  - openjdk8
+before_install:
+  - nvm install 12
