@@ -1,5 +1,7 @@
 Alibaba RSocket Broker
 ======================
+[![Build Status](https://api.travis-ci.com/alibaba/alibaba-rsocket-broker.svg?branch=master)](https://travis-ci.com/alibaba/alibaba-rsocket-broker)
+
 Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换系统，为通讯双方构建一个透明稳健的通讯桥梁。
 
 * 反应式: 编程模型、线程模型、异步化、无网络要求等
