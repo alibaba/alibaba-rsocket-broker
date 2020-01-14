@@ -58,7 +58,14 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
         return RSocketMimeType.MessageAcceptMimeTypes.getType();
     }
 
-    @Override
+    public RSocketMimeType getFirstAcceptType() {
+        Object mimeType = mimeTypes.get(0);
+        if (mimeType instanceof Byte) {
+            return RSocketMimeType.valueOf((Byte) mimeType);
+        }
+        return null;
+    }
+
     public ByteBuf getContent() {
         ByteBuf buffer = Unpooled.buffer(this.byteBufLength);
         for (Object mimeType : mimeTypes) {
