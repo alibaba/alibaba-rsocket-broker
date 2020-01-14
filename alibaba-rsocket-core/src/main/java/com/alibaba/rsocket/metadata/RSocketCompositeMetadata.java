@@ -31,6 +31,10 @@ public class RSocketCompositeMetadata implements MetadataAware {
      * data encoding metadata, cached to avoid parse again
      */
     private MessageMimeTypeMetadata encodingMetadata;
+    /**
+     * accept mimetypes metadata
+     */
+    private MessageAcceptMimeTypesMetadata acceptMimeTypesMetadata;
 
     public static RSocketCompositeMetadata from(ByteBuf content) {
         RSocketCompositeMetadata temp = new RSocketCompositeMetadata();
@@ -116,6 +120,17 @@ public class RSocketCompositeMetadata implements MetadataAware {
         }
         return encodingMetadata;
     }
+
+    @Nullable
+    public MessageAcceptMimeTypesMetadata getAcceptMimeTypesMetadata() {
+        if (this.acceptMimeTypesMetadata == null && metadataStore.containsKey(RSocketMimeType.MessageAcceptMimeTypes.getType())) {
+            this.acceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata();
+            ByteBuf byteBuf = metadataStore.get(RSocketMimeType.MessageAcceptMimeTypes.getType());
+            this.acceptMimeTypesMetadata.load(byteBuf);
+        }
+        return acceptMimeTypesMetadata;
+    }
+
 
     @Override
     public String toText() throws Exception {
