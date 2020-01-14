@@ -2,7 +2,7 @@ Alibaba RSocket Broker
 ======================
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 [!["Open Issues"](https://img.shields.io/github/issues-raw/alibaba/alibaba-rsocket-broker.svg)](https://github.com/alibaba/alibaba-rsocket-broker/issues)
-[![Build Status](https://api.travis-ci.com/alibaba/alibaba-rsocket-broker.svg?branch=master)](https://travis-ci.com/alibaba/alibaba-rsocket-broker)
+[![Build Status](https://api.travis-ci.com/alibaba/alibaba-rsocket-broker.svg?branch=master)](https://travis-ci.com/alibaba/alibaba-rsocket-broker) [![Join the chat at https://gitter.im/alibaba-rsocket-broker/community](https://badges.gitter.im/alibaba-rsocket-broker/community.svg)](https://gitter.im/alibaba-rsocket-broker/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换系统，为通讯双方构建一个透明稳健的通讯桥梁。
 
