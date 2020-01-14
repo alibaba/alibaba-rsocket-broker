@@ -41,6 +41,13 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
         this.byteBufLength = wellKnownMimeTypes.length;
     }
 
+    public MessageAcceptMimeTypesMetadata(RSocketMimeType... rsocketMimeTypes) {
+        for (RSocketMimeType rsocketMimeType : rsocketMimeTypes) {
+            this.mimeTypes.add(rsocketMimeType.getId());
+        }
+        this.byteBufLength = rsocketMimeTypes.length;
+    }
+
     @Override
     public RSocketMimeType rsocketMimeType() {
         return RSocketMimeType.MessageAcceptMimeTypes;
