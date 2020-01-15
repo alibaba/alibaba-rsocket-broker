@@ -62,6 +62,8 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
         Object mimeType = mimeTypes.get(0);
         if (mimeType instanceof Byte) {
             return RSocketMimeType.valueOf((Byte) mimeType);
+        } else if (mimeType instanceof String) {
+            return RSocketMimeType.valueOfType((String) mimeType);
         }
         return null;
     }
@@ -81,7 +83,7 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
     }
 
     @Override
-    public void load(ByteBuf byteBuf) throws Exception {
+    public void load(ByteBuf byteBuf) {
         this.byteBufLength = byteBuf.capacity();
         while (byteBuf.isReadable()) {
             byte firstByte = byteBuf.readByte();
