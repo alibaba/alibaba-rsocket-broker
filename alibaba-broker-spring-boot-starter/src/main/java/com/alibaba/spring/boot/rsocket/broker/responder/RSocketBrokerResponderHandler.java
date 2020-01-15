@@ -176,7 +176,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 if (dataEncodingMetadata == null) {
                     dataEncodingMetadata = defaultMessageMimeType;
                 }
-                return localRequestResponse(routingMetaData, dataEncodingMetadata, payload);
+                return localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
             }
             String routing = routingMetaData.routing();
             //payload exchange
@@ -247,7 +247,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 if (dataEncodingMetadata == null) {
                     dataEncodingMetadata = defaultMessageMimeType;
                 }
-                return localRequestStream(routingMetaData, dataEncodingMetadata, payload);
+                return localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
             }
             String routing = routingMetaData.routing();
             RSocket destination = findDestination(routingMetaData.id(), routing);

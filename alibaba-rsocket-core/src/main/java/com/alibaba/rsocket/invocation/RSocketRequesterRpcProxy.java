@@ -121,7 +121,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         //add param encoding & make hessian as result type
         if (methodMetadata.getParamEncoding() != null) {
             compositeMetadata.addMetadata(new MessageMimeTypeMetadata(methodMetadata.getParamEncoding()));
-            //todo add accepted mime types
+            //set accepted mimetype
+            compositeMetadata.addMetadata(new MessageAcceptMimeTypesMetadata(encodingType));
         }
         //metadata data content
         ByteBuf compositeMetadataBuf = compositeMetadata.getContent();
@@ -166,7 +167,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 Flux<Payload> flux = upstream.requestStream(DefaultPayload.create(bodyBuffer, compositeMetadataBuf));
                 Flux<Object> result = flux.flatMap(payload -> {
                     try {
-                        return Mono.justOrEmpty(encodingFacade.decodeResult(encodingType, payload.data(), methodMetadata.getInferredClassForResult()));
+                        return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForResult()));
                     } catch (Exception e) {
                         return Mono.error(e);
                     } finally {
@@ -192,7 +193,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 Mono<Payload> payloadMono = upstream.requestResponse(DefaultPayload.create(bodyBuffer, compositeMetadataBuf)).timeout(timeout);
                 Mono<Object> result = payloadMono.flatMap(payload -> {
                     try {
-                        Mono<Object> remoteResult = Mono.justOrEmpty(encodingFacade.decodeResult(encodingType, payload.data(), methodMetadata.getInferredClassForResult()));
+                        Mono<Object> remoteResult = Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForResult()));
                         return injectContext(payload, remoteResult);
                     } catch (Exception e) {
                         return Mono.error(e);
@@ -274,5 +275,17 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             }
         }
         return temp;
+    }
+
+    private RSocketMimeType extractPayloadDataMimeType(ByteBuf metadata, RSocketMimeType defaultEncodingType) {
+        RSocketMimeType encodingType = defaultEncodingType;
+        if (metadata != null && metadata.capacity() > 0) {
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(metadata);
+            if (compositeMetadata.contains(RSocketMimeType.MessageMimeType)) {
+                MessageMimeTypeMetadata mimeTypeMetadata = MessageMimeTypeMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.MessageMimeType));
+                encodingType = mimeTypeMetadata.getRSocketMimeType();
+            }
+        }
+        return encodingType;
     }
 }

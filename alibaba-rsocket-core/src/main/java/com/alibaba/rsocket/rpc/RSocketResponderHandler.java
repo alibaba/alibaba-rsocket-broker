@@ -10,7 +10,6 @@ import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.route.RSocketRequestType;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
@@ -60,9 +59,9 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             //request filters
             if (filterChain.isFiltersPresent()) {
                 RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routing, payload);
-                return filterChain.filter(exchange).then(localRequestResponse(routing, dataEncodingMetadata, payload));
+                return filterChain.filter(exchange).then(localRequestResponse(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload));
             }
-            return localRequestResponse(routing, dataEncodingMetadata, payload);
+            return localRequestResponse(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
         });
     }
 
@@ -101,7 +100,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
                 ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
             }
-            return localRequestStream(routing, dataEncodingMetadata, payload);
+            return localRequestStream(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
         });
     }
 
@@ -115,7 +114,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
                 ReferenceCountUtil.safeRelease(signal);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
             }
-            return localRequestChannel(routing, dataEncodingMetadata, signal, Flux.from(payloads).skip(1));
+            return localRequestChannel(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), signal, Flux.from(payloads).skip(1));
         });
     }
 

@@ -1,10 +1,7 @@
 package com.alibaba.rsocket.listen;
 
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
-import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
-import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
-import com.alibaba.rsocket.metadata.MessageTagsMetadata;
-import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
@@ -51,7 +48,10 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
      */
     private Map<String, Object> attributes = new ConcurrentHashMap<>();
 
-    protected Mono<Payload> localRequestResponse(GSVRoutingMetadata routing, MessageMimeTypeMetadata dataEncodingMetadata, Payload payload) {
+    protected Mono<Payload> localRequestResponse(GSVRoutingMetadata routing,
+                                                 MessageMimeTypeMetadata dataEncodingMetadata,
+                                                 @Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata,
+                                                 Payload payload) {
         try {
             ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
             if (methodHandler != null) {
@@ -86,7 +86,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                     monoResult = Mono.fromFuture((CompletableFuture) result);
                 }
                 return monoResult
-                        .map(object -> encodingFacade.encodingResult(object, dataEncodingMetadata.getRSocketMimeType()))
+                        .map(object -> encodingFacade.encodingResult(object, resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType())))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()))
                         .doOnTerminate(() -> {
                             ReferenceCountUtil.safeRelease(payload);
@@ -122,7 +122,10 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
     }
 
 
-    protected Flux<Payload> localRequestStream(GSVRoutingMetadata routing, MessageMimeTypeMetadata dataEncodingMetadata, Payload payload) {
+    protected Flux<Payload> localRequestStream(GSVRoutingMetadata routing,
+                                               MessageMimeTypeMetadata dataEncodingMetadata,
+                                               @Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata,
+                                               Payload payload) {
         try {
             ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
             if (methodHandler != null) {
@@ -139,7 +142,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 //composite data for return value
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(dataEncodingMetadata);
                 return fluxResult
-                        .map(object -> encodingFacade.encodingResult(object, dataEncodingMetadata.getRSocketMimeType()))
+                        .map(object -> encodingFacade.encodingResult(object, resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType())))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
             } else {
                 ReferenceCountUtil.safeRelease(payload);
@@ -157,7 +160,10 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
         return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
     }
 
-    public Flux<Payload> localRequestChannel(GSVRoutingMetadata routing, MessageMimeTypeMetadata dataEncodingMetadata, Payload signal, Flux<Payload> payloads) {
+    public Flux<Payload> localRequestChannel(GSVRoutingMetadata routing,
+                                             MessageMimeTypeMetadata dataEncodingMetadata,
+                                             @Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata,
+                                             Payload signal, Flux<Payload> payloads) {
         try {
             ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
             if (methodHandler != null) {
@@ -180,7 +186,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(dataEncodingMetadata);
                 //result return
                 return ((Flux<Object>) result)
-                        .map(object -> encodingFacade.encodingResult(object, dataEncodingMetadata.getRSocketMimeType()))
+                        .map(object -> encodingFacade.encodingResult(object, resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType())))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
             } else {
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
@@ -229,4 +235,14 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
         attributes.put(name, value);
     }
 
+    private RSocketMimeType resultEncodingType(@Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata, RSocketMimeType defaultEncodingType) {
+        RSocketMimeType encodingType = defaultEncodingType;
+        if (messageAcceptMimeTypesMetadata != null) {
+            RSocketMimeType firstAcceptType = messageAcceptMimeTypesMetadata.getFirstAcceptType();
+            if (firstAcceptType != null) {
+                encodingType = firstAcceptType;
+            }
+        }
+        return encodingType;
+    }
 }
