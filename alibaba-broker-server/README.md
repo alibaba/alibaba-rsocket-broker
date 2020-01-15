@@ -36,10 +36,15 @@ RSocket Broker内置支持配置推送功能，基于KV存储
 
 ```
 rsocket.broker.auth-required=false
-
 ```
 
-在产品环境下，RSocket Broker使用JWT RSA进行安全验证，你需要在用户根目录下的.rsocket子目录下放置一个jwt_rsa.pub的公钥文件，生成步骤如下：
+或者在RSocket Broker Server启动命令行中添加取消JWT Token验证特性，命令行如下：
+
+```
+java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar --rsocket.broker.auth-required=false
+```
+
+在产品环境下，强力建议RSocket Broker使用JWT RSA进行安全验证，你需要在用户根目录下的.rsocket子目录下放置一个jwt_rsa.pub的公钥文件，生成步骤如下：
 
 ```
 # generate a 2048-bit RSA private key
