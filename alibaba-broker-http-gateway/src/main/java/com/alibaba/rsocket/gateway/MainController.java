@@ -26,7 +26,7 @@ public class MainController {
     private RSocket rSocketMono;
 
     public MainController(UpstreamManager upstreamManager) {
-        rSocketMono = upstreamManager.getRSocket("*");
+        rSocketMono = upstreamManager.findBroker();
     }
 
     @RequestMapping("/{serviceName}/{method}")
