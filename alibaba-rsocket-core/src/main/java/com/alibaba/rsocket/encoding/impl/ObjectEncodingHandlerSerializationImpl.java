@@ -21,7 +21,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
     @NotNull
     @Override
     public RSocketMimeType mimeType() {
-        return RSocketMimeType.Json;
+        return RSocketMimeType.Java_Object;
     }
 
     @Override
