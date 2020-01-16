@@ -23,6 +23,7 @@ import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
 @Controller
 public class MainController {
     private static MessageMimeTypeMetadata jsonMetaEncoding = new MessageMimeTypeMetadata(RSocketMimeType.Json);
+    private static MessageAcceptMimeTypesMetadata acceptMimeTypes = new MessageAcceptMimeTypesMetadata(RSocketMimeType.Json);
     private RSocket rSocketMono;
 
     public MainController(UpstreamManager upstreamManager) {
@@ -40,7 +41,7 @@ public class MainController {
         // please add auth code here
         try {
             GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, serviceName, method, version);
-            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding);
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding, acceptMimeTypes);
             ByteBuf bodyBuf = body == null ? EMPTY_BUFFER : Unpooled.wrappedBuffer(body);
             return rSocketMono.requestResponse(DefaultPayload.create(bodyBuf, compositeMetadata.getContent()))
                     .map(payload -> {
