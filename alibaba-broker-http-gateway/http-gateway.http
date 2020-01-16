@@ -1,0 +1,10 @@
+### REST API Gateway
+POST http://127.0.0.1:8282/com.alibaba.user.UserService/findById
+Authorization: Bearer jwt_token
+Content-Type: application/json
+
+[
+  1
+]
+
+###
