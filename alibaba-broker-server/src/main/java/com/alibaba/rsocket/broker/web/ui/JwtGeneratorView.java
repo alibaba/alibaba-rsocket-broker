@@ -25,6 +25,7 @@ public class JwtGeneratorView extends VerticalLayout {
     private TextField orgIdsText;
     private TextField serviceAccountsText;
     private TextField rolesText;
+    private TextField authoritiesText;
     private TextArea tokenTextArea;
     private Button generateBtn;
     private AuthenticationService authenticationService;
@@ -51,6 +52,9 @@ public class JwtGeneratorView extends VerticalLayout {
         rolesText = new TextField("Roles");
         rolesText.setWidth("300px");
         rolesText.setValue("user");
+        authoritiesText = new TextField("Authorities");
+        rolesText.setWidth("300px");
+        rolesText.setValue("");
         tokenTextArea = new TextArea("JWT Token");
         tokenTextArea.setWidth("800px");
         tokenTextArea.setHeight("240px");
@@ -63,8 +67,9 @@ public class JwtGeneratorView extends VerticalLayout {
             String[] serviceAccounts = serviceAccountsText.getValue().trim().split("[,;\\s]*");
             String[] owners = ownersText.getValue().trim().split("[,;\\s]*");
             String[] roles = rolesText.getValue().trim().split("[,;\\s]*");
+            String[] authorities = authoritiesText.getValue().trim().split("[,;\\s]*");
             try {
-                String token = authenticationService.generateCredentials(orgIds, serviceAccounts, roles, null, appName, owners);
+                String token = authenticationService.generateCredentials(orgIds, serviceAccounts, roles, authorities, appName, owners);
                 tokenTextArea.setValue(token);
             } catch (Exception ignore) {
 
@@ -76,6 +81,7 @@ public class JwtGeneratorView extends VerticalLayout {
         content.add(orgIdsText);
         content.add(serviceAccountsText);
         content.add(rolesText);
+        content.add(authoritiesText);
         content.add(tokenTextArea);
         buttons.add(generateBtn);
         buttons.add(new Button("Clear", buttonClickEvent -> {
@@ -91,6 +97,7 @@ public class JwtGeneratorView extends VerticalLayout {
         orgIdsText.clear();
         serviceAccountsText.clear();
         rolesText.clear();
+        authoritiesText.clear();
         tokenTextArea.clear();
     }
 }
