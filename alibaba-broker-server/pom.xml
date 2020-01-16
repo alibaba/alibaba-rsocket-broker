@@ -14,7 +14,7 @@
 
     <properties>
         <vaadin.version>14.1.5</vaadin.version>
-        <flexmark-all.version>0.50.44</flexmark-all.version>
+        <flexmark-all.version>0.50.46</flexmark-all.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
