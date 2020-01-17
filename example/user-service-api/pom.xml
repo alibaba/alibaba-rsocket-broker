@@ -11,7 +11,7 @@
     <properties>
         <reactor.version>3.3.2.RELEASE</reactor.version>
         <rxjava2.version>2.2.17</rxjava2.version>
-        <protobuf-java.version>3.11.0</protobuf-java.version>
+        <protobuf-java.version>3.11.1</protobuf-java.version>
         <junit5.version>5.5.2</junit5.version>
     </properties>
 
