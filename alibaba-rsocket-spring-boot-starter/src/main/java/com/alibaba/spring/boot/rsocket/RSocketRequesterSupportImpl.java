@@ -4,10 +4,10 @@ import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
+import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.Unpooled;
@@ -83,6 +83,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
             return applicationContext.getBeansWithAnnotation(RSocketService.class)
                     .values()
                     .stream()
+                    .filter(bean -> !(bean instanceof RSocketServiceHealth))
                     .map(o -> {
                         Class<?> managedBeanClass = o.getClass();
                         RSocketService rSocketService = AnnotationUtils.findAnnotation(managedBeanClass, RSocketService.class);
