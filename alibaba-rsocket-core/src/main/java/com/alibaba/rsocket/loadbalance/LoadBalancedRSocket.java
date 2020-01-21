@@ -260,6 +260,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     /**
      * start health check timer: check the connection every 15 seconds
+     * please check https://github.com/alibaba/alibaba-rsocket-broker/issues/10
      */
     public void startHealthCheckTimer() {
         Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
