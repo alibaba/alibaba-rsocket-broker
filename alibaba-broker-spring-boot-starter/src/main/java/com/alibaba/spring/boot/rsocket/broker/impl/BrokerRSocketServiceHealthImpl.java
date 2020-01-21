@@ -23,7 +23,8 @@ public class BrokerRSocketServiceHealthImpl implements RSocketServiceHealth {
     @Override
     public Mono<Integer> check(String serviceName) {
         //health check
-        if (serviceName.equals("com.alibaba.rsocket.health.Health")) {
+        if (serviceName == null || serviceName.equals("com.alibaba.rsocket.health.Health")) {
+            System.out.println("Health checking");
             return Mono.just(1);
         } else { //remote service check
             return Flux.fromIterable(routingSelector.findAllServices())
