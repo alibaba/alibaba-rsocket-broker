@@ -6,8 +6,13 @@ import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.listen.CompositeMetadataInterceptor;
+import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
+import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
+import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.cloudevents.v1.CloudEventImpl;
+import io.netty.buffer.Unpooled;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
@@ -15,6 +20,7 @@ import io.rsocket.RSocketFactory;
 import io.rsocket.exceptions.ConnectionErrorException;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
+import io.rsocket.util.DefaultPayload;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +30,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +49,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private Flux<Collection<String>> urisFactory;
     private Map<String, RSocket> activeSockets;
     private long lastRefresh;
+    /**
+     * health check interval seconds
+     */
+    private static int HEALTH_CHECK_INTERVAL_SECONDS = 15;
     private RSocketRequesterSupport requesterSupport;
 
     public LoadBalancedRSocket(String serviceId, Flux<Collection<String>> urisFactory,
@@ -51,6 +62,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         this.requesterSupport = requesterSupport;
         this.activeSockets = new HashMap<>();
         this.urisFactory.subscribe(this::refreshRsockets);
+        startHealthCheckTimer();
     }
 
     private void refreshRsockets(Collection<String> rsocketUris) {
@@ -244,6 +256,25 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             log.error(RsocketErrorCode.message("RST-400500", uri), e);
             return Mono.error(new ConnectionErrorException(uri));
         }
+    }
+
+    /**
+     * start health check timer: check the connection every 15 seconds
+     */
+    public void startHealthCheckTimer() {
+        Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
+                .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
+                .subscribe(entry -> {
+                    GSVRoutingMetadata routing = new GSVRoutingMetadata("", "com.alibaba.rsocket.health.RSocketServiceHealth", "check", "");
+                    MessageMimeTypeMetadata encoding = new MessageMimeTypeMetadata(RSocketMimeType.Hessian);
+                    RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routing, encoding);
+                    Mono<Payload> mono = entry.getValue().requestResponse(DefaultPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent()));
+                    mono.doOnError(error -> {
+                        if (error instanceof ClosedChannelException) { //connection closed
+                            onRSocketClosed(entry.getKey(), entry.getValue());
+                        }
+                    }).subscribe();
+                });
     }
 
 }
