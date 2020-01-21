@@ -12,6 +12,7 @@ import com.alibaba.rsocket.rpc.RSocketResponderHandler;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
+import com.alibaba.spring.boot.rsocket.health.RSocketServiceHealthImpl;
 import com.alibaba.spring.boot.rsocket.observability.MetricsServicePrometheusImpl;
 import com.alibaba.spring.boot.rsocket.responder.RSocketServicesPublishHook;
 import com.alibaba.spring.boot.rsocket.responder.invocation.RSocketServiceAnnotationProcessor;
@@ -136,5 +137,11 @@ public class RSocketAutoConfiguration {
     @Bean
     public RSocketServicesPublishHook rsocketServicesPublishHook() {
         return new RSocketServicesPublishHook();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RSocketServiceHealth rsocketServiceHealth() {
+        return new RSocketServiceHealthImpl();
     }
 }
