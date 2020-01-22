@@ -72,11 +72,16 @@
         <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
         <tag>HEAD</tag>
     </scm>
-    
+
     <issueManagement>
         <system>Github</system>
         <url>https://github.com/alibaba/alibaba-rsocket-broker/issues</url>
     </issueManagement>
+
+    <ciManagement>
+        <system>Travis</system>
+        <url>https://travis-ci.com/alibaba/alibaba-rsocket-broker</url>
+    </ciManagement>
 
     <dependencies>
         <dependency>
