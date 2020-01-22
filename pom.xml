@@ -2,12 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>3.5.0</maven>
+    </prerequisites>
+
     <groupId>com.alibaba.rsocket</groupId>
     <artifactId>alibaba-rsocket-broker-parent</artifactId>
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
-    <name>Alibaba RSocket Broker Parent</name>
-    <description>Alibaba RSocket Broker Maven parent module</description>
 
     <modules>
         <module>alibaba-rsocket-core</module>
@@ -43,6 +45,10 @@
         <junit5.version>5.6.0</junit5.version>
     </properties>
 
+    <name>Alibaba RSocket Broker Parent</name>
+    <description>Alibaba RSocket Broker Maven parent module</description>
+    <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
+    <inceptionYear>2019</inceptionYear>
     <licenses>
         <license>
             <name>Apache License</name>
@@ -50,14 +56,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <scm>
-        <connection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</connection>
-        <developerConnection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</developerConnection>
-        <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
-        <tag>HEAD</tag>
-    </scm>
-
     <developers>
         <developer>
             <id>leijuan</id>
@@ -67,6 +65,18 @@
             </roles>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</connection>
+        <developerConnection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</developerConnection>
+        <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/alibaba/alibaba-rsocket-broker/issues</url>
+    </issueManagement>
 
     <dependencies>
         <dependency>
