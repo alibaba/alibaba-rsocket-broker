@@ -1,9 +1,11 @@
 package com.alibaba.spring.boot.rsocket;
 
 import com.alibaba.rsocket.RSocketAppContext;
+import com.alibaba.rsocket.RSocketRequesterSupport;
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.events.AppStatusEvent;
+import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
-import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import io.cloudevents.v1.CloudEventBuilder;
@@ -29,25 +31,29 @@ import java.util.stream.Collectors;
 @Endpoint(id = "rsocket")
 public class RSocketEndpoint {
     private RSocketProperties properties;
-    private LocalReactiveServiceCaller localReactiveServiceCaller;
+    private RSocketRequesterSupport rsocketRequesterSupport;
     private UpstreamManager upstreamManager;
 
-    public RSocketEndpoint(RSocketProperties properties, UpstreamManager upstreamManager, LocalReactiveServiceCaller localReactiveServiceCaller) {
+    public RSocketEndpoint(RSocketProperties properties, UpstreamManager upstreamManager, RSocketRequesterSupport rsocketRequesterSupport) {
         this.properties = properties;
         this.upstreamManager = upstreamManager;
-        this.localReactiveServiceCaller = localReactiveServiceCaller;
+        this.rsocketRequesterSupport = rsocketRequesterSupport;
     }
 
     @ReadOperation
     public Map<String, Object> info() {
         Map<String, Object> info = new HashMap<>();
         info.put("id", RSocketAppContext.ID);
-        if (!localReactiveServiceCaller.findAllServices().isEmpty()) {
-            info.put("published", localReactiveServiceCaller.findAllServices());
+        Set<ServiceLocator> exposedServices = rsocketRequesterSupport.exposedServices().get();
+        if (!exposedServices.isEmpty()) {
+            info.put("published", exposedServices);
+        }
+        if (!RSocketRemoteServiceBuilder.CONSUMED_SERVICES.isEmpty()) {
+            info.put("subscribed", RSocketRemoteServiceBuilder.CONSUMED_SERVICES);
         }
         Collection<UpstreamCluster> upstreamClusters = upstreamManager.findAllClusters();
         if (!upstreamClusters.isEmpty()) {
-            info.put("subscribed", upstreamClusters.stream().map(upstreamCluster -> {
+            info.put("upstreams", upstreamClusters.stream().map(upstreamCluster -> {
                 Map<String, Object> temp = new HashMap<>();
                 temp.put("service", upstreamCluster.getServiceId());
                 temp.put("uris", upstreamCluster.getUris());
