@@ -2,6 +2,7 @@ package com.alibaba.spring.boot.rsocket;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.events.AppStatusEvent;
+import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
@@ -17,10 +18,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +50,13 @@ public class RSocketEndpoint {
                 Map<String, Object> temp = new HashMap<>();
                 temp.put("service", upstreamCluster.getServiceId());
                 temp.put("uris", upstreamCluster.getUris());
+                LoadBalancedRSocket loadBalancedRSocket = upstreamCluster.getLoadBalancedRSocket();
+                temp.put("activeUris", loadBalancedRSocket.getActiveSockets().keySet());
+                if (!loadBalancedRSocket.getUnHealthUriList().isEmpty()) {
+                    temp.put("unHealthUris", loadBalancedRSocket.getUnHealthUriList());
+                }
+                temp.put("lastRefreshTimeStamp", new Date(loadBalancedRSocket.getLastRefreshTimeStamp()));
+                temp.put("lastHealthCheckTimeStamp", new Date(loadBalancedRSocket.getLastHealthCheckTimeStamp()));
                 return temp;
             }).collect(Collectors.toList()));
         }
