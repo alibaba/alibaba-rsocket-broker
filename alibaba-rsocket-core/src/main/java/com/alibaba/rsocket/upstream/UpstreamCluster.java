@@ -108,7 +108,7 @@ public class UpstreamCluster extends AbstractRSocket implements CloudEventRSocke
         return serviceName.equals("*");
     }
 
-    public LoadBalancedRSocket getLoadBalancedRSocketMono() {
+    public LoadBalancedRSocket getLoadBalancedRSocket() {
         return loadBalancedRSocket;
     }
 
