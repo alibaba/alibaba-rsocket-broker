@@ -1,8 +1,8 @@
 package com.alibaba.spring.boot.rsocket;
 
 import com.alibaba.rsocket.health.RSocketServiceHealth;
-import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
+import com.alibaba.rsocket.upstream.UpstreamManager;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import reactor.core.publisher.Mono;
@@ -31,7 +31,8 @@ public class RSocketBrokerHealthIndicator implements ReactiveHealthIndicator {
         return rsocketServiceHealth.check("com.alibaba.rsocket.health.Health")
                 .map(result -> result != null && result == 1 ?
                         Health.up().withDetail("brokers", brokers).build()
-                        : Health.outOfService().withDetail("brokers", brokers).build());
+                        : Health.outOfService().withDetail("brokers", brokers).build())
+                .onErrorReturn(Health.down().withDetail("brokers", brokers).build());
     }
 
 }
