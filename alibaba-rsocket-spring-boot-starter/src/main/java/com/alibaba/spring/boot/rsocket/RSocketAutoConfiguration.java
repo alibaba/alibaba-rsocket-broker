@@ -124,8 +124,8 @@ public class RSocketAutoConfiguration {
     }
 
     @Bean
-    public RSocketEndpoint rsocketEndpoint(@Autowired UpstreamManager upstreamManager, @Autowired LocalReactiveServiceCaller localReactiveServiceCaller) {
-        return new RSocketEndpoint(properties, upstreamManager, localReactiveServiceCaller);
+    public RSocketEndpoint rsocketEndpoint(@Autowired UpstreamManager upstreamManager, @Autowired RSocketRequesterSupport rsocketRequesterSupport) {
+        return new RSocketEndpoint(properties, upstreamManager, rsocketRequesterSupport);
     }
 
     @Bean
