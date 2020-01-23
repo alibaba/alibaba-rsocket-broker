@@ -35,6 +35,7 @@ public class RSocketEndpoint {
     public RSocketEndpoint(RSocketProperties properties, UpstreamManager upstreamManager, LocalReactiveServiceCaller localReactiveServiceCaller) {
         this.properties = properties;
         this.upstreamManager = upstreamManager;
+        this.localReactiveServiceCaller = localReactiveServiceCaller;
     }
 
     @ReadOperation
