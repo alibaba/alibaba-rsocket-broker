@@ -49,7 +49,9 @@ public class RSocketEndpoint {
             info.put("published", exposedServices);
         }
         if (!RSocketRemoteServiceBuilder.CONSUMED_SERVICES.isEmpty()) {
-            info.put("subscribed", RSocketRemoteServiceBuilder.CONSUMED_SERVICES);
+            info.put("subscribed", RSocketRemoteServiceBuilder.CONSUMED_SERVICES.stream()
+                    .filter(serviceLocator -> !"com.alibaba.rsocket.health.RSocketServiceHealth".equals(serviceLocator.getService()))
+                    .collect(Collectors.toList()));
         }
         Collection<UpstreamCluster> upstreamClusters = upstreamManager.findAllClusters();
         if (!upstreamClusters.isEmpty()) {
