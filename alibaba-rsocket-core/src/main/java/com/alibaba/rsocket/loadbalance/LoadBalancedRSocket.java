@@ -32,10 +32,7 @@ import reactor.util.function.Tuples;
 
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Load balanced RSocket:  how to remove failure nodes?
@@ -48,12 +45,29 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private String serviceId;
     private Flux<Collection<String>> urisFactory;
     private Map<String, RSocket> activeSockets;
-    private long lastRefresh;
+    /**
+     * un health uri list
+     */
+    private List<String> unHealthUriList = new ArrayList<>();
+    private long lastHealthCheckTimeStamp = System.currentTimeMillis();
+    private long lastRefreshTimeStamp = System.currentTimeMillis();
     /**
      * health check interval seconds
      */
     private static int HEALTH_CHECK_INTERVAL_SECONDS = 15;
     private RSocketRequesterSupport requesterSupport;
+
+    public List<String> getUnHealthUriList() {
+        return unHealthUriList;
+    }
+
+    public long getLastHealthCheckTimeStamp() {
+        return lastHealthCheckTimeStamp;
+    }
+
+    public long getLastRefreshTimeStamp() {
+        return lastRefreshTimeStamp;
+    }
 
     public LoadBalancedRSocket(String serviceId, Flux<Collection<String>> urisFactory,
                                RSocketRequesterSupport requesterSupport) {
@@ -66,7 +80,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     private void refreshRsockets(Collection<String> rsocketUris) {
-        this.lastRefresh = System.currentTimeMillis();
+        this.lastRefreshTimeStamp = System.currentTimeMillis();
         Flux.fromIterable(rsocketUris)
                 .flatMap(rsocketUri -> {
                     if (activeSockets.containsKey(rsocketUri)) {
@@ -102,6 +116,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         }
                     }
                     this.activeSockets = newActiveRSockets;
+                    this.unHealthUriList.clear();
                     this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
                     //close all stale rsocket after 15 for drain mode
                     if (!staleRSockets.isEmpty()) {
@@ -216,6 +231,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void onRSocketClosed(String rsocketUri, RSocket rsocket) {
+        this.unHealthUriList.add(rsocketUri);
         if (activeSockets.containsKey(rsocketUri)) {
             activeSockets.remove(rsocketUri);
             this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
@@ -225,7 +241,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void onRSocketReconnected(String rsocketUri, RSocket rsocket) {
-        activeSockets.put(rsocketUri, rsocket);
+        this.activeSockets.put(rsocketUri, rsocket);
+        this.unHealthUriList.remove(rsocketUri);
         this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
         rsocket.onClose().subscribe(aVoid -> {
             onRSocketClosed(rsocketUri, rsocket);
@@ -288,6 +305,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
      * please check https://github.com/alibaba/alibaba-rsocket-broker/issues/10
      */
     public void startHealthCheckTimer() {
+        this.lastHealthCheckTimeStamp = System.currentTimeMillis();
         Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
                 .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
                 .subscribe(entry -> {
