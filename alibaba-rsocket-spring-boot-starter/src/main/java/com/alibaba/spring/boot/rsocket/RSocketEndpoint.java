@@ -4,6 +4,7 @@ import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.events.AppStatusEvent;
+import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
@@ -50,7 +51,7 @@ public class RSocketEndpoint {
         }
         if (!RSocketRemoteServiceBuilder.CONSUMED_SERVICES.isEmpty()) {
             info.put("subscribed", RSocketRemoteServiceBuilder.CONSUMED_SERVICES.stream()
-                    .filter(serviceLocator -> !"com.alibaba.rsocket.health.RSocketServiceHealth".equals(serviceLocator.getService()))
+                    .filter(serviceLocator -> !RSocketServiceHealth.class.getCanonicalName().equals(serviceLocator.getService()))
                     .collect(Collectors.toList()));
         }
         Collection<UpstreamCluster> upstreamClusters = upstreamManager.findAllClusters();
