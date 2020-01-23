@@ -53,8 +53,8 @@ public class RSocketEndpoint {
                 temp.put("uris", upstreamCluster.getUris());
                 LoadBalancedRSocket loadBalancedRSocket = upstreamCluster.getLoadBalancedRSocket();
                 temp.put("activeUris", loadBalancedRSocket.getActiveSockets().keySet());
-                if (!loadBalancedRSocket.getUnHealthUriList().isEmpty()) {
-                    temp.put("unHealthUris", loadBalancedRSocket.getUnHealthUriList());
+                if (!loadBalancedRSocket.getUnHealthUriSet().isEmpty()) {
+                    temp.put("unHealthUris", loadBalancedRSocket.getUnHealthUriSet());
                 }
                 temp.put("lastRefreshTimeStamp", new Date(loadBalancedRSocket.getLastRefreshTimeStamp()));
                 temp.put("lastHealthCheckTimeStamp", new Date(loadBalancedRSocket.getLastHealthCheckTimeStamp()));
