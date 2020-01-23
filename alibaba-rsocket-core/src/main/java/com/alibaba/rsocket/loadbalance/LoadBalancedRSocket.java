@@ -131,7 +131,16 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         if (next == null) {
             return Mono.error(new ConnectionErrorException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
-        return next.requestResponse(payload);
+        return next.requestResponse(payload)
+                .doOnError(error -> {
+                    if (error instanceof ClosedChannelException) {
+                        for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
+                            if (entry.getValue() == next) {
+                                onRSocketClosed(entry.getKey(), entry.getValue());
+                            }
+                        }
+                    }
+                }).onErrorResume((error) -> error instanceof ClosedChannelException, error -> requestResponse(payload));
     }
 
 
@@ -141,7 +150,15 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         if (next == null) {
             return Mono.error(new ConnectionErrorException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
-        return next.fireAndForget(payload);
+        return next.fireAndForget(payload).doOnError(error -> {
+            if (error instanceof ClosedChannelException) {
+                for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
+                    if (entry.getValue() == next) {
+                        onRSocketClosed(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+        }).onErrorResume((error) -> error instanceof ClosedChannelException, error -> fireAndForget(payload));
     }
 
     @Override
@@ -160,7 +177,15 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         if (next == null) {
             return Flux.error(new ConnectionErrorException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
-        return next.requestStream(payload);
+        return next.requestStream(payload).doOnError(error -> {
+            if (error instanceof ClosedChannelException) {
+                for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
+                    if (entry.getValue() == next) {
+                        onRSocketClosed(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+        }).onErrorResume((error) -> error instanceof ClosedChannelException, error -> requestStream(payload));
     }
 
     @Override
