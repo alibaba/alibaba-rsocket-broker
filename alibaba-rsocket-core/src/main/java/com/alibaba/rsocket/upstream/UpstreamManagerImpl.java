@@ -49,7 +49,7 @@ public class UpstreamManagerImpl implements UpstreamManager {
 
     @Override
     public RSocket getRSocket(String serviceId) {
-        return clusters.get(serviceId).getLoadBalancedRSocketMono();
+        return clusters.get(serviceId).getLoadBalancedRSocket();
     }
 
     @Override
