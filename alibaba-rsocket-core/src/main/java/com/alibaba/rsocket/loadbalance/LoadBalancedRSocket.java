@@ -5,6 +5,7 @@ import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
+import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.listen.CompositeMetadataInterceptor;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
@@ -310,7 +311,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
                 .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
                 .subscribe(entry -> {
-                    GSVRoutingMetadata routing = new GSVRoutingMetadata("", "com.alibaba.rsocket.health.RSocketServiceHealth", "check", "");
+                    GSVRoutingMetadata routing = new GSVRoutingMetadata("", RSocketServiceHealth.class.getCanonicalName(), "check", "");
                     MessageMimeTypeMetadata encoding = new MessageMimeTypeMetadata(RSocketMimeType.Hessian);
                     RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routing, encoding);
                     Mono<Payload> mono = entry.getValue().requestResponse(DefaultPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent()));
