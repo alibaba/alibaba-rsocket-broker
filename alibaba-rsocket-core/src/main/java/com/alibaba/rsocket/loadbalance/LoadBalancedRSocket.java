@@ -46,9 +46,9 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private Flux<Collection<String>> urisFactory;
     private Map<String, RSocket> activeSockets;
     /**
-     * un health uri list
+     * un health uri set
      */
-    private List<String> unHealthUriList = new ArrayList<>();
+    private Set<String> unHealthUriSet = new HashSet<>();
     private long lastHealthCheckTimeStamp = System.currentTimeMillis();
     private long lastRefreshTimeStamp = System.currentTimeMillis();
     /**
@@ -57,8 +57,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private static int HEALTH_CHECK_INTERVAL_SECONDS = 15;
     private RSocketRequesterSupport requesterSupport;
 
-    public List<String> getUnHealthUriList() {
-        return unHealthUriList;
+    public Set<String> getUnHealthUriSet() {
+        return unHealthUriSet;
     }
 
     public long getLastHealthCheckTimeStamp() {
@@ -81,6 +81,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     private void refreshRsockets(Collection<String> rsocketUris) {
         this.lastRefreshTimeStamp = System.currentTimeMillis();
+        this.unHealthUriSet.clear();
         Flux.fromIterable(rsocketUris)
                 .flatMap(rsocketUri -> {
                     if (activeSockets.containsKey(rsocketUri)) {
@@ -116,7 +117,6 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         }
                     }
                     this.activeSockets = newActiveRSockets;
-                    this.unHealthUriList.clear();
                     this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
                     //close all stale rsocket after 15 for drain mode
                     if (!staleRSockets.isEmpty()) {
@@ -231,7 +231,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void onRSocketClosed(String rsocketUri, RSocket rsocket) {
-        this.unHealthUriList.add(rsocketUri);
+        this.unHealthUriSet.add(rsocketUri);
         if (activeSockets.containsKey(rsocketUri)) {
             activeSockets.remove(rsocketUri);
             this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
@@ -242,7 +242,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     public void onRSocketReconnected(String rsocketUri, RSocket rsocket) {
         this.activeSockets.put(rsocketUri, rsocket);
-        this.unHealthUriList.remove(rsocketUri);
+        this.unHealthUriSet.remove(rsocketUri);
         this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
         rsocket.onClose().subscribe(aVoid -> {
             onRSocketClosed(rsocketUri, rsocket);
@@ -266,6 +266,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     if (!activeSockets.containsKey(rsocketUri)) {
                         connect(rsocketUri)
                                 .doOnError(e -> {
+                                    this.getUnHealthUriSet().add(rsocketUri);
                                     log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
                                 })
                                 .subscribe(rsocket -> {
