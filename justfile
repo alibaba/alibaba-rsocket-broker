@@ -25,6 +25,10 @@ start_broker:
 start_gossip_broker:
    java -jar -Drsocket.broker.topology=gossip -Drsocket.broker.seeds=192.168.11.11,192.168.11.12,192.168.11.13 alibaba-broker-server/target/alibaba-rsocket-broker.jar
 
+# display outdated maven artifacts
+updates:
+   mvn compile versions:display-dependency-updates versions:display-plugin-updates
+
 clean:
    mvn clean
    rm -rf alibaba-broker-server/node_modules
