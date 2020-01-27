@@ -45,6 +45,10 @@
             <outputDirectory>/</outputDirectory>
             <filtered>true</filtered>
         </file>
+        <file>
+            <source>${basedir}/src/main/build/README.md</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
     </files>
 
 </assembly>
