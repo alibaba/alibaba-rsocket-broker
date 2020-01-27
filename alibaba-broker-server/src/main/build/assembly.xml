@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>bundle</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <baseDirectory>alibaba-rsocket-broker</baseDirectory>
+
+    <fileSets>
+        <!-- config files -->
+        <fileSet>
+            <directory>${basedir}/src/main/build/config</directory>
+            <excludes></excludes>
+            <includes>
+                <include>application*.properties</include>
+                <include>logback-spring.xml</include>
+            </includes>
+            <fileMode>0644</fileMode>
+            <outputDirectory>/config</outputDirectory>
+        </fileSet>
+        <!-- scripts -->
+        <fileSet>
+            <directory>${basedir}/src/main/build/bin</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+        <!-- executable jar -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/lib</outputDirectory>
+            <includes>
+                <include>${build.finalName}.jar</include>
+            </includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+    </fileSets>
+
+    <files>
+        <file>
+            <source>${basedir}/src/main/build/VERSION</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+    </files>
+
+</assembly>
