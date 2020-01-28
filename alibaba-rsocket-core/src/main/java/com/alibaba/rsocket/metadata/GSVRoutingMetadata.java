@@ -43,7 +43,7 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     public GSVRoutingMetadata(String group, String service, String method, String version) {
         this.group = group == null ? "" : group;
-        this.service = service;
+        this.setService(service);
         this.method = method;
         this.version = version == null ? "" : version;
     }
@@ -61,7 +61,12 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     public void setService(String service) {
-        this.service = service;
+        if (this.service.contains("-")) {
+            this.service = service.substring(0, service.indexOf("-"));
+            this.method = service.substring(service.indexOf("-"));
+        } else {
+            this.service = service;
+        }
     }
 
     public String getMethod() {
