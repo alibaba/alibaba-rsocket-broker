@@ -26,13 +26,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
-        <micrometer.version>1.3.2</micrometer.version>
+        <micrometer.version>1.3.3</micrometer.version>
         <reactor-bom.version>Dysprosium-SR4</reactor-bom.version>
         <netty.version>4.1.45.Final</netty.version>
         <rsocket.version>1.0.0-RC5</rsocket.version>
         <kotlin.version>1.3.61</kotlin.version>
         <rxjava2.version>2.2.17</rxjava2.version>
-        <caffeine.version>2.8.0</caffeine.version>
+        <caffeine.version>2.8.1</caffeine.version>
         <roaring-bitmap.version>0.8.12</roaring-bitmap.version>
         <protobuf-java.version>3.11.1</protobuf-java.version>
         <hessian.version>4.0.63</hessian.version>
