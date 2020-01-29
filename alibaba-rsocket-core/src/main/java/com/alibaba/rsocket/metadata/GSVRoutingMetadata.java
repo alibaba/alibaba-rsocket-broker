@@ -61,7 +61,7 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     public void setService(String service) {
-        if (this.service.contains("-")) {
+        if (service.contains("-")) {
             this.service = service.substring(0, service.indexOf("-"));
             this.method = service.substring(service.indexOf("-"));
         } else {
