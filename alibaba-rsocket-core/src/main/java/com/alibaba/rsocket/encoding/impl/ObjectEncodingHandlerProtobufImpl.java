@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 
 /**
  * Object protobuf encoding
@@ -28,7 +29,7 @@ import java.lang.reflect.Method;
 public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler {
     LoadingCache<Class<?>, Method> parseFromMethodStore = Caffeine.newBuilder()
             .maximumSize(1000)
-            .build(targetClass -> targetClass.getMethod("parseFrom", InputStream.class));
+            .build(targetClass -> targetClass.getMethod("parseFrom", ByteBuffer.class));
 
     @NotNull
     @Override
@@ -73,7 +74,7 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws Exception {
         if (data.capacity() >= 1 && targetClass != null) {
             if (targetClass.getSuperclass() != null && targetClass.getSuperclass().equals(GeneratedMessageV3.class)) {
-                return parseFromMethodStore.get(targetClass).invoke(null, new ByteBufInputStream(data));
+                return parseFromMethodStore.get(targetClass).invoke(null, data.nioBuffer());
             } else {
                 Schema schema = RuntimeSchema.getSchema(targetClass);
                 Object object = schema.newMessage();
