@@ -29,6 +29,9 @@ start_gossip_broker:
 updates:
    mvn compile versions:display-dependency-updates versions:display-plugin-updates
 
+dependency_tree:
+   mvn compile -DgraphFormat=text -Dscope=compile  compile com.github.ferstl:depgraph-maven-plugin:3.3.0:aggregate -Dscope=compile "-Dincludes=org.springframework.boot:*"
+
 clean:
    mvn clean
    rm -rf alibaba-broker-server/node_modules
