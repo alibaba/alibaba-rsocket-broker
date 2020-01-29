@@ -10,6 +10,9 @@ GET http://localhost:8181/rx/user/2
 ### get all user
 GET http://localhost:8181/users
 
+### get error
+GET http://localhost:8181/error
+
 ### save user
 POST http://localhost:8181/user/save
 Content-Type: application/json
