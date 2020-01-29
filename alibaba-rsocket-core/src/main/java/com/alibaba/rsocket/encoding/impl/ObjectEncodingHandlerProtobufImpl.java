@@ -16,6 +16,7 @@ import io.protostuff.runtime.RuntimeSchema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 /**
@@ -27,7 +28,7 @@ import java.lang.reflect.Method;
 public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler {
     LoadingCache<Class<?>, Method> parseFromMethodStore = Caffeine.newBuilder()
             .maximumSize(1000)
-            .build(targetClass -> targetClass.getMethod("parseFrom", byte[].class));
+            .build(targetClass -> targetClass.getMethod("parseFrom", InputStream.class));
 
     @NotNull
     @Override
