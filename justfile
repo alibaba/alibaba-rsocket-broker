@@ -30,7 +30,7 @@ updates:
    mvn compile versions:display-dependency-updates versions:display-plugin-updates
 
 dependency_tree:
-   mvn compile -DgraphFormat=text -Dscope=compile  compile com.github.ferstl:depgraph-maven-plugin:3.3.0:aggregate -Dscope=compile "-Dincludes=org.springframework.boot:*"
+   mvn clean compile com.github.ferstl:depgraph-maven-plugin:3.3.0:aggregate -DgraphFormat=text -Dscope=compile -DshowVersions=true
 
 clean:
    mvn clean
