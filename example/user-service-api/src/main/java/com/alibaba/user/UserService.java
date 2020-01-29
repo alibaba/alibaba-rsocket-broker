@@ -85,4 +85,6 @@ public interface UserService {
      */
     Flux<User> recent(Flux<Date> point);
 
+    Mono<String> error(String text);
+
 }

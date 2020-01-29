@@ -86,4 +86,9 @@ public class UserServiceImpl implements UserService {
         return Flux.interval(Duration.ofMillis(1000))
                 .map(timestamp -> new User((int) (timestamp % 1000), "nick"));
     }
+
+    @Override
+    public Mono<String> error(String text) {
+        return Mono.error(new Exception("this is an Exception!"));
+    }
 }
