@@ -214,14 +214,14 @@
                 <plugin>
                     <groupId>com.google.cloud.tools</groupId>
                     <artifactId>jib-maven-plugin</artifactId>
-                    <version>1.8.0</version>
+                    <version>2.0.0</version>
                     <configuration>
                         <allowInsecureRegistries>true</allowInsecureRegistries>
                         <from>
                             <image>openjdk:8-jdk-slim</image>
                         </from>
                         <container>
-                            <useCurrentTimestamp>true</useCurrentTimestamp>
+                            <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                         </container>
                     </configuration>
                 </plugin>
