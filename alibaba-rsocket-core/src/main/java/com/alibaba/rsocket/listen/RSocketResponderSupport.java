@@ -15,6 +15,7 @@ import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.InvalidException;
+import io.rsocket.exceptions.RSocketException;
 import io.rsocket.util.DefaultPayload;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
@@ -88,7 +89,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                     monoResult = Mono.fromFuture((CompletableFuture) result);
                 }
                 return monoResult
-                        .onErrorMap(error -> new ApplicationErrorException(error.getMessage()))
+                        .onErrorMap(e -> !(e instanceof RSocketException), e -> new ApplicationErrorException(e.getMessage()))
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()))
                         .doOnTerminate(() -> {
@@ -146,7 +147,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
                 return fluxResult
-                        .onErrorMap(error -> new ApplicationErrorException(error.getMessage()))
+                        .onErrorMap(e -> !(e instanceof RSocketException), e -> new ApplicationErrorException(e.getMessage()))
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
             } else {
