@@ -1,7 +1,9 @@
 package com.alibaba.rsocket.encoding.impl;
 
+import com.alibaba.rsocket.encoding.EncodingException;
 import com.alibaba.rsocket.encoding.ObjectEncodingHandler;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.protobuf.GeneratedMessageV3;
@@ -16,7 +18,6 @@ import io.protostuff.runtime.RuntimeSchema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
@@ -38,7 +39,7 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     }
 
     @Override
-    public ByteBuf encodingParams(@Nullable Object[] args) throws Exception {
+    public ByteBuf encodingParams(@Nullable Object[] args) throws EncodingException {
         if (args != null && args.length == 1) {
             return encodingResult(args[0]);
         }
@@ -47,7 +48,7 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
 
     @Override
     @Nullable
-    public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws Exception {
+    public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
         if (data.capacity() >= 1 && targetClasses != null && targetClasses.length == 1) {
             return decodeResult(data, targetClasses[0]);
         }
@@ -55,7 +56,7 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     }
 
     @Override
-    public ByteBuf encodingResult(@Nullable Object result) throws Exception {
+    public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result != null) {
             if (result instanceof MessageLite) {
                 return Unpooled.wrappedBuffer(((MessageLite) result).toByteArray());
@@ -71,15 +72,19 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     @SuppressWarnings("ConstantConditions")
     @Override
     @Nullable
-    public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws Exception {
+    public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
         if (data.capacity() >= 1 && targetClass != null) {
-            if (targetClass.getSuperclass() != null && targetClass.getSuperclass().equals(GeneratedMessageV3.class)) {
-                return parseFromMethodStore.get(targetClass).invoke(null, data.nioBuffer());
-            } else {
-                Schema schema = RuntimeSchema.getSchema(targetClass);
-                Object object = schema.newMessage();
-                ProtostuffIOUtil.mergeFrom(new ByteBufInputStream(data), object, schema);
-                return object;
+            try {
+                if (targetClass.getSuperclass() != null && targetClass.getSuperclass().equals(GeneratedMessageV3.class)) {
+                    return parseFromMethodStore.get(targetClass).invoke(null, data.nioBuffer());
+                } else {
+                    Schema schema = RuntimeSchema.getSchema(targetClass);
+                    Object object = schema.newMessage();
+                    ProtostuffIOUtil.mergeFrom(new ByteBufInputStream(data), object, schema);
+                    return object;
+                }
+            } catch (Exception e) {
+                throw new EncodingException(RsocketErrorCode.message("RST-700501", "bytebuf", targetClass.getName()), e);
             }
         }
         return null;

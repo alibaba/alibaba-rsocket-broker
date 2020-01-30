@@ -17,16 +17,16 @@ import javax.validation.constraints.Null;
 public interface RSocketEncodingFacade {
 
     @NotNull
-    ByteBuf encodingParams(@Nullable Object[] args, RSocketMimeType encodingType);
+    ByteBuf encodingParams(@Nullable Object[] args, RSocketMimeType encodingType) throws EncodingException;
 
     @Nullable
-    Object decodeParams(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?>... targetClasses);
+    Object decodeParams(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException;
 
     @NotNull
-    ByteBuf encodingResult(@Nullable Object result, RSocketMimeType encodingType);
+    ByteBuf encodingResult(@Nullable Object result, RSocketMimeType encodingType) throws EncodingException;
 
     @Nullable
-    Object decodeResult(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?> targetClass);
+    Object decodeResult(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException;
 
     /**
      * get RSocket encoding facade singleton

@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.encoding.impl;
 
+import com.alibaba.rsocket.encoding.EncodingException;
 import com.alibaba.rsocket.encoding.ObjectEncodingHandler;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
@@ -58,7 +59,7 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
 
     @NotNull
     @Override
-    public ByteBuf encodingResult(@Nullable Object result, RSocketMimeType encodingType) {
+    public ByteBuf encodingResult(@Nullable Object result, RSocketMimeType encodingType) throws EncodingException {
         try {
             return handlerMap.get(encodingType).encodingResult(result);
         } catch (Exception e) {
