@@ -227,10 +227,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 onRSocketClosed(entry.getKey(), entry.getValue());
             }
         }
-        try {
-            rsocket.dispose();
-        } catch (Exception ignore) {
+        if (!rsocket.isDisposed()) {
+            try {
+                rsocket.dispose();
+            } catch (Exception ignore) {
 
+            }
         }
     }
 
@@ -242,10 +244,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
             tryToReconnect(rsocketUri);
         }
-        try {
-            rsocket.dispose();
-        } catch (Exception ignore) {
+        if (!rsocket.isDisposed()) {
+            try {
+                rsocket.dispose();
+            } catch (Exception ignore) {
 
+            }
         }
     }
 
