@@ -13,6 +13,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
+import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.InvalidException;
 import io.rsocket.util.DefaultPayload;
 import org.jetbrains.annotations.Nullable;
@@ -87,6 +88,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                     monoResult = Mono.fromFuture((CompletableFuture) result);
                 }
                 return monoResult
+                        .onErrorMap(error -> new ApplicationErrorException(error.getMessage()))
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()))
                         .doOnTerminate(() -> {
@@ -144,6 +146,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
                 return fluxResult
+                        .onErrorMap(error -> new ApplicationErrorException(error.getMessage()))
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
             } else {
