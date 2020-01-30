@@ -144,6 +144,9 @@ public class RSocketListenerImpl implements RSocketListener {
                     serverRSocketFactory = serverRSocketFactory.addResponderPlugin(responderInterceptor);
                 }
                 Disposable disposable = serverRSocketFactory
+                        .errorConsumer(error -> {
+                            log.error(RsocketErrorCode.message("RST-200501"), error);
+                        })
                         .acceptor(acceptor)
                         .transport(transport)
                         .start()
