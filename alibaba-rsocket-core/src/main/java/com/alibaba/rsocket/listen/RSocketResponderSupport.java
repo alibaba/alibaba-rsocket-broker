@@ -89,7 +89,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                     monoResult = Mono.fromFuture((CompletableFuture) result);
                 }
                 return monoResult
-                        .onErrorMap(e -> !(e instanceof RSocketException), e -> new ApplicationErrorException(e.getMessage()))
+                        .onErrorMap(e -> !(e instanceof RSocketException), this::convertException)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()))
                         .doOnTerminate(() -> {
@@ -147,7 +147,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
                 return fluxResult
-                        .onErrorMap(e -> !(e instanceof RSocketException), e -> new ApplicationErrorException(e.getMessage()))
+                        .onErrorMap(e -> !(e instanceof RSocketException), this::convertException)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
             } else {
@@ -193,6 +193,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(dataEncodingMetadata);
                 //result return
                 return ((Flux<Object>) result)
+                        .onErrorMap(e -> !(e instanceof RSocketException), this::convertException)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
             } else {
@@ -251,5 +252,10 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             }
         }
         return encodingType;
+    }
+
+    public RSocketException convertException(Throwable e) {
+        log.error(RsocketErrorCode.message("RST-200501"), e);
+        return new ApplicationErrorException(e.getMessage());
     }
 }
