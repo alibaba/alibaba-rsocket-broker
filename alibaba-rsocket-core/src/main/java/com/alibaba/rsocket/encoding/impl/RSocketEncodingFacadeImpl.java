@@ -39,7 +39,8 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     @Override
     public ByteBuf encodingParams(@Nullable Object[] args, RSocketMimeType encodingType) {
         try {
-            return handlerMap.get(encodingType).encodingParams(args);
+            ObjectEncodingHandler handler = handlerMap.get(encodingType);
+            return handler.encodingParams(args);
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-700500", "Object[]", encodingType.getName()), e);
             return EMPTY_BUFFER;
@@ -76,6 +77,14 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-700501", encodingType.getName(), targetClass != null ? targetClass.getName() : "Null"), e);
             return null;
+        }
+    }
+
+    //check encoding type exist or not
+    private void checkMimeTypeAvailable(RSocketMimeType encodingType) throws EncodingException {
+        if (!handlerMap.containsKey(encodingType)) {
+            String message = RsocketErrorCode.message("RST-700405", encodingType.getType());
+            throw new EncodingException(message, new Exception(message));
         }
     }
 }
