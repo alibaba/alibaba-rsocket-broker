@@ -34,6 +34,7 @@ import reactor.util.function.Tuples;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Load balanced RSocket:  how to remove failure nodes?
@@ -69,6 +70,11 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public long getLastRefreshTimeStamp() {
         return lastRefreshTimeStamp;
     }
+
+    /**
+     * connection error predicate
+     */
+    private static Predicate<? super Throwable> CONNECTION_ERROR_PREDICATE = e -> e instanceof ClosedChannelException || e instanceof ConnectionErrorException;
 
     public LoadBalancedRSocket(String serviceId, Flux<Collection<String>> urisFactory,
                                RSocketRequesterSupport requesterSupport) {
@@ -145,16 +151,11 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public Mono<Payload> requestResponse(Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
-            return Mono.error(new ConnectionErrorException(RsocketErrorCode.message("RST-200404", serviceId)));
+            return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
         return next.requestResponse(payload)
-                .doOnError(ClosedChannelException.class, error -> {
-                    for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
-                        if (entry.getValue() == next) {
-                            onRSocketClosed(entry.getKey(), entry.getValue());
-                        }
-                    }
-                }).onErrorResume(ClosedChannelException.class, error -> requestResponse(payload));
+                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
+                .onErrorResume(ClosedChannelException.class, error -> requestResponse(payload));
     }
 
 
@@ -162,15 +163,11 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public Mono<Void> fireAndForget(Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
-            return Mono.error(new ConnectionErrorException(RsocketErrorCode.message("RST-200404", serviceId)));
+            return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
-        return next.fireAndForget(payload).doOnError(ClosedChannelException.class, error -> {
-            for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
-                if (entry.getValue() == next) {
-                    onRSocketClosed(entry.getKey(), entry.getValue());
-                }
-            }
-        }).onErrorResume(ClosedChannelException.class, error -> fireAndForget(payload));
+        return next.fireAndForget(payload)
+                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
+                .onErrorResume(ClosedChannelException.class, error -> fireAndForget(payload));
     }
 
     @Override
@@ -187,30 +184,22 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public Flux<Payload> requestStream(Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
-            return Flux.error(new ConnectionErrorException(RsocketErrorCode.message("RST-200404", serviceId)));
+            return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
-        return next.requestStream(payload).doOnError(ClosedChannelException.class, error -> {
-            for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
-                if (entry.getValue() == next) {
-                    onRSocketClosed(entry.getKey(), entry.getValue());
-                }
-            }
-        }).onErrorResume(ClosedChannelException.class, error -> requestStream(payload));
+        return next.requestStream(payload)
+                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
+                .onErrorResume(ClosedChannelException.class, error -> requestStream(payload));
     }
 
     @Override
     public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
         RSocket next = randomSelector.next();
         if (next == null) {
-            return Flux.error(new ConnectionErrorException(RsocketErrorCode.message("RST-200404", serviceId)));
+            return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
-        return next.requestChannel(payloads).doOnError(ClosedChannelException.class, error -> {
-            for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
-                if (entry.getValue() == next) {
-                    onRSocketClosed(entry.getKey(), entry.getValue());
-                }
-            }
-        }).onErrorResume(ClosedChannelException.class, error -> requestChannel(payloads));
+        return next.requestChannel(payloads)
+                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
+                .onErrorResume(ClosedChannelException.class, error -> requestChannel(payloads));
     }
 
     @Override
@@ -229,6 +218,15 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     public Map<String, RSocket> getActiveSockets() {
         return activeSockets;
+    }
+
+
+    public void onRSocketClosed(RSocket rsocket) {
+        for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
+            if (entry.getValue() == rsocket) {
+                onRSocketClosed(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     public void onRSocketClosed(String rsocketUri, RSocket rsocket) {
