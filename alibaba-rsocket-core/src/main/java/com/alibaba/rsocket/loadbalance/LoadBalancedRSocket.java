@@ -163,13 +163,9 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     @Override
     public Mono<Void> fireAndForget(Payload payload) {
-        RSocket next = randomSelector.next();
-        if (next == null) {
-            return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
-        }
         return Mono.defer(randomSelector)
                 .flatMap(rsocket -> rsocket.fireAndForget(payload)
-                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next)))
+                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
                 .retry(retryCount, CONNECTION_ERROR_PREDICATE);
     }
 
