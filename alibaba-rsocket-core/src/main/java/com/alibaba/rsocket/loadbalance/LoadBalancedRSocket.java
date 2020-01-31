@@ -47,7 +47,6 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private String serviceId;
     private Flux<Collection<String>> urisFactory;
     private Map<String, RSocket> activeSockets;
-    private int retryCount = 3;
     /**
      * un health uri set
      */
@@ -58,6 +57,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
      * health check interval seconds
      */
     private static int HEALTH_CHECK_INTERVAL_SECONDS = 15;
+    /**
+     * retry count because of connection error
+     */
+    private int retryCount = 3;
     private RSocketRequesterSupport requesterSupport;
 
     public Set<String> getUnHealthUriSet() {
