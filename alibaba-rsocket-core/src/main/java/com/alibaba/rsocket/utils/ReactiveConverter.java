@@ -8,6 +8,8 @@ import reactor.adapter.rxjava.RxJava2Adapter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -17,18 +19,22 @@ import java.util.concurrent.CompletableFuture;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public interface ReactiveConverter {
+    List<String> REACTIVE_STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
+            "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux",
+            "reactor.core.publisher.Mono","io.reactivex.Maybe","io.reactivex.Single","java.util.concurrent.CompletableFuture",
+            "io.reactivex.rxjava3.core.Maybe","io.reactivex.rxjava3.core.Single","org.reactivestreams.Publisher");
 
     default <T> Mono<T> toMono(@Nullable Object source) {
-        if (source instanceof Maybe) {
+        if (source instanceof Mono) {
+            return (Mono) source;
+        } else if (source instanceof CompletableFuture) {  //CompletableFuture
+            return Mono.fromFuture((CompletableFuture) source);
+        } else if (source instanceof Publisher) {
+            return Mono.from((Publisher) source);
+        } else if (source instanceof Maybe) {
             return RxJava2Adapter.maybeToMono((Maybe) source);
         } else if (source instanceof Single) {
             return RxJava2Adapter.singleToMono((Single) source);
-        } else if (source instanceof CompletableFuture) {  //CompletableFuture
-            return Mono.fromFuture((CompletableFuture) source);
-        } else if (source instanceof Mono) {
-            return (Mono) source;
-        } else if (source instanceof Publisher) {
-            return Mono.from((Publisher) source);
         }
         return (Mono<T>) Mono.justOrEmpty(source);
     }
