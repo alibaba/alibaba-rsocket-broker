@@ -42,11 +42,12 @@ import java.util.function.Predicate;
  * @author leijuan
  */
 public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRSocket {
-    private RandomSelector<RSocket> randomSelector = new RandomSelector<>(new ArrayList<>());
+    private RandomSelector<RSocket> randomSelector;
     private Logger log = LoggerFactory.getLogger(LoadBalancedRSocket.class);
     private String serviceId;
     private Flux<Collection<String>> urisFactory;
     private Map<String, RSocket> activeSockets;
+    private int retryCount = 3;
     /**
      * un health uri set
      */
@@ -79,6 +80,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public LoadBalancedRSocket(String serviceId, Flux<Collection<String>> urisFactory,
                                RSocketRequesterSupport requesterSupport) {
         this.serviceId = serviceId;
+        this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>());
         this.urisFactory = urisFactory;
         this.requesterSupport = requesterSupport;
         this.activeSockets = new HashMap<>();
@@ -124,7 +126,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         }
                     }
                     this.activeSockets = newActiveRSockets;
-                    this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
+                    this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
                     //close all stale rsocket after 15 for drain mode
                     if (!staleRSockets.isEmpty()) {
                         Flux.fromIterable(staleRSockets.entrySet())
@@ -149,13 +151,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     @Override
     public Mono<Payload> requestResponse(Payload payload) {
-        RSocket next = randomSelector.next();
-        if (next == null) {
-            return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
-        }
-        return next.requestResponse(payload)
-                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
-                .onErrorResume(ClosedChannelException.class, error -> requestResponse(payload));
+        return Mono.defer(randomSelector)
+                .flatMap(rsocket -> rsocket.requestResponse(payload)
+                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
+                .retry(retryCount, error -> error instanceof ClosedChannelException);
     }
 
 
@@ -165,9 +164,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         if (next == null) {
             return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
-        return next.fireAndForget(payload)
-                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
-                .onErrorResume(ClosedChannelException.class, error -> fireAndForget(payload));
+        return Mono.defer(randomSelector)
+                .flatMap(rsocket -> rsocket.fireAndForget(payload)
+                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next)))
+                .retry(retryCount, error -> error instanceof ClosedChannelException);
     }
 
     @Override
@@ -182,24 +182,19 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     @Override
     public Flux<Payload> requestStream(Payload payload) {
-        RSocket next = randomSelector.next();
-        if (next == null) {
-            return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
-        }
-        return next.requestStream(payload)
-                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
-                .onErrorResume(ClosedChannelException.class, error -> requestStream(payload));
+        return Mono.defer(randomSelector)
+                .flatMapMany(rsocket -> rsocket.requestStream(payload)
+                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
+                .retry(retryCount, error -> error instanceof ClosedChannelException);
     }
 
     @Override
     public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
-        RSocket next = randomSelector.next();
-        if (next == null) {
-            return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
-        }
-        return next.requestChannel(payloads)
-                .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next))
-                .onErrorResume(ClosedChannelException.class, error -> requestChannel(payloads));
+
+        return Mono.defer(randomSelector)
+                .flatMapMany(rsocket -> rsocket.requestChannel(payloads)
+                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
+                .retry(retryCount, error -> error instanceof ClosedChannelException);
     }
 
     @Override
@@ -240,7 +235,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         this.unHealthUriSet.add(rsocketUri);
         if (activeSockets.containsKey(rsocketUri)) {
             activeSockets.remove(rsocketUri);
-            this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
+            this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
             log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
             tryToReconnect(rsocketUri);
         }
@@ -256,7 +251,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public void onRSocketReconnected(String rsocketUri, RSocket rsocket) {
         this.activeSockets.put(rsocketUri, rsocket);
         this.unHealthUriSet.remove(rsocketUri);
-        this.randomSelector = new RandomSelector<>(new ArrayList<>(activeSockets.values()));
+        this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
         rsocket.onClose().subscribe(aVoid -> {
             onRSocketClosed(rsocketUri, rsocket);
         });
