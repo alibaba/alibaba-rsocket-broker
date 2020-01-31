@@ -29,13 +29,13 @@ public class ReactiveMethodMetadata {
      */
     private RSocketMimeType paramEncoding;
     /**
-     * result type
+     * return type
      */
     private Class<?> returnType;
     /**
-     * inferred class for result type
+     * inferred class for return type
      */
-    private Class<?> inferredClassForResult;
+    private Class<?> inferredClassForReturn;
 
     public ReactiveMethodMetadata(Method method, RSocketMimeType defaultEncoding) {
         this.classFullName = method.getDeclaringClass().getCanonicalName();
@@ -51,14 +51,14 @@ public class ReactiveMethodMetadata {
                 if (typeArguments.length > 0) {
                     final Type typeArgument = typeArguments[0];
                     if (typeArgument instanceof ParameterizedType) {
-                        this.inferredClassForResult = (Class<?>) ((ParameterizedType) typeArgument).getActualTypeArguments()[0];
+                        this.inferredClassForReturn = (Class<?>) ((ParameterizedType) typeArgument).getActualTypeArguments()[0];
                     } else {
-                        this.inferredClassForResult = (Class<?>) typeArgument;
+                        this.inferredClassForReturn = (Class<?>) typeArgument;
                     }
                 }
             }
-            if (this.inferredClassForResult == null) {
-                this.inferredClassForResult = (Class<?>) genericReturnType;
+            if (this.inferredClassForReturn == null) {
+                this.inferredClassForReturn = (Class<?>) genericReturnType;
             }
         }
         //parameter
@@ -77,8 +77,8 @@ public class ReactiveMethodMetadata {
             ;
         }
         if (this.rsocketFrameType == null) {
-            assert inferredClassForResult != null;
-            if (returnType.equals(Void.TYPE) || (returnType.equals(Mono.class) && inferredClassForResult.equals(Void.TYPE))) {
+            assert inferredClassForReturn != null;
+            if (returnType.equals(Void.TYPE) || (returnType.equals(Mono.class) && inferredClassForReturn.equals(Void.TYPE))) {
                 this.rsocketFrameType = FrameType.REQUEST_FNF;
             } else if (returnType.equals(Flux.class) || returnType.equals(Flowable.class) || returnType.equals(Observable.class)) {
                 this.rsocketFrameType = FrameType.REQUEST_STREAM;
@@ -116,12 +116,12 @@ public class ReactiveMethodMetadata {
         return rsocketFrameType;
     }
 
-    public Class<?> getInferredClassForResult() {
-        return inferredClassForResult;
+    public Class<?> getInferredClassForReturn() {
+        return inferredClassForReturn;
     }
 
-    public void setInferredClassForResult(Class<?> inferredClassForResult) {
-        this.inferredClassForResult = inferredClassForResult;
+    public void setInferredClassForReturn(Class<?> inferredClassForReturn) {
+        this.inferredClassForReturn = inferredClassForReturn;
     }
 
     public int getParameterCount() {
