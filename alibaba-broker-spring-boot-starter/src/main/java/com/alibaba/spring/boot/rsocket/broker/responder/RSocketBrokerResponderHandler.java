@@ -82,6 +82,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     private ServiceRoutingSelector routingSelector;
     private RSocketBrokerHandlerRegistry handlerRegistry;
     private ServiceMeshInspector serviceMeshInspector;
+    private Mono<Void> comboOnClose;
     /**
      * reactive event processor
      */
@@ -126,7 +127,9 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                     registerPublishedServices();
                 }
             }
-            onClose().doOnTerminate(this::unRegisterPublishedServices).subscribeOn(Schedulers.parallel()).subscribe();
+            //new comboOnClose
+            this.comboOnClose = Mono.first(super.onClose(), peerRsocket.onClose());
+            this.comboOnClose.doOnTerminate(this::unRegisterPublishedServices).subscribeOn(Schedulers.parallel()).subscribe();
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-500400"), e);
         }
@@ -368,5 +371,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             }
         }
         return null;
+    }
+
+    @Override
+    public Mono<Void> onClose() {
+        return this.comboOnClose;
     }
 }
