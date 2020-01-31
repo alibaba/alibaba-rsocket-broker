@@ -1,7 +1,11 @@
 package com.alibaba.rsocket.invocation;
 
 import com.alibaba.rsocket.metadata.RSocketMimeType;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.rsocket.frame.FrameType;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -17,9 +21,9 @@ public class ReactiveMethodMetadata {
     private String name;
     private int parameterCount;
     /**
-     * bi directional indicate, parameter type & return type are both Flux
+     * rsocket frame type
      */
-    private boolean biDirectional = false;
+    private FrameType rsocketFrameType;
     /**
      * param encoding
      */
@@ -27,7 +31,7 @@ public class ReactiveMethodMetadata {
     /**
      * result type
      */
-    private Class<?> resultType;
+    private Class<?> returnType;
     /**
      * inferred class for result type
      */
@@ -37,7 +41,7 @@ public class ReactiveMethodMetadata {
         this.classFullName = method.getDeclaringClass().getCanonicalName();
         this.name = method.getName();
         //result type & generic type
-        this.resultType = method.getReturnType();
+        this.returnType = method.getReturnType();
         Type genericReturnType = method.getGenericReturnType();
         if (genericReturnType != null) {
             //http://tutorials.jenkov.com/java-reflection/generics.html
@@ -46,9 +50,9 @@ public class ReactiveMethodMetadata {
                 Type[] typeArguments = type.getActualTypeArguments();
                 if (typeArguments.length > 0) {
                     final Type typeArgument = typeArguments[0];
-                    if (typeArgument instanceof  ParameterizedType){
+                    if (typeArgument instanceof ParameterizedType) {
                         this.inferredClassForResult = (Class<?>) ((ParameterizedType) typeArgument).getActualTypeArguments()[0];
-                    }else{
+                    } else {
                         this.inferredClassForResult = (Class<?>) typeArgument;
                     }
                 }
@@ -67,11 +71,21 @@ public class ReactiveMethodMetadata {
         }
         //bi direction check: type is Flux for 1st param or type is flux for 2nd param
         if (parameterCount == 1 && method.getParameterTypes()[0].equals(Flux.class)) {
-            biDirectional = true;
+            rsocketFrameType = FrameType.REQUEST_CHANNEL;
         } else if (parameterCount == 2 && method.getParameterTypes()[1].equals(Flux.class)) {
-            biDirectional = true;
+            rsocketFrameType = FrameType.REQUEST_CHANNEL;
+            ;
         }
-
+        if (this.rsocketFrameType == null) {
+            assert inferredClassForResult != null;
+            if (returnType.equals(Void.TYPE) || (returnType.equals(Mono.class) && inferredClassForResult.equals(Void.TYPE))) {
+                this.rsocketFrameType = FrameType.REQUEST_FNF;
+            } else if (returnType.equals(Flux.class) || returnType.equals(Flowable.class) || returnType.equals(Observable.class)) {
+                this.rsocketFrameType = FrameType.REQUEST_STREAM;
+            } else {
+                this.rsocketFrameType = FrameType.REQUEST_RESPONSE;
+            }
+        }
     }
 
     public String getClassFullName() {
@@ -90,19 +104,23 @@ public class ReactiveMethodMetadata {
         this.name = name;
     }
 
-    public Class<?> getResultType() {
-        return resultType;
+    public Class<?> getReturnType() {
+        return returnType;
     }
 
-    public void setResultType(Class<?> resultType) {
-        this.resultType = resultType;
+    public void setReturnType(Class<?> returnType) {
+        this.returnType = returnType;
     }
 
-    public Class getInferredClassForResult() {
+    public FrameType getRsocketFrameType() {
+        return rsocketFrameType;
+    }
+
+    public Class<?> getInferredClassForResult() {
         return inferredClassForResult;
     }
 
-    public void setInferredClassForResult(Class inferredClassForResult) {
+    public void setInferredClassForResult(Class<?> inferredClassForResult) {
         this.inferredClassForResult = inferredClassForResult;
     }
 
@@ -120,14 +138,6 @@ public class ReactiveMethodMetadata {
 
     public void setParamEncoding(RSocketMimeType paramEncoding) {
         this.paramEncoding = paramEncoding;
-    }
-
-    public boolean isBiDirectional() {
-        return biDirectional;
-    }
-
-    public void setBiDirectional(boolean biDirectional) {
-        this.biDirectional = biDirectional;
     }
 
 }
