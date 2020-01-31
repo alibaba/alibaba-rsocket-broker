@@ -154,7 +154,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         return Mono.defer(randomSelector)
                 .flatMap(rsocket -> rsocket.requestResponse(payload)
                         .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
-                .retry(retryCount, error -> error instanceof ClosedChannelException);
+                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
     }
 
 
@@ -167,7 +167,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         return Mono.defer(randomSelector)
                 .flatMap(rsocket -> rsocket.fireAndForget(payload)
                         .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(next)))
-                .retry(retryCount, error -> error instanceof ClosedChannelException);
+                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
     }
 
     @Override
@@ -185,16 +185,15 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         return Mono.defer(randomSelector)
                 .flatMapMany(rsocket -> rsocket.requestStream(payload)
                         .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
-                .retry(retryCount, error -> error instanceof ClosedChannelException);
+                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
     }
 
     @Override
     public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
-
         return Mono.defer(randomSelector)
                 .flatMapMany(rsocket -> rsocket.requestChannel(payloads)
                         .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
-                .retry(retryCount, error -> error instanceof ClosedChannelException);
+                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
     }
 
     @Override
