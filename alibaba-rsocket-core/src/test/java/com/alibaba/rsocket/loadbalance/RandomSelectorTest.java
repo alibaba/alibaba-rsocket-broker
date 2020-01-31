@@ -10,7 +10,7 @@ import java.util.Arrays;
  * @author leijuan
  */
 public class RandomSelectorTest {
-    private static RandomSelector<Integer> randomSelector = new RandomSelector<>(Arrays.asList(1, 2, 3));
+    private static RandomSelector<Integer> randomSelector = new RandomSelector<>("Demo", Arrays.asList(1, 2, 3));
 
     @Test
     public void testNext() {
