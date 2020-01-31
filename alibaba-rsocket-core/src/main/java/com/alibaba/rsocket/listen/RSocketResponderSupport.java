@@ -54,9 +54,9 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             if (methodHandler != null) {
                 Object result;
                 if (methodHandler.isAsyncReturn()) {
-                    result = Mono.fromCallable(() -> invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
-                } else {
                     result = invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
+                } else {
+                    result = Mono.fromCallable(() -> invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
@@ -100,15 +100,26 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
     protected Mono<Void> localFireAndForget(GSVRoutingMetadata routing, MessageMimeTypeMetadata dataEncodingMetadata, Payload payload) {
         ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
         if (methodHandler != null) {
-            return Mono.fromRunnable(() -> {
+            if (methodHandler.isAsyncReturn()) {
                 try {
-                    invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
+                    return toMono(invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
                 } catch (Exception e) {
                     log.error(RsocketErrorCode.message("RST-200500"), e);
-                } finally {
-                    ReferenceCountUtil.safeRelease(payload);
+                    return Mono.error(e);
                 }
-            });
+            } else {
+                return Mono.create((sink) -> {
+                    try {
+                        invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
+                        sink.success();
+                    } catch (Exception e) {
+                        log.error(RsocketErrorCode.message("RST-200500"), e);
+                        sink.error(e);
+                    } finally {
+                        ReferenceCountUtil.safeRelease(payload);
+                    }
+                });
+            }
         } else {
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
