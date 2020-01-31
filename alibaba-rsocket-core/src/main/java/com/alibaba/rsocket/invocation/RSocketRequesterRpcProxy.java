@@ -5,18 +5,16 @@ import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
+import com.alibaba.rsocket.utils.ReactiveConverter;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.micrometer.core.instrument.Metrics;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
-import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
 import io.rsocket.Payload;
+import io.rsocket.frame.FrameType;
 import io.rsocket.util.DefaultPayload;
-import reactor.adapter.rxjava.RxJava2Adapter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -34,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author leijuan
  */
-public class RSocketRequesterRpcProxy implements InvocationHandler {
+public class RSocketRequesterRpcProxy implements InvocationHandler, ReactiveConverter {
     private UpstreamCluster upstream;
     /**
      * service interface
@@ -127,7 +125,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         //metadata data content
         ByteBuf compositeMetadataBuf = compositeMetadata.getContent();
         //----- return type deal------
-        if (methodMetadata.isBiDirectional()) { //bi directional, channel
+        if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_CHANNEL) {
             metrics(routing, "0x07");
             Payload routePayload;
             Flux<Object> source;
@@ -154,15 +152,12 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         } else {
             //body content
             ByteBuf bodyBuffer = encodingFacade.encodingParams(args, methodMetadata.getParamEncoding());
-            //return type is void, use fireAndForget
             Class<?> returnType = method.getReturnType();
-            if (returnType.equals(Void.TYPE)) {
+            if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
                 metrics(routing, "0x05");
                 upstream.fireAndForget(DefaultPayload.create(bodyBuffer, compositeMetadataBuf)).subscribe();
                 return null;
-            }
-            //request/stream
-            else if (returnType.equals(Flux.class) || returnType.equals(Flowable.class)) {
+            } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
                 metrics(routing, "0x05");
                 Flux<Payload> flux = upstream.requestStream(DefaultPayload.create(bodyBuffer, compositeMetadataBuf));
                 Flux<Object> result = flux.flatMap(payload -> {
@@ -174,13 +169,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         ReferenceCountUtil.safeRelease(payload);
                     }
                 });
-                if (returnType.equals(Flowable.class)) {
-                    return RxJava2Adapter.fluxToFlowable(result);
-                }
-                return result.subscriberContext(mutableContext::putAll);
-            }
-            // request/response
-            else {
+                return fromPublisher(result, returnType, mutableContext);
+            } else {
                 metrics(routing, "0x04");
                 if (cachedMethods.containsKey(method)) {
                     CacheResult cacheResult = cachedMethods.get(method);
@@ -207,12 +197,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         rpcCache.put(key, Mono.just(obj).cache());
                     }
                 });
-                if (returnType.equals(Maybe.class)) {
-                    return RxJava2Adapter.monoToMaybe(result);
-                } else if (returnType.equals(Single.class)) {
-                    return RxJava2Adapter.monoToSingle(result);
-                }
-                return result.subscriberContext(mutableContext::putAll);
+                return fromPublisher(result, returnType, mutableContext);
             }
         }
     }
