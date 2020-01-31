@@ -1,23 +1,27 @@
 package com.alibaba.rsocket.loadbalance;
 
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import org.jetbrains.annotations.Nullable;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * random selector
  *
  * @author leijuan
  */
-public class RandomSelector<T> {
+public class RandomSelector<T> implements Supplier<Mono<T>> {
     // atomic性能更好一些
     //private Random randomGenerator = new Random();
     private AtomicInteger position = new AtomicInteger(0);
     private List<T> elements;
     private int size;
+    private String name;
 
-    public RandomSelector(List<T> elements) {
+    public RandomSelector(String name, List<T> elements) {
         this.elements = elements;
         this.size = elements.size();
     }
@@ -35,5 +39,14 @@ public class RandomSelector<T> {
             }
             return t;
         }
+    }
+
+    @Override
+    public Mono<T> get() {
+        T next = next();
+        if (next == null) {
+            return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", this.name)));
+        }
+        return Mono.just(next);
     }
 }
