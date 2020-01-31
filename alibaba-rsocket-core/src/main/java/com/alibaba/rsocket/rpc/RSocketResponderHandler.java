@@ -31,9 +31,13 @@ import reactor.extra.processor.TopicProcessor;
 public class RSocketResponderHandler extends RSocketResponderSupport implements ResponderRSocket, CloudEventRSocket {
     private RSocketFilterChain filterChain;
     /**
-     * peer rsocket
+     * requester from peer
      */
-    protected RSocket peerRsocket;
+    protected RSocket requester;
+    /**
+     * combo onClose from responder and requester
+     */
+    private Mono<Void> comboOnClose;
     protected TopicProcessor<CloudEventImpl> eventProcessor;
 
     public RSocketResponderHandler(LocalReactiveServiceCaller serviceCall,
@@ -43,7 +47,8 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         this.localServiceCaller = serviceCall;
         this.filterChain = filterChain;
         this.eventProcessor = eventProcessor;
-        this.peerRsocket = peerRsocket;
+        this.requester = peerRsocket;
+        this.comboOnClose = Mono.first(super.onClose(), requester.onClose());
     }
 
     @Override
@@ -141,10 +146,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     public Mono<Void> fireCloudEventToPeer(CloudEventImpl<?> cloudEvent) {
         try {
             Payload payload = PayloadUtils.cloudEventToMetadataPushPayload(cloudEvent);
-            return peerRsocket.metadataPush(payload);
+            return requester.metadataPush(payload);
         } catch (Exception e) {
             return Mono.error(e);
         }
     }
 
+    @Override
+    public Mono<Void> onClose() {
+        return this.comboOnClose;
+    }
 }
