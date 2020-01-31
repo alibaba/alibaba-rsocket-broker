@@ -1,14 +1,11 @@
 package com.alibaba.rsocket.rpc;
 
-import io.reactivex.Maybe;
-import io.reactivex.Single;
-import org.reactivestreams.Publisher;
+import com.alibaba.rsocket.utils.ReactiveConverter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -26,10 +23,7 @@ public class ReactiveMethodHandler {
         this.method = method;
         this.parameterCount = method.getParameterCount();
         Class<?> returnType = this.method.getReturnType();
-        if (returnType.isAssignableFrom(Publisher.class)
-                || returnType.isAssignableFrom(CompletableFuture.class)
-                || returnType.isAssignableFrom(Single.class)
-                || returnType.isAssignableFrom(Maybe.class)) {
+        if (ReactiveConverter.REACTIVE_STREAM_CLASSES.contains(returnType.getCanonicalName())) {
             this.asyncReturn = true;
         }
     }
