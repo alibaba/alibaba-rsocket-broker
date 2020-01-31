@@ -24,6 +24,7 @@ public class RandomSelector<T> implements Supplier<Mono<T>> {
     public RandomSelector(String name, List<T> elements) {
         this.elements = elements;
         this.size = elements.size();
+        this.name = name;
     }
 
     @Nullable
