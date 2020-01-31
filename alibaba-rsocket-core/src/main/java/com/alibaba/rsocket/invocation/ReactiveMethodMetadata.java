@@ -1,8 +1,6 @@
 package com.alibaba.rsocket.invocation;
 
 import com.alibaba.rsocket.metadata.RSocketMimeType;
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.rsocket.frame.FrameType;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,6 +8,8 @@ import reactor.core.publisher.Mono;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * reactive method metadata for service interface
@@ -17,6 +17,8 @@ import java.lang.reflect.Type;
  * @author leijuan
  */
 public class ReactiveMethodMetadata {
+    public static List<String> STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
+            "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux");
     private String classFullName;
     private String name;
     private int parameterCount;
@@ -80,7 +82,7 @@ public class ReactiveMethodMetadata {
             assert inferredClassForReturn != null;
             if (returnType.equals(Void.TYPE) || (returnType.equals(Mono.class) && inferredClassForReturn.equals(Void.TYPE))) {
                 this.rsocketFrameType = FrameType.REQUEST_FNF;
-            } else if (returnType.equals(Flux.class) || returnType.equals(Flowable.class) || returnType.equals(Observable.class)) {
+            } else if (returnType.equals(Flux.class) || STREAM_CLASSES.contains(returnType.getCanonicalName())) {
                 this.rsocketFrameType = FrameType.REQUEST_STREAM;
             } else {
                 this.rsocketFrameType = FrameType.REQUEST_RESPONSE;
