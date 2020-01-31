@@ -40,7 +40,7 @@ public class ReactiveMethodHandler {
         return method.getParameterTypes();
     }
 
-    public Class<?> getInferredClassForResult() {
+    public Class<?> getInferredClassForReturn() {
         return getInferredClassForGeneric(method.getGenericReturnType());
     }
 
