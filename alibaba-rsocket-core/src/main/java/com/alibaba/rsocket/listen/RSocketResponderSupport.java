@@ -104,6 +104,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 try {
                     return toMono(invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
                 } catch (Exception e) {
+                    ReferenceCountUtil.safeRelease(payload);
                     log.error(RsocketErrorCode.message("RST-200500"), e);
                     return Mono.error(e);
                 }
@@ -135,7 +136,6 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
             if (methodHandler != null) {
                 Object result = invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
-                ReferenceCountUtil.safeRelease(payload);
                 Flux<Object> fluxResult = toFlux(result);
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
