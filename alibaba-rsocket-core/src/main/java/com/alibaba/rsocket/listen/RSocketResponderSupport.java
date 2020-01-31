@@ -5,12 +5,11 @@ import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
+import com.alibaba.rsocket.utils.ReactiveConverter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.exceptions.InvalidException;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.adapter.rxjava.RxJava2Adapter;
 import reactor.core.Scannable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,7 +25,6 @@ import reactor.util.function.Tuple2;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -36,7 +33,7 @@ import java.util.stream.Stream;
  *
  * @author leijuan
  */
-public abstract class RSocketResponderSupport extends AbstractRSocket implements AttributeMap {
+public abstract class RSocketResponderSupport extends AbstractRSocket implements AttributeMap, ReactiveConverter {
     public static String COMPOSITE_METADATA_KEY = CompositeMetadataRSocket.COMPOSITE_METADATA_KEY;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected LocalReactiveServiceCaller localServiceCaller;
@@ -79,12 +76,8 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                             resultCompositeMetadata.addMetadata(new MessageTagsMetadata(tags));
                         }
                     }
-                } else if (result instanceof Maybe) {
-                    monoResult = RxJava2Adapter.maybeToMono((Maybe) result);
-                } else if (result instanceof Single) {
-                    monoResult = RxJava2Adapter.singleToMono((Single) result);
-                } else {  //CompletableFuture
-                    monoResult = Mono.fromFuture((CompletableFuture) result);
+                } else {
+                    monoResult = toMono(result);
                 }
                 return monoResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
@@ -132,14 +125,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             if (methodHandler != null) {
                 Object result = invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
                 ReferenceCountUtil.safeRelease(payload);
-                Flux<Object> fluxResult;
-                if (result instanceof Iterable) {
-                    fluxResult = Flux.fromIterable((Iterable) result);
-                } else if (result instanceof Flux) {
-                    fluxResult = (Flux) result;
-                } else {
-                    fluxResult = Flux.just(result);
-                }
+                Flux<Object> fluxResult = toFlux(result);
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
