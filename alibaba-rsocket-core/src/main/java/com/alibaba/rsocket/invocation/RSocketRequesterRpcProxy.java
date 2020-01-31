@@ -142,7 +142,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler, ReactiveConv
             Flux<Payload> payloads = upstream.requestChannel(payloadFlux);
             return payloads.flatMap(payload -> {
                 try {
-                    return Mono.justOrEmpty(encodingFacade.decodeResult(encodingType, payload.data(), methodMetadata.getInferredClassForResult()));
+                    return Mono.justOrEmpty(encodingFacade.decodeResult(encodingType, payload.data(), methodMetadata.getInferredClassForReturn()));
                 } catch (Exception e) {
                     return Flux.error(e);
                 } finally {
@@ -162,7 +162,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler, ReactiveConv
                 Flux<Payload> flux = upstream.requestStream(DefaultPayload.create(bodyBuffer, compositeMetadataBuf));
                 Flux<Object> result = flux.flatMap(payload -> {
                     try {
-                        return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForResult()));
+                        return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
                     } catch (Exception e) {
                         return Mono.error(e);
                     } finally {
@@ -183,7 +183,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler, ReactiveConv
                 Mono<Payload> payloadMono = upstream.requestResponse(DefaultPayload.create(bodyBuffer, compositeMetadataBuf)).timeout(timeout);
                 Mono<Object> result = payloadMono.flatMap(payload -> {
                     try {
-                        Mono<Object> remoteResult = Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForResult()));
+                        Mono<Object> remoteResult = Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
                         return injectContext(payload, remoteResult);
                     } catch (Exception e) {
                         return Mono.error(e);
