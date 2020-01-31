@@ -140,7 +140,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 routePayload = DefaultPayload.create(bodyBuffer, compositeMetadataBuf);
                 source = (Flux<Object>) args[1];
             }
-            Flux<Payload> payloadFlux = Flux.just(routePayload).concatWith(source.map(obj -> DefaultPayload.create(encodingFacade.encodingResult(obj, encodingType), compositeMetadataBuf)));
+            Flux<Payload> payloadFlux = source.startWith(routePayload).map(obj -> DefaultPayload.create(encodingFacade.encodingResult(obj, encodingType), compositeMetadataBuf));
             Flux<Payload> payloads = upstream.requestChannel(payloadFlux);
             return payloads.flatMap(payload -> {
                 try {
