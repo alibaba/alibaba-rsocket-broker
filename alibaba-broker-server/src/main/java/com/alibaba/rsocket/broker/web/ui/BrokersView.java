@@ -25,6 +25,7 @@ public class BrokersView extends VerticalLayout {
         brokerDataGrid.setItems(brokerManager.currentBrokers());
         brokerDataGrid.addColumn(RSocketBroker::getIp).setHeader("IP");
         brokerDataGrid.addColumn(RSocketBroker::getPort).setHeader("Port");
+        brokerDataGrid.addColumn(RSocketBroker::getUrl).setHeader("Link");
         add(brokerDataGrid);
     }
 
