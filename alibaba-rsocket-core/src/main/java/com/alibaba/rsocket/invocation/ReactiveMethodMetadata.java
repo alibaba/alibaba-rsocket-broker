@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.invocation;
 
 import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.reactive.ReactiveAdapter;
 import io.rsocket.frame.FrameType;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,6 +39,7 @@ public class ReactiveMethodMetadata {
      * inferred class for return type
      */
     private Class<?> inferredClassForReturn;
+    private ReactiveAdapter reactiveAdapter;
 
     public ReactiveMethodMetadata(Method method, RSocketMimeType defaultEncoding) {
         this.classFullName = method.getDeclaringClass().getCanonicalName();
@@ -76,7 +78,6 @@ public class ReactiveMethodMetadata {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
         } else if (parameterCount == 2 && method.getParameterTypes()[1].equals(Flux.class)) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
-            ;
         }
         if (this.rsocketFrameType == null) {
             assert inferredClassForReturn != null;
@@ -88,6 +89,7 @@ public class ReactiveMethodMetadata {
                 this.rsocketFrameType = FrameType.REQUEST_RESPONSE;
             }
         }
+        this.reactiveAdapter = ReactiveAdapter.findAdapter(returnType.getCanonicalName());
     }
 
     public String getClassFullName() {
@@ -96,6 +98,10 @@ public class ReactiveMethodMetadata {
 
     public void setClassFullName(String classFullName) {
         this.classFullName = classFullName;
+    }
+
+    public ReactiveAdapter getReactiveAdapter() {
+        return reactiveAdapter;
     }
 
     public String getName() {
