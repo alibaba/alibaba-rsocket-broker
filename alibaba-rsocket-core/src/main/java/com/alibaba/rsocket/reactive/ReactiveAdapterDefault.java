@@ -1,0 +1,55 @@
+package com.alibaba.rsocket.reactive;
+
+import com.alibaba.rsocket.MutableContext;
+import org.jetbrains.annotations.Nullable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.stream.Stream;
+
+/**
+ * Reactive Adapter default
+ *
+ * @author leijuan
+ */
+public class ReactiveAdapterDefault implements ReactiveAdapter {
+    private static ReactiveAdapterDefault instance = new ReactiveAdapterDefault();
+
+    public static ReactiveAdapterDefault getInstance() {
+        return instance;
+    }
+
+
+    @Override
+    public <T> Mono<T> toMono(@Nullable Object source) {
+        if (source instanceof Mono) {
+            return (Mono) source;
+        } else {
+            return (Mono<T>) Mono.justOrEmpty(source);
+        }
+    }
+
+    @Override
+    public <T> Flux<T> toFlux(@Nullable Object source) {
+        if (source instanceof Flux) {
+            return (Flux) source;
+        } else if (source instanceof Iterable) {
+            return Flux.fromIterable((Iterable) source);
+        } else if (source instanceof Stream) {
+            return Flux.fromStream((Stream) source);
+        } else if (source == null) {
+            return Flux.empty();
+        }
+        return (Flux<T>) Flux.just(source);
+    }
+
+    @Override
+    public Object fromPublisher(Mono<?> mono, Class<?> returnType, MutableContext mutableContext) {
+        return mono;
+    }
+
+    @Override
+    public Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext) {
+        return flux;
+    }
+}
