@@ -4,6 +4,7 @@ import com.alibaba.account.AccountService;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamManager;
+import com.alibaba.user.Rx3UserService;
 import com.alibaba.user.RxUserService;
 import com.alibaba.user.UserService;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,14 @@ public class ServiceConsumeConfiguration {
         return RSocketRemoteServiceBuilder
                 .client(RxUserService.class)
                 .encodingType(RSocketMimeType.CBOR)
+                .upstreamManager(upstreamManager)
+                .build();
+    }
+
+    @Bean
+    public Rx3UserService rx3UserService(UpstreamManager upstreamManager) {
+        return RSocketRemoteServiceBuilder
+                .client(Rx3UserService.class)
                 .upstreamManager(upstreamManager)
                 .build();
     }
