@@ -24,6 +24,8 @@ public class ReactiveAdapterDefault implements ReactiveAdapter {
     public <T> Mono<T> toMono(@Nullable Object source) {
         if (source instanceof Mono) {
             return (Mono) source;
+        } else if (source instanceof Publisher) {
+            return Mono.from((Publisher) source);
         } else {
             return (Mono<T>) Mono.justOrEmpty(source);
         }
