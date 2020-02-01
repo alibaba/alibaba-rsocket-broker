@@ -7,8 +7,12 @@ import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.user.Rx3UserService;
 import com.alibaba.user.RxUserService;
 import com.alibaba.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ReactiveAdapterRegistry;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Service consumer configuration
@@ -17,6 +21,13 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class ServiceConsumeConfiguration {
+    @Autowired
+    private ReactiveAdapterRegistry reactiveAdapterRegistry;
+
+    @PostConstruct
+    public void init() {
+        new RxJava3Registrar().registerAdapters(reactiveAdapterRegistry);
+    }
 
     @Bean
     public UserService userService(UpstreamManager upstreamManager) {
