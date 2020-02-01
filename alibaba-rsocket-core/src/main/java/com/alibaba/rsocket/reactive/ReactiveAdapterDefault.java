@@ -2,6 +2,7 @@ package com.alibaba.rsocket.reactive;
 
 import com.alibaba.rsocket.MutableContext;
 import org.jetbrains.annotations.Nullable;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +19,6 @@ public class ReactiveAdapterDefault implements ReactiveAdapter {
     public static ReactiveAdapterDefault getInstance() {
         return instance;
     }
-
 
     @Override
     public <T> Mono<T> toMono(@Nullable Object source) {
@@ -37,19 +37,23 @@ public class ReactiveAdapterDefault implements ReactiveAdapter {
             return Flux.fromIterable((Iterable) source);
         } else if (source instanceof Stream) {
             return Flux.fromStream((Stream) source);
+        } else if (source instanceof Publisher) {
+            return Flux.from((Publisher) source);
         } else if (source == null) {
             return Flux.empty();
+        } else if (source.getClass().isArray()) {
+            return Flux.fromArray((T[]) source);
         }
         return (Flux<T>) Flux.just(source);
     }
 
     @Override
     public Object fromPublisher(Mono<?> mono, Class<?> returnType, MutableContext mutableContext) {
-        return mono;
+        return mono.subscriberContext(mutableContext::putAll);
     }
 
     @Override
     public Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext) {
-        return flux;
+        return flux.subscriberContext(mutableContext::putAll);
     }
 }
