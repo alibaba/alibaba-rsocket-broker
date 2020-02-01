@@ -143,7 +143,6 @@
                         <image>linuxchina/alibaba-rsocket-broker</image>
                     </to>
                     <container>
-                        <useCurrentTimestamp>true</useCurrentTimestamp>
                         <mainClass>${mainClass}</mainClass>
                         <entrypoint>/bin/sh,/app/run-java.sh</entrypoint>
                         <environment>
