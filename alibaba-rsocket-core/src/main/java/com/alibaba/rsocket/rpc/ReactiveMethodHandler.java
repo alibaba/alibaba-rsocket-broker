@@ -1,10 +1,13 @@
 package com.alibaba.rsocket.rpc;
 
-import com.alibaba.rsocket.utils.ReactiveConverter;
+import com.alibaba.rsocket.reactive.ReactiveAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,22 +17,33 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author leijuan
  */
 public class ReactiveMethodHandler {
+    List<String> REACTIVE_STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
+            "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux",
+            "reactor.core.publisher.Mono", "io.reactivex.Maybe", "io.reactivex.Single", "java.util.concurrent.CompletableFuture",
+            "io.reactivex.rxjava3.core.Maybe", "io.reactivex.rxjava3.core.Single", "org.reactivestreams.Publisher");
     private static Map<Type, Class<?>> genericTypesCache = new ConcurrentHashMap<>();
     private Method method;
     private int parameterCount;
     private boolean asyncReturn = false;
+    private ReactiveAdapter reactiveAdapter;
 
     public ReactiveMethodHandler(Class<?> serviceInterface, Method method) {
         this.method = method;
         this.parameterCount = method.getParameterCount();
         Class<?> returnType = this.method.getReturnType();
-        if (ReactiveConverter.REACTIVE_STREAM_CLASSES.contains(returnType.getCanonicalName())) {
+        if (REACTIVE_STREAM_CLASSES.contains(returnType.getCanonicalName())) {
             this.asyncReturn = true;
         }
+        this.reactiveAdapter = ReactiveAdapter.findAdapter(returnType.getCanonicalName());
     }
 
     public Object invoke(Object obj, Object... args) throws Exception {
         return method.invoke(obj, args);
+    }
+
+    @NotNull
+    public ReactiveAdapter getReactiveAdapter() {
+        return reactiveAdapter;
     }
 
     public int getParameterCount() {
