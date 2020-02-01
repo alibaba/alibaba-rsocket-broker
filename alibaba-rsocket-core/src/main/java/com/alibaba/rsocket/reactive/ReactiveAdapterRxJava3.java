@@ -26,6 +26,8 @@ public class ReactiveAdapterRxJava3 implements ReactiveAdapter {
             return RxJava3Adapter.maybeToMono((Maybe) source);
         } else if (source instanceof Single) {
             return RxJava3Adapter.singleToMono((Single) source);
+        } else if (source instanceof Completable) {
+            return (Mono<T>) RxJava3Adapter.completableToMono((Completable) source);
         } else {
             return (Mono<T>) Mono.justOrEmpty(source);
         }
@@ -50,6 +52,8 @@ public class ReactiveAdapterRxJava3 implements ReactiveAdapter {
             return RxJava3Adapter.monoToMaybe(mono);
         } else if (returnType.equals(Single.class)) {
             return RxJava3Adapter.monoToSingle(mono);
+        } else if (returnType.equals(Completable.class)) {
+            return RxJava3Adapter.monoToCompletable(mono);
         }
         return mono;
     }
