@@ -5,7 +5,6 @@ import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
-import com.alibaba.rsocket.utils.ReactiveConverter;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.micrometer.core.instrument.Metrics;
@@ -32,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author leijuan
  */
-public class RSocketRequesterRpcProxy implements InvocationHandler, ReactiveConverter {
+public class RSocketRequesterRpcProxy implements InvocationHandler {
     private UpstreamCluster upstream;
     /**
      * service interface
@@ -169,7 +168,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler, ReactiveConv
                         ReferenceCountUtil.safeRelease(payload);
                     }
                 });
-                return fromPublisher(result, returnType, mutableContext);
+                return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else {
                 metrics(routing, "0x04");
                 if (cachedMethods.containsKey(method)) {
@@ -197,7 +196,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler, ReactiveConv
                         rpcCache.put(key, Mono.just(obj).cache());
                     }
                 });
-                return fromPublisher(result, returnType, mutableContext);
+                return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             }
         }
     }

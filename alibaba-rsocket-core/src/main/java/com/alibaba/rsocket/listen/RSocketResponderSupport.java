@@ -5,7 +5,6 @@ import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
-import com.alibaba.rsocket.utils.ReactiveConverter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.v1.CloudEventImpl;
@@ -33,7 +32,7 @@ import java.util.stream.Stream;
  *
  * @author leijuan
  */
-public abstract class RSocketResponderSupport extends AbstractRSocket implements AttributeMap, ReactiveConverter {
+public abstract class RSocketResponderSupport extends AbstractRSocket implements AttributeMap {
     public static String COMPOSITE_METADATA_KEY = CompositeMetadataRSocket.COMPOSITE_METADATA_KEY;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected LocalReactiveServiceCaller localServiceCaller;
@@ -77,7 +76,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                         }
                     }
                 } else {
-                    monoResult = toMono(result);
+                    monoResult = methodHandler.getReactiveAdapter().toMono(result);
                 }
                 return monoResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
@@ -102,7 +101,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
         if (methodHandler != null) {
             if (methodHandler.isAsyncReturn()) {
                 try {
-                    return toMono(invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
+                    return methodHandler.getReactiveAdapter().toMono(invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
                 } catch (Exception e) {
                     ReferenceCountUtil.safeRelease(payload);
                     log.error(RsocketErrorCode.message("RST-200500"), e);
@@ -136,7 +135,12 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
             if (methodHandler != null) {
                 Object result = invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
-                Flux<Object> fluxResult = toFlux(result);
+                Flux<Object> fluxResult;
+                if (result instanceof Flux) {
+                    fluxResult = (Flux<Object>) result;
+                } else {
+                    fluxResult = methodHandler.getReactiveAdapter().toFlux(result);
+                }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
