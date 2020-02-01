@@ -28,7 +28,11 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
         if (args == null || args.length == 0 || args[0] == null) {
             return EMPTY_BUFFER;
         }
-        return HessianUtils.outputAsBuffer(args);
+        try {
+            return HessianUtils.outputAsBuffer(args);
+        } catch (Exception e) {
+            throw new EncodingException(RsocketErrorCode.message("RST-700500", "object[]", "ByteBuf"), e);
+        }
     }
 
     @Override
@@ -48,7 +52,11 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
         if (result == null) {
             return EMPTY_BUFFER;
         }
-        return HessianUtils.outputAsBuffer(result);
+        try {
+            return HessianUtils.outputAsBuffer(result);
+        } catch (Exception e) {
+            throw new EncodingException(RsocketErrorCode.message("RST-700500", result.toString(), "ByteBuf"), e);
+        }
     }
 
     @Override
