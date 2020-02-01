@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ReactiveMethodHandler {
     List<String> REACTIVE_STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
             "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux",
-            "reactor.core.publisher.Mono", "io.reactivex.Maybe", "io.reactivex.Single", "java.util.concurrent.CompletableFuture",
-            "io.reactivex.rxjava3.core.Maybe", "io.reactivex.rxjava3.core.Single", "org.reactivestreams.Publisher");
+            "reactor.core.publisher.Mono", "io.reactivex.Maybe", "io.reactivex.Single", "io.reactivex.Completable", "java.util.concurrent.CompletableFuture",
+            "io.reactivex.rxjava3.core.Maybe", "io.reactivex.rxjava3.core.Single", "io.reactivex.rxjava3.core.Completable", "org.reactivestreams.Publisher");
     private static Map<Type, Class<?>> genericTypesCache = new ConcurrentHashMap<>();
     private Method method;
     private int parameterCount;
