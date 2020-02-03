@@ -122,9 +122,10 @@ public class GSVRoutingMetadata implements MetadataAware {
     public ByteBuf getContent() {
         List<String> tags = new ArrayList<>();
         tags.add(assembleRoutingKey());
-        if (method != null && !method.isEmpty()) {
+        //method included in routing key
+        /*if (method != null && !method.isEmpty()) {
             tags.add("m=" + method);
-        }
+        }*/
         if (endpoint != null && !endpoint.isEmpty()) {
             tags.add("e=" + endpoint);
         }
