@@ -104,16 +104,9 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(method, encodingType));
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
-        //payload metadata
-        GSVRoutingMetadata routing = new GSVRoutingMetadata();
-        routing.setService(this.service);
-        routing.setMethod(methodMetadata.getName());
-        if (group != null) {
-            routing.setGroup(this.group);
-        }
-        if (version != null) {
-            routing.setVersion(this.version);
-        }
+        //payload routing metadata
+        GSVRoutingMetadata routing = new GSVRoutingMetadata(group, service, methodMetadata.getName(), version);
+        //payload composite metadata
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routing);
         //add param encoding & make hessian as result type
         if (methodMetadata.getParamEncoding() != null) {
