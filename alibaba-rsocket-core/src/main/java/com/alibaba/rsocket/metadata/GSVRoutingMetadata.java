@@ -20,7 +20,7 @@ public class GSVRoutingMetadata implements MetadataAware {
     /**
      * group: region, datacenter, virtual group in datacenter
      */
-    private String group = "";
+    private String group;
     /**
      * service name
      */
@@ -32,7 +32,7 @@ public class GSVRoutingMetadata implements MetadataAware {
     /**
      * version
      */
-    private String version = "";
+    private String version;
     /**
      * endpoint
      */
@@ -42,10 +42,22 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     public GSVRoutingMetadata(String group, String service, String method, String version) {
-        this.group = group == null ? "" : group;
-        this.setService(service);
+        this.group = group;
+        this.service = service;
         this.method = method;
-        this.version = version == null ? "" : version;
+        this.version = version;
+    }
+
+    public GSVRoutingMetadata(String group, String routeKey, String version) {
+        this.group = group;
+        if (routeKey.contains(".")) {
+            int offset = routeKey.lastIndexOf('.');
+            this.service = routeKey.substring(0, offset);
+            this.method = routeKey.substring(offset + 1);
+        } else {
+            this.service = routeKey;
+        }
+        this.version = version;
     }
 
     public String getGroup() {
@@ -61,12 +73,7 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     public void setService(String service) {
-        if (service.contains("-")) {
-            this.service = service.substring(0, service.indexOf("-"));
-            this.method = service.substring(service.indexOf("-"));
-        } else {
-            this.service = service;
-        }
+        this.service = service;
     }
 
     public String getMethod() {
@@ -114,7 +121,7 @@ public class GSVRoutingMetadata implements MetadataAware {
     @Override
     public ByteBuf getContent() {
         List<String> tags = new ArrayList<>();
-        tags.add((group == null ? "" : group) + ":" + service + ":" + (version == null ? "" : version));
+        tags.add(assembleRoutingKey());
         if (method != null && !method.isEmpty()) {
             tags.add("m=" + method);
         }
@@ -125,19 +132,22 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     /**
-     * format routing as "group:service:version?m=login&e=xxxx"
+     * format routing as "group!service:version?m=login&e=xxxx"
      *
      * @return data format
      */
     public String formatData() {
         StringBuilder builder = new StringBuilder();
-        String serviceFullName = group + ":" + service + ":" + version;
-        builder.append(serviceFullName);
-        if (method != null) {
-            builder.append("?").append("m=").append(method);
-        }
-        if (endpoint != null) {
-            builder.append("&").append("e=").append(endpoint);
+        builder.append(assembleRoutingKey());
+        if (method != null || endpoint != null) {
+            builder.append("?");
+            if (!method.isEmpty()) {
+                builder.append("m=").append(method);
+                builder.append("&");
+            }
+            if (!endpoint.isEmpty()) {
+                builder.append("e=").append(endpoint);
+            }
         }
         return builder.toString();
     }
@@ -175,16 +185,16 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     @Override
     public void load(String text) {
-        String routing;
+        String routingKey;
         String tags = null;
         if (text.contains("?")) {
-            routing = text.substring(0, text.indexOf("?"));
+            routingKey = text.substring(0, text.indexOf("?"));
             tags = text.substring(text.indexOf("?") + 1);
         } else {
-            routing = text;
+            routingKey = text;
         }
-        //routing
-        parseRoutingKey(routing);
+        //routingKey
+        parseRoutingKey(routingKey);
         if (tags != null) {
             for (String tag : tags.split("&")) {
                 if (tag.startsWith("m=")) {
@@ -196,17 +206,45 @@ public class GSVRoutingMetadata implements MetadataAware {
         }
     }
 
-    private void parseRoutingKey(String routing) {
-        if (routing.contains(":")) {
-            String[] parts = routing.split(":");
-            this.group = parts[0];
-            this.service = parts[1];
-            if (parts.length > 2) {
-                this.version = parts[2];
-            }
-        } else {
-            this.service = routing;
+    private void parseRoutingKey(String routingKey) {
+        String temp = routingKey;
+        //group
+        if (temp.contains("!")) {
+            this.group = temp.substring(0, temp.indexOf('!'));
+            temp = temp.substring(temp.indexOf('!') + 1);
         }
+        //version
+        if (temp.contains(":")) {
+            this.version = temp.substring(temp.lastIndexOf(':') + 1);
+            temp = temp.substring(0, temp.indexOf(':'));
+        }
+        //service & method
+        if (temp.contains(".")) {
+            int offset = temp.lastIndexOf('.');
+            this.service = temp.substring(0, offset);
+            this.method = temp.substring(offset + 1);
+        } else {
+            this.service = temp;
+        }
+    }
+
+    private String assembleRoutingKey() {
+        StringBuilder routingBuilder = new StringBuilder();
+        //group
+        if (group != null && !group.isEmpty()) {
+            routingBuilder.append(group).append("!");
+        }
+        //service
+        routingBuilder.append(service);
+        //method
+        if (method != null && !method.isEmpty()) {
+            routingBuilder.append(".").append(method);
+        }
+        //version
+        if (version != null && !version.isEmpty()) {
+            routingBuilder.append(":").append(version);
+        }
+        return routingBuilder.toString();
     }
 
     public static GSVRoutingMetadata from(ByteBuf content) {

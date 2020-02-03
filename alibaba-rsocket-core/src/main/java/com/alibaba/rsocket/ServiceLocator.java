@@ -90,6 +90,17 @@ public class ServiceLocator {
     }
 
     public static String serviceId(String group, String service, String version) {
-        return (group == null ? "" : group) + ":" + service + ":" + (version == null ? "" : version);
+        StringBuilder routingBuilder = new StringBuilder();
+        //group
+        if (group != null && !group.isEmpty()) {
+            routingBuilder.append(group).append("!");
+        }
+        //service
+        routingBuilder.append(service);
+        //version
+        if (version != null && !version.isEmpty()) {
+            routingBuilder.append(":").append(version);
+        }
+        return routingBuilder.toString();
     }
 }
