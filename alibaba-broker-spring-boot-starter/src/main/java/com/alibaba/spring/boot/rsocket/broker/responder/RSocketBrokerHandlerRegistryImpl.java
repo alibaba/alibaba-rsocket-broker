@@ -55,13 +55,16 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     private ServiceRoutingSelector routingSelector;
     private TopicProcessor<CloudEventImpl> eventProcessor;
     private AuthenticationService authenticationService;
+    /**
+     * connections, key is connection id
+     */
     private Map<Integer, RSocketBrokerResponderHandler> connectionHandlers = new ConcurrentHashMap<>();
     /**
      * broker side handlers, the key is app instance iid
      */
     private Map<String, RSocketBrokerResponderHandler> responderHandlers = new ConcurrentHashMap<>();
     /**
-     * handlers for App name, the key is app name
+     * handlers for App name, the key is app name, and value is list of handlers
      */
     private Multimap<String, RSocketBrokerResponderHandler> appHandlers = MultimapBuilder.treeKeys().hashSetValues().build();
     private RSocketBrokerManager rSocketBrokerManager;
