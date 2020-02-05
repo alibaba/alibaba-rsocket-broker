@@ -1,14 +1,17 @@
 package com.alibaba.rsocket.invocation;
 
-import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.reactive.ReactiveAdapter;
+import io.micrometer.core.instrument.Tag;
 import io.rsocket.frame.FrameType;
+import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,8 +23,22 @@ import java.util.List;
 public class ReactiveMethodMetadata {
     public static List<String> STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
             "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux");
-    private String classFullName;
+    /**
+     * service full name
+     */
+    private String serviceFullName;
+    /**
+     * method handler
+     */
     private String name;
+    /**
+     * service group
+     */
+    private String group;
+    /**
+     * service version
+     */
+    private String version;
     private int parameterCount;
     /**
      * rsocket frame type
@@ -32,6 +49,14 @@ public class ReactiveMethodMetadata {
      */
     private RSocketMimeType paramEncoding;
     /**
+     * default composite metadata for method: routing, encoding & accept encoding
+     */
+    private RSocketCompositeMetadata defaultCompositeMetadata;
+    /**
+     * metrics tag
+     */
+    private List<Tag> metricsTags = new ArrayList<>();
+    /**
      * return type
      */
     private Class<?> returnType;
@@ -41,9 +66,11 @@ public class ReactiveMethodMetadata {
     private Class<?> inferredClassForReturn;
     private ReactiveAdapter reactiveAdapter;
 
-    public ReactiveMethodMetadata(Method method, RSocketMimeType defaultEncoding) {
-        this.classFullName = method.getDeclaringClass().getCanonicalName();
+    public ReactiveMethodMetadata(Class<?> interfaceClass, Method method, RSocketMimeType defaultEncoding, String group, String version, @Nullable RSocketMimeType encodingType) {
+        this.serviceFullName = interfaceClass.getCanonicalName();
         this.name = method.getName();
+        this.group = group;
+        this.version = version;
         //result type & generic type
         this.returnType = method.getReturnType();
         Type genericReturnType = method.getGenericReturnType();
@@ -65,14 +92,26 @@ public class ReactiveMethodMetadata {
                 this.inferredClassForReturn = (Class<?>) genericReturnType;
             }
         }
-        //parameter
         this.parameterCount = method.getParameterCount();
-        if (parameterCount == 1) {
-            paramEncoding = defaultEncoding;
+        //encoding type
+        if (encodingType != null) {
+            this.paramEncoding = encodingType;
+        } else {
+            if (parameterCount == 1) {
+                this.paramEncoding = defaultEncoding;
+            }
+            if (paramEncoding == null) {
+                this.paramEncoding = defaultEncoding;
+            }
         }
-        if (paramEncoding == null) {
-            paramEncoding = defaultEncoding;
-        }
+        //payload routing metadata
+        GSVRoutingMetadata routing = new GSVRoutingMetadata(group, this.serviceFullName, this.name, version);
+        //add param encoding
+        MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
+        //set accepted mimetype
+        MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.paramEncoding);
+        //construct default composite metadata
+        this.defaultCompositeMetadata = RSocketCompositeMetadata.from(routing, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
         //bi direction check: type is Flux for 1st param or type is flux for 2nd param
         if (parameterCount == 1 && method.getParameterTypes()[0].equals(Flux.class)) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
@@ -90,14 +129,23 @@ public class ReactiveMethodMetadata {
             }
         }
         this.reactiveAdapter = ReactiveAdapter.findAdapter(returnType.getCanonicalName());
+        //metrics tags
+        if (this.group != null && !this.group.isEmpty()) {
+            metricsTags.add(Tag.of("group", this.group));
+        }
+        if (this.version != null && !this.version.isEmpty()) {
+            metricsTags.add(Tag.of("version", this.version));
+        }
+        metricsTags.add(Tag.of("method", this.name));
+        metricsTags.add(Tag.of("frame", String.valueOf(this.rsocketFrameType.getEncodedType())));
     }
 
-    public String getClassFullName() {
-        return classFullName;
+    public String getServiceFullName() {
+        return serviceFullName;
     }
 
-    public void setClassFullName(String classFullName) {
-        this.classFullName = classFullName;
+    public void setServiceFullName(String serviceFullName) {
+        this.serviceFullName = serviceFullName;
     }
 
     public ReactiveAdapter getReactiveAdapter() {
@@ -146,6 +194,14 @@ public class ReactiveMethodMetadata {
 
     public void setParamEncoding(RSocketMimeType paramEncoding) {
         this.paramEncoding = paramEncoding;
+    }
+
+    public RSocketCompositeMetadata getDefaultCompositeMetadata() {
+        return this.defaultCompositeMetadata;
+    }
+
+    public List<Tag> getMetricsTags() {
+        return this.metricsTags;
     }
 
 }
