@@ -107,7 +107,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
         //metadata data content
-        ByteBuf compositeMetadataBuf = methodMetadata.getDefaultCompositeMetadata().getContent();
+        ByteBuf compositeMetadataBuf = methodMetadata.getCompositeMetadataByteBuf().duplicate();
         //----- return type deal------
         if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_CHANNEL) {
             metrics(methodMetadata);
