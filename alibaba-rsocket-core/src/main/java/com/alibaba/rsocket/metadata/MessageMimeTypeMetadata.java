@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.rsocket.metadata.WellKnownMimeType;
 
@@ -52,7 +53,7 @@ public class MessageMimeTypeMetadata implements MetadataAware {
             return Unpooled.wrappedBuffer(new byte[]{(byte) (mimeTypeId | 0x80)});
         } else {
             byte[] bytes = mimeType.getBytes();
-            ByteBuf buffer = Unpooled.buffer(bytes.length + 1);
+            ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer(bytes.length + 1);
             buffer.writeByte(bytes.length);
             buffer.writeBytes(bytes);
             return buffer;
