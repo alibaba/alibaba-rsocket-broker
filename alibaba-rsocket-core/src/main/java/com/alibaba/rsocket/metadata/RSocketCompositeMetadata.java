@@ -3,7 +3,7 @@ package com.alibaba.rsocket.metadata;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.metadata.CompositeMetadata;
 import io.rsocket.metadata.CompositeMetadataFlyweight;
 import io.rsocket.metadata.WellKnownMimeType;
@@ -67,7 +67,7 @@ public class RSocketCompositeMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        CompositeByteBuf compositeByteBuf = Unpooled.compositeBuffer();
+        CompositeByteBuf compositeByteBuf = PooledByteBufAllocator.DEFAULT.compositeBuffer();
         for (Map.Entry<String, ByteBuf> entry : metadataStore.entrySet()) {
             WellKnownMimeType wellKnownMimeType = WellKnownMimeType.fromString(entry.getKey());
             if (wellKnownMimeType != UNPARSEABLE_MIME_TYPE) {
