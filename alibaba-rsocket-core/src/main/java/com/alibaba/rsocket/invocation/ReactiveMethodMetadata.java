@@ -3,6 +3,7 @@ package com.alibaba.rsocket.invocation;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.reactive.ReactiveAdapter;
 import io.micrometer.core.instrument.Tag;
+import io.netty.buffer.ByteBuf;
 import io.rsocket.frame.FrameType;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
@@ -54,7 +55,11 @@ public class ReactiveMethodMetadata {
     /**
      * default composite metadata for method: routing, encoding & accept encoding
      */
-    private RSocketCompositeMetadata defaultCompositeMetadata;
+    private RSocketCompositeMetadata compositeMetadata;
+    /**
+     * bytebuf for default composite metadata
+     */
+    private ByteBuf compositeMetadataByteBuf;
     /**
      * metrics tag
      */
@@ -117,7 +122,8 @@ public class ReactiveMethodMetadata {
         //set accepted mimetype
         MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.paramEncoding);
         //construct default composite metadata
-        this.defaultCompositeMetadata = RSocketCompositeMetadata.from(routing, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
+        this.compositeMetadata = RSocketCompositeMetadata.from(routing, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
+        this.compositeMetadataByteBuf = this.compositeMetadata.getContent();
         //bi direction check: type is Flux for 1st param or type is flux for 2nd param
         if (parameterCount == 1 && method.getParameterTypes()[0].equals(Flux.class)) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
@@ -202,8 +208,12 @@ public class ReactiveMethodMetadata {
         this.paramEncoding = paramEncoding;
     }
 
-    public RSocketCompositeMetadata getDefaultCompositeMetadata() {
-        return this.defaultCompositeMetadata;
+    public RSocketCompositeMetadata getCompositeMetadata() {
+        return this.compositeMetadata;
+    }
+
+    public ByteBuf getCompositeMetadataByteBuf() {
+        return compositeMetadataByteBuf;
     }
 
     public List<Tag> getMetricsTags() {
