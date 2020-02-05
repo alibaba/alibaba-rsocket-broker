@@ -51,7 +51,10 @@ Broker完全是异步化的，没有线程池这些概念，而且消息转发�
 
 ### 如何运行Example?
 
-项目提供了RSocket Broker Example，你可以在example模块下找到.
+**注意:** 样例代码中的AccountService接口采用了Protobuf进行序列化，使用了protobuf-maven-plugin生成对应的Protobuf，  
+建议使用IDE导入项目之前首先执行一下"mvn -DskipTests package"完成Protobuf对应的代码生成，不然直接在IDE中编译可能出现编译不通过的情况。
+
+项目提供了完成的样例，你可以在[example模块](/example/)下找到，包括服务接口定义、服务实现和服务调用三个部分。
 
 ##### Docker Compose运行RSocket Broker
 
@@ -59,7 +62,6 @@ Broker完全是异步化的，没有线程池这些概念，而且消息转发�
 
 ##### 手动运行RSocket Broker
 
-* 首先执行Maven编译，主要是protobuf的编译，还有Vaadin的生成(Node 10+需要): mvn -DskipTests clean package
 * 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker
 
 ##### 运行 RSocket Responder & Requester
@@ -130,7 +132,8 @@ public class PortalController {
 ### References
 
 * RSocket: http://rsocket.io/
-* RSocket Java: https://github.com/rsocket/rsocket-java
-* RSocket with Spring Boot: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-rsocket
-* Reactor: http://projectreactor.io/
+* RSocket Java SDK: https://github.com/rsocket/rsocket-java
+* Spring RSocket: https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#rsocket
+* Spring Boot RSocket Starter: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-rsocket
+* Project Reactor: http://projectreactor.io/
 * Reactive Foundation: https://reactive.foundation/
