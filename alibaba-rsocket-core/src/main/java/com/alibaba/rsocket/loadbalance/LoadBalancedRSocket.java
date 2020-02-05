@@ -13,6 +13,7 @@ import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.cloudevents.v1.CloudEventImpl;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
@@ -62,6 +63,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
      */
     private int retryCount = 3;
     private RSocketRequesterSupport requesterSupport;
+    private ByteBuf healthCheckCompositeByteBuf;
 
     public Set<String> getUnHealthUriSet() {
         return unHealthUriSet;
@@ -88,6 +90,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         this.requesterSupport = requesterSupport;
         this.activeSockets = new HashMap<>();
         this.urisFactory.subscribe(this::refreshRsockets);
+        //composite metadata for health check
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(
+                new GSVRoutingMetadata(null, RSocketServiceHealth.class.getCanonicalName(), "check", null),
+                new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
+        this.healthCheckCompositeByteBuf = compositeMetadata.getContent();
+        //start health check timer
         startHealthCheckTimer();
     }
 
@@ -319,10 +327,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
                 .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
                 .subscribe(entry -> {
-                    GSVRoutingMetadata routing = new GSVRoutingMetadata("", RSocketServiceHealth.class.getCanonicalName(), "check", "");
-                    MessageMimeTypeMetadata encoding = new MessageMimeTypeMetadata(RSocketMimeType.Hessian);
-                    RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routing, encoding);
-                    Mono<Payload> mono = entry.getValue().requestResponse(DefaultPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent()));
+                    Mono<Payload> mono = entry.getValue().requestResponse(DefaultPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.duplicate()));
                     mono.doOnError(error -> {
                         if (error instanceof ClosedChannelException) { //connection closed
                             onRSocketClosed(entry.getKey(), entry.getValue());
