@@ -8,6 +8,7 @@ import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.v1.CloudEventImpl;
+import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
@@ -78,11 +79,13 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 } else {
                     monoResult = methodHandler.getReactiveAdapter().toMono(result);
                 }
+                ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 return monoResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()))
+                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, compositeMetadataContent))
                         .doOnTerminate(() -> {
                             ReferenceCountUtil.safeRelease(payload);
+                            ReferenceCountUtil.safeRelease(compositeMetadataContent);
                         });
             } else {
                 ReferenceCountUtil.safeRelease(payload);
@@ -144,9 +147,14 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
+                ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 return fluxResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
+                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, compositeMetadataContent))
+                        .doOnTerminate(() -> {
+                            ReferenceCountUtil.safeRelease(payload);
+                            ReferenceCountUtil.safeRelease(compositeMetadataContent);
+                        });
             } else {
                 ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
@@ -188,10 +196,14 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(dataEncodingMetadata);
+                ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 //result return
                 return ((Flux<Object>) result)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, resultCompositeMetadata.getContent()));
+                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, compositeMetadataContent))
+                        .doOnTerminate(() -> {
+                            ReferenceCountUtil.safeRelease(compositeMetadataContent);
+                        });
             } else {
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
             }
