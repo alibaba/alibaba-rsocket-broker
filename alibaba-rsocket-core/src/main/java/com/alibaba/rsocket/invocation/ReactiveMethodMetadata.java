@@ -39,6 +39,9 @@ public class ReactiveMethodMetadata {
      * service version
      */
     private String version;
+    /**
+     * parameter count
+     */
     private int parameterCount;
     /**
      * rsocket frame type
@@ -64,10 +67,13 @@ public class ReactiveMethodMetadata {
      * inferred class for return type
      */
     private Class<?> inferredClassForReturn;
+    /**
+     * reactive adapter for RxJava2 & RxJava3 etc
+     */
     private ReactiveAdapter reactiveAdapter;
 
-    public ReactiveMethodMetadata(Class<?> interfaceClass, Method method, RSocketMimeType defaultEncoding, String group, String version, @Nullable RSocketMimeType encodingType) {
-        this.serviceFullName = interfaceClass.getCanonicalName();
+    public ReactiveMethodMetadata(String serviceFullName, Method method, RSocketMimeType defaultEncoding, String group, String version, @Nullable RSocketMimeType encodingType) {
+        this.serviceFullName = serviceFullName;
         this.name = method.getName();
         this.group = group;
         this.version = version;
