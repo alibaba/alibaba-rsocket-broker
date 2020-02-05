@@ -3,7 +3,10 @@ package com.alibaba.rsocket.invocation;
 
 import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
-import com.alibaba.rsocket.metadata.*;
+import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
+import com.alibaba.rsocket.metadata.MessageTagsMetadata;
+import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -21,7 +24,9 @@ import javax.cache.annotation.CacheResult;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -89,36 +94,23 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         this.version = version;
         this.encodingType = encodingType;
         this.timeout = timeout;
-        for (Method method : serviceInterface.getMethods()) {
-            if (method.getAnnotation(CacheResult.class) != null) {
-                cachedMethods.put(method, method.getAnnotation(CacheResult.class));
-            }
-        }
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MutableContext mutableContext = new MutableContext();
-        //performance, cache method
         if (!methodMetadataMap.containsKey(method)) {
-            methodMetadataMap.put(method, new ReactiveMethodMetadata(method, encodingType));
+            methodMetadataMap.put(method, new ReactiveMethodMetadata(service, method, encodingType, group, version, encodingType));
+            if (method.getAnnotation(CacheResult.class) != null) {
+                cachedMethods.put(method, method.getAnnotation(CacheResult.class));
+            }
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
-        //payload routing metadata
-        GSVRoutingMetadata routing = new GSVRoutingMetadata(group, service, methodMetadata.getName(), version);
-        //payload composite metadata
-        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routing);
-        //add param encoding & make hessian as result type
-        if (methodMetadata.getParamEncoding() != null) {
-            compositeMetadata.addMetadata(new MessageMimeTypeMetadata(methodMetadata.getParamEncoding()));
-            //set accepted mimetype
-            compositeMetadata.addMetadata(new MessageAcceptMimeTypesMetadata(encodingType));
-        }
         //metadata data content
-        ByteBuf compositeMetadataBuf = compositeMetadata.getContent();
+        ByteBuf compositeMetadataBuf = methodMetadata.getDefaultCompositeMetadata().getContent();
         //----- return type deal------
         if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_CHANNEL) {
-            metrics(routing, "0x07");
+            metrics(methodMetadata);
             Payload routePayload;
             Flux<Object> source;
             //1 param or 2 params
@@ -146,11 +138,11 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             ByteBuf bodyBuffer = encodingFacade.encodingParams(args, methodMetadata.getParamEncoding());
             Class<?> returnType = method.getReturnType();
             if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
-                metrics(routing, "0x05");
+                metrics(methodMetadata);
                 upstream.fireAndForget(DefaultPayload.create(bodyBuffer, compositeMetadataBuf)).subscribe();
                 return null;
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
-                metrics(routing, "0x05");
+                metrics(methodMetadata);
                 Flux<Payload> flux = upstream.requestStream(DefaultPayload.create(bodyBuffer, compositeMetadataBuf));
                 Flux<Object> result = flux.flatMap(payload -> {
                     try {
@@ -163,7 +155,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 });
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else {
-                metrics(routing, "0x04");
+                metrics(methodMetadata);
                 if (cachedMethods.containsKey(method)) {
                     CacheResult cacheResult = cachedMethods.get(method);
                     String key = cacheResult.cacheName() + ":" + generateCacheKey(args);
@@ -194,22 +186,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         }
     }
 
-    @SuppressWarnings("Duplicates")
-    protected void metrics(GSVRoutingMetadata routing, String frameType) {
-        List<String> tags = new ArrayList<>();
-        if (routing.getGroup() != null && !routing.getGroup().isEmpty()) {
-            tags.add("group");
-            tags.add(routing.getGroup());
-        }
-        if (routing.getVersion() != null && !routing.getVersion().isEmpty()) {
-            tags.add("version");
-            tags.add(routing.getVersion());
-        }
-        tags.add("method");
-        tags.add(routing.getMethod());
-        tags.add("frame");
-        tags.add(frameType);
-        Metrics.counter(routing.getService(), tags.toArray(new String[0])).increment();
+    protected void metrics(ReactiveMethodMetadata methodMetadata) {
+        Metrics.counter(this.service, methodMetadata.getMetricsTags());
     }
 
     /**
