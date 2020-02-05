@@ -21,6 +21,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.cache.annotation.CacheResult;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.time.Duration;
@@ -71,7 +75,9 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      * encoding facade
      */
     private RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
-
+    /**
+     * cache for Request/Response result
+     */
     public static Cache<String, Mono<Object>> rpcCache = Caffeine.newBuilder()
             .maximumSize(500_000)
             .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -80,6 +86,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      * java method metadata map cache for performance
      */
     private Map<Method, ReactiveMethodMetadata> methodMetadataMap = new ConcurrentHashMap<>();
+    /**
+     * interface default method handlers
+     */
+    private Map<Method, MethodHandle> defaultMethodHandles = new HashMap<>();
 
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, String service, String version,
@@ -98,6 +108,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        //interface default method validation
+        if (method.isDefault()) {
+            return getMethodHandle(method, serviceInterface).bindTo(proxy).invokeWithArguments(args);
+        }
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(service, method, encodingType, group, version, encodingType));
@@ -242,5 +256,28 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             }
         }
         return encodingType;
+    }
+
+    public MethodHandle getMethodHandle(Method method, Class<?> serviceInterface) throws Exception {
+        MethodHandle methodHandle = this.defaultMethodHandles.get(method);
+        if (methodHandle == null) {
+            String version = System.getProperty("java.version");
+            if (version.startsWith("1.8.")) {
+                Constructor<MethodHandles.Lookup> lookupConstructor = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, Integer.TYPE);
+                if (!lookupConstructor.isAccessible()) {
+                    lookupConstructor.setAccessible(true);
+                }
+                methodHandle = lookupConstructor.newInstance(method.getDeclaringClass(), MethodHandles.Lookup.PRIVATE)
+                        .unreflectSpecial(method, method.getDeclaringClass());
+            } else {
+                methodHandle = MethodHandles.lookup().findSpecial(
+                        method.getDeclaringClass(),
+                        method.getName(),
+                        MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
+                        serviceInterface);
+            }
+            this.defaultMethodHandles.put(method, methodHandle);
+        }
+        return methodHandle;
     }
 }
