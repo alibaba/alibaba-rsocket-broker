@@ -21,7 +21,7 @@
         <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
         <reactor-bom.version>Dysprosium-SR4</reactor-bom.version>
         <netty.version>4.1.45.Final</netty.version>
-        <rsocket.version>1.0.0-RC5</rsocket.version>
+        <rsocket.version>1.0.0-RC6</rsocket.version>
         <alibaba-cloud-broker.version>0.1.0-SNAPSHOT</alibaba-cloud-broker.version>
         <junit5.version>5.6.0</junit5.version>
     </properties>
