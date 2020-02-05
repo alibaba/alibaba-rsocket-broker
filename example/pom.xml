@@ -65,18 +65,18 @@
                 <version>2.0.28.Final</version>
             </dependency>
             <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit5.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-bom</artifactId>
                 <version>${reactor-bom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.rsocket</groupId>
@@ -86,11 +86,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${junit5.version}</version>
-                <scope>import</scope>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -138,5 +138,5 @@
             </plugins>
         </pluginManagement>
     </build>
-    
+
 </project>
