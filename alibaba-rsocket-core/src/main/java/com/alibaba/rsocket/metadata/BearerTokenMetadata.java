@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 
 import java.nio.charset.StandardCharsets;
@@ -44,7 +45,7 @@ public class BearerTokenMetadata implements MetadataAware {
     @Override
     public ByteBuf getContent() {
         byte[] credentialsBytes = bearerToken.getBytes();
-        ByteBuf byteBuf = Unpooled.buffer(1 + credentialsBytes.length);
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(1 + credentialsBytes.length);
         byteBuf.writeByte(0x81); //bearer type
         byteBuf.writeBytes(credentialsBytes);
         return byteBuf;
