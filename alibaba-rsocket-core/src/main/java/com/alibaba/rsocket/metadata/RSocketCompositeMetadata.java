@@ -71,9 +71,9 @@ public class RSocketCompositeMetadata implements MetadataAware {
         for (Map.Entry<String, ByteBuf> entry : metadataStore.entrySet()) {
             WellKnownMimeType wellKnownMimeType = WellKnownMimeType.fromString(entry.getKey());
             if (wellKnownMimeType != UNPARSEABLE_MIME_TYPE) {
-                CompositeMetadataFlyweight.encodeAndAddMetadata(compositeByteBuf, ByteBufAllocator.DEFAULT, wellKnownMimeType, entry.getValue());
+                CompositeMetadataFlyweight.encodeAndAddMetadata(compositeByteBuf, PooledByteBufAllocator.DEFAULT, wellKnownMimeType, entry.getValue());
             } else {
-                CompositeMetadataFlyweight.encodeAndAddMetadata(compositeByteBuf, ByteBufAllocator.DEFAULT, entry.getKey(), entry.getValue());
+                CompositeMetadataFlyweight.encodeAndAddMetadata(compositeByteBuf, PooledByteBufAllocator.DEFAULT, entry.getKey(), entry.getValue());
             }
         }
         return compositeByteBuf;
