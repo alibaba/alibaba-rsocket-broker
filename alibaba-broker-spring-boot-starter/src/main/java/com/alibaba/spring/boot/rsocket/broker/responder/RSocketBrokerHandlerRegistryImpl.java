@@ -60,7 +60,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
      */
     private Map<Integer, RSocketBrokerResponderHandler> connectionHandlers = new ConcurrentHashMap<>();
     /**
-     * broker side handlers, the key is app instance iid
+     * broker side handlers, the key is app instance UUID
      */
     private Map<String, RSocketBrokerResponderHandler> responderHandlers = new ConcurrentHashMap<>();
     /**
