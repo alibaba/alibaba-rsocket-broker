@@ -64,26 +64,14 @@ public enum RSocketMimeType {
         return id;
     }
 
-    public void setId(byte id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getType() {
         return type;
     }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
+    
     public static RSocketMimeType valueOf(byte id) {
         return MIME_TYPE_MAP.get(id);
     }
