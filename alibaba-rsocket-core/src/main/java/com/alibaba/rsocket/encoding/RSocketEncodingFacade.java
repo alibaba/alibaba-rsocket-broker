@@ -3,11 +3,8 @@ package com.alibaba.rsocket.encoding;
 import com.alibaba.rsocket.encoding.impl.RSocketEncodingFacadeImpl;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import io.netty.buffer.ByteBuf;
-import io.rsocket.Payload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.validation.constraints.Null;
 
 /**
  * RSocket Encoding Facade
@@ -34,6 +31,6 @@ public interface RSocketEncodingFacade {
      * @return encoding facade
      */
     static RSocketEncodingFacade getInstance() {
-        return RSocketEncodingFacadeImpl.Instance;
+        return RSocketEncodingFacadeImpl.instance;
     }
 }

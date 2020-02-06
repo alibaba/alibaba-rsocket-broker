@@ -26,7 +26,7 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     private Logger log = LoggerFactory.getLogger(RSocketEncodingFacadeImpl.class);
     private Map<RSocketMimeType, ObjectEncodingHandler> handlerMap = new HashMap<>();
 
-    public static RSocketEncodingFacade Instance = new RSocketEncodingFacadeImpl();
+    public static RSocketEncodingFacade instance = new RSocketEncodingFacadeImpl();
 
     public RSocketEncodingFacadeImpl() {
         ServiceLoader<ObjectEncodingHandler> serviceLoader = ServiceLoader.load(ObjectEncodingHandler.class);
