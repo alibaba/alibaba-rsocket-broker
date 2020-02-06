@@ -18,14 +18,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BearerTokenMetadataTest {
 
     @Test
-    public void testEncodingAndDecoding() {
+    public void testEncode() {
         String token = "123456";
-        BearerTokenMetadata tokenMetadata = BearerTokenMetadata.jwt(token);
+        BearerTokenMetadata tokenMetadata = BearerTokenMetadata.jwt(token.toCharArray());
         Assertions.assertEquals(token.length() + 1, tokenMetadata.getContent().capacity());
         BearerTokenMetadata tokenMetadata1 = BearerTokenMetadata.from(tokenMetadata.getContent());
         Assertions.assertEquals(tokenMetadata1.getBearerToken(), token);
         ByteBuf byteBuf = AuthMetadataFlyweight.encodeBearerMetadata(ByteBufAllocator.DEFAULT, token.toCharArray());
         assertThat(toArrayString(tokenMetadata.getContent())).isEqualTo(toArrayString(byteBuf));
+    }
+
+    @Test
+    public void testDecode() {
+        String token = "123456";
+        ByteBuf byteBuf = AuthMetadataFlyweight.encodeBearerMetadata(ByteBufAllocator.DEFAULT, token.toCharArray()).duplicate();
+        AuthMetadataFlyweight.decodeWellKnownAuthType(byteBuf);
+        String token2 = new String(AuthMetadataFlyweight.decodeBearerTokenAsCharArray(byteBuf));
+        assertThat(token).isEqualTo(token2);
     }
 
     private String toArrayString(ByteBuf byteBuf) {
