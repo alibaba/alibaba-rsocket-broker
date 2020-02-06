@@ -34,8 +34,8 @@ public enum RSocketMimeType {
     MessageTags("Message-Tags", WellKnownMimeType.MESSAGE_RSOCKET_MESSAGE_TAGS),
     MessageOrigin("Message-Origin", WellKnownMimeType.MESSAGE_RSOCKET_MESSAGE_ORIGIN);
 
-    public static Map<Byte, RSocketMimeType> MIME_TYPE_MAP;
-    public static Map<String, RSocketMimeType> MIME_MIME_MAP;
+    public static final Map<Byte, RSocketMimeType> MIME_TYPE_MAP;
+    public static final Map<String, RSocketMimeType> MIME_MIME_MAP;
 
     static {
         MIME_TYPE_MAP = Stream.of(RSocketMimeType.values()).collect(

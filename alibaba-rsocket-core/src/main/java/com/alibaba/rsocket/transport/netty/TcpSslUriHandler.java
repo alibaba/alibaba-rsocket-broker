@@ -49,7 +49,7 @@ public final class TcpSslUriHandler implements UriHandler {
     private static final String SCHEME = "tcps";
     private static final String DEFAULT_PASSWORD = "changeit";
     private TrustManagerFactory trustManagerFactory = InsecureTrustManagerFactory.INSTANCE;
-    public static String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
+    public static final String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
 
     public TcpSslUriHandler() {
         File fingerPrints = new File(System.getProperty("user.home") + "/.rsocket/known_finder_prints");
@@ -109,7 +109,9 @@ public final class TcpSslUriHandler implements UriHandler {
             File keyStore = new File(params.getOrDefault("store", System.getProperty("user.home") + "/.rsocket/rsocket.p12"));
             if (keyStore.exists()) { // key store found
                 KeyStore store = KeyStore.getInstance("PKCS12");
-                store.load(new FileInputStream(keyStore), password);
+                try (InputStream is = new FileInputStream(keyStore)) {
+                    store.load(is, password);
+                }
                 String alias = store.aliases().nextElement();
                 certificate = (X509Certificate) store.getCertificate(alias);
                 KeyStore.Entry entry = store.getEntry(alias, new KeyStore.PasswordProtection(password));
@@ -128,7 +130,7 @@ public final class TcpSslUriHandler implements UriHandler {
                                     .sslProvider(getSslProvider())
                     ));
             return Optional.of(TcpServerTransport.create(tcpServer));
-        } catch (Exception e) {
+        } catch (Exception ignore) {
             return Optional.empty();
         }
     }

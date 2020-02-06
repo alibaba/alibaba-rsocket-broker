@@ -38,7 +38,7 @@ public class RSocketListenerImpl implements RSocketListener {
     private Logger log = LoggerFactory.getLogger(RSocketListenerImpl.class);
     private Map<Integer, String> schemas = new HashMap<>();
     private String host = "0.0.0.0";
-    public static String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
+    public static final String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
     private Consumer<Throwable> errorConsumer;
     private Certificate certificate;
     private PrivateKey privateKey;

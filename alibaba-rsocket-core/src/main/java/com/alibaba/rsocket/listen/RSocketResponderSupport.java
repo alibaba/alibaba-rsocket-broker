@@ -34,11 +34,11 @@ import java.util.stream.Stream;
  * @author leijuan
  */
 public abstract class RSocketResponderSupport extends AbstractRSocket implements AttributeMap {
-    public static String COMPOSITE_METADATA_KEY = CompositeMetadataRSocket.COMPOSITE_METADATA_KEY;
+    public static final String COMPOSITE_METADATA_KEY = CompositeMetadataRSocket.COMPOSITE_METADATA_KEY;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected LocalReactiveServiceCaller localServiceCaller;
     protected RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
-    public static TypeReference<CloudEventImpl<ObjectNode>> CLOUD_EVENT_TYPE_REFERENCE = new TypeReference<CloudEventImpl<ObjectNode>>() {
+    public static final TypeReference<CloudEventImpl<ObjectNode>> CLOUD_EVENT_TYPE_REFERENCE = new TypeReference<CloudEventImpl<ObjectNode>>() {
     };
     /**
      * attribute map
@@ -248,7 +248,9 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
 
     @Override
     public void attr(String name, @Nullable Object value) {
-        attributes.put(name, value);
+        if (value != null) {
+            attributes.put(name, value);
+        }
     }
 
     private RSocketMimeType resultEncodingType(@Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata, RSocketMimeType defaultEncodingType) {

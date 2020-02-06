@@ -78,7 +78,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     /**
      * cache for Request/Response result
      */
-    public static Cache<String, Mono<Object>> rpcCache = Caffeine.newBuilder()
+    public static final Cache<String, Mono<Object>> rpcCache = Caffeine.newBuilder()
             .maximumSize(500_000)
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();

@@ -1,7 +1,6 @@
 package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.metadata.CompositeMetadata;
@@ -138,42 +137,44 @@ public class RSocketCompositeMetadata implements MetadataAware {
         for (Map.Entry<String, ByteBuf> entry : metadataStore.entrySet()) {
             RSocketMimeType metadataType = RSocketMimeType.valueOfType(entry.getKey());
             ByteBuf byteBuf = entry.getValue();
-            switch (metadataType) {
-                case Application: {
-                    AppMetadata metadata = new AppMetadata();
-                    metadata.load(byteBuf);
-                    lines.add(metadataType.getName() + ":" + metadata.toText());
-                    break;
-                }
-                case MessageMimeType: {
-                    MessageMimeTypeMetadata metadata = new MessageMimeTypeMetadata();
-                    metadata.load(byteBuf);
-                    lines.add(metadataType.getName() + ":" + metadata.toText());
-                    break;
-                }
-                case BearerToken: {
-                    BearerTokenMetadata metadata = new BearerTokenMetadata();
-                    metadata.load(byteBuf);
-                    lines.add(metadataType.getName() + ":" + metadata.toText());
-                    break;
-                }
-                case Routing: {
-                    GSVRoutingMetadata metadata = new GSVRoutingMetadata();
-                    metadata.load(byteBuf);
-                    lines.add(metadataType.getName() + ":" + metadata.toText());
-                    break;
-                }
-                case Tracing: {
-                    TracingMetadata metadata = new TracingMetadata();
-                    metadata.load(byteBuf);
-                    lines.add(metadataType.getName() + ":" + metadata.toText());
-                    break;
-                }
-                case CacheControl: {
-                    CacheControlMetadata metadata = new CacheControlMetadata();
-                    metadata.load(byteBuf);
-                    lines.add(metadataType.getName() + ":" + metadata.toText());
-                    break;
+            if (metadataType != null) {
+                switch (metadataType) {
+                    case Application: {
+                        AppMetadata metadata = new AppMetadata();
+                        metadata.load(byteBuf);
+                        lines.add(metadataType.getName() + ":" + metadata.toText());
+                        break;
+                    }
+                    case MessageMimeType: {
+                        MessageMimeTypeMetadata metadata = new MessageMimeTypeMetadata();
+                        metadata.load(byteBuf);
+                        lines.add(metadataType.getName() + ":" + metadata.toText());
+                        break;
+                    }
+                    case BearerToken: {
+                        BearerTokenMetadata metadata = new BearerTokenMetadata();
+                        metadata.load(byteBuf);
+                        lines.add(metadataType.getName() + ":" + metadata.toText());
+                        break;
+                    }
+                    case Routing: {
+                        GSVRoutingMetadata metadata = new GSVRoutingMetadata();
+                        metadata.load(byteBuf);
+                        lines.add(metadataType.getName() + ":" + metadata.toText());
+                        break;
+                    }
+                    case Tracing: {
+                        TracingMetadata metadata = new TracingMetadata();
+                        metadata.load(byteBuf);
+                        lines.add(metadataType.getName() + ":" + metadata.toText());
+                        break;
+                    }
+                    case CacheControl: {
+                        CacheControlMetadata metadata = new CacheControlMetadata();
+                        metadata.load(byteBuf);
+                        lines.add(metadataType.getName() + ":" + metadata.toText());
+                        break;
+                    }
                 }
             }
         }
@@ -187,42 +188,44 @@ public class RSocketCompositeMetadata implements MetadataAware {
             String[] parts = line.split("\\s*:\\s*", 2);
             if (parts.length > 1) {
                 RSocketMimeType metadataType = RSocketMimeType.valueOfType(parts[0].trim());
-                switch (metadataType) {
-                    case Application: {
-                        AppMetadata metadata = new AppMetadata();
-                        metadata.load(parts[1].trim());
-                        addMetadata(metadata);
-                        break;
-                    }
-                    case MessageMimeType: {
-                        MessageMimeTypeMetadata metadata = new MessageMimeTypeMetadata();
-                        metadata.load(parts[1].trim());
-                        addMetadata(metadata);
-                        break;
-                    }
-                    case BearerToken: {
-                        BearerTokenMetadata metadata = new BearerTokenMetadata();
-                        metadata.load(parts[1].trim());
-                        addMetadata(metadata);
-                        break;
-                    }
-                    case Routing: {
-                        GSVRoutingMetadata metadata = new GSVRoutingMetadata();
-                        metadata.load(parts[1].trim());
-                        addMetadata(metadata);
-                        break;
-                    }
-                    case Tracing: {
-                        TracingMetadata metadata = new TracingMetadata();
-                        metadata.load(parts[1].trim());
-                        addMetadata(metadata);
-                        break;
-                    }
-                    case CacheControl: {
-                        CacheControlMetadata metadata = new CacheControlMetadata();
-                        metadata.load(parts[1].trim());
-                        addMetadata(metadata);
-                        break;
+                if (metadataType != null) {
+                    switch (metadataType) {
+                        case Application: {
+                            AppMetadata metadata = new AppMetadata();
+                            metadata.load(parts[1].trim());
+                            addMetadata(metadata);
+                            break;
+                        }
+                        case MessageMimeType: {
+                            MessageMimeTypeMetadata metadata = new MessageMimeTypeMetadata();
+                            metadata.load(parts[1].trim());
+                            addMetadata(metadata);
+                            break;
+                        }
+                        case BearerToken: {
+                            BearerTokenMetadata metadata = new BearerTokenMetadata();
+                            metadata.load(parts[1].trim());
+                            addMetadata(metadata);
+                            break;
+                        }
+                        case Routing: {
+                            GSVRoutingMetadata metadata = new GSVRoutingMetadata();
+                            metadata.load(parts[1].trim());
+                            addMetadata(metadata);
+                            break;
+                        }
+                        case Tracing: {
+                            TracingMetadata metadata = new TracingMetadata();
+                            metadata.load(parts[1].trim());
+                            addMetadata(metadata);
+                            break;
+                        }
+                        case CacheControl: {
+                            CacheControlMetadata metadata = new CacheControlMetadata();
+                            metadata.load(parts[1].trim());
+                            addMetadata(metadata);
+                            break;
+                        }
                     }
                 }
             }

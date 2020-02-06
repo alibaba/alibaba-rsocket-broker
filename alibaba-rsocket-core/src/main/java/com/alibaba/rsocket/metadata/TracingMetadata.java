@@ -2,6 +2,7 @@ package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
 
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 
 import static io.netty.buffer.Unpooled.buffer;
@@ -92,7 +93,7 @@ public class TracingMetadata implements MetadataAware {
     public ByteBuf getContent() {
         ByteBuf buffer = buffer(TRACING_BYTES_LENGTH);
         buffer.writeByte(flag);
-        byte[] source = id.getBytes();
+        byte[] source = id.getBytes(StandardCharsets.UTF_8);
         if (source.length == ID_BYTES_LENGTH) {
             buffer.writeBytes(source);
         } else {
@@ -113,7 +114,7 @@ public class TracingMetadata implements MetadataAware {
         this.flag = byteBuf.readByte();
         byte[] idBytes = new byte[ID_BYTES_LENGTH];
         byteBuf.readBytes(idBytes);
-        this.id = new String(idBytes);
+        this.id = new String(idBytes,StandardCharsets.UTF_8);
         this.spanId = byteBuf.readLong();
         this.parentSpanId = byteBuf.readLong();
     }
@@ -130,10 +131,10 @@ public class TracingMetadata implements MetadataAware {
             this.id = parts[0];
         }
         if (parts.length > 1) {
-            this.spanId = Long.valueOf(parts[1]);
+            this.spanId = Long.parseLong(parts[1]);
         }
         if (parts.length > 2) {
-            this.parentSpanId = Long.valueOf(parts[2]);
+            this.parentSpanId = Long.parseLong(parts[2]);
         }
     }
 

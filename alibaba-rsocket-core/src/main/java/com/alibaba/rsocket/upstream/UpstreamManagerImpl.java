@@ -1,13 +1,15 @@
 package com.alibaba.rsocket.upstream;
 
 import com.alibaba.rsocket.RSocketRequesterSupport;
-import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.rsocket.RSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * upstream manager implementation
@@ -61,13 +63,6 @@ public class UpstreamManagerImpl implements UpstreamManager {
     public void init() throws Exception {
         if (!clusters.isEmpty()) {
             for (UpstreamCluster cluster : clusters.values()) {
-                //rsocket broker cluster
-                if (cluster.isBroker()) {
-                    //RSocket handler for request from broker
-                    AppMetadata appMetadata = new AppMetadata();
-                    appMetadata.setName("RSocket Broker");
-                    appMetadata.setUuid(UUID.randomUUID().toString());
-                }
                 cluster.setRsocketAware(rsocketRequesterSupport);
                 cluster.init();
             }

@@ -16,7 +16,7 @@ import java.util.Set;
  * @author leijuan
  */
 public class RSocketRemoteServiceBuilder<T> {
-    public static Set<ServiceLocator> CONSUMED_SERVICES = new HashSet<>();
+    public static final Set<ServiceLocator> CONSUMED_SERVICES = new HashSet<>();
     private String group;
     private String service;
     private String version;

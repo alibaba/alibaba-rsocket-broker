@@ -22,7 +22,7 @@ import java.util.List;
  * @author leijuan
  */
 public class ReactiveMethodMetadata {
-    public static List<String> STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
+    public static final List<String> STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
             "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux");
     /**
      * service full name
