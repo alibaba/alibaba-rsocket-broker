@@ -125,7 +125,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
     }
 
     @NotNull
-    private AppMetadata getAppMetadata() throws Exception {
+    private AppMetadata getAppMetadata() {
         //app metadata
         AppMetadata appMetadata = new AppMetadata();
         appMetadata.setUuid(RSocketAppContext.ID);
@@ -159,24 +159,22 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         //humans.md
         URL humansMd = this.getClass().getResource("/humans.md");
         if (humansMd != null) {
-            InputStream inputStream = humansMd.openStream();
-            byte[] bytes = new byte[inputStream.available()];
-            inputStream.read(bytes);
-            inputStream.close();
-            appMetadata.setHumansMd(new String(bytes));
+            try {
+                InputStream inputStream = humansMd.openStream();
+                byte[] bytes = new byte[inputStream.available()];
+                inputStream.read(bytes);
+                inputStream.close();
+                appMetadata.setHumansMd(new String(bytes));
+            } catch (Exception ignore) {
+
+            }
         }
         return appMetadata;
     }
 
     @NotNull
     private RSocketCompositeMetadata constructCompositeMetadata() {
-        RSocketCompositeMetadata compositeMetadata = new RSocketCompositeMetadata();
-        try {
-            compositeMetadata.addMetadata(getAppMetadata());
-            return compositeMetadata;
-        } catch (Exception ignore) {
-        }
-        return compositeMetadata;
+        return RSocketCompositeMetadata.from(getAppMetadata());
     }
 
     @Override
