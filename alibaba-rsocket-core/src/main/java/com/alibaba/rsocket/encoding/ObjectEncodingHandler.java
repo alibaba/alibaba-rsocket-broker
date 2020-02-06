@@ -50,6 +50,7 @@ public interface ObjectEncodingHandler {
      * @return byte buffer
      * @throws EncodingException exception
      */
+    @NotNull
     ByteBuf encodingResult(@Nullable Object result) throws EncodingException;
 
     /**
