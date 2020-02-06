@@ -1,7 +1,6 @@
 package com.alibaba.rsocket.metadata;
 
 import com.alibaba.rsocket.PayloadUtils;
-import io.cloudevents.CloudEvent;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
@@ -35,17 +34,17 @@ public class RSocketCompositeMetadataTest {
         appMetadata.setMetadata(tempMap);
         compositeMetadata.addMetadata(appMetadata);
         compositeMetadata.addMetadata(new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
-        compositeMetadata.addMetadata(new BearerTokenMetadata("xxx.yyy.zz"));
+        compositeMetadata.addMetadata(new BearerTokenMetadata("xxx.yyy.zz".toCharArray()));
         compositeMetadata.addMetadata(new GSVRoutingMetadata("", "com.alibaba.UserService", "findById", "1.0.0"));
         ByteBuf buffer = compositeMetadata.getContent();
         //System.out.println(buffer.capacity());
-        RSocketCompositeMetadata temp =  RSocketCompositeMetadata.from(Unpooled.wrappedBuffer(buffer.array()));
+        RSocketCompositeMetadata temp = RSocketCompositeMetadata.from(Unpooled.wrappedBuffer(buffer.array()));
         Assertions.assertNotNull(temp.getRoutingMetaData());
         String text = temp.toText();
         System.out.println(text);
         RSocketCompositeMetadata temp2 = new RSocketCompositeMetadata();
         temp2.load(text);
-        AppMetadata appMetadata1 =  AppMetadata.from(temp2.getMetadata(RSocketMimeType.Application));
+        AppMetadata appMetadata1 = AppMetadata.from(temp2.getMetadata(RSocketMimeType.Application));
         System.out.println(appMetadata1.getIp());
         Assertions.assertNotNull(temp2.getRoutingMetaData());
         compositeMetadata.getMetadata(RSocketMimeType.Application);
@@ -56,7 +55,7 @@ public class RSocketCompositeMetadataTest {
         RSocketCompositeMetadata compositeMetadata = new RSocketCompositeMetadata();
         ByteBuf buffer = compositeMetadata.getContent();
         //System.out.println(buffer.capacity());
-        RSocketCompositeMetadata temp =  RSocketCompositeMetadata.from(Unpooled.wrappedBuffer(buffer.array()));
+        RSocketCompositeMetadata temp = RSocketCompositeMetadata.from(Unpooled.wrappedBuffer(buffer.array()));
         System.out.println(temp.getMetadata(RSocketMimeType.ServiceRegistry));
     }
 
@@ -78,7 +77,7 @@ public class RSocketCompositeMetadataTest {
                 .build();
         Payload payload = PayloadUtils.cloudEventToPayload(cloudEvent);
         payload.getMetadata().rewind();
-        RSocketCompositeMetadata compositeMetadata =  RSocketCompositeMetadata.from(payload.metadata());
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         Assertions.assertNotNull(dataEncodingMetadata);
         System.out.println(dataEncodingMetadata.getMimeType());
