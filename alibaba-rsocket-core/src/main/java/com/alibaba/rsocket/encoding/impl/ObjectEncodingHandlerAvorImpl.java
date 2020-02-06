@@ -54,6 +54,7 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
     }
 
     @Override
+    @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result instanceof SpecificRecordBase) {
             Class<?> objectClass = result.getClass();

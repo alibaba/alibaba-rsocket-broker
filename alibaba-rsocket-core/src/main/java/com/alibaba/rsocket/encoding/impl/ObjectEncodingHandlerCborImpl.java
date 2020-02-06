@@ -54,6 +54,7 @@ public class ObjectEncodingHandlerCborImpl implements ObjectEncodingHandler {
     }
 
     @Override
+    @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result != null) {
             try {

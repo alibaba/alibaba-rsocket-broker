@@ -45,6 +45,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     }
 
     @Override
+    @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result != null) {
             return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(result));

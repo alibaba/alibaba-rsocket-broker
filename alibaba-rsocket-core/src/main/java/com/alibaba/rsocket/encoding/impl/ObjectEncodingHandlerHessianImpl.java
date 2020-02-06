@@ -48,6 +48,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
     }
 
     @Override
+    @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result == null) {
             return EMPTY_BUFFER;

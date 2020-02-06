@@ -43,6 +43,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
     }
 
     @Override
+    @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result != null) {
             return Unpooled.wrappedBuffer(objectToBytes(result));

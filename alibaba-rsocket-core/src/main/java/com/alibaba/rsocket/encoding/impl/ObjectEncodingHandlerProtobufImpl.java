@@ -56,6 +56,7 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     }
 
     @Override
+    @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result != null) {
             if (result instanceof MessageLite) {
