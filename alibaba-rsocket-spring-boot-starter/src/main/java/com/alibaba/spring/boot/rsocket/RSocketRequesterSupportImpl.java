@@ -43,7 +43,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
     private Properties env;
     private RSocketProperties properties;
     private String appName;
-    private String jwtToken;
+    private char[] jwtToken;
     private ApplicationContext applicationContext;
     private SocketAcceptor socketAcceptor;
     private List<RSocketInterceptor> responderInterceptors = new ArrayList<>();
@@ -54,7 +54,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         this.properties = properties;
         this.env = env;
         this.appName = env.getProperty("spring.application.name", env.getProperty("application.name"));
-        this.jwtToken = env.getProperty("rsocket.jwt-token");
+        this.jwtToken = env.getProperty("rsocket.jwt-token", "").toCharArray();
         this.socketAcceptor = socketAcceptor;
     }
 
@@ -70,7 +70,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
                 compositeMetadata.addMetadata(serviceRegistryMetadata);
             }
             // authentication
-            if (this.jwtToken != null && !this.jwtToken.isEmpty()) {
+            if (this.jwtToken != null && this.jwtToken.length > 0) {
                 compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
             }
             return DefaultPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent());
@@ -208,7 +208,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
             //app metadata
             compositeMetadata.addMetadata(getAppMetadata());
             // authentication
-            if (this.jwtToken != null && !this.jwtToken.isEmpty()) {
+            if (this.jwtToken != null && this.jwtToken.length > 0) {
                 compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
             }
             return compositeMetadata;
