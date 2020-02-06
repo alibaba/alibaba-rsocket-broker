@@ -85,16 +85,21 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
 
     public RSAPrivateKey readPrivateKey() throws Exception {
         File keyFile = new File(System.getProperty("user.home"), ".rsocket/jwt_rsa.key");
-        byte[] keyBytes = toBytes(new FileInputStream(keyFile));
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-        return (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(spec);
+        try (InputStream inputStream = new FileInputStream(keyFile)) {
+            byte[] keyBytes = toBytes(inputStream);
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+            return (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(spec);
+        }
+
     }
 
     public RSAPublicKey readPublicKey() throws Exception {
         File keyFile = new File(System.getProperty("user.home"), ".rsocket/jwt_rsa.pub");
-        byte[] keyBytes = toBytes(new FileInputStream(keyFile));
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
-        return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(spec);
+        try (InputStream inputStream = new FileInputStream(keyFile)) {
+            byte[] keyBytes = toBytes(inputStream);
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+            return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(spec);
+        }
     }
 
     public byte[] toBytes(InputStream inputStream) throws IOException {
@@ -112,11 +117,11 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
         KeyPair keyPair = kpg.generateKeyPair();
         Key pub = keyPair.getPublic();
         Key pvt = keyPair.getPrivate();
-        OutputStream out = new FileOutputStream(new File(rsocketKeysDir, "jwt_rsa.key"));
-        out.write(pvt.getEncoded());
-        out.close();
-        out = new FileOutputStream(new File(rsocketKeysDir, "jwt_rsa.pub"));
-        out.write(pub.getEncoded());
-        out.close();
+        try (OutputStream out = new FileOutputStream(new File(rsocketKeysDir, "jwt_rsa.key"))) {
+            out.write(pvt.getEncoded());
+        }
+        try (OutputStream out2 = new FileOutputStream(new File(rsocketKeysDir, "jwt_rsa.pub"))) {
+            out2.write(pub.getEncoded());
+        }
     }
 }
