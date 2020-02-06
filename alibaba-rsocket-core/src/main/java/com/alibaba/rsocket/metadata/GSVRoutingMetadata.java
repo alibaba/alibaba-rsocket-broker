@@ -142,11 +142,11 @@ public class GSVRoutingMetadata implements MetadataAware {
         builder.append(assembleRoutingKey());
         if (method != null || endpoint != null) {
             builder.append("?");
-            if (!method.isEmpty()) {
+            if (method != null && !method.isEmpty()) {
                 builder.append("m=").append(method);
                 builder.append("&");
             }
-            if (!endpoint.isEmpty()) {
+            if (endpoint != null && !endpoint.isEmpty()) {
                 builder.append("e=").append(endpoint);
             }
         }
