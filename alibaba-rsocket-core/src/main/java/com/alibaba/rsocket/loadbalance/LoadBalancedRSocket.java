@@ -15,6 +15,7 @@ import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.util.ReferenceCountUtil;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
@@ -301,9 +302,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             for (RSocketInterceptor responderInterceptor : requesterSupport.responderInterceptors()) {
                 clientRSocketFactory = clientRSocketFactory.addResponderPlugin(responderInterceptor);
             }
+            Payload payload = requesterSupport.setupPayload().get();
             return clientRSocketFactory
                     .keepAliveMissedAcks(12)
-                    .setupPayload(requesterSupport.setupPayload().get())
+                    .setupPayload(payload)
                     .metadataMimeType(RSocketAppContext.DEFAULT_METADATA_TYPE)
                     .dataMimeType(RSocketAppContext.DEFAULT_DATA_TYPE)
                     .errorConsumer(error -> {
@@ -311,7 +313,14 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     })
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
-                    .start();
+                    .start()
+                    .doOnSuccess(rSocket -> {
+                        ReferenceCountUtil.release(payload.metadata());
+                        ReferenceCountUtil.release(payload);
+                    }).doOnError(error -> {
+                        ReferenceCountUtil.release(payload.metadata());
+                        ReferenceCountUtil.release(payload);
+                    });
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-400500", uri), e);
             return Mono.error(new ConnectionErrorException(uri));
