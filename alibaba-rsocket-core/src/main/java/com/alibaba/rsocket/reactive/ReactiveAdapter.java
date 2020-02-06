@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.reactive;
 
 import com.alibaba.rsocket.MutableContext;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,6 +21,7 @@ public interface ReactiveAdapter {
 
     Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext);
 
+    @NotNull
     static ReactiveAdapter findAdapter(String returnTypeName) {
         if (returnTypeName.equals("java.util.concurrent.CompletableFuture")) {
             return ReactiveAdapterFuture.getInstance();
