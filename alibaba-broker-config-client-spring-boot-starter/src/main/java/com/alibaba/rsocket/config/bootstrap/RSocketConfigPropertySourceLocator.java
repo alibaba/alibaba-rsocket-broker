@@ -26,12 +26,12 @@ public class RSocketConfigPropertySourceLocator implements PropertySourceLocator
     /**
      * config properties. key is app name
      */
-    public static Map<String, Properties> CONFIG_PROPERTIES = new HashMap<>();
-    public static Map<String, PropertiesPropertySource> CONFIG_SOURCES = new HashMap<>();
+    public static final Map<String, Properties> CONFIG_PROPERTIES = new HashMap<>();
+    public static final Map<String, PropertiesPropertySource> CONFIG_SOURCES = new HashMap<>();
     /**
      * last config text
      */
-    public static String LAST_CONFIG_TEXT = null;
+    private static String LAST_CONFIG_TEXT = null;
 
     @Override
     public PropertySource<?> locate(Environment environment) {
@@ -70,5 +70,15 @@ public class RSocketConfigPropertySourceLocator implements PropertySourceLocator
         }
         log.error(RsocketErrorCode.message("RST-202201"));
         throw new RuntimeException(RsocketErrorCode.message("RST-202201"));
+    }
+
+    public static String getLastConfigText() {
+        return LAST_CONFIG_TEXT;
+    }
+
+    public static void setLastConfigText(String configText) {
+        if (configText != null && !configText.isEmpty()) {
+            LAST_CONFIG_TEXT = configText;
+        }
     }
 }

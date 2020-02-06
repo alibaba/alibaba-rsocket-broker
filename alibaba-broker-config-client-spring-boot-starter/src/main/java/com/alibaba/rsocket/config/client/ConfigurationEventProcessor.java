@@ -49,14 +49,14 @@ public class ConfigurationEventProcessor {
         ConfigEvent configEvent = CloudEventSupport.unwrapData(cloudEvent, ConfigEvent.class);
         // validate config content
         if (configEvent.getAppName().equalsIgnoreCase(applicationName)
-                && !RSocketConfigPropertySourceLocator.LAST_CONFIG_TEXT.equals(configEvent.getContent())) {
+                && !RSocketConfigPropertySourceLocator.getLastConfigText().equals(configEvent.getContent())) {
             Properties configProperties = RSocketConfigPropertySourceLocator.CONFIG_PROPERTIES.get(applicationName);
             if (configProperties != null) {
                 try {
                     configProperties.load(new StringReader(configEvent.getContent()));
                     log.info(RsocketErrorCode.message("RST-202200", applicationName));
                     contextRefresher.refresh();
-                    RSocketConfigPropertySourceLocator.LAST_CONFIG_TEXT = configEvent.getContent();
+                    RSocketConfigPropertySourceLocator.setLastConfigText(configEvent.getContent());
                     log.info(RsocketErrorCode.message("RST-202001"));
                 } catch (Exception e) {
                     log.info(RsocketErrorCode.message("RST-202501"), e);

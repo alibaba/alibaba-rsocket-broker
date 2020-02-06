@@ -23,9 +23,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Supplier;
@@ -61,7 +65,8 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
     @Override
     public Supplier<Payload> setupPayload() {
         return () -> {
-            RSocketCompositeMetadata compositeMetadata = constructCompositeMetadata();
+            //composite metadata with app metadata
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(getAppMetadata());
             //add published in setup payload
             Set<ServiceLocator> serviceLocators = exposedServices().get();
             if (!compositeMetadata.contains(RSocketMimeType.ServiceRegistry) && !serviceLocators.isEmpty()) {
@@ -159,22 +164,16 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         //humans.md
         URL humansMd = this.getClass().getResource("/humans.md");
         if (humansMd != null) {
-            try {
-                InputStream inputStream = humansMd.openStream();
+            try(InputStream inputStream = humansMd.openStream()) {
                 byte[] bytes = new byte[inputStream.available()];
                 inputStream.read(bytes);
                 inputStream.close();
-                appMetadata.setHumansMd(new String(bytes));
+                appMetadata.setHumansMd(new String(bytes, StandardCharsets.UTF_8));
             } catch (Exception ignore) {
 
             }
         }
         return appMetadata;
-    }
-
-    @NotNull
-    private RSocketCompositeMetadata constructCompositeMetadata() {
-        return RSocketCompositeMetadata.from(getAppMetadata());
     }
 
     @Override

@@ -16,8 +16,8 @@ import java.util.List;
  * @author leijuan
  */
 public class HessianCodecSupport {
-    public static MimeType HESSIAN_MIME_TYPE = MimeTypeUtils.parseMimeType("application/x-hessian");
-    public static List<MimeType> HESSIAN_MIME_TYPES = Collections.singletonList(HESSIAN_MIME_TYPE);
+    public static final MimeType HESSIAN_MIME_TYPE = MimeTypeUtils.parseMimeType("application/x-hessian");
+    public static final List<MimeType> HESSIAN_MIME_TYPES = Collections.singletonList(HESSIAN_MIME_TYPE);
 
 
     public Object decode(DataBuffer dataBuffer) throws Exception {

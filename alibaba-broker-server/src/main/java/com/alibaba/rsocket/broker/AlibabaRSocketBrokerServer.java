@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @SpringBootApplication
 public class AlibabaRSocketBrokerServer implements DisposableBean {
-    public static LocalDateTime STARTED_AT = LocalDateTime.now();
+    public static final LocalDateTime STARTED_AT = LocalDateTime.now();
 
     @Autowired
     private RSocketBrokerManager brokerManager;

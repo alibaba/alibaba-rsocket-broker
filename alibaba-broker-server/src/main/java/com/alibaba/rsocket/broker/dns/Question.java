@@ -20,7 +20,7 @@ public class Question {
 
     public Question(String name, Integer type) {
         setName(name);
-        this.type = type == null ? 1 : type;
+        this.type = (type == null ? 1 : type);
     }
 
     public String getName() {

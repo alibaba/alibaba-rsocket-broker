@@ -22,7 +22,7 @@ public class ConfigTestingController {
 
     @RequestMapping("/config/display")
     public Mono<String> serverInstances() {
-        return Mono.just(RSocketConfigPropertySourceLocator.LAST_CONFIG_TEXT);
+        return Mono.just(RSocketConfigPropertySourceLocator.getLastConfigText());
     }
 
     @RequestMapping("/config/developer")
