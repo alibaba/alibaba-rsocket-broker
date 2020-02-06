@@ -12,7 +12,7 @@ requester_testing:
 
 #bench test: 30 seconds, using 5 threads, and keeping 50 HTTP connections open
 benchmarking_rpc:
-  wrk -t5 -c50 -d30s http://localhost:8181/user/2
+  wrk -t5 -c50 -d30s --latency http://localhost:8181/user/2
 
 benchmarking_stream:
-  wrk -t5 -c50 -d30s http://localhost:8181/users
+  wrk -t5 -c50 -d30s --latency http://localhost:8181/users
