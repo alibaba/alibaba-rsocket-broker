@@ -1,6 +1,8 @@
 package com.alibaba.rsocket.utils;
 
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * MurmurHash3 yields a 32-bit or 128-bit value.
  * <p>
@@ -145,7 +147,7 @@ public final class MurmurHash3 {
      * @return 32 bit hash
      */
     public static int hash32(final String data) {
-        final byte[] origin = data.getBytes();
+        final byte[] origin = data.getBytes(StandardCharsets.UTF_8);
         return hash32(origin, 0, origin.length, DEFAULT_SEED);
     }
 
@@ -383,7 +385,7 @@ public final class MurmurHash3 {
      * @return - 128 bit hash (2 longs)
      */
     public static long[] hash128(final String data) {
-        final byte[] origin = data.getBytes();
+        final byte[] origin = data.getBytes(StandardCharsets.UTF_8);
         return hash128(origin, 0, origin.length, DEFAULT_SEED);
     }
 

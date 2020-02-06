@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.events;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.UUID;
 
@@ -84,7 +85,7 @@ public class ConfigEvent implements CloudEventSupport<ConfigEvent> {
         if (text == null) return "";
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] encodedHash = digest.digest(text.getBytes());
+            byte[] encodedHash = digest.digest(text.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
             for (byte b : encodedHash) {
                 String hex = Integer.toHexString(0xff & b);

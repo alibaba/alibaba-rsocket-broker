@@ -16,6 +16,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
  * @author leijuan
  */
 public class JsonUtils {
-    public static ObjectMapper objectMapper = new ObjectMapper();
+    public static final ObjectMapper objectMapper = new ObjectMapper();
 
     static {
         // add Jackson datatype for ZonedDateTime
@@ -76,7 +77,7 @@ public class JsonUtils {
     }
 
     public static Object[] readJsonArray(String text, Class<?>[] targetClasses) throws Exception {
-        return readJsonArray(Unpooled.wrappedBuffer(text.getBytes()), targetClasses);
+        return readJsonArray(Unpooled.wrappedBuffer(text.getBytes(StandardCharsets.UTF_8)), targetClasses);
     }
 
     public static Object[] readJsonArray(ByteBuf byteBuf, Class<?>[] targetClasses) throws Exception {

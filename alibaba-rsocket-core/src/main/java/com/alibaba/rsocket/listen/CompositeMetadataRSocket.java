@@ -26,8 +26,8 @@ import java.util.List;
  */
 @SuppressWarnings("DuplicatedCode")
 public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
-    public static String COMPOSITE_METADATA_KEY = "_CM";
-    public static String REAL_RSOCKET_HANDLER = "_RSH";
+    public static final String COMPOSITE_METADATA_KEY = "_CM";
+    public static final String REAL_RSOCKET_HANDLER = "_RSH";
     private static Logger log = LoggerFactory.getLogger(CompositeMetadataRSocket.class);
     private RSocket source;
 

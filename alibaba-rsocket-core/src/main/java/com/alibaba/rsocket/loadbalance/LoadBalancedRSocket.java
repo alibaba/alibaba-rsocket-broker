@@ -144,12 +144,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         Flux.fromIterable(staleRSockets.entrySet())
                                 .delaySubscription(Duration.ofSeconds(15))
                                 .subscribe(entry -> {
-                                    try {
-                                        entry.getValue().dispose();
-                                        log.info(RsocketErrorCode.message("RST-200011", entry.getKey()));
-                                    } catch (Exception ignore) {
-
-                                    }
+                                    log.info(RsocketErrorCode.message("RST-200011", entry.getKey()));
+                                    entry.getValue().dispose();
                                 });
                     }
                     //subscribe rsocket close event

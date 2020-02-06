@@ -74,7 +74,7 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
             if (mimeType instanceof Byte) {
                 buffer.writeByte((byte) ((byte) mimeType | 0x80));
             } else if (mimeType instanceof String) {
-                byte[] bytes = ((String) mimeType).getBytes();
+                byte[] bytes = ((String) mimeType).getBytes(StandardCharsets.US_ASCII);
                 buffer.writeByte(bytes.length);
                 buffer.writeBytes(bytes);
             }

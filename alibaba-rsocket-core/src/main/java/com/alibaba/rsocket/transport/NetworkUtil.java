@@ -15,7 +15,7 @@ public class NetworkUtil {
     /**
      * ip black list. 10.0.2.15 is default ip for virtual box vm
      */
-    public static List<String> IP_BLACK_LIST = Arrays.asList("10.0.2.15");
+    public static final List<String> IP_BLACK_LIST = Arrays.asList("10.0.2.15");
 
     public static String getLocalIP() {
         String ip = null;

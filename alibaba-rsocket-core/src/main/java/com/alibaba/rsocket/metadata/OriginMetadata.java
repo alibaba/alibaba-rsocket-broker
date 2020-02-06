@@ -42,7 +42,7 @@ public class OriginMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        return Unpooled.wrappedBuffer(this.origin.toString().getBytes());
+        return Unpooled.wrappedBuffer(this.origin.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     @Override

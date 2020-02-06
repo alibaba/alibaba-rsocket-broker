@@ -59,8 +59,13 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
         if (result instanceof SpecificRecordBase) {
             Class<?> objectClass = result.getClass();
             try {
-                ByteBuffer byteBuffer = (ByteBuffer) toByteBufferMethodStore.get(objectClass).invoke(result);
-                return Unpooled.wrappedBuffer(byteBuffer);
+                Method toByteBufferMethod = toByteBufferMethodStore.get(objectClass);
+                if (toByteBufferMethod != null) {
+                    ByteBuffer byteBuffer = (ByteBuffer) toByteBufferMethod.invoke(result);
+                    return Unpooled.wrappedBuffer(byteBuffer);
+                } else {
+                    throw new EncodingException("Failed to find toByteBuffer  for class: " + objectClass);
+                }
             } catch (Exception e) {
                 throw new EncodingException(RsocketErrorCode.message("RST-700500", result.toString(), "ByteBuf"), e);
 
@@ -76,7 +81,12 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
         if (data.capacity() >= 1 && targetClass != null) {
             if (SpecificRecordBase.class.equals(targetClass.getSuperclass())) {
                 try {
-                    return fromByteBufferMethodStore.get(targetClass).invoke(null, data.nioBuffer());
+                    Method fromByteBufferMethod = fromByteBufferMethodStore.get(targetClass);
+                    if (fromByteBufferMethod != null) {
+                        return fromByteBufferMethod.invoke(null, data.nioBuffer());
+                    } else {
+                        throw new EncodingException("Failed to find toByteBuffer  for class: " + targetClass);
+                    }
                 } catch (Exception e) {
                     throw new EncodingException(RsocketErrorCode.message("RST-700501", "bytebuf", targetClass.getName()), e);
                 }

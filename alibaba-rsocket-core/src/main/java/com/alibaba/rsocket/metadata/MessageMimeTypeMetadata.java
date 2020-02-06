@@ -52,7 +52,7 @@ public class MessageMimeTypeMetadata implements MetadataAware {
         if (mimeTypeId > 0) {
             return Unpooled.wrappedBuffer(new byte[]{(byte) (mimeTypeId | 0x80)});
         } else {
-            byte[] bytes = mimeType.getBytes();
+            byte[] bytes = mimeType.getBytes(StandardCharsets.US_ASCII);
             ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer(bytes.length + 1);
             buffer.writeByte(bytes.length);
             buffer.writeBytes(bytes);
