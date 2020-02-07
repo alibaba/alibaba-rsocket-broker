@@ -11,8 +11,14 @@ import java.util.Set;
  * @author leijuan
  */
 public class ServicesExposedEvent implements CloudEventSupport<ServicesExposedEvent> {
+    /**
+     * app UUID
+     */
     private String appId;
-    private Set<ServiceLocator> published = new HashSet<>();
+    /**
+     * exposed services
+     */
+    private Set<ServiceLocator> services = new HashSet<>();
 
     public ServicesExposedEvent() {
     }
@@ -25,15 +31,15 @@ public class ServicesExposedEvent implements CloudEventSupport<ServicesExposedEv
         this.appId = appId;
     }
 
-    public Set<ServiceLocator> getPublished() {
-        return published;
+    public Set<ServiceLocator> getServices() {
+        return services;
     }
 
-    public void setPublished(Set<ServiceLocator> published) {
-        this.published = published;
+    public void setServices(Set<ServiceLocator> services) {
+        this.services = services;
     }
 
     public void addService(ServiceLocator serviceLocator) {
-        this.published.add(serviceLocator);
+        this.services.add(serviceLocator);
     }
 }
