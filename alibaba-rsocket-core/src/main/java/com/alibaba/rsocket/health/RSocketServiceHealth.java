@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.health;
 
+import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 /**
@@ -8,11 +9,15 @@ import reactor.core.publisher.Mono;
  * @author leijuan
  */
 public interface RSocketServiceHealth {
+    int SERVING_STATUS = 1;
+    int UNKNOWN_STATUS = 0;
+    int ERROR_STATUS = -1;
+
     /**
      * health status: 0:unknown, 1: serving, -1: out of service
      *
-     * @param serviceName service name
+     * @param serviceName service name. if service name is null, just check server's health
      * @return health status
      */
-    Mono<Integer> check(String serviceName);
+    Mono<Integer> check(@Nullable String serviceName);
 }
