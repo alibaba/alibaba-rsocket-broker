@@ -6,8 +6,17 @@ package com.alibaba.rsocket.events;
  * @author leijuan
  */
 public class EventReply {
+    /**
+     * source id of event
+     */
     private String eventId;
+    /**
+     * logical id of reply
+     */
     private String replyId;
+    /**
+     * reply name
+     */
     private String replyName;
     private Integer status;
     private String data;

@@ -11,7 +11,7 @@ public class AppStatusEvent implements CloudEventSupport<AppStatusEvent> {
     public static Integer STATUS_OUT_OF_SERVICE = 2;
     public static Integer STATUS_STOPPED = 2;
     /**
-     * App id
+     * App UUID
      */
     private String id;
     /**

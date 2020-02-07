@@ -8,6 +8,9 @@ import java.util.List;
  * @author leijuan
  */
 public class InvalidCacheEvent implements CloudEventSupport<InvalidCacheEvent> {
+    /**
+     * cache keys
+     */
     private List<String> keys;
 
     public InvalidCacheEvent(List<String> keys) {

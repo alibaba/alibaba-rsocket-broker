@@ -10,6 +10,9 @@ import java.util.UUID;
  * @author leijuan
  */
 public class ConfigEvent implements CloudEventSupport<ConfigEvent> {
+    /**
+     * config event logic id
+     */
     private String id;
     private String appName;
     private String contentType;

@@ -5,6 +5,7 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
@@ -18,6 +19,7 @@ import java.util.UUID;
  */
 public interface CloudEventSupport<T extends CloudEventSupport<?>> {
 
+    @Nullable
     static <T> T unwrapData(CloudEventImpl<?> cloudEvent, Class<T> targetClass) {
         return cloudEvent.getData().map(data -> {
             try {
