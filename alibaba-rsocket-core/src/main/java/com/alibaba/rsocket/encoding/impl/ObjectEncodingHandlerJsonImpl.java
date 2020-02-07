@@ -26,15 +26,20 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
 
     @Override
     public ByteBuf encodingParams(@Nullable Object[] args) throws EncodingException {
-        if (args == null || args.length == 0 || args[0] == null) {
+        if (args == null || args.length == 0 || (args.length == 1 && args[0] == null)) {
             return EMPTY_BUFFER;
         }
-        return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(args));
+        try {
+            return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(args));
+        } catch (Exception e) {
+            throw new EncodingException(RsocketErrorCode.message("RST-700500", "Object[]", "ByteBuf"), e);
+        }
     }
 
     @Override
+    @Nullable
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() >= 1 && targetClasses != null && targetClasses.length > 0) {
+        if (data.capacity() > 0 && targetClasses != null && targetClasses.length > 0) {
             try {
                 return JsonUtils.readJsonArray(data, targetClasses);
             } catch (Exception e) {
@@ -47,16 +52,20 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     @Override
     @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
-        if (result != null) {
-            return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(result));
+        if (result == null) {
+            return EMPTY_BUFFER;
         }
-        return EMPTY_BUFFER;
+        try {
+            return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(result));
+        } catch (Exception e) {
+            throw new EncodingException(RsocketErrorCode.message("RST-700500", result.getClass().getCanonicalName(), "ByteBuf"), e);
+        }
     }
 
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() >= 1 && targetClass != null) {
+        if (data.capacity() > 0 && targetClass != null) {
             try {
                 return JsonUtils.readJsonValue(data, targetClass);
             } catch (Exception e) {
