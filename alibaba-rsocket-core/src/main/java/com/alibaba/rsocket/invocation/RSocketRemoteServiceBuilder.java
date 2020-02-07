@@ -48,6 +48,13 @@ public class RSocketRemoteServiceBuilder<T> {
         return this;
     }
 
+    /**
+     * timeout configuration, and default timeout is 3000 millis
+     * if the call is long time task, please set it to big value
+     *
+     * @param millis millis
+     * @return builder
+     */
     public RSocketRemoteServiceBuilder<T> timeoutMillis(int millis) {
         this.timeout = Duration.ofMillis(millis);
         return this;
@@ -84,6 +91,6 @@ public class RSocketRemoteServiceBuilder<T> {
         return (T) Proxy.newProxyInstance(
                 serviceInterface.getClassLoader(),
                 new Class[]{serviceInterface},
-                new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version, encodingType, timeout));
+                new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version, encodingType, timeout, endpoint));
     }
 }
