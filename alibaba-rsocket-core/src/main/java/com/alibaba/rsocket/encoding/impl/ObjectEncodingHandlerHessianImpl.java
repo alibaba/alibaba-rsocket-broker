@@ -29,7 +29,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
             return EMPTY_BUFFER;
         }
         try {
-            return HessianUtils.outputAsBuffer(args);
+            return HessianUtils.encode(args);
         } catch (Exception e) {
             throw new EncodingException(RsocketErrorCode.message("RST-700500", "object[]", "ByteBuf"), e);
         }
@@ -54,7 +54,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
             return EMPTY_BUFFER;
         }
         try {
-            return HessianUtils.outputAsBuffer(result);
+            return HessianUtils.encode(result);
         } catch (Exception e) {
             throw new EncodingException(RsocketErrorCode.message("RST-700500", result.toString(), "ByteBuf"), e);
         }
