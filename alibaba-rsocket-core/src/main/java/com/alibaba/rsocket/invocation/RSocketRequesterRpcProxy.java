@@ -114,7 +114,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         }
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
-            methodMetadataMap.put(method, new ReactiveMethodMetadata(service, method, encodingType, group, version, encodingType));
+            methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
+                    method, encodingType, acceptEncodingTypes()));
             if (method.getAnnotation(CacheResult.class) != null) {
                 cachedMethods.put(method, method.getAnnotation(CacheResult.class));
             }
@@ -279,5 +280,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             this.defaultMethodHandles.put(method, methodHandle);
         }
         return methodHandle;
+    }
+
+    public RSocketMimeType[] acceptEncodingTypes() {
+        return new RSocketMimeType[]{this.encodingType, RSocketMimeType.Hessian, RSocketMimeType.Java_Object,
+                RSocketMimeType.Json, RSocketMimeType.Protobuf, RSocketMimeType.Avor, RSocketMimeType.CBOR};
     }
 }
