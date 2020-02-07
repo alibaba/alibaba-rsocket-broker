@@ -5,20 +5,24 @@ import com.caucho.hessian.io.HessianSerializerOutput;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 
 /**
- * hessian utils
+ * Hessian en/decode utils
  *
  * @author leijuan
  */
 public class HessianUtils {
 
-    public static ByteBuf outputAsBuffer(Object obj) throws Exception {
+    @NotNull
+    public static ByteBuf encode(@Nullable Object obj) throws Exception {
         if (obj == null) {
             return Unpooled.EMPTY_BUFFER;
         }
+        //bos and output close not necessary
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         HessianSerializerOutput output = new HessianSerializerOutput(bos);
         output.writeObject(obj);
@@ -26,9 +30,12 @@ public class HessianUtils {
         return Unpooled.wrappedBuffer(bos.toByteArray());
     }
 
-    public static Object decode(ByteBuf buffer) throws Exception {
-        HessianSerializerInput input = new HessianSerializerInput(new ByteBufInputStream(buffer));
-        return input.readObject();
+    @Nullable
+    public static Object decode(@Nullable ByteBuf byteBuf) throws Exception {
+        if (byteBuf == null || byteBuf.capacity() == 0) {
+            return null;
+        }
+        return new HessianSerializerInput(new ByteBufInputStream(byteBuf)).readObject();
     }
 
 }
