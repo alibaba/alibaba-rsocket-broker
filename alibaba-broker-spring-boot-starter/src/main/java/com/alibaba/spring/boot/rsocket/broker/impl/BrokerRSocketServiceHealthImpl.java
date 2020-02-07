@@ -3,9 +3,9 @@ package com.alibaba.spring.boot.rsocket.broker.impl;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
+import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 
 /**
  * rsocket broker service health implement
@@ -21,14 +21,14 @@ public class BrokerRSocketServiceHealthImpl implements RSocketServiceHealth {
     }
 
     @Override
-    public Mono<Integer> check(String serviceName) {
+    public Mono<Integer> check(@Nullable String serviceName) {
         //health check
-        if (serviceName == null || serviceName.equals("com.alibaba.rsocket.health.Health")) {
-            return Mono.just(1);
+        if (serviceName == null || serviceName.isEmpty()) {
+            return Mono.just(SERVING_STATUS);
         } else { //remote service check
             return Flux.fromIterable(routingSelector.findAllServices())
-                    .any(serviceId -> serviceId.contains("" + serviceName + ":"))
-                    .map(result -> result ? 1 : 0);
+                    .any(serviceId -> serviceId.contains(serviceName))
+                    .map(result -> result ? SERVING_STATUS : ERROR_STATUS);
         }
     }
 }
