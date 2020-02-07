@@ -97,7 +97,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     private Map<Method, MethodHandle> defaultMethodHandles = new HashMap<>();
 
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
-                                    String group, Class<?> serviceInterface, String service, String version,
+                                    String group, Class<?> serviceInterface, @Nullable String service, String version,
                                     RSocketMimeType encodingType, Duration timeout, @Nullable String endpoint) {
         this.upstream = upstream;
         this.serviceInterface = serviceInterface;
@@ -290,6 +290,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     public RSocketMimeType[] acceptEncodingTypes() {
         return new RSocketMimeType[]{this.encodingType, RSocketMimeType.Hessian, RSocketMimeType.Java_Object,
-                RSocketMimeType.Json, RSocketMimeType.Protobuf, RSocketMimeType.Avor, RSocketMimeType.CBOR};
+                RSocketMimeType.Json, RSocketMimeType.Protobuf, RSocketMimeType.Avor, RSocketMimeType.CBOR,
+                RSocketMimeType.Text, RSocketMimeType.Binary};
     }
 }
