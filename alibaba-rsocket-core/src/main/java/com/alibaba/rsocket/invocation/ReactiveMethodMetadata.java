@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.rsocket.frame.FrameType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -40,6 +41,10 @@ public class ReactiveMethodMetadata {
      * service version
      */
     private String version;
+    /**
+     * endpoint
+     */
+    private String endpoint;
     /**
      * method handler's param count
      */
@@ -84,11 +89,13 @@ public class ReactiveMethodMetadata {
     public ReactiveMethodMetadata(String group, String serviceFullName, String version,
                                   Method method,
                                   @NotNull RSocketMimeType dataEncodingType,
-                                  @NotNull RSocketMimeType[] acceptEncodingTypes) {
+                                  @NotNull RSocketMimeType[] acceptEncodingTypes,
+                                  @Nullable String endpoint) {
         this.serviceFullName = serviceFullName;
         this.name = method.getName();
         this.group = group;
         this.version = version;
+        this.endpoint = endpoint;
         //result type & generic type
         this.returnType = method.getReturnType();
         Type genericReturnType = method.getGenericReturnType();
@@ -116,6 +123,7 @@ public class ReactiveMethodMetadata {
         this.acceptEncodingTypes = acceptEncodingTypes;
         //payload routing metadata
         GSVRoutingMetadata routing = new GSVRoutingMetadata(group, this.serviceFullName, this.name, version);
+        routing.setEndpoint(this.endpoint);
         //add param encoding
         MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
         //set accepted mimetype
