@@ -23,11 +23,11 @@ import java.nio.ByteBuffer;
 @SuppressWarnings("unchecked")
 public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
     LoadingCache<Class<?>, Method> fromByteBufferMethodStore = Caffeine.newBuilder()
-            .maximumSize(1000)
+            .maximumSize(Integer.MAX_VALUE)
             .build(targetClass -> targetClass.getMethod("fromByteBuffer", ByteBuffer.class));
 
     LoadingCache<Class<?>, Method> toByteBufferMethodStore = Caffeine.newBuilder()
-            .maximumSize(1000)
+            .maximumSize(Integer.MAX_VALUE)
             .build(targetClass -> targetClass.getMethod("toByteBuffer"));
 
     @NotNull
@@ -47,7 +47,7 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() >= 1 && targetClasses != null && targetClasses.length == 1) {
+        if (data.capacity() >0 && targetClasses != null && targetClasses.length == 1) {
             return decodeResult(data, targetClasses[0]);
         }
         return null;
@@ -78,7 +78,7 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() >= 1 && targetClass != null) {
+        if (data.capacity() > 0  && targetClass != null) {
             if (SpecificRecordBase.class.equals(targetClass.getSuperclass())) {
                 try {
                     Method fromByteBufferMethod = fromByteBufferMethodStore.get(targetClass);

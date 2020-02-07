@@ -25,7 +25,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     @Override
     public ByteBuf encodingParams(@Nullable Object[] args) throws EncodingException {
-        if (args == null || args.length == 0 || args[0] == null) {
+        if (isArrayEmpty(args)) {
             return EMPTY_BUFFER;
         }
         try {
@@ -37,7 +37,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() >= 1) {
+        if (data.capacity() > 0) {
             try {
                 return HessianUtils.decode(data);
             } catch (Exception e) {
@@ -62,7 +62,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() >= 1) {
+        if (data.capacity() > 0) {
             try {
                 return HessianUtils.decode(data);
             } catch (Exception e) {

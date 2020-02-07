@@ -26,7 +26,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
 
     @Override
     public ByteBuf encodingParams(@Nullable Object[] args) throws EncodingException {
-        if (args == null || args.length == 0 || (args.length == 1 && args[0] == null)) {
+        if (isArrayEmpty(args)) {
             return EMPTY_BUFFER;
         }
         try {
@@ -39,7 +39,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() > 0 && targetClasses != null && targetClasses.length > 0) {
+        if (data.capacity() > 0 && !isArrayEmpty(targetClasses)) {
             try {
                 return JsonUtils.readJsonArray(data, targetClasses);
             } catch (Exception e) {

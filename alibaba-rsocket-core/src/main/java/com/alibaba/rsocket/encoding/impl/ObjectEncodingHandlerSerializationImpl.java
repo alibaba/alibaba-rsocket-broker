@@ -28,7 +28,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
 
     @Override
     public ByteBuf encodingParams(@Nullable Object[] args) throws EncodingException {
-        if (args == null || args.length == 0 || args[0] == null) {
+        if (isArrayEmpty(args)) {
             return EMPTY_BUFFER;
         }
         return Unpooled.wrappedBuffer(objectToBytes(args));
@@ -36,7 +36,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
 
     @Override
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() >= 1 && targetClasses != null && targetClasses.length > 0) {
+        if (data.capacity() > 0 && !isArrayEmpty(targetClasses)) {
             return objectToBytes(data);
         }
         return null;
@@ -54,7 +54,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() >= 1 && targetClass != null) {
+        if (data.capacity() > 0 && targetClass != null) {
             return bytesToObject(data);
         }
         return null;
@@ -65,7 +65,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream outputStream = new ObjectOutputStream(bos);
             outputStream.writeObject(obj);
-            outputStream.flush();
+            outputStream.close();
             return bos.toByteArray();
         } catch (Exception e) {
             throw new EncodingException(RsocketErrorCode.message("RST-700500", obj.getClass().getName(), "byte[]"), e);
