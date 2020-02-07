@@ -18,6 +18,7 @@ public enum RSocketMimeType {
     Avor("Avor", WellKnownMimeType.APPLICATION_AVRO),
     Hessian("Hessian", WellKnownMimeType.APPLICATION_HESSIAN),
     Text("Text", WellKnownMimeType.TEXT_PLAIN),
+    Binary("Binary", WellKnownMimeType.APPLICATION_OCTET_STREAM),
     Java_Object("JavaObject", WellKnownMimeType.APPLICATION_JAVA_OBJECT),
     CBOR("CBOR", WellKnownMimeType.APPLICATION_CBOR),
     CloudEventsJson("CloudEventsJson", WellKnownMimeType.APPLICATION_CLOUDEVENTS_JSON),
