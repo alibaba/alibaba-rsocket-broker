@@ -95,7 +95,7 @@ public class AppStatusCloudEventProcessor {
         if (servicesExposedEvent != null && servicesExposedEvent.getAppId().equals(cloudEvent.getAttributes().getSource().getHost())) {
             RSocketBrokerResponderHandler responderHandler = rsocketBrokerHandlerRegistry.findByUUID(servicesExposedEvent.getAppId());
             if (responderHandler != null) {
-                responderHandler.setPeerServices(servicesExposedEvent.getPublished());
+                responderHandler.setPeerServices(servicesExposedEvent.getServices());
                 responderHandler.registerPublishedServices();
             }
         }
