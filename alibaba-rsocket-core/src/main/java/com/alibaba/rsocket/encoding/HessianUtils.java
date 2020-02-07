@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Hessian en/decode utils
@@ -18,7 +19,7 @@ import java.io.ByteArrayOutputStream;
 public class HessianUtils {
 
     @NotNull
-    public static ByteBuf encode(@Nullable Object obj) throws Exception {
+    public static ByteBuf encode(@Nullable Object obj) throws IOException {
         if (obj == null) {
             return Unpooled.EMPTY_BUFFER;
         }
