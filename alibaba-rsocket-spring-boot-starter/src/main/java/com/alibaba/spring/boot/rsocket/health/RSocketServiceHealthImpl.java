@@ -13,6 +13,6 @@ import reactor.core.publisher.Mono;
 public class RSocketServiceHealthImpl implements RSocketServiceHealth {
     @Override
     public Mono<Integer> check(String serviceName) {
-        return Mono.just(1);
+        return Mono.just(SERVING_STATUS);
     }
 }
