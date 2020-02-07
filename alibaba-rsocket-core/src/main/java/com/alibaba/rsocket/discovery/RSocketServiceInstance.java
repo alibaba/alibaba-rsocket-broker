@@ -3,7 +3,6 @@ package com.alibaba.rsocket.discovery;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * RSocket Service instance
@@ -23,12 +22,12 @@ public class RSocketServiceInstance implements ServiceInstance, Serializable {
     public RSocketServiceInstance() {
     }
 
-    public RSocketServiceInstance(String serviceId, String host, int port) {
+    public RSocketServiceInstance(String serviceId, String instanceId, String host, int port) {
         this();
         this.serviceId = serviceId;
         this.host = host;
         this.port = port;
-        this.instanceId = UUID.randomUUID().toString();
+        this.instanceId = instanceId;
         this.uri = schema + "://" + host + ":" + port;
     }
 
