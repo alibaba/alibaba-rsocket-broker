@@ -17,6 +17,7 @@ import io.netty.util.ReferenceCountUtil;
 import io.rsocket.Payload;
 import io.rsocket.frame.FrameType;
 import io.rsocket.util.DefaultPayload;
+import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -63,6 +64,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      */
     private String version;
     /**
+     * endpoint of service
+     */
+    private String endpoint;
+    /**
      * encoding type
      */
     private RSocketMimeType encodingType;
@@ -93,7 +98,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, String service, String version,
-                                    RSocketMimeType encodingType, Duration timeout) {
+                                    RSocketMimeType encodingType, Duration timeout, @Nullable String endpoint) {
         this.upstream = upstream;
         this.serviceInterface = serviceInterface;
         this.service = serviceInterface.getCanonicalName();
@@ -102,6 +107,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         }
         this.group = group;
         this.version = version;
+        this.endpoint = endpoint;
         this.encodingType = encodingType;
         this.timeout = timeout;
     }
@@ -115,7 +121,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
-                    method, encodingType, acceptEncodingTypes()));
+                    method, encodingType, acceptEncodingTypes(), endpoint));
             if (method.getAnnotation(CacheResult.class) != null) {
                 cachedMethods.put(method, method.getAnnotation(CacheResult.class));
             }
