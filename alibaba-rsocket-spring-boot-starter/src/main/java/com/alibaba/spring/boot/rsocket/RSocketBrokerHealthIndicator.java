@@ -28,7 +28,7 @@ public class RSocketBrokerHealthIndicator implements ReactiveHealthIndicator {
 
     @Override
     public Mono<Health> health() {
-        return rsocketServiceHealth.check("com.alibaba.rsocket.health.Health")
+        return rsocketServiceHealth.check(null)
                 .map(result -> result != null && result == 1 ?
                         Health.up().withDetail("brokers", brokers).build()
                         : Health.outOfService().withDetail("brokers", brokers).build())
