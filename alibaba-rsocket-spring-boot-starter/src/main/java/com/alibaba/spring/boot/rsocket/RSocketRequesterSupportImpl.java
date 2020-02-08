@@ -23,10 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -142,11 +139,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
             appMetadata.setSchema(env.getProperty("rsocket.schema"));
         }
         //rsocket port
-        if (env.containsKey("rsocket.port")) {
-            appMetadata.setPort(Integer.parseInt(env.getProperty("rsocket.port")));
-        } else {
-            appMetadata.setPort(RSocketAppContext.LISTEN_PORT);
-        }
+        appMetadata.setPort(properties.getPort());
         //management port
         if (env.containsKey("management.server.port")) {
             appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port")));
@@ -164,7 +157,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         //humans.md
         URL humansMd = this.getClass().getResource("/humans.md");
         if (humansMd != null) {
-            try(InputStream inputStream = humansMd.openStream()) {
+            try (InputStream inputStream = humansMd.openStream()) {
                 byte[] bytes = new byte[inputStream.available()];
                 inputStream.read(bytes);
                 inputStream.close();
