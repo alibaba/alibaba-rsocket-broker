@@ -381,14 +381,17 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Nullable
     private Integer findDestinationWithEndpoint(String endpoint, Integer serviceId) {
+        String[] parts = endpoint.split(":");
         return routingSelector.findHandlers(serviceId).stream()
                 .map(handlerId -> handlerRegistry.findById(handlerId))
                 .filter(targetHandler -> {
                     if (targetHandler == null) return false;
-                    if (endpoint.startsWith("ip:")) {
-                        return endpoint.contains(targetHandler.getAppMetadata().getIp());
-                    } else if (endpoint.startsWith("id:")) {
-                        return endpoint.equals("id:" + targetHandler.getUuid());
+                    if (parts[0].equalsIgnoreCase("ip")) {
+                        return parts[1].contains(targetHandler.getAppMetadata().getIp());
+                    } else if (endpoint.equalsIgnoreCase("id")) {
+                        return parts[1].equals(targetHandler.getUuid());
+                    } else if (appMetadata.getMetadata() != null) {
+                        return parts[1].equals(appMetadata.getMetadata(parts[0]));
                     } else {
                         return false;
                     }
