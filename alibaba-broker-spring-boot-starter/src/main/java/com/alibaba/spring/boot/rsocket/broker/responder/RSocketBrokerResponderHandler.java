@@ -381,23 +381,22 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Nullable
     private Integer findDestinationWithEndpoint(String endpoint, Integer serviceId) {
-        String[] parts = endpoint.split(":");
-        return routingSelector.findHandlers(serviceId).stream()
-                .map(handlerId -> handlerRegistry.findById(handlerId))
-                .filter(targetHandler -> {
-                    if (targetHandler == null) return false;
-                    if (parts[0].equalsIgnoreCase("ip")) {
-                        return parts[1].contains(targetHandler.getAppMetadata().getIp());
-                    } else if (endpoint.equalsIgnoreCase("id")) {
-                        return parts[1].equals(targetHandler.getUuid());
-                    } else if (appMetadata.getMetadata() != null) {
-                        return parts[1].equals(appMetadata.getMetadata(parts[0]));
-                    } else {
-                        return false;
-                    }
-                })
-                .map(RSocketBrokerResponderHandler::getId)
-                .findFirst().orElse(null);
+        int sepPosition = endpoint.indexOf(':');
+        String key = endpoint.substring(0, sepPosition);
+        String value = endpoint.substring(sepPosition + 1);
+        for (Integer handlerId : routingSelector.findHandlers(serviceId)) {
+            RSocketBrokerResponderHandler handler = handlerRegistry.findById(handlerId);
+            if (handler != null) {
+                if (key.equalsIgnoreCase("ip") && value.equalsIgnoreCase(handler.getAppMetadata().getIp())) {
+                    return handlerId;
+                } else if (endpoint.equalsIgnoreCase("id") && value.equalsIgnoreCase(handler.getAppMetadata().getIp())) {
+                    return handlerId;
+                } else if (appMetadata.getMetadata() != null && value.equalsIgnoreCase(appMetadata.getMetadata(key))) {
+                    return handlerId;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
