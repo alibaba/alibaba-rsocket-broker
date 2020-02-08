@@ -34,6 +34,7 @@ public class ServiceConsumeConfiguration {
         return RSocketRemoteServiceBuilder
                 .client(UserService.class)
                 .upstreamManager(upstreamManager)
+                //.endpoint("ip:192.168.1.2") //for testing
                 .build();
     }
 
