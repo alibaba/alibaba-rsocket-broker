@@ -23,6 +23,10 @@ public interface UserService {
      */
     Mono<User> findById(Integer id);
 
+    default Mono<User> findByIdFromDefault(Integer id) {
+        return findById(id);
+    }
+
     /**
      * find by email or phone
      *
