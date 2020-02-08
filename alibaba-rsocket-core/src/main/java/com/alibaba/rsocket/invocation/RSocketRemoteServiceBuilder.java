@@ -61,6 +61,7 @@ public class RSocketRemoteServiceBuilder<T> {
     }
 
     public RSocketRemoteServiceBuilder<T> endpoint(String endpoint) {
+        assert endpoint.contains(":");
         this.endpoint = endpoint;
         return this;
     }
