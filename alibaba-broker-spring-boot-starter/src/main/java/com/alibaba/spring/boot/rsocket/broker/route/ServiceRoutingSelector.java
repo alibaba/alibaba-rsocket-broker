@@ -24,7 +24,7 @@ public interface ServiceRoutingSelector {
     @Nullable
     Integer findHandler(Integer serviceId);
 
-    Flux<Integer> findHandlers(Integer serviceId);
+    Collection<Integer> findHandlers(Integer serviceId);
 
     Integer getInstanceCount(Integer serviceId);
 

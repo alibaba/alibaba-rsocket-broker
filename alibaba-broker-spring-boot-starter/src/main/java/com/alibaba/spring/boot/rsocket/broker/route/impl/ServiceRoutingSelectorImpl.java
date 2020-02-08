@@ -7,11 +7,8 @@ import com.google.common.collect.MultimapBuilder;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.IntConsumer;
 import org.roaringbitmap.RoaringBitmap;
-import reactor.core.publisher.Flux;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -91,18 +88,15 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     }
 
     @Override
-    public Flux<Integer> findHandlers(Integer serviceId) {
+    public Collection<Integer> findHandlers(Integer serviceId) {
         RoaringBitmap bitmap = servicesBitmap.get(serviceId);
-        if (bitmap != null && bitmap.getCardinality() > 0) {
-            return Flux.create((sink -> {
-                try {
-                    bitmap.forEach((IntConsumer) sink::next);
-                } finally {
-                    sink.complete();
-                }
-            }));
+        if (bitmap != null) {
+            List<Integer> ids = new ArrayList<>();
+            bitmap.forEach((IntConsumer) ids::add);
+            return ids;
+        } else {
+            return Collections.emptyList();
         }
-        return Flux.empty();
     }
 
     @Override
