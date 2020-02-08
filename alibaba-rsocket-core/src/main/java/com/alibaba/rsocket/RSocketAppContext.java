@@ -11,7 +11,6 @@ import java.util.UUID;
  */
 public class RSocketAppContext {
     public static final String ID = UUID.randomUUID().toString();
-    public static final String DEFAULT_METADATA_TYPE = RSocketMimeType.CompositeMetadata.getType();
     public static final String DEFAULT_DATA_TYPE = RSocketMimeType.Hessian.getType();
     public static final Integer LISTEN_PORT = 42252;
 }
