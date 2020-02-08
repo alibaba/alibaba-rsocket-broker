@@ -37,6 +37,10 @@ public class GSVRoutingMetadata implements MetadataAware {
      * endpoint
      */
     private String endpoint;
+    /**
+     * service hash code
+     */
+    private Integer serviceHashCode;
 
     public GSVRoutingMetadata() {
     }
@@ -93,7 +97,10 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     public Integer id() {
-        return MurmurHash3.hash32(ServiceLocator.serviceId(group, service, group));
+        if (this.serviceHashCode == null) {
+            this.serviceHashCode = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, group));
+        }
+        return this.serviceHashCode;
     }
 
     public String routing() {
