@@ -1,7 +1,6 @@
 package com.alibaba.rsocket.loadbalance;
 
 import com.alibaba.rsocket.PayloadUtils;
-import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
@@ -302,8 +301,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             return clientRSocketFactory
                     .keepAliveMissedAcks(12)
                     .setupPayload(payload)
-                    .metadataMimeType(RSocketAppContext.DEFAULT_METADATA_TYPE)
-                    .dataMimeType(RSocketAppContext.DEFAULT_DATA_TYPE)
+                    .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
+                    .dataMimeType(RSocketMimeType.Hessian.getType())
                     .errorConsumer(error -> {
                         log.error(RsocketErrorCode.message("RST-200501"), error);
                     })
