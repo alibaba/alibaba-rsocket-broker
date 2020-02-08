@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * upstream cluster and add timeout
+ * upstream cluster for a service with group and version
  *
  * @author leijuan
  */
