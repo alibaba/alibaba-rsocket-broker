@@ -389,7 +389,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             if (handler != null) {
                 if (key.equalsIgnoreCase("ip") && value.equalsIgnoreCase(handler.getAppMetadata().getIp())) {
                     return handlerId;
-                } else if (endpoint.equalsIgnoreCase("id") && value.equalsIgnoreCase(handler.getAppMetadata().getIp())) {
+                } else if (endpoint.equalsIgnoreCase("id") && value.equalsIgnoreCase(handler.getAppMetadata().getUuid())) {
                     return handlerId;
                 } else if (appMetadata.getMetadata() != null && value.equalsIgnoreCase(appMetadata.getMetadata(key))) {
                     return handlerId;
