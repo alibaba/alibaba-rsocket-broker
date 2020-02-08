@@ -183,7 +183,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             }
             String routing = routingMetaData.routing();
             //payload exchange
-            RSocket destination = findDestination(routingMetaData.id(), routing);
+            RSocket destination = findDestination(routingMetaData, routing);
             if (destination != null) {
                 recordServiceInvoke(principal.getName(), routing);
                 //request filters
@@ -213,7 +213,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 return localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
             }
             String routing = routingMetaData.routing();
-            RSocket destination = findDestination(routingMetaData.id(), routing);
+            RSocket destination = findDestination(routingMetaData, routing);
             if (destination != null) {
                 recordServiceInvoke(principal.getName(), routing);
                 if (this.filterChain.isFiltersPresent()) {
@@ -253,7 +253,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 return localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
             }
             String routing = routingMetaData.routing();
-            RSocket destination = findDestination(routingMetaData.id(), routing);
+            RSocket destination = findDestination(routingMetaData, routing);
             if (destination != null) {
                 recordServiceInvoke(principal.getName(), routing);
                 if (this.filterChain.isFiltersPresent()) {
@@ -273,7 +273,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
             GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
             @SuppressWarnings("ConstantConditions") String routing = routingMetaData.routing();
-            RSocket destination = findDestination(routingMetaData.id(), routing);
+            RSocket destination = findDestination(routingMetaData, routing);
             if (destination != null) {
                 recordServiceInvoke(principal.getName(), routing);
                 return destination.requestChannel(payloads);
@@ -360,8 +360,14 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Nullable
-    private RSocket findDestination(Integer serviceId, String routing) {
-        Integer handlerId = routingSelector.findHandler(serviceId);
+    private RSocket findDestination(GSVRoutingMetadata routingMetaData, String routing) {
+        Integer serviceId = routingMetaData.id();
+        Integer handlerId;
+        if (routingMetaData.getEndpoint() != null && !routingMetaData.getEndpoint().isEmpty()) {
+            handlerId = findDestinationWithEndpoint(routingMetaData.getEndpoint(), serviceId);
+        } else {
+            handlerId = routingSelector.findHandler(serviceId);
+        }
         if (handlerId != null) {
             RSocketBrokerResponderHandler targetHandler = handlerRegistry.findById(handlerId);
             if (targetHandler != null) {
@@ -371,6 +377,24 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             }
         }
         return null;
+    }
+
+    @Nullable
+    private Integer findDestinationWithEndpoint(String endpoint, Integer serviceId) {
+        return routingSelector.findHandlers(serviceId).stream()
+                .map(handlerId -> handlerRegistry.findById(handlerId))
+                .filter(targetHandler -> {
+                    if (targetHandler == null) return false;
+                    if (endpoint.startsWith("ip:")) {
+                        return endpoint.contains(targetHandler.getAppMetadata().getIp());
+                    } else if (endpoint.startsWith("id:")) {
+                        return endpoint.equals("id:" + targetHandler.getUuid());
+                    } else {
+                        return false;
+                    }
+                })
+                .map(RSocketBrokerResponderHandler::getId)
+                .findFirst().orElse(null);
     }
 
     @Override
