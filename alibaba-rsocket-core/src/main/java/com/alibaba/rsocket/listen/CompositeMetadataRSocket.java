@@ -5,6 +5,7 @@ import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Tag;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
@@ -46,6 +47,7 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
+            metrics(routingMetaData, "0x05");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -66,6 +68,7 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
+            metrics(routingMetaData, "0x04");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -86,6 +89,7 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
+            metrics(routingMetaData, "0x06");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -105,6 +109,7 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(signal);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
+            metrics(routingMetaData, "0x07");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -137,5 +142,19 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
     public RSocket getDelegate() {
         return source;
     }
-    
+
+    protected void metrics(GSVRoutingMetadata routing, String frameType) {
+        List<Tag> tags = new ArrayList<>();
+        if (routing.getGroup() != null && !routing.getGroup().isEmpty()) {
+            tags.add(Tag.of("group", routing.getGroup()));
+        }
+        if (routing.getVersion() != null && !routing.getVersion().isEmpty()) {
+            tags.add(Tag.of("version", routing.getVersion()));
+        }
+        tags.add(Tag.of("method", routing.getMethod()));
+        tags.add(Tag.of("frame", frameType));
+        Metrics.counter(routing.getService(), tags).increment();
+        Metrics.counter("rsocket.request.count").increment();
+        Metrics.counter(routing.getService() + ".all").increment();
+    }
 }
