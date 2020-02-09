@@ -24,14 +24,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findById(Integer id) {
-        return Mono.fromCallable(() -> {
-            User user = new User();
-            user.setId(id);
-            user.setNick(faker.name().name());
-            user.setPhone(faker.phoneNumber().cellPhone());
-            user.setEmail(faker.internet().emailAddress());
-            return user;
-        });
+        User user = new User();
+        user.setId(id);
+        user.setNick(faker.name().name());
+        user.setPhone(faker.phoneNumber().cellPhone());
+        user.setEmail(faker.internet().emailAddress());
+        return Mono.just(user);
     }
 
     @Override
