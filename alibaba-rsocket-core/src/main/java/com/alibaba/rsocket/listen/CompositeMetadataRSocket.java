@@ -46,7 +46,6 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
-            metrics(routingMetaData, "0x05");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -67,7 +66,6 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
-            metrics(routingMetaData, "0x04");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -88,7 +86,6 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
-            metrics(routingMetaData, "0x06");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -108,7 +105,6 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
                 ReferenceCountUtil.safeRelease(signal);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
-            metrics(routingMetaData, "0x07");
             reactiveContext.put(COMPOSITE_METADATA_KEY, compositeMetadata);
             reactiveContext.put(REAL_RSOCKET_HANDLER, source);
         } catch (Exception e) {
@@ -141,19 +137,5 @@ public class CompositeMetadataRSocket implements RSocket, ResponderRSocket {
     public RSocket getDelegate() {
         return source;
     }
-
-    protected void metrics(GSVRoutingMetadata routing, String frameType) {
-        List<String> tags = new ArrayList<>();
-        tags.add("group");
-        tags.add(routing.getGroup() == null ? "" : routing.getGroup());
-        tags.add("version");
-        tags.add(routing.getVersion() == null ? "" : routing.getVersion());
-        tags.add("method");
-        tags.add(routing.getMethod());
-        tags.add("frame");
-        tags.add(frameType);
-        Metrics.counter(routing.getService(), tags.toArray(new String[0])).increment();
-        Metrics.counter("rsocket.request.count").increment();
-        Metrics.counter(routing.getService() + ".all").increment();
-    }
+    
 }
