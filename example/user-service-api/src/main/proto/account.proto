@@ -13,4 +13,5 @@ message Account {
     string email = 2;
     string phone = 3;
     int32 status = 4;
+    string nick = 5;
 }
