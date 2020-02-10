@@ -146,7 +146,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             }
             Flux<Payload> payloadFlux = source.startWith(routePayload).map(obj -> DefaultPayload.create(encodingFacade.encodingResult(obj, encodingType), compositeMetadataBuf));
             Flux<Payload> payloads = upstream.requestChannel(payloadFlux);
-            return payloads.flatMap(payload -> {
+            return payloads.concatMap(payload -> {
                 try {
                     RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
                     return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
@@ -167,7 +167,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
                 metrics(methodMetadata);
                 Flux<Payload> flux = upstream.requestStream(DefaultPayload.create(bodyBuffer, compositeMetadataBuf));
-                Flux<Object> result = flux.flatMap(payload -> {
+                Flux<Object> result = flux.concatMap((payload) -> {
                     try {
                         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
                         return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
