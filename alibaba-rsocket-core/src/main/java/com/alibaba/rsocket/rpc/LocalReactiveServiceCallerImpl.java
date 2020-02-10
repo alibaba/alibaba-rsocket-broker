@@ -19,7 +19,7 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
 
     @Override
     public Object invoke(String serviceName, String rpc, Object... args) throws Exception {
-        return methodInvokeEntrances.get(serviceName + "." + rpc).invoke(rsocketServices.get(serviceName), args);
+        return methodInvokeEntrances.get(serviceName + "." + rpc).invoke(args);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
     public void addProvider(@NotNull String group, String serviceName, @NotNull String version, Class<?> serviceInterface, Object handler) {
         rsocketServices.put(serviceName, handler);
         for (Method method : serviceInterface.getMethods()) {
-            methodInvokeEntrances.put(serviceName + "." + method.getName(), new ReactiveMethodHandler(serviceInterface, method));
+            methodInvokeEntrances.put(serviceName + "." + method.getName(), new ReactiveMethodHandler(serviceInterface, method, handler));
         }
     }
 
