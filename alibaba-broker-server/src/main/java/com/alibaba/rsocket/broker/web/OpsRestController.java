@@ -43,8 +43,8 @@ public class OpsRestController {
     private RSocketBrokerManager brokerManager;
 
     @RequestMapping("/services")
-    public Flux<String> services() {
-        return Flux.fromIterable(serviceRoutingSelector.findAllServices());
+    public Mono<Collection<String>> services() {
+        return Mono.just(serviceRoutingSelector.findAllServices());
     }
 
     @RequestMapping("/connections")
