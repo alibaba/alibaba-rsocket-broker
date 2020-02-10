@@ -180,7 +180,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else {  //request/response
                 metrics(methodMetadata);
-                if (cachedMethods.containsKey(method)) {
+                final boolean cachedMethod = cachedMethods.containsKey(method);
+                if (cachedMethod) {
                     CacheResult cacheResult = cachedMethods.get(method);
                     String key = cacheResult.cacheName() + ":" + generateCacheKey(args);
                     Mono<Object> cachedMono = rpcCache.getIfPresent(key);
@@ -204,7 +205,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         ReferenceCountUtil.safeRelease(payload);
                     }
                 }).doOnNext(obj -> {
-                    if (cachedMethods.containsKey(method)) {
+                    if (cachedMethod) {
                         CacheResult cacheResult = cachedMethods.get(method);
                         String key = cacheResult.cacheName() + ":" + generateCacheKey(args);
                         rpcCache.put(key, Mono.just(obj).cache());
