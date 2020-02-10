@@ -22,13 +22,16 @@ public class ReactiveMethodHandler {
             "reactor.core.publisher.Mono", "io.reactivex.Maybe", "io.reactivex.Single", "io.reactivex.Completable", "java.util.concurrent.CompletableFuture",
             "io.reactivex.rxjava3.core.Maybe", "io.reactivex.rxjava3.core.Single", "io.reactivex.rxjava3.core.Completable", "org.reactivestreams.Publisher");
     private static Map<Type, Class<?>> genericTypesCache = new ConcurrentHashMap<>();
+    private Object handler;
     private Method method;
     private int parameterCount;
     private boolean asyncReturn = false;
     private ReactiveAdapter reactiveAdapter;
 
-    public ReactiveMethodHandler(Class<?> serviceInterface, Method method) {
+    public ReactiveMethodHandler(Class<?> serviceInterface, Method method, Object handler) {
+        this.handler = handler;
         this.method = method;
+        this.method.setAccessible(true);
         this.parameterCount = method.getParameterCount();
         Class<?> returnType = this.method.getReturnType();
         if (REACTIVE_STREAM_CLASSES.contains(returnType.getCanonicalName())) {
@@ -37,8 +40,8 @@ public class ReactiveMethodHandler {
         this.reactiveAdapter = ReactiveAdapter.findAdapter(returnType.getCanonicalName());
     }
 
-    public Object invoke(Object obj, Object... args) throws Exception {
-        return method.invoke(obj, args);
+    public Object invoke(Object... args) throws Exception {
+        return method.invoke(this.handler, args);
     }
 
     @NotNull
