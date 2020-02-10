@@ -159,19 +159,29 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     @Override
     public Mono<Payload> requestResponse(Payload payload) {
-        return Mono.defer(randomSelector)
-                .flatMap(rsocket -> rsocket.requestResponse(payload)
-                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
-                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
+        RSocket next = randomSelector.next();
+        if (next == null) {
+            return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
+        }
+        return next.requestResponse(payload)
+                .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
+                    onRSocketClosed(next);
+                    return requestResponse(payload);
+                });
     }
 
 
     @Override
     public Mono<Void> fireAndForget(Payload payload) {
-        return Mono.defer(randomSelector)
-                .flatMap(rsocket -> rsocket.fireAndForget(payload)
-                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
-                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
+        RSocket next = randomSelector.next();
+        if (next == null) {
+            return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
+        }
+        return next.fireAndForget(payload)
+                .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
+                    onRSocketClosed(next);
+                    return fireAndForget(payload);
+                });
     }
 
     @Override
@@ -186,18 +196,28 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     @Override
     public Flux<Payload> requestStream(Payload payload) {
-        return Mono.defer(randomSelector)
-                .flatMapMany(rsocket -> rsocket.requestStream(payload)
-                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
-                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
+        RSocket next = randomSelector.next();
+        if (next == null) {
+            return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
+        }
+        return next.requestStream(payload)
+                .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
+                    onRSocketClosed(next);
+                    return requestStream(payload);
+                });
     }
 
     @Override
     public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
-        return Mono.defer(randomSelector)
-                .flatMapMany(rsocket -> rsocket.requestChannel(payloads)
-                        .doOnError(CONNECTION_ERROR_PREDICATE, error -> onRSocketClosed(rsocket)))
-                .retry(retryCount, CONNECTION_ERROR_PREDICATE);
+        RSocket next = randomSelector.next();
+        if (next == null) {
+            return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
+        }
+        return next.requestChannel(payloads)
+                .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
+                    onRSocketClosed(next);
+                    return requestChannel(payloads);
+                });
     }
 
     @Override
