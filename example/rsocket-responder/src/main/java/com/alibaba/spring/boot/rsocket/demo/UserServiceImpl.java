@@ -5,6 +5,7 @@ import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import com.github.javafaker.Faker;
 import org.apache.commons.lang3.RandomUtils;
+import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +13,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * user service implementation
@@ -24,29 +26,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findById(Integer id) {
-        User user = new User();
-        user.setId(id);
-        user.setNick(faker.name().name());
-        user.setPhone(faker.phoneNumber().cellPhone());
-        user.setEmail(faker.internet().emailAddress());
-        return Mono.just(user);
+        return Mono.just(randomUser(id));
     }
 
     @Override
     public Mono<User> findByEmailOrPhone(String email, String phone) {
         return Mono.fromCallable(() -> {
-            User user = new User();
-            user.setId(1);
-            user.setEmail(email);
-            user.setPhone(phone);
-            user.setNick(faker.name().name());
-            return user;
+            return randomUser(null);
         });
     }
 
     @Override
     public Mono<List<User>> findAll() {
-        return Mono.just(Arrays.asList(new User(1, "first"), new User(2, "second")));
+        return Mono.just(Arrays.asList(randomUser(null), randomUser(null)));
     }
 
     @Override
@@ -88,5 +80,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<String> error(String text) {
         return Mono.error(new Exception("this is an Exception!"));
+    }
+
+    private User randomUser(@Nullable Integer id) {
+        User user = new User();
+        user.setId(id == null ? new Random().nextInt() : id);
+        user.setNick(faker.name().name());
+        user.setPhone(faker.phoneNumber().cellPhone());
+        user.setEmail(faker.internet().emailAddress());
+        return user;
     }
 }
