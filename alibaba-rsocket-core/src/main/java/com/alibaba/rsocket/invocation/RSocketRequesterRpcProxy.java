@@ -148,7 +148,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             Flux<Payload> payloads = upstream.requestChannel(payloadFlux);
             return payloads.flatMap(payload -> {
                 try {
-                    return Mono.justOrEmpty(encodingFacade.decodeResult(encodingType, payload.data(), methodMetadata.getInferredClassForReturn()));
+                    RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+                    return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
                 } catch (Exception e) {
                     return Flux.error(e);
                 } finally {
@@ -168,7 +169,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 Flux<Payload> flux = upstream.requestStream(DefaultPayload.create(bodyBuffer, compositeMetadataBuf));
                 Flux<Object> result = flux.flatMap(payload -> {
                     try {
-                        return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
+                        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+                        return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
                     } catch (Exception e) {
                         return Mono.error(e);
                     } finally {
@@ -189,10 +191,11 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 Mono<Payload> payloadMono = upstream.requestResponse(DefaultPayload.create(bodyBuffer, compositeMetadataBuf)).timeout(timeout);
                 Mono<Object> result = payloadMono.handle((payload, sink) -> {
                     try {
-                        Object obj = encodingFacade.decodeResult(extractPayloadDataMimeType(payload.metadata(), encodingType), payload.data(), methodMetadata.getInferredClassForReturn());
+                        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+                        Object obj = encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn());
                         if (obj != null) {
                             sink.next(obj);
-                            injectContext(payload, sink);
+                            injectContext(compositeMetadata, sink);
                         }
                         sink.complete();
                     } catch (Exception e) {
@@ -243,29 +246,21 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         return Arrays.deepHashCode(params);
     }
 
-    void injectContext(Payload payload, SynchronousSink<?> sink) throws Exception {
-        ByteBuf metadata = payload.metadata();
-        if (metadata.capacity() > 0) {
-            RSocketCompositeMetadata rSocketCompositeMetadata = RSocketCompositeMetadata.from(metadata);
-            //message tags
-            if (rSocketCompositeMetadata.contains(RSocketMimeType.MessageTags)) {
-                MessageTagsMetadata tagsMetadata = MessageTagsMetadata.from(rSocketCompositeMetadata.getMetadata(RSocketMimeType.MessageTags));
-                Map<String, String> tags = tagsMetadata.getTags();
-                sink.currentContext().put("_tags", tags);
-            }
+    void injectContext(RSocketCompositeMetadata compositeMetadata, SynchronousSink<?> sink) throws Exception {
+        //message tags
+        if (compositeMetadata.contains(RSocketMimeType.MessageTags)) {
+            MessageTagsMetadata tagsMetadata = MessageTagsMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.MessageTags));
+            Map<String, String> tags = tagsMetadata.getTags();
+            sink.currentContext().put("_tags", tags);
         }
     }
 
-    private RSocketMimeType extractPayloadDataMimeType(ByteBuf metadata, RSocketMimeType defaultEncodingType) {
-        RSocketMimeType encodingType = defaultEncodingType;
-        if (metadata != null && metadata.capacity() > 0) {
-            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(metadata);
-            if (compositeMetadata.contains(RSocketMimeType.MessageMimeType)) {
-                MessageMimeTypeMetadata mimeTypeMetadata = MessageMimeTypeMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.MessageMimeType));
-                encodingType = mimeTypeMetadata.getRSocketMimeType();
-            }
+    private RSocketMimeType extractPayloadDataMimeType(RSocketCompositeMetadata compositeMetadata, RSocketMimeType defaultEncodingType) {
+        if (compositeMetadata.contains(RSocketMimeType.MessageMimeType)) {
+            MessageMimeTypeMetadata mimeTypeMetadata = MessageMimeTypeMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.MessageMimeType));
+            return mimeTypeMetadata.getRSocketMimeType();
         }
-        return encodingType;
+        return defaultEncodingType;
     }
 
     public MethodHandle getMethodHandle(Method method, Class<?> serviceInterface) throws Exception {
