@@ -54,9 +54,9 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             if (methodHandler != null) {
                 Object result;
                 if (methodHandler.isAsyncReturn()) {
-                    result = invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
+                    result = invokeLocalService(methodHandler, dataEncodingMetadata, payload);
                 } else {
-                    result = Mono.fromCallable(() -> invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
+                    result = Mono.fromCallable(() -> invokeLocalService(methodHandler, dataEncodingMetadata, payload));
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
@@ -104,7 +104,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
         if (methodHandler != null) {
             if (methodHandler.isAsyncReturn()) {
                 try {
-                    return methodHandler.getReactiveAdapter().toMono(invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload));
+                    return methodHandler.getReactiveAdapter().toMono(invokeLocalService(methodHandler, dataEncodingMetadata, payload));
                 } catch (Exception e) {
                     ReferenceCountUtil.safeRelease(payload);
                     log.error(RsocketErrorCode.message("RST-200500"), e);
@@ -113,7 +113,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             } else {
                 return Mono.create((sink) -> {
                     try {
-                        invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
+                        invokeLocalService(methodHandler, dataEncodingMetadata, payload);
                         sink.success();
                     } catch (Exception e) {
                         log.error(RsocketErrorCode.message("RST-200500"), e);
@@ -137,7 +137,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
         try {
             ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
             if (methodHandler != null) {
-                Object result = invokeLocalService(methodHandler, dataEncodingMetadata, routing, payload);
+                Object result = invokeLocalService(methodHandler, dataEncodingMetadata, payload);
                 Flux<Object> fluxResult;
                 if (result instanceof Flux) {
                     fluxResult = (Flux<Object>) result;
@@ -184,14 +184,14 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                             .map(payload -> {
                                 return encodingFacade.decodeResult(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getInferredClassForParameter(0));
                             });
-                    result = localServiceCaller.invoke(routing.getService(), routing.getMethod(), paramFlux);
+                    result = methodHandler.invoke(paramFlux);
                 } else {
                     Object paramFirst = encodingFacade.decodeResult(dataEncodingMetadata.getRSocketMimeType(), signal.data(), methodHandler.getParameterTypes()[0]);
                     Flux<Object> paramFlux = payloads
                             .map(payload -> {
                                 return encodingFacade.decodeResult(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getInferredClassForParameter(1));
                             });
-                    result = localServiceCaller.invoke(routing.getService(), routing.getMethod(), paramFirst, paramFlux);
+                    result = methodHandler.invoke(paramFirst, paramFlux);
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
@@ -219,24 +219,22 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
      *
      * @param methodHandler        method handler
      * @param dataEncodingMetadata data encoding metadata
-     * @param routingMetadata      routing metadata
      * @param payload              payload
      * @return result
      * @throws Exception exception
      */
     @Nullable
-    protected Object invokeLocalService(ReactiveMethodHandler methodHandler, MessageMimeTypeMetadata dataEncodingMetadata,
-                                        GSVRoutingMetadata routingMetadata, Payload payload) throws Exception {
+    protected Object invokeLocalService(ReactiveMethodHandler methodHandler, MessageMimeTypeMetadata dataEncodingMetadata, Payload payload) throws Exception {
         Object result;
         if (methodHandler.getParameterCount() > 0) {
             Object args = encodingFacade.decodeParams(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getParameterTypes());
             if (args instanceof Object[]) {
-                result = localServiceCaller.invoke(routingMetadata.getService(), routingMetadata.getMethod(), (Object[]) args);
+                result = methodHandler.invoke((Object[]) args);
             } else {
-                result = localServiceCaller.invoke(routingMetadata.getService(), routingMetadata.getMethod(), args);
+                result = methodHandler.invoke(args);
             }
         } else {
-            result = localServiceCaller.invoke(routingMetadata.getService(), routingMetadata.getMethod());
+            result = methodHandler.invoke();
         }
         return result;
     }
