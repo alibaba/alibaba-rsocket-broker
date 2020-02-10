@@ -20,6 +20,7 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.exceptions.ConnectionErrorException;
+import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.DefaultPayload;
@@ -96,7 +97,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
         this.healthCheckCompositeByteBuf = compositeMetadata.getContent();
         //start health check timer
-        startHealthCheckTimer();
+        // startHealthCheckTimer();
     }
 
     private void refreshRsockets(Collection<String> rsocketUris) {
@@ -303,9 +304,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
-                    .errorConsumer(error -> {
-                        log.error(RsocketErrorCode.message("RST-200501"), error);
-                    })
+                    .errorConsumer(error -> log.error(RsocketErrorCode.message("RST-200501"), error))
+                    .frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
                     .start()
