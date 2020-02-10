@@ -156,6 +156,7 @@ public class RSocketListenerImpl implements RSocketListener {
                     serverRSocketFactory = serverRSocketFactory.errorConsumer(error -> log.error(RsocketErrorCode.message("RST-200501"), error));
                 }
                 Disposable disposable = serverRSocketFactory
+                        .frameDecoder(PayloadDecoder.ZERO_COPY)
                         .acceptor(acceptor)
                         .transport(transport)
                         .start()
