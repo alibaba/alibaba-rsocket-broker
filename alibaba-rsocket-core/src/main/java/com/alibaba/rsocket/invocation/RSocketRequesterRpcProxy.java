@@ -204,13 +204,15 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                     } finally {
                         ReferenceCountUtil.safeRelease(payload);
                     }
-                }).doOnNext(obj -> {
-                    if (cachedMethod) {
+                });
+                //cache result
+                if (cachedMethod) {
+                    result = result.doOnNext(obj -> {
                         CacheResult cacheResult = cachedMethods.get(method);
                         String key = cacheResult.cacheName() + ":" + generateCacheKey(args);
                         rpcCache.put(key, Mono.just(obj).cache());
-                    }
-                });
+                    });
+                }
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             }
         }
