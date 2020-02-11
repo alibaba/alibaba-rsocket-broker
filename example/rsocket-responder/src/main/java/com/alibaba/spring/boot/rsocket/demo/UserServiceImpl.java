@@ -47,8 +47,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void flush(String name) {
+    public Mono<Void> flush(String name) {
         System.out.println("flush");
+        return Mono.empty();
     }
 
     @Override
