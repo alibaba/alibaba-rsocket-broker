@@ -16,6 +16,8 @@ import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -25,6 +27,7 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.ResponderRSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
+import io.rsocket.exceptions.InvalidException;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +39,9 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.TopicProcessor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -173,61 +178,64 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Override
     public Mono<Payload> requestResponse(Payload payload) {
-        return Mono.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-            // broker local service call check: don't introduce interceptor, performance consideration
-            //noinspection ConstantConditions
-            if (localServiceCaller.contains(routingMetaData.getService(), routingMetaData.getMethod())) {
-                MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-                if (dataEncodingMetadata == null) {
-                    dataEncodingMetadata = defaultMessageMimeType;
-                }
-                return localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
-            }
-            String routing = routingMetaData.routing();
-            //payload exchange
-            RSocket destination = findDestination(routingMetaData, routing);
-            if (destination != null) {
-                recordServiceInvoke(principal.getName(), routing);
-                //request filters
-                if (this.filterChain.isFiltersPresent()) {
-                    RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
-                    return filterChain.filter(exchange).then(destination.requestResponse(payloadWithDataEncoding(compositeMetadata, payload)));
-                }
-                return destination.requestResponse(payloadWithDataEncoding(compositeMetadata, payload));
-            }
-            return Mono.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
-        });
-    }
-
-    @Override
-    public Mono<Void> fireAndForget(Payload payload) {
-        return Mono.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        // broker local service call check: don't introduce interceptor, performance consideration
+        if (localServiceCaller.contains(routingMetaData.getService())) {
             MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
             if (dataEncodingMetadata == null) {
                 dataEncodingMetadata = defaultMessageMimeType;
             }
-            // broker local service call check: don't introduce interceptor, performance consideration
-            //noinspection ConstantConditions
-            if (localServiceCaller.contains(routingMetaData.getService(), routingMetaData.getMethod())) {
-                return localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
+            return localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        }
+        metrics(routingMetaData, "0x05");
+        String routing = routingMetaData.routing();
+        //payload exchange
+        RSocket destination = findDestination(routingMetaData, routing);
+        if (destination != null) {
+            recordServiceInvoke(principal.getName(), routing);
+            //request filters
+            if (this.filterChain.isFiltersPresent()) {
+                RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+                return filterChain.filter(exchange).then(destination.requestResponse(payloadWithDataEncoding(compositeMetadata, payload)));
             }
-            String routing = routingMetaData.routing();
-            RSocket destination = findDestination(routingMetaData, routing);
-            if (destination != null) {
-                recordServiceInvoke(principal.getName(), routing);
-                if (this.filterChain.isFiltersPresent()) {
-                    RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
-                    return filterChain.filter(requestContext).then(destination.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload)));
-                }
-                return destination.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload));
-            }
-            return Mono.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
-        });
+            return destination.requestResponse(payloadWithDataEncoding(compositeMetadata, payload));
+        }
+        return Mono.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
+    }
 
+    @Override
+    public Mono<Void> fireAndForget(Payload payload) {
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        // broker local service call check: don't introduce interceptor, performance consideration
+        if (localServiceCaller.contains(routingMetaData.getService())) {
+            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+            if (dataEncodingMetadata == null) {
+                dataEncodingMetadata = defaultMessageMimeType;
+            }
+            return localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
+        }
+        metrics(routingMetaData, "0x05");
+        String routing = routingMetaData.routing();
+        RSocket destination = findDestination(routingMetaData, routing);
+        if (destination != null) {
+            recordServiceInvoke(principal.getName(), routing);
+            if (this.filterChain.isFiltersPresent()) {
+                RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+                return filterChain.filter(requestContext).then(destination.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload)));
+            }
+            return destination.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload));
+        }
+        return Mono.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
     }
 
 
@@ -242,45 +250,50 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Override
     public Flux<Payload> requestStream(Payload payload) {
-        return Flux.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-            // broker local service call check: don't introduce interceptor, performance consideration
-            //noinspection ConstantConditions
-            if (localServiceCaller.contains(routingMetaData.getService(), routingMetaData.getMethod())) {
-                MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-                if (dataEncodingMetadata == null) {
-                    dataEncodingMetadata = defaultMessageMimeType;
-                }
-                return localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        // broker local service call check: don't introduce interceptor, performance consideration
+        if (localServiceCaller.contains(routingMetaData.getService())) {
+            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+            if (dataEncodingMetadata == null) {
+                dataEncodingMetadata = defaultMessageMimeType;
             }
-            String routing = routingMetaData.routing();
-            RSocket destination = findDestination(routingMetaData, routing);
-            if (destination != null) {
-                recordServiceInvoke(principal.getName(), routing);
-                if (this.filterChain.isFiltersPresent()) {
-                    RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
-                    return filterChain.filter(requestContext).thenMany(destination.requestStream(payloadWithDataEncoding(compositeMetadata, payload)));
-                }
-                return destination.requestStream(payloadWithDataEncoding(compositeMetadata, payload));
+            return localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        }
+        metrics(routingMetaData, "0x06");
+        String routing = routingMetaData.routing();
+        RSocket destination = findDestination(routingMetaData, routing);
+        if (destination != null) {
+            recordServiceInvoke(principal.getName(), routing);
+            if (this.filterChain.isFiltersPresent()) {
+                RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+                return filterChain.filter(requestContext).thenMany(destination.requestStream(payloadWithDataEncoding(compositeMetadata, payload)));
             }
-            return Flux.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
-        });
+            return destination.requestStream(payloadWithDataEncoding(compositeMetadata, payload));
+        }
+        return Flux.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
     }
 
     @Override
     public Flux<Payload> requestChannel(Payload signal, Publisher<Payload> payloads) {
-        return Flux.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-            @SuppressWarnings("ConstantConditions") String routing = routingMetaData.routing();
-            RSocket destination = findDestination(routingMetaData, routing);
-            if (destination != null) {
-                recordServiceInvoke(principal.getName(), routing);
-                return destination.requestChannel(payloads);
-            }
-            return Flux.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
-        });
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(signal);
+            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        metrics(routingMetaData, "0x07");
+        String routing = routingMetaData.routing();
+        RSocket destination = findDestination(routingMetaData, routing);
+        if (destination != null) {
+            recordServiceInvoke(principal.getName(), routing);
+            return destination.requestChannel(payloads);
+        }
+        return Flux.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
     }
 
     @Override
@@ -413,5 +426,20 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     @Override
     public Mono<Void> onClose() {
         return this.comboOnClose;
+    }
+
+    private static void metrics(GSVRoutingMetadata routing, String frameType) {
+        List<Tag> tags = new ArrayList<>();
+        if (routing.getGroup() != null && !routing.getGroup().isEmpty()) {
+            tags.add(Tag.of("group", routing.getGroup()));
+        }
+        if (routing.getVersion() != null && !routing.getVersion().isEmpty()) {
+            tags.add(Tag.of("version", routing.getVersion()));
+        }
+        tags.add(Tag.of("method", routing.getMethod()));
+        tags.add(Tag.of("frame", frameType));
+        Metrics.counter(routing.getService(), tags).increment();
+        Metrics.counter("rsocket.request.count").increment();
+        Metrics.counter(routing.getService() + ".all").increment();
     }
 }

@@ -52,41 +52,40 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
 
     @Override
     public Mono<Payload> requestResponse(Payload payload) {
-        return Mono.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-            if (dataEncodingMetadata == null) {
-                ReferenceCountUtil.safeRelease(payload);
-                return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
-            }
-            //request filters
-            if (filterChain.isFiltersPresent()) {
-                RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routing, payload);
-                return filterChain.filter(exchange).then(localRequestResponse(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload));
-            }
-            return localRequestResponse(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
-        });
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        if (dataEncodingMetadata == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
+        }
+        //request filters
+        if (filterChain.isFiltersPresent()) {
+            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+            return filterChain.filter(exchange).then(localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload));
+        }
+        return localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
     }
 
     @Override
     public Mono<Void> fireAndForget(Payload payload) {
-        return Mono.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-            if (dataEncodingMetadata == null) {
-                ReferenceCountUtil.safeRelease(payload);
-                return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
-            }
-            //cloud event for local broker
-            if (routing == null) {
-                ReferenceCountUtil.safeRelease(payload);
-                return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
-            }
-            //normal fireAndForget
-            return localFireAndForget(routing, dataEncodingMetadata, payload);
-        });
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        if (dataEncodingMetadata == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
+        }
+        //normal fireAndForget
+        return localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
     }
 
     @Override
@@ -96,30 +95,34 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
 
     @Override
     public Flux<Payload> requestStream(Payload payload) {
-        return Flux.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-            if (dataEncodingMetadata == null) {
-                ReferenceCountUtil.safeRelease(payload);
-                return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
-            }
-            return localRequestStream(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
-        });
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        if (dataEncodingMetadata == null) {
+            ReferenceCountUtil.safeRelease(payload);
+            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
+        }
+        return localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
     }
 
     @Override
     public Flux<Payload> requestChannel(Payload signal, Publisher<Payload> payloads) {
-        return Flux.deferWithContext(context -> {
-            RSocketCompositeMetadata compositeMetadata = context.get(COMPOSITE_METADATA_KEY);
-            GSVRoutingMetadata routing = compositeMetadata.getRoutingMetaData();
-            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-            if (dataEncodingMetadata == null) {
-                ReferenceCountUtil.safeRelease(signal);
-                return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
-            }
-            return localRequestChannel(routing, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), signal, Flux.from(payloads).skip(1));
-        });
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
+        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
+        if (routingMetaData == null) {
+            ReferenceCountUtil.safeRelease(signal);
+            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        if (dataEncodingMetadata == null) {
+            ReferenceCountUtil.safeRelease(signal);
+            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
+        }
+        return localRequestChannel(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), signal, Flux.from(payloads).skip(1));
     }
 
     /**
