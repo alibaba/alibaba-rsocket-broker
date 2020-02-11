@@ -1,11 +1,12 @@
 package com.alibaba.rsocket.metadata;
 
-import com.alibaba.rsocket.PayloadUtils;
+import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.rsocket.Payload;
+import io.rsocket.util.ByteBufPayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -75,11 +76,16 @@ public class RSocketCompositeMetadataTest {
                 .withSource(URI.create("app://app1"))
                 .withData("欢迎")
                 .build();
-        Payload payload = PayloadUtils.cloudEventToPayload(cloudEvent);
+        Payload payload = cloudEventToPayload(cloudEvent);
         payload.getMetadata().rewind();
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         Assertions.assertNotNull(dataEncodingMetadata);
         System.out.println(dataEncodingMetadata.getMimeType());
+    }
+
+    public static Payload cloudEventToPayload(CloudEventImpl<?> cloudEvent) {
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(RSocketMimeType.CloudEventsJson));
+        return ByteBufPayload.create(Unpooled.wrappedBuffer(Json.binaryEncode(cloudEvent)), compositeMetadata.getContent());
     }
 }
