@@ -1,6 +1,5 @@
 package com.alibaba.spring.boot.rsocket.broker.responder;
 
-import com.alibaba.rsocket.PayloadUtils;
 import com.alibaba.rsocket.RSocketExchange;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
@@ -17,12 +16,17 @@ import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.ResponderRSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
+import io.rsocket.metadata.WellKnownMimeType;
+import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -193,7 +197,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 }
                 return destination.requestResponse(payloadWithDataEncoding(compositeMetadata, payload));
             }
-            ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
         });
     }
@@ -222,7 +225,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 }
                 return destination.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload));
             }
-            ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
         });
 
@@ -262,7 +264,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 }
                 return destination.requestStream(payloadWithDataEncoding(compositeMetadata, payload));
             }
-            ReferenceCountUtil.safeRelease(payload);
             return Flux.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
         });
     }
@@ -278,7 +279,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 recordServiceInvoke(principal.getName(), routing);
                 return destination.requestChannel(payloads);
             }
-            ReferenceCountUtil.safeRelease(signal);
             return Flux.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", routing)));
         });
     }
@@ -321,7 +321,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     public Mono<Void> fireCloudEventToPeer(CloudEventImpl<?> cloudEvent) {
         try {
-            Payload payload = PayloadUtils.cloudEventToMetadataPushPayload(cloudEvent);
+            Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
             return peerRsocket.metadataPush(payload);
         } catch (Exception e) {
             return Mono.error(e);
@@ -356,7 +356,18 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      * @return payload
      */
     public Payload payloadWithDataEncoding(RSocketCompositeMetadata compositeMetadata, Payload payload) {
-        return PayloadUtils.payloadWithDataEncoding(compositeMetadata, defaultMessageMimeType, payload);
+        if (compositeMetadata.contains(RSocketMimeType.MessageMimeType)) {
+            return payload;
+        } else {
+            ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5);
+            buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
+            buf.writeByte(0);
+            buf.writeByte(0);
+            buf.writeByte(1);
+            buf.writeByte(defaultMessageMimeType.getRSocketMimeType().getId() | 0x80);
+            CompositeByteBuf compositeByteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 3, payload.metadata(), buf);
+            return ByteBufPayload.create(payload.data(), compositeByteBuf);
+        }
     }
 
     @Nullable
