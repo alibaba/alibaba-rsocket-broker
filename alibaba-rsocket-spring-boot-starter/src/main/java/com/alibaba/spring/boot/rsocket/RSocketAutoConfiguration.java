@@ -78,7 +78,7 @@ public class RSocketAutoConfiguration {
     public RSocketResponderHandlerFactory rsocketResponderHandlerFactory(@Autowired LocalReactiveServiceCaller serviceCaller,
                                                                          @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
                                                                          @Autowired RSocketFilterChain rsocketFilterChain) {
-        return (setup, peerSocket) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, rsocketFilterChain, peerSocket));
+        return (setup, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, rsocketFilterChain, requester));
     }
 
     @Bean

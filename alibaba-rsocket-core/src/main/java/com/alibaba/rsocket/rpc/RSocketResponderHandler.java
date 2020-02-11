@@ -42,11 +42,11 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     public RSocketResponderHandler(LocalReactiveServiceCaller serviceCall,
                                    TopicProcessor<CloudEventImpl> eventProcessor,
                                    RSocketFilterChain filterChain,
-                                   RSocket peerRsocket) {
+                                   RSocket requester) {
         this.localServiceCaller = serviceCall;
         this.filterChain = filterChain;
         this.eventProcessor = eventProcessor;
-        this.requester = peerRsocket;
+        this.requester = requester;
         this.comboOnClose = Mono.first(super.onClose(), requester.onClose());
     }
 
