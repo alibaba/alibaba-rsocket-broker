@@ -13,6 +13,7 @@ import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.Unpooled;
 import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
+import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.util.DefaultPayload;
 import org.jetbrains.annotations.NotNull;
@@ -120,7 +121,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
                     .withTime(ZonedDateTime.now())
                     .withSource(URI.create("app://" + RSocketAppContext.ID))
                     .withType(ServicesExposedEvent.class.getCanonicalName())
-                    .withDataContentType("application/json")
+                    .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
                     .withData(servicesExposedEvent)
                     .build();
         };
@@ -190,24 +191,6 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
 
     public void addRequesterInterceptor(RSocketInterceptor interceptor) {
         this.requestInterceptors.add(interceptor);
-    }
-
-    @NotNull
-    private RSocketCompositeMetadata constructCompositeMetaDataForBroker() {
-        //setup payload construct
-        RSocketCompositeMetadata compositeMetadata = new RSocketCompositeMetadata();
-        try {
-            //app metadata
-            compositeMetadata.addMetadata(getAppMetadata());
-            // authentication
-            if (this.jwtToken != null && this.jwtToken.length > 0) {
-                compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
-            }
-            return compositeMetadata;
-        } catch (Exception e) {
-            log.error(RsocketErrorCode.message("RST-400001"), e);
-        }
-        return compositeMetadata;
     }
 
     @Override
