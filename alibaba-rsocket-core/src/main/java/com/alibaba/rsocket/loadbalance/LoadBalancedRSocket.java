@@ -4,7 +4,6 @@ import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
-import com.alibaba.rsocket.listen.CompositeMetadataInterceptor;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
@@ -313,7 +312,6 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             for (RSocketInterceptor requestInterceptor : requesterSupport.requestInterceptors()) {
                 clientRSocketFactory = clientRSocketFactory.addRequesterPlugin(requestInterceptor);
             }
-            clientRSocketFactory = clientRSocketFactory.addResponderPlugin(CompositeMetadataInterceptor.getInstance());
             for (RSocketInterceptor responderInterceptor : requesterSupport.responderInterceptors()) {
                 clientRSocketFactory = clientRSocketFactory.addResponderPlugin(responderInterceptor);
             }
