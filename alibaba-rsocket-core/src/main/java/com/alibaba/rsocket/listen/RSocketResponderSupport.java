@@ -34,7 +34,6 @@ import java.util.stream.Stream;
  * @author leijuan
  */
 public abstract class RSocketResponderSupport extends AbstractRSocket implements AttributeMap {
-    public static final String COMPOSITE_METADATA_KEY = CompositeMetadataRSocket.COMPOSITE_METADATA_KEY;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected LocalReactiveServiceCaller localServiceCaller;
     protected RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
