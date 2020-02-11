@@ -160,24 +160,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             //body content
             ByteBuf bodyBuffer = encodingFacade.encodingParams(args, methodMetadata.getParamEncoding());
             Class<?> returnType = method.getReturnType();
-            if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
-                metrics(methodMetadata);
-                return upstream.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
-            } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
-                metrics(methodMetadata);
-                Flux<Payload> flux = upstream.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
-                Flux<Object> result = flux.concatMap((payload) -> {
-                    try {
-                        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-                        return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
-                    } catch (Exception e) {
-                        return Mono.error(e);
-                    } finally {
-                        ReferenceCountUtil.safeRelease(payload);
-                    }
-                });
-                return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
-            } else {  //request/response
+            if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_RESPONSE) {
                 metrics(methodMetadata);
                 final boolean cachedMethod = cachedMethods.containsKey(method);
                 if (cachedMethod) {
@@ -213,6 +196,25 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                     });
                 }
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
+            } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
+                metrics(methodMetadata);
+                return upstream.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
+            } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
+                metrics(methodMetadata);
+                Flux<Payload> flux = upstream.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
+                Flux<Object> result = flux.concatMap((payload) -> {
+                    try {
+                        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+                        return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
+                    } catch (Exception e) {
+                        return Mono.error(e);
+                    } finally {
+                        ReferenceCountUtil.safeRelease(payload);
+                    }
+                });
+                return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
+            }  else {
+                return Mono.error(new Exception("Unknown RSocket Frame type"));
             }
         }
     }
