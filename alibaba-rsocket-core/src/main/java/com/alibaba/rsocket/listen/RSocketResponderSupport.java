@@ -13,7 +13,7 @@ import io.netty.util.ReferenceCountUtil;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.exceptions.InvalidException;
-import io.rsocket.util.DefaultPayload;
+import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -82,10 +82,9 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 return monoResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, compositeMetadataContent))
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, compositeMetadataContent))
                         .doOnTerminate(() -> {
                             ReferenceCountUtil.safeRelease(payload);
-                            ReferenceCountUtil.safeRelease(compositeMetadataContent);
                         });
             } else {
                 ReferenceCountUtil.safeRelease(payload);
@@ -150,10 +149,9 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 return fluxResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, compositeMetadataContent))
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, compositeMetadataContent))
                         .doOnTerminate(() -> {
                             ReferenceCountUtil.safeRelease(payload);
-                            ReferenceCountUtil.safeRelease(compositeMetadataContent);
                         });
             } else {
                 ReferenceCountUtil.safeRelease(payload);
@@ -200,7 +198,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
                 //result return
                 return ((Flux<Object>) result)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> DefaultPayload.create(dataByteBuf, compositeMetadataContent))
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, compositeMetadataContent))
                         .doOnTerminate(() -> {
                             ReferenceCountUtil.safeRelease(compositeMetadataContent);
                         });
