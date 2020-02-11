@@ -71,7 +71,7 @@ public interface UserService {
      *
      * @param name name
      */
-    void flush(String name);
+    Mono<Void> flush(String name);
 
     /**
      * request/stream to get people by type
