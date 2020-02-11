@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.loadbalance;
 
-import com.alibaba.rsocket.PayloadUtils;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
@@ -23,7 +22,7 @@ import io.rsocket.exceptions.ConnectionErrorException;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
-import io.rsocket.util.DefaultPayload;
+import io.rsocket.util.ByteBufPayload;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +186,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     @Override
     public Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent) {
         try {
-            Payload payload = PayloadUtils.cloudEventToMetadataPushPayload(cloudEvent);
+            Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
             return metadataPush(payload);
         } catch (Exception e) {
             return Mono.error(e);
@@ -281,7 +280,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         CloudEventImpl<ServicesExposedEvent> cloudEvent = requesterSupport.servicesExposedEvent().get();
         if (cloudEvent != null) {
             try {
-                Payload payload = PayloadUtils.cloudEventToMetadataPushPayload(cloudEvent);
+                Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
                 rsocket.metadataPush(payload).subscribe();
             } catch (Exception ignore) {
 
@@ -351,7 +350,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
                 .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
                 .subscribe(entry -> {
-                    Mono<Payload> mono = entry.getValue().requestResponse(DefaultPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.duplicate()));
+                    Mono<Payload> mono = entry.getValue().requestResponse(ByteBufPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.retainedDuplicate()));
                     mono.doOnError(error -> {
                         if (error instanceof ClosedChannelException) { //connection closed
                             onRSocketClosed(entry.getKey(), entry.getValue());

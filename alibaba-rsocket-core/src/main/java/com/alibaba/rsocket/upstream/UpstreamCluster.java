@@ -1,7 +1,6 @@
 package com.alibaba.rsocket.upstream;
 
 import com.alibaba.rsocket.Initializable;
-import com.alibaba.rsocket.PayloadUtils;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
@@ -137,7 +136,7 @@ public class UpstreamCluster extends AbstractRSocket implements CloudEventRSocke
     @Override
     public Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent) {
         try {
-            return metadataPush(PayloadUtils.cloudEventToMetadataPushPayload(cloudEvent));
+            return metadataPush(cloudEventToMetadataPushPayload(cloudEvent));
         } catch (Exception e) {
             return Mono.empty();
         }
@@ -199,7 +198,7 @@ public class UpstreamCluster extends AbstractRSocket implements CloudEventRSocke
      */
     public Mono<Void> fireCloudEventToUpstreamAll(CloudEventImpl<?> cloudEvent) {
         try {
-            Payload payload = PayloadUtils.cloudEventToMetadataPushPayload(cloudEvent);
+            Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
             return Flux.fromIterable(loadBalancedRSocket.getActiveSockets().values())
                     .flatMap(rSocket -> rSocket.metadataPush(payload))
                     .doOnError(throwable -> log.error("Failed to fire event to upstream", throwable))

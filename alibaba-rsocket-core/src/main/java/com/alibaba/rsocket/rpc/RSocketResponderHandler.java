@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.rpc;
 
-import com.alibaba.rsocket.PayloadUtils;
 import com.alibaba.rsocket.RSocketExchange;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
@@ -145,7 +144,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
 
     public Mono<Void> fireCloudEventToPeer(CloudEventImpl<?> cloudEvent) {
         try {
-            Payload payload = PayloadUtils.cloudEventToMetadataPushPayload(cloudEvent);
+            Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
             return requester.metadataPush(payload);
         } catch (Exception e) {
             return Mono.error(e);
