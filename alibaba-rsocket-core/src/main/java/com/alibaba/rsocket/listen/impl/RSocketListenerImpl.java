@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.listen.impl;
 
-import com.alibaba.rsocket.listen.CompositeMetadataInterceptor;
 import com.alibaba.rsocket.listen.RSocketListener;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.handler.ssl.OpenSsl;
@@ -145,8 +144,6 @@ public class RSocketListenerImpl implements RSocketListener {
                 for (DuplexConnectionInterceptor connectionInterceptor : connectionInterceptors) {
                     serverRSocketFactory = serverRSocketFactory.addConnectionPlugin(connectionInterceptor);
                 }
-                //add composite metadata parsing interceptor
-                serverRSocketFactory = serverRSocketFactory.addResponderPlugin(CompositeMetadataInterceptor.getInstance());
                 //responder interceptor
                 for (RSocketInterceptor responderInterceptor : responderInterceptors) {
                     serverRSocketFactory = serverRSocketFactory.addResponderPlugin(responderInterceptor);
