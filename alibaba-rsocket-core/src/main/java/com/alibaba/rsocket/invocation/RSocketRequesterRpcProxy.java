@@ -162,8 +162,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             Class<?> returnType = method.getReturnType();
             if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
                 metrics(methodMetadata);
-                upstream.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf)).subscribe();
-                return null;
+                return upstream.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
                 metrics(methodMetadata);
                 Flux<Payload> flux = upstream.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
