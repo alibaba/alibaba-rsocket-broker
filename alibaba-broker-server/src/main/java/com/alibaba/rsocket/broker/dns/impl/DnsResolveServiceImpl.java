@@ -5,9 +5,9 @@ import com.alibaba.rsocket.broker.dns.DnsResolveService;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import io.netty.handler.codec.dns.DnsRecordType;
+import org.eclipse.collections.impl.multimap.list.FastListMultimap;
+import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 public class DnsResolveServiceImpl implements DnsResolveService {
     @Autowired
     private RSocketBrokerHandlerRegistry handlerRegistry;
-    private Multimap<String, String> domainToTypes = MultimapBuilder.treeKeys().hashSetValues().build();
-    private Multimap<String, Answer> dnsRecordStore = MultimapBuilder.treeKeys().hashSetValues().build();
+    private UnifiedSetMultimap<String, String> domainToTypes = new UnifiedSetMultimap<>();
+    private FastListMultimap<String, Answer> dnsRecordStore = new FastListMultimap<>();
 
     public DnsResolveServiceImpl() {
         addRecords("www.taobao.com", DnsRecordType.A.name(), "47.246.24.234", "47.246.25.233");
@@ -70,7 +70,7 @@ public class DnsResolveServiceImpl implements DnsResolveService {
     public Flux<String> allDomains() {
         Set<String> names = new HashSet<>();
         names.addAll(handlerRegistry.findAllAppNames());
-        names.addAll(domainToTypes.keySet());
+        names.addAll(domainToTypes.keySet().toList());
         return Flux.fromIterable(names);
     }
 
