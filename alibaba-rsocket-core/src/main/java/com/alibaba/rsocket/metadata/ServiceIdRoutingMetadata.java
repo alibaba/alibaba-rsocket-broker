@@ -10,12 +10,14 @@ import io.netty.buffer.Unpooled;
  */
 public class ServiceIdRoutingMetadata implements MetadataAware {
     private Integer serviceId;
+    private Integer handlerId;
 
     public ServiceIdRoutingMetadata() {
     }
 
-    public ServiceIdRoutingMetadata(Integer serviceId) {
+    public ServiceIdRoutingMetadata(Integer serviceId, Integer handlerId) {
         this.serviceId = serviceId;
+        this.handlerId = handlerId;
     }
 
     @Override
@@ -28,10 +30,19 @@ public class ServiceIdRoutingMetadata implements MetadataAware {
         return RSocketMimeType.BinaryRouting.getType();
     }
 
+    public Integer getServiceId() {
+        return serviceId;
+    }
+
+    public Integer getHandlerId() {
+        return handlerId;
+    }
+
     @Override
     public ByteBuf getContent() {
-        ByteBuf byteBuf = Unpooled.buffer(4);
+        ByteBuf byteBuf = Unpooled.buffer(8);
         byteBuf.writeInt(this.serviceId);
+        byteBuf.writeInt(this.handlerId);
         return byteBuf;
     }
 
@@ -42,6 +53,7 @@ public class ServiceIdRoutingMetadata implements MetadataAware {
      */
     public void load(ByteBuf byteBuf) {
         this.serviceId = byteBuf.readInt();
+        this.handlerId = byteBuf.readInt();
     }
 
     public static ServiceIdRoutingMetadata from(ByteBuf content) {
