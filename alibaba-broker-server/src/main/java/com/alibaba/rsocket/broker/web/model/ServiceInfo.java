@@ -1,5 +1,8 @@
 package com.alibaba.rsocket.broker.web.model;
 
+import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.utils.MurmurHash3;
+
 /**
  * Service Info
  *
@@ -79,5 +82,9 @@ public class ServiceInfo {
 
     public void setServiceAccounts(String serviceAccounts) {
         this.serviceAccounts = serviceAccounts;
+    }
+
+    public Integer getServiceId() {
+       return MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
     }
 }
