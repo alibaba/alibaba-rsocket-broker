@@ -37,8 +37,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected LocalReactiveServiceCaller localServiceCaller;
     protected RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
-    public static final TypeReference<CloudEventImpl<ObjectNode>> CLOUD_EVENT_TYPE_REFERENCE = new TypeReference<CloudEventImpl<ObjectNode>>() {
-    };
+
     /**
      * attribute map
      */
