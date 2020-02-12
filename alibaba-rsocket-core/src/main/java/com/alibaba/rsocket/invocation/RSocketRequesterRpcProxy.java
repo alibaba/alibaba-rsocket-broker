@@ -73,6 +73,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      */
     private RSocketMimeType encodingType;
     /**
+     * accept encoding types
+     */
+    private RSocketMimeType[] acceptEncodingTypes;
+    /**
      * '
      * timeout for request/response
      */
@@ -110,6 +114,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         this.version = version;
         this.endpoint = endpoint;
         this.encodingType = encodingType;
+        this.acceptEncodingTypes = defaultAcceptEncodingTypes();
         this.timeout = timeout;
     }
 
@@ -122,7 +127,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
-                    method, encodingType, acceptEncodingTypes(), endpoint));
+                    method, encodingType, this.acceptEncodingTypes, endpoint));
             if (method.getAnnotation(CacheResult.class) != null) {
                 cachedMethods.put(method, method.getAnnotation(CacheResult.class));
             }
@@ -213,7 +218,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                     }
                 });
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
-            }  else {
+            } else {
                 return Mono.error(new Exception("Unknown RSocket Frame type"));
             }
         }
@@ -290,7 +295,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         return methodHandle;
     }
 
-    public RSocketMimeType[] acceptEncodingTypes() {
+    public RSocketMimeType[] defaultAcceptEncodingTypes() {
         return new RSocketMimeType[]{this.encodingType, RSocketMimeType.Hessian, RSocketMimeType.Java_Object,
                 RSocketMimeType.Json, RSocketMimeType.Protobuf, RSocketMimeType.Avor, RSocketMimeType.CBOR,
                 RSocketMimeType.Text, RSocketMimeType.Binary};
