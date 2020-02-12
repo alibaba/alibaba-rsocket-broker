@@ -2,8 +2,7 @@ package com.alibaba.spring.boot.rsocket.broker.route.impl;
 
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
+import org.eclipse.collections.impl.multimap.list.FastListMultimap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.IntConsumer;
 import org.roaringbitmap.RoaringBitmap;
@@ -30,7 +29,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     /**
      * instance to services
      */
-    private Multimap<Integer, Integer> instanceServices = MultimapBuilder.treeKeys().hashSetValues().build();
+    private FastListMultimap<Integer, Integer> instanceServices = new FastListMultimap<>();
 
     @Override
     public void register(Integer instanceId, Set<String> services) {
