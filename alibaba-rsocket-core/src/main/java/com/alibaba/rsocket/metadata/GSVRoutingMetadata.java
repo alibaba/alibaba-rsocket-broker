@@ -98,13 +98,13 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     public Integer id() {
         if (this.serviceHashCode == null) {
-            this.serviceHashCode = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, group));
+            this.serviceHashCode = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
         }
         return this.serviceHashCode;
     }
 
     public String routing() {
-        return ServiceLocator.serviceId(group, service, group);
+        return ServiceLocator.serviceId(group, service, version);
     }
 
     public String getEndpoint() {
@@ -140,32 +140,6 @@ public class GSVRoutingMetadata implements MetadataAware {
     }
 
     /**
-     * format routing as "group!service:version?m=login&e=xxxx"
-     *
-     * @return data format
-     */
-    public String formatData() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(assembleRoutingKey());
-        if (method != null || endpoint != null) {
-            builder.append("?");
-            if (method != null && !method.isEmpty()) {
-                builder.append("m=").append(method);
-                builder.append("&");
-            }
-            if (endpoint != null && !endpoint.isEmpty()) {
-                builder.append("e=").append(endpoint);
-            }
-        }
-        return builder.toString();
-    }
-
-    @Override
-    public String toString() {
-        return formatData();
-    }
-
-    /**
      * parse data
      *
      * @param byteBuf byte buffer
@@ -182,34 +156,6 @@ public class GSVRoutingMetadata implements MetadataAware {
                 this.method = tag.substring(2);
             } else if (tag.startsWith("e=")) {
                 this.endpoint = tag.substring(2);
-            }
-        }
-    }
-
-    @Override
-    public String toText() throws Exception {
-        return formatData();
-    }
-
-    @Override
-    public void load(String text) {
-        String routingKey;
-        String tags = null;
-        if (text.contains("?")) {
-            routingKey = text.substring(0, text.indexOf("?"));
-            tags = text.substring(text.indexOf("?") + 1);
-        } else {
-            routingKey = text;
-        }
-        //routingKey
-        parseRoutingKey(routingKey);
-        if (tags != null) {
-            for (String tag : tags.split("&")) {
-                if (tag.startsWith("m=")) {
-                    this.method = tag.substring(2);
-                } else if (tag.startsWith("e=")) {
-                    this.endpoint = tag.substring(2);
-                }
             }
         }
     }

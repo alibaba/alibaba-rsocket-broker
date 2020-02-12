@@ -37,11 +37,6 @@ public class CacheControlMetadata implements MetadataAware {
         return Unpooled.copyLong(expiredAt);
     }
 
-    @Override
-    public String toString() {
-        return String.valueOf(expiredAt);
-    }
-
     /**
      * parse data
      *
@@ -49,16 +44,6 @@ public class CacheControlMetadata implements MetadataAware {
      */
     public void load(ByteBuf byteBuf) {
         this.expiredAt = byteBuf.readLong();
-    }
-
-    @Override
-    public String toText() throws Exception {
-        return toString();
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        this.expiredAt = Long.valueOf(text);
     }
 
     public static CacheControlMetadata from(ByteBuf content) {

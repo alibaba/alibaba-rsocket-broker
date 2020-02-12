@@ -3,7 +3,6 @@ package com.alibaba.rsocket.metadata;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 
 import static io.netty.buffer.Unpooled.buffer;
 
@@ -114,28 +113,9 @@ public class TracingMetadata implements MetadataAware {
         this.flag = byteBuf.readByte();
         byte[] idBytes = new byte[ID_BYTES_LENGTH];
         byteBuf.readBytes(idBytes);
-        this.id = new String(idBytes,StandardCharsets.UTF_8);
+        this.id = new String(idBytes, StandardCharsets.UTF_8);
         this.spanId = byteBuf.readLong();
         this.parentSpanId = byteBuf.readLong();
-    }
-
-    @Override
-    public String toText() throws Exception {
-        return MessageFormat.format("%s:%s:%s", id, spanId, parentSpanId);
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        String[] parts = text.split(":");
-        if (parts.length > 0) {
-            this.id = parts[0];
-        }
-        if (parts.length > 1) {
-            this.spanId = Long.parseLong(parts[1]);
-        }
-        if (parts.length > 2) {
-            this.parentSpanId = Long.parseLong(parts[2]);
-        }
     }
 
     public static TracingMetadata from(ByteBuf content) {

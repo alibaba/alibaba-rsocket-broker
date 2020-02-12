@@ -50,17 +50,7 @@ public class OriginMetadata implements MetadataAware {
         String text = byteBuf.toString(StandardCharsets.UTF_8);
         this.origin = URI.create(text);
     }
-
-    @Override
-    public String toText() throws Exception {
-        return origin.toString();
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        this.origin = URI.create(text);
-    }
-
+    
     public static OriginMetadata from(ByteBuf content) {
         OriginMetadata temp = new OriginMetadata();
         temp.load(content);

@@ -71,16 +71,6 @@ public class MessageMimeTypeMetadata implements MetadataAware {
         }
     }
 
-    @Override
-    public String toText() throws Exception {
-        return getMimeType();
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        this.mimeType = text;
-    }
-
     public RSocketMimeType getRSocketMimeType() {
         return RSocketMimeType.valueOfType(this.mimeType);
     }

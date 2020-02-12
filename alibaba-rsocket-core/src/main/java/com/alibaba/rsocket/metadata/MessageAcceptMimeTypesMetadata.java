@@ -95,21 +95,4 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
             }
         }
     }
-
-    @Override
-    public String toText() throws Exception {
-        return Joiner.on(',').join(mimeTypes);
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        String[] parts = text.split(",");
-        for (String part : parts) {
-            if (part.contains("/")) {
-                this.mimeTypes.add(part);
-            } else {
-                this.mimeTypes.add(Byte.valueOf(part));
-            }
-        }
-    }
 }

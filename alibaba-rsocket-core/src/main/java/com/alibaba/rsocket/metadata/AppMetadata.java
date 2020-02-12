@@ -255,16 +255,6 @@ public class AppMetadata implements MetadataAware {
         JsonUtils.updateJsonValue(byteBuf, this);
     }
 
-    @Override
-    public String toText() throws Exception {
-        return JsonUtils.toJsonText(this);
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        JsonUtils.updateJsonValue(text, this);
-    }
-
     public static AppMetadata from(ByteBuf content) {
         AppMetadata appMetadata = new AppMetadata();
         try {

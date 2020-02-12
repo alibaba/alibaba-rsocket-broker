@@ -33,19 +33,4 @@ public interface MetadataAware extends CompositeMetadata.Entry {
      */
     void load(ByteBuf byteBuf) throws Exception;
 
-    /**
-     * convert metadata to text, for development & debug & languages integration
-     *
-     * @return text
-     * @throws Exception exception
-     */
-    String toText() throws Exception;
-
-    /**
-     * load metadata from text, for development & debug & languages integration
-     *
-     * @param text metadata text
-     * @throws Exception exception
-     */
-    void load(String text) throws Exception;
 }

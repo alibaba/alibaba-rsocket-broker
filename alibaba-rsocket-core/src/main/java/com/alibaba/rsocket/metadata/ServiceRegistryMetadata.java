@@ -73,17 +73,7 @@ public class ServiceRegistryMetadata implements MetadataAware {
     public void load(ByteBuf byteBuf) throws Exception {
         JsonUtils.updateJsonValue(byteBuf, this);
     }
-
-    @Override
-    public String toText() throws Exception {
-        return JsonUtils.toJsonText(this);
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        JsonUtils.updateJsonValue(text, this);
-    }
-
+    
     public boolean containPublishedServices() {
         return published != null && !published.isEmpty();
     }

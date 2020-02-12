@@ -73,16 +73,6 @@ public class BearerTokenMetadata implements MetadataAware {
         }
     }
 
-    @Override
-    public String toText() throws Exception {
-        return formatData();
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        this.bearerToken = text.toCharArray();
-    }
-
     public static BearerTokenMetadata jwt(char[] credentials) {
         return new BearerTokenMetadata(credentials);
     }

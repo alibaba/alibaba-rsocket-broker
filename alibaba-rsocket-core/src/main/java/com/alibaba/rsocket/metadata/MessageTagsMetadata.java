@@ -89,24 +89,6 @@ public class MessageTagsMetadata implements MetadataAware {
         });
     }
 
-    @Override
-    public String toText() throws Exception {
-        return formatData();
-    }
-
-    @Override
-    public void load(String text) throws Exception {
-        String[] lines = text.split("\n");
-        for (String line : lines) {
-            int start = line.indexOf("=");
-            if (start > 0) {
-                String name = line.substring(0, start);
-                String value = line.substring(start + 1);
-                tags.put(name, value);
-            }
-        }
-    }
-
     public static MessageTagsMetadata from(ByteBuf content) {
         MessageTagsMetadata temp = new MessageTagsMetadata();
         temp.load(content);
