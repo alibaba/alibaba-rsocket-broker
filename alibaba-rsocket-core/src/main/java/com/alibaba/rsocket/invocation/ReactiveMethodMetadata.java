@@ -136,7 +136,7 @@ public class ReactiveMethodMetadata {
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
         //payload binary routing metadata
-        ServiceIdRoutingMetadata serviceIdRoutingMetadata = new ServiceIdRoutingMetadata(this.serviceId, this.handlerId);
+        BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId);
         //payload routing metadata
         GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.serviceFullName, this.name, version);
         routingMetadata.setEndpoint(this.endpoint);
@@ -146,10 +146,16 @@ public class ReactiveMethodMetadata {
         MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
         //construct default composite metadata
         this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
-        //construct composite metadata bytebuf
-        CompositeByteBuf compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
-        //add serviceIdRoutingMetadata as first
-        compositeMetadataContent.addComponent(true, 0, serviceIdRoutingMetadata.getHeaderAndContent());
+        CompositeByteBuf compositeMetadataContent;
+        if (endpoint != null && !endpoint.isEmpty()) {
+            this.compositeMetadata.addMetadata(binaryRoutingMetadata);
+            //construct composite metadata bytebuf
+            compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
+        } else {
+            compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
+            //add BinaryRoutingMetadata as first
+            compositeMetadataContent.addComponent(true, 0, binaryRoutingMetadata.getHeaderAndContent());
+        }
         // convert composite bytebuf to bytebuf for performance
         this.compositeMetadataByteBuf = compositeMetadataContent.copy();
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
