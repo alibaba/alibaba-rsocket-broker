@@ -48,6 +48,10 @@ public class ReactiveMethodMetadata {
      */
     private Integer serviceId;
     /**
+     * method handler id
+     */
+    private Integer handlerId;
+    /**
      * endpoint
      */
     private String endpoint;
@@ -102,6 +106,7 @@ public class ReactiveMethodMetadata {
         this.group = group;
         this.version = version;
         this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, serviceFullName, version));
+        this.handlerId = MurmurHash3.hash32(serviceFullName + "." + name);
         this.endpoint = endpoint;
         //result type & generic type
         this.returnType = method.getReturnType();
@@ -129,7 +134,7 @@ public class ReactiveMethodMetadata {
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
         //payload binary routing metadata
-        ServiceIdRoutingMetadata serviceIdRoutingMetadata = new ServiceIdRoutingMetadata(this.serviceId);
+        ServiceIdRoutingMetadata serviceIdRoutingMetadata = new ServiceIdRoutingMetadata(this.serviceId, this.handlerId);
         //payload routing metadata
         GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.serviceFullName, this.name, version);
         routingMetadata.setEndpoint(this.endpoint);
