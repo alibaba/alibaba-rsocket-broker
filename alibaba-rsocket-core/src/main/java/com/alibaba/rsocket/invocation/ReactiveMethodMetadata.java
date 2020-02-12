@@ -128,15 +128,17 @@ public class ReactiveMethodMetadata {
         //param encoding type
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
+        //payload binary routing metadata
+        ServiceIdRoutingMetadata serviceIdRoutingMetadata = new ServiceIdRoutingMetadata(this.serviceId);
         //payload routing metadata
-        GSVRoutingMetadata routing = new GSVRoutingMetadata(group, this.serviceFullName, this.name, version);
-        routing.setEndpoint(this.endpoint);
+        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.serviceFullName, this.name, version);
+        routingMetadata.setEndpoint(this.endpoint);
         //add param encoding
         MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
         //set accepted mimetype
         MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
         //construct default composite metadata
-        this.compositeMetadata = RSocketCompositeMetadata.from(routing, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
+        this.compositeMetadata = RSocketCompositeMetadata.from(serviceIdRoutingMetadata, routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
         this.compositeMetadataByteBuf = this.compositeMetadata.getContent();
         //bi direction check: param's type is Flux for 1st param or 2nd param
         if (paramCount == 1 && method.getParameterTypes()[0].equals(Flux.class)) {
