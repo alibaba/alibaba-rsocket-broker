@@ -452,7 +452,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         if (compositeByteBuf.capacity() >= 12) {
             byte metadataTypeId = compositeByteBuf.getByte(0);
             int length = compositeByteBuf.getInt(0) & 0xFF;
-            if (metadataTypeId == -18 && length == 8) {
+            if (metadataTypeId == BINARY_ROUTING_MARK && length == 8) {
                 return new int[]{compositeByteBuf.getInt(4), compositeByteBuf.getInt(4)};
             }
         }
