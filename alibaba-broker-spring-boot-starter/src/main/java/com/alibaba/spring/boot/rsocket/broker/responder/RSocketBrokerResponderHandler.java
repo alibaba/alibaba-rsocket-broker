@@ -384,7 +384,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Nullable
-    private RSocket findDestination(GSVRoutingMetadata routingMetaData, String routing) {
+    private RSocket findDestination(GSVRoutingMetadata routingMetaData, String gsv) {
         Integer serviceId = routingMetaData.id();
         Integer handlerId;
         if (routingMetaData.getEndpoint() != null && !routingMetaData.getEndpoint().isEmpty()) {
@@ -395,7 +395,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         if (handlerId != null) {
             RSocketBrokerResponderHandler targetHandler = handlerRegistry.findById(handlerId);
             if (targetHandler != null) {
-                if (serviceMeshInspector.isRequestAllowed(this.principal, routing, targetHandler.principal)) {
+                if (serviceMeshInspector.isRequestAllowed(this.principal, gsv, targetHandler.principal)) {
                     return targetHandler.peerRsocket;
                 }
             }
