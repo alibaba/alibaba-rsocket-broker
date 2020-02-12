@@ -54,6 +54,10 @@ import java.util.stream.Collectors;
 public class RSocketBrokerResponderHandler extends RSocketResponderSupport implements ResponderRSocket, CloudEventRSocket {
     private static Logger log = LoggerFactory.getLogger(RSocketBrokerResponderHandler.class);
     /**
+     * binary routing mark
+     */
+    private static final byte BINARY_ROUTING_MARK = (byte) (WellKnownMimeType.MESSAGE_RSOCKET_BINARY_ROUTING.getIdentifier() | 0x80);
+    /**
      * rsocket filter for requests
      */
     private RSocketFilterChain filterChain;
@@ -200,7 +204,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             recordServiceInvoke(principal.getName(), gsv);
             //request filters
             if (this.filterChain.isFiltersPresent()) {
-                RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+                RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
                 return filterChain.filter(exchange).then(destination.requestResponse(payloadWithDataEncoding(compositeMetadata, payload)));
             }
             return destination.requestResponse(payloadWithDataEncoding(compositeMetadata, payload));
@@ -230,7 +234,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         if (destination != null) {
             recordServiceInvoke(principal.getName(), gsv);
             if (this.filterChain.isFiltersPresent()) {
-                RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+                RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
                 return filterChain.filter(requestContext).then(destination.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload)));
             }
             return destination.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload));
@@ -270,7 +274,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         if (destination != null) {
             recordServiceInvoke(principal.getName(), gsv);
             if (this.filterChain.isFiltersPresent()) {
-                RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+                RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
                 return filterChain.filter(requestContext).thenMany(destination.requestStream(payloadWithDataEncoding(compositeMetadata, payload)));
             }
             return destination.requestStream(payloadWithDataEncoding(compositeMetadata, payload));
@@ -317,7 +321,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     public void registerPublishedServices() {
         if (this.peerServices != null && !this.peerServices.isEmpty()) {
-            routingSelector.register(appMetadata.getId(), peerServices.stream().map(ServiceLocator::gsv).collect(Collectors.toSet()));
+            routingSelector.register(appMetadata.getId(), peerServices);
         }
         this.appStatus = AppStatusEvent.STATUS_SERVING;
     }
@@ -441,5 +445,17 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         Metrics.counter(routingMetadata.getService(), tags).increment();
         Metrics.counter("rsocket.request.counter").increment();
         Metrics.counter(routingMetadata.getService() + ".counter").increment();
+    }
+
+    @Nullable
+    private int[] binaryRoutingInfo(ByteBuf compositeByteBuf) {
+        if (compositeByteBuf.capacity() >= 12) {
+            byte metadataTypeId = compositeByteBuf.getByte(0);
+            int length = compositeByteBuf.getInt(0) & 0xFF;
+            if (metadataTypeId == -18 && length == 8) {
+                return new int[]{compositeByteBuf.getInt(4), compositeByteBuf.getInt(4)};
+            }
+        }
+        return null;
     }
 }
