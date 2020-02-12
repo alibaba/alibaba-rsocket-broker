@@ -6,6 +6,7 @@ import com.alibaba.rsocket.reactive.ReactiveAdapter;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.frame.FrameType;
 import org.jetbrains.annotations.NotNull;
@@ -144,10 +145,13 @@ public class ReactiveMethodMetadata {
         //set accepted mimetype
         MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
         //construct default composite metadata
-        this.compositeMetadata = RSocketCompositeMetadata.from(serviceIdRoutingMetadata, routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
+        this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
         //construct composite metadata bytebuf
-        ByteBuf compositeMetadataContent = this.compositeMetadata.getContent();
-        this.compositeMetadataByteBuf = compositeMetadataContent.copy(); // convert composite bytebuf to bytebuf for performance
+        CompositeByteBuf compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
+        //add serviceIdRoutingMetadata as first
+        compositeMetadataContent.addComponent(true, 0, serviceIdRoutingMetadata.getHeaderAndContent());
+        // convert composite bytebuf to bytebuf for performance
+        this.compositeMetadataByteBuf = compositeMetadataContent.copy();
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
         //bi direction check: param's type is Flux for 1st param or 2nd param
         if (paramCount == 1 && method.getParameterTypes()[0].equals(Flux.class)) {
