@@ -33,6 +33,8 @@ public interface RSocketListener {
 
     interface Builder {
 
+        Builder host(String host);
+
         Builder listen(String schema, int port);
 
         Builder errorConsumer(Consumer<Throwable> errorConsumer);

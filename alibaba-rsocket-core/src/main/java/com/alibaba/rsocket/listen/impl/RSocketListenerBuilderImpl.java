@@ -20,6 +20,12 @@ public class RSocketListenerBuilderImpl implements RSocketListener.Builder {
     private RSocketListenerImpl rSocketListener = new RSocketListenerImpl();
 
     @Override
+    public RSocketListener.Builder host(String host) {
+        rSocketListener.host(host);
+        return this;
+    }
+
+    @Override
     public RSocketListener.Builder listen(String schema, int port) {
         rSocketListener.listen(schema, port);
         return this;
