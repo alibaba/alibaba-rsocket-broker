@@ -71,17 +71,15 @@ public enum WellKnownMimeType {
     APPLICATION_JAVA_OBJECT("application/x-java-object", (byte) 0x27),
     APPLICATION_CLOUDEVENTS_JSON("application/cloudevents+json", (byte) 0x28),
     //customized data type
-    APPLICATION_CLOUDEVENTS_PROTOBUF("application/cloudevents+protobuf", (byte) 0x40),
     //customized rsocket related types
+    MESSAGE_RSOCKET_BINARY_ROUTING("message/x.rsocket.binary-routing.v0", (byte) 0x50),
     MESSAGE_RSOCKET_APPLICATION("message/x.rsocket.application+json", (byte) 0x51),
-    MESSAGE_RSOCKET_DATA_ENCODING("message/x.rsocket.data.encoding.v0", (byte) 0x52),
     MESSAGE_RSOCKET_DATA_CACHE_CONTROL("message/x.rsocket.rsocket.data.cache-control", (byte) 0x53),
     MESSAGE_RSOCKET_SERVICE_REGISTRY("message/x.rsocket.service.registry.v0+json", (byte) 0x54),
     MESSAGE_RSOCKET_BEARER_TOKEN("message/x.rsocket.authentication.bearer.v0", (byte) 0x55),
     MESSAGE_RSOCKET_COMPOSITE_METADATA_JSON("message/x.rsocket.composite-metadata.v0+json", (byte) 0x56),
     MESSAGE_RSOCKET_MESSAGE_TAGS("message/x.rsocket.message.tags", (byte) 0x57),
     MESSAGE_RSOCKET_MESSAGE_ORIGIN("message/x.rsocket.message.origin", (byte) 0x58),
-    MESSAGE_RSOCKET_BINARY_ROUTING("message/x.rsocket.binary-routing.v0", (byte) 0x6E),
 
     // ... reserved for future use ...
     MESSAGE_RSOCKET_MIMETYPE("message/x.rsocket.mime-type.v0", (byte) 0x7A),
