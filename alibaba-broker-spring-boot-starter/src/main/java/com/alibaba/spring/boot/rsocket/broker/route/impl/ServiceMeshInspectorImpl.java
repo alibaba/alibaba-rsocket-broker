@@ -1,7 +1,5 @@
 package com.alibaba.spring.boot.rsocket.broker.route.impl;
 
-import com.alibaba.rsocket.ServiceLocator;
-import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import org.roaringbitmap.RoaringBitmap;
@@ -20,12 +18,12 @@ public class ServiceMeshInspectorImpl implements ServiceMeshInspector {
     @Override
     public boolean isRequestAllowed(RSocketAppPrincipal requesterPrincipal, String routing, RSocketAppPrincipal responderPrincipal) {
         //org & service account relation
-        int relationHashCode = MurmurHash3.hash32(requesterPrincipal.hashCode() + ":" + responderPrincipal.hashCode());
+        int relationHashCode = (requesterPrincipal.hashCode() + ":" + responderPrincipal.hashCode()).hashCode();
         if (whiteRelationBitmap.contains(relationHashCode)) {
             return true;
         }
         //acl mapping
-        int aclHashCode = MurmurHash3.hash32(requesterPrincipal.hashCode() + ":" + routing + ":" + responderPrincipal.hashCode());
+        int aclHashCode = (requesterPrincipal.hashCode() + ":" + routing + ":" + responderPrincipal.hashCode()).hashCode();
         if (whiteRelationBitmap.contains(aclHashCode)) {
             return true;
         }
