@@ -1,7 +1,9 @@
 package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.rsocket.metadata.WellKnownMimeType;
+import io.rsocket.util.NumberUtils;
 
 /**
  * Service ID routing metadata
@@ -40,7 +42,17 @@ public class ServiceIdRoutingMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        ByteBuf byteBuf = Unpooled.buffer(8);
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(8, 8);
+        byteBuf.writeInt(this.serviceId);
+        byteBuf.writeInt(this.handlerId);
+        return byteBuf;
+    }
+
+
+    public ByteBuf getHeaderAndContent() {
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(12, 12);
+        byteBuf.writeByte(WellKnownMimeType.MESSAGE_RSOCKET_BINARY_ROUTING.getIdentifier() | 0x80);
+        NumberUtils.encodeUnsignedMedium(byteBuf, 8);
         byteBuf.writeInt(this.serviceId);
         byteBuf.writeInt(this.handlerId);
         return byteBuf;
