@@ -107,7 +107,7 @@ public class GSVRoutingMetadata implements MetadataAware {
         return this.serviceHashCode;
     }
 
-    public String routing() {
+    public String gsv() {
         return ServiceLocator.serviceId(group, service, version);
     }
 
