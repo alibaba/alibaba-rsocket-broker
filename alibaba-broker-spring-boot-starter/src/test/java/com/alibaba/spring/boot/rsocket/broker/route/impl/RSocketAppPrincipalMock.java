@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.route.impl;
 
+import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Set;
  * @author leijuan
  */
 public class RSocketAppPrincipalMock implements RSocketAppPrincipal {
+    private Integer hashcode;
     private String name;
     private Set<String> orgs;
     private Set<String> serviceAccounts;
@@ -20,6 +22,7 @@ public class RSocketAppPrincipalMock implements RSocketAppPrincipal {
         this.name = name;
         this.orgs = orgs;
         this.serviceAccounts = serviceAccounts;
+        this.hashcode = MurmurHash3.hash32(name + ":" + String.join(",", orgs) + ":" + String.join(",", serviceAccounts));
     }
 
     @Override
@@ -55,5 +58,18 @@ public class RSocketAppPrincipalMock implements RSocketAppPrincipal {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RSocketAppPrincipalMock that = (RSocketAppPrincipalMock) o;
+        return this.hashcode.equals(that.hashcode);
+    }
+
+    @Override
+    public int hashCode() {
+        return hashcode;
     }
 }
