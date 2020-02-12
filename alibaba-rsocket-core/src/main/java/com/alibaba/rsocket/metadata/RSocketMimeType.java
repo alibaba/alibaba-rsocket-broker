@@ -22,7 +22,6 @@ public enum RSocketMimeType {
     Java_Object("JavaObject", WellKnownMimeType.APPLICATION_JAVA_OBJECT),
     CBOR("CBOR", WellKnownMimeType.APPLICATION_CBOR),
     CloudEventsJson("CloudEventsJson", WellKnownMimeType.APPLICATION_CLOUDEVENTS_JSON),
-    CloudEventsProtobuf("CloudEventsProtobuf", WellKnownMimeType.APPLICATION_CLOUDEVENTS_PROTOBUF),
     Application("Meta-Application", WellKnownMimeType.MESSAGE_RSOCKET_APPLICATION),
     CacheControl("Meta-CacheControl", WellKnownMimeType.MESSAGE_RSOCKET_DATA_CACHE_CONTROL),
     ServiceRegistry("Meta-Service-Registry", WellKnownMimeType.MESSAGE_RSOCKET_SERVICE_REGISTRY),
