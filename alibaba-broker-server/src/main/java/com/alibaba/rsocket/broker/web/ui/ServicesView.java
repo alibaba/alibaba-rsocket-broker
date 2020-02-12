@@ -1,7 +1,6 @@
 package com.alibaba.rsocket.broker.web.ui;
 
 import com.alibaba.rsocket.broker.web.model.ServiceInfo;
-import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.vaadin.flow.component.grid.Grid;
@@ -44,21 +43,12 @@ public class ServicesView extends VerticalLayout {
     public List<ServiceInfo> services(RSocketBrokerHandlerRegistry handlerRegistry, ServiceRoutingSelector routingSelector) {
         return routingSelector.findAllServices()
                 .stream()
-                .map(serviceId -> {
-                    ServiceInfo serviceInfo;
-                    if (serviceId.contains(":")) {
-                        String[] parts = serviceId.split(":");
-                        serviceInfo = new ServiceInfo(parts[0], parts[1], parts.length > 2 ? parts[2] : "",
-                                ((long) (Metrics.counter(parts[1] + ".counter").count())),
-                                routingSelector.getInstanceCount(MurmurHash3.hash32(serviceId)));
-
-                    } else {
-                        serviceInfo = new ServiceInfo("", serviceId, "",
-                                (long) Metrics.counter(serviceId + ".counter").count(),
-                                routingSelector.getInstanceCount(MurmurHash3.hash32(serviceId)));
-                    }
-                    //serviceInfo.setOrgs(Joiner.on(",").join(serviceRoutingSelector.getServiceOrgs(serviceId)));
-                    //serviceInfo.setServiceAccounts(Joiner.on(",").join(serviceRoutingSelector.getServiceAccounts(serviceId)));
+                .map(serviceLocator -> {
+                    ServiceInfo serviceInfo = new ServiceInfo(serviceLocator.getGroup(), serviceLocator.getService(), serviceLocator.getVersion(),
+                            ((long) (Metrics.counter(serviceLocator.getService() + ".counter").count())),
+                            routingSelector.getInstanceCount(serviceLocator.getId()));
+                    //serviceInfo.setOrgs(String.join(",", serviceRoutingSelector.getServiceOrgs(serviceLocator.getId())));
+                    //serviceInfo.setServiceAccounts(String.join(",", serviceRoutingSelector.getServiceAccounts(serviceLocator.getId())));
                     return serviceInfo;
                 }).collect(Collectors.toList());
     }
