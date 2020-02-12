@@ -61,12 +61,12 @@ public class ServiceLocator {
         this.tags = tags;
     }
 
-    public String routing() {
+    public String gsv() {
         return serviceId(group, service, version);
     }
 
     public Integer id() {
-        return MurmurHash3.hash32(routing());
+        return MurmurHash3.hash32(gsv());
     }
 
     @Override
