@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.broker.web;
 
 import com.alibaba.rsocket.RSocketAppContext;
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
@@ -43,7 +44,7 @@ public class OpsRestController {
     private RSocketBrokerManager brokerManager;
 
     @RequestMapping("/services")
-    public Mono<Collection<String>> services() {
+    public Mono<Collection<ServiceLocator>> services() {
         return Mono.just(serviceRoutingSelector.findAllServices());
     }
 
