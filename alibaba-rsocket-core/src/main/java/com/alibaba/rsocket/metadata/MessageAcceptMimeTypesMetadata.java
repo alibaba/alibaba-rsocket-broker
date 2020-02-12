@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.metadata;
 
-import com.google.common.base.Joiner;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.rsocket.metadata.WellKnownMimeType;
