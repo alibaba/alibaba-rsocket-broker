@@ -18,7 +18,6 @@ import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.security.JwtPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import io.cloudevents.v1.CloudEventBuilder;
@@ -123,9 +122,9 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             }
             //Security authentication
             if (appMetadata != null) {
-                appMetadata.addMetadata("_orgs", Joiner.on(",").join(principal.getOrganizations()));
-                appMetadata.addMetadata("_roles", Joiner.on(",").join(principal.getRoles()));
-                appMetadata.addMetadata("_serviceAccounts", Joiner.on(",").join(principal.getServiceAccounts()));
+                appMetadata.addMetadata("_orgs", String.join(",", principal.getOrganizations()));
+                appMetadata.addMetadata("_roles", String.join(",", principal.getRoles()));
+                appMetadata.addMetadata("_serviceAccounts", String.join(",", principal.getServiceAccounts()));
             }
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-500402"), e);
