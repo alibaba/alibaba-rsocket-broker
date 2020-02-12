@@ -27,7 +27,7 @@ public class BrokerRSocketServiceHealthImpl implements RSocketServiceHealth {
             return Mono.just(SERVING_STATUS);
         } else { //remote service check
             return Flux.fromIterable(routingSelector.findAllServices())
-                    .any(serviceId -> serviceId.contains(serviceName))
+                    .any(serviceLocator -> serviceLocator.getService().equals(serviceName))
                     .map(result -> result ? SERVING_STATUS : ERROR_STATUS);
         }
     }
