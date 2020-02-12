@@ -8,9 +8,7 @@ import io.rsocket.metadata.CompositeMetadataFlyweight;
 import io.rsocket.metadata.WellKnownMimeType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static io.rsocket.metadata.WellKnownMimeType.UNPARSEABLE_MIME_TYPE;
@@ -26,6 +24,10 @@ public class RSocketCompositeMetadata implements MetadataAware {
      * routing metadata, cached to avoid parse again
      */
     private GSVRoutingMetadata routingMetadata;
+    /**
+     * binary routing data
+     */
+    private BinaryRoutingMetadata binaryRoutingMetadata;
     /**
      * data encoding metadata, cached to avoid parse again
      */
@@ -98,6 +100,15 @@ public class RSocketCompositeMetadata implements MetadataAware {
     public RSocketCompositeMetadata addMetadata(MetadataAware metadataSupport) {
         metadataStore.put(metadataSupport.getMimeType(), metadataSupport.getContent());
         return this;
+    }
+
+    @Nullable
+    public BinaryRoutingMetadata getBinaryRoutingMetadata() {
+        if (binaryRoutingMetadata == null && metadataStore.containsKey(RSocketMimeType.BinaryRouting.getType())) {
+            ByteBuf content = metadataStore.get(RSocketMimeType.BinaryRouting.getType());
+            this.binaryRoutingMetadata = BinaryRoutingMetadata.from(content);
+        }
+        return this.binaryRoutingMetadata;
     }
 
     @Nullable
