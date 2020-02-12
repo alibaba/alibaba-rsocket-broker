@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.route.impl;
 
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -24,7 +25,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     /**
      * distinct Services
      */
-    private IntObjectHashMap<String> distinctServices = new IntObjectHashMap<>();
+    private IntObjectHashMap<ServiceLocator> distinctServices = new IntObjectHashMap<>();
 
     /**
      * instance to services
@@ -32,18 +33,18 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     private FastListMultimap<Integer, Integer> instanceServices = new FastListMultimap<>();
 
     @Override
-    public void register(Integer instanceId, Set<String> services) {
+    public void register(Integer instanceId, Set<ServiceLocator> services) {
         if (instanceServices.containsKey(instanceId)) {
             return;
         }
-        for (String serviceRouting : services) {
-            int serviceId = MurmurHash3.hash32(serviceRouting);
+        for (ServiceLocator serviceLocator : services) {
+            int serviceId = serviceLocator.getId();
             instanceServices.put(instanceId, serviceId);
             if (!servicesBitmap.containsKey(serviceId)) {
                 servicesBitmap.put(serviceId, new RoaringBitmap());
             }
             servicesBitmap.get(serviceId).add(instanceId);
-            distinctServices.put(serviceId, serviceRouting);
+            distinctServices.put(serviceId, serviceLocator);
         }
     }
 
@@ -71,6 +72,11 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     @Override
     public boolean containService(Integer serviceId) {
         return servicesBitmap.containsKey(serviceId);
+    }
+
+    @Override
+    public @Nullable ServiceLocator findServiceById(Integer serviceId) {
+        return distinctServices.get(serviceId);
     }
 
     @Nullable
@@ -113,7 +119,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     }
 
     @Override
-    public Collection<String> findAllServices() {
+    public Collection<ServiceLocator> findAllServices() {
         return distinctServices.values();
     }
 }
