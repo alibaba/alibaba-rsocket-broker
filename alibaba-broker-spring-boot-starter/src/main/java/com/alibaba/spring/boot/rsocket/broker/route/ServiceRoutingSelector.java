@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.route;
 
+import com.alibaba.rsocket.ServiceLocator;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 
@@ -13,13 +14,16 @@ import java.util.Set;
  */
 public interface ServiceRoutingSelector {
 
-    void register(Integer instanceId, Set<String> services);
+    void register(Integer instanceId, Set<ServiceLocator> services);
 
     void deregister(Integer instanceId);
 
     boolean containInstance(Integer instanceId);
 
     boolean containService(Integer serviceId);
+
+    @Nullable
+    ServiceLocator findServiceById(Integer serviceId);
 
     @Nullable
     Integer findHandler(Integer serviceId);
@@ -30,5 +34,5 @@ public interface ServiceRoutingSelector {
 
     Integer getInstanceCount(String serviceName);
 
-    Collection<String> findAllServices();
+    Collection<ServiceLocator> findAllServices();
 }
