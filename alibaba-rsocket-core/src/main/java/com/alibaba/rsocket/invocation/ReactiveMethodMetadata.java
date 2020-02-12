@@ -32,7 +32,7 @@ public class ReactiveMethodMetadata {
     /**
      * service full name, format as com.alibaba.user.UserService
      */
-    private String serviceFullName;
+    private String service;
     /**
      * method handler name
      */
@@ -98,17 +98,17 @@ public class ReactiveMethodMetadata {
      */
     private ReactiveAdapter reactiveAdapter;
 
-    public ReactiveMethodMetadata(String group, String serviceFullName, String version,
+    public ReactiveMethodMetadata(String group, String service, String version,
                                   Method method,
                                   @NotNull RSocketMimeType dataEncodingType,
                                   @NotNull RSocketMimeType[] acceptEncodingTypes,
                                   @Nullable String endpoint) {
-        this.serviceFullName = serviceFullName;
+        this.service = service;
         this.name = method.getName();
         this.group = group;
         this.version = version;
-        this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, serviceFullName, version));
-        this.handlerId = MurmurHash3.hash32(serviceFullName + "." + name);
+        this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
+        this.handlerId = MurmurHash3.hash32(service + "." + name);
         this.endpoint = endpoint;
         //result type & generic type
         this.returnType = method.getReturnType();
@@ -138,7 +138,7 @@ public class ReactiveMethodMetadata {
         //payload binary routing metadata
         BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId);
         //payload routing metadata
-        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.serviceFullName, this.name, version);
+        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.service, this.name, version);
         routingMetadata.setEndpoint(this.endpoint);
         //add param encoding
         MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
@@ -189,12 +189,12 @@ public class ReactiveMethodMetadata {
         metricsTags.add(Tag.of("frame", String.valueOf(this.rsocketFrameType.getEncodedType())));
     }
 
-    public String getServiceFullName() {
-        return serviceFullName;
+    public String getService() {
+        return service;
     }
 
-    public void setServiceFullName(String serviceFullName) {
-        this.serviceFullName = serviceFullName;
+    public void setService(String service) {
+        this.service = service;
     }
 
     public ReactiveAdapter getReactiveAdapter() {
