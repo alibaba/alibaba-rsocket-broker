@@ -6,18 +6,18 @@ import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.util.NumberUtils;
 
 /**
- * Service ID routing metadata
+ * binary routing metadata with service id and handler id
  *
  * @author leijuan
  */
-public class ServiceIdRoutingMetadata implements MetadataAware {
+public class BinaryRoutingMetadata implements MetadataAware {
     private Integer serviceId;
     private Integer handlerId;
 
-    public ServiceIdRoutingMetadata() {
+    public BinaryRoutingMetadata() {
     }
 
-    public ServiceIdRoutingMetadata(Integer serviceId, Integer handlerId) {
+    public BinaryRoutingMetadata(Integer serviceId, Integer handlerId) {
         this.serviceId = serviceId;
         this.handlerId = handlerId;
     }
@@ -68,8 +68,8 @@ public class ServiceIdRoutingMetadata implements MetadataAware {
         this.handlerId = byteBuf.readInt();
     }
 
-    public static ServiceIdRoutingMetadata from(ByteBuf content) {
-        ServiceIdRoutingMetadata temp = new ServiceIdRoutingMetadata();
+    public static BinaryRoutingMetadata from(ByteBuf content) {
+        BinaryRoutingMetadata temp = new BinaryRoutingMetadata();
         temp.load(content);
         return temp;
     }
