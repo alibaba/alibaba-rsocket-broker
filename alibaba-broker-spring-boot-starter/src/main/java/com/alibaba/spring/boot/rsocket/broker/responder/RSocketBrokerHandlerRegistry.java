@@ -2,11 +2,11 @@ package com.alibaba.spring.boot.rsocket.broker.responder;
 
 import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
 import io.cloudevents.v1.CloudEventImpl;
+import org.eclipse.collections.api.multimap.Multimap;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * rsocket broker handler registry to create, manage all RSocket handler
@@ -31,7 +31,7 @@ public interface RSocketBrokerHandlerRegistry extends RSocketResponderHandlerFac
 
     void onHandlerDisposed(RSocketBrokerResponderHandler responderHandler);
 
-    Map<String, Collection<RSocketBrokerResponderHandler>> appHandlers();
+    Multimap<String, RSocketBrokerResponderHandler> appHandlers();
 
     Mono<Void> broadcast(String appName, final CloudEventImpl cloudEvent);
 }
