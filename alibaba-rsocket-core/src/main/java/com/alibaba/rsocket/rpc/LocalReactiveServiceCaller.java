@@ -30,6 +30,14 @@ public interface LocalReactiveServiceCaller {
     boolean contains(String serviceName);
 
     /**
+     * validate service available
+     *
+     * @param serviceId service id
+     * @return legal
+     */
+    boolean contains(Integer serviceId);
+
+    /**
      * find all service
      *
      * @return service list
@@ -55,4 +63,13 @@ public interface LocalReactiveServiceCaller {
      */
     @Nullable
     ReactiveMethodHandler getInvokeMethod(String serviceName, String method);
+
+    /**
+     * get invoke method
+     *
+     * @param handlerId handler id
+     * @return method object
+     */
+    @Nullable
+    ReactiveMethodHandler getInvokeMethod(Integer handlerId);
 }
