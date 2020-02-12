@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.route.impl;
 
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,10 +19,10 @@ public class ServiceRoutingSelectorImplTest {
     @Test
     public void testOperation() {
         Integer instanceId = 1;
-        Set<String> services = new HashSet<>();
-        services.add("1");
-        services.add("2");
-        services.add("3");
+        Set<ServiceLocator> services = new HashSet<>();
+        services.add(new ServiceLocator("","1",""));
+        services.add(new ServiceLocator("","2",""));
+        services.add(new ServiceLocator("","3",""));
         routingSelector.register(instanceId, services);
         Assertions.assertTrue(routingSelector.containInstance(instanceId));
         Assertions.assertTrue(routingSelector.containService(MurmurHash3.hash32("1")));
