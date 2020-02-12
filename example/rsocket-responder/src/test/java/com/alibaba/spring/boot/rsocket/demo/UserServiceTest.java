@@ -1,11 +1,13 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
+import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
-import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.Unpooled;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
+import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.DefaultPayload;
 import org.junit.jupiter.api.AfterAll;
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.TestInstance;
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserServiceTest {
+    private ObjectMapper objectMapper = new ObjectMapper();
     RSocket rsocket;
 
     @BeforeAll
@@ -37,17 +40,15 @@ public class UserServiceTest {
 
     @Test
     public void testFindById() throws Exception {
-        String data = "[1]";
         RSocketCompositeMetadata compositeMetadata = new RSocketCompositeMetadata();
-        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata();
-        routingMetadata.load("g:,s:com.alibaba.UserService,m:findById,v:1.0.0,e:");
+        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata("", "com.alibaba.user.UserService", "findById", "");
         compositeMetadata.addMetadata(routingMetadata);
-        MessageMimeTypeMetadata dataEncodingMetadata = new MessageMimeTypeMetadata();
-        dataEncodingMetadata.load("5");
+        MessageMimeTypeMetadata dataEncodingMetadata = new MessageMimeTypeMetadata(WellKnownMimeType.APPLICATION_JSON);
         compositeMetadata.addMetadata(dataEncodingMetadata);
-        rsocket.requestResponse(DefaultPayload.create(Unpooled.wrappedBuffer(data.getBytes()), compositeMetadata.getContent()))
+        rsocket.requestResponse(DefaultPayload.create(Unpooled.wrappedBuffer(objectMapper.writeValueAsBytes(1)), compositeMetadata.getContent()))
                 .subscribe(payload -> {
                     System.out.println(payload.getDataUtf8());
                 });
+        Thread.sleep(1000);
     }
 }
