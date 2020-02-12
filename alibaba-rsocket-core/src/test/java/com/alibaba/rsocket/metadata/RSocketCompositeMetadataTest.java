@@ -41,13 +41,6 @@ public class RSocketCompositeMetadataTest {
         //System.out.println(buffer.capacity());
         RSocketCompositeMetadata temp = RSocketCompositeMetadata.from(Unpooled.wrappedBuffer(buffer.array()));
         Assertions.assertNotNull(temp.getRoutingMetaData());
-        String text = temp.toText();
-        System.out.println(text);
-        RSocketCompositeMetadata temp2 = new RSocketCompositeMetadata();
-        temp2.load(text);
-        AppMetadata appMetadata1 = AppMetadata.from(temp2.getMetadata(RSocketMimeType.Application));
-        System.out.println(appMetadata1.getIp());
-        Assertions.assertNotNull(temp2.getRoutingMetaData());
         compositeMetadata.getMetadata(RSocketMimeType.Application);
     }
 
