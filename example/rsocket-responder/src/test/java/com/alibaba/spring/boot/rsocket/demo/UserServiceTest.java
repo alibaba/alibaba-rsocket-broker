@@ -5,6 +5,7 @@ import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.Unpooled;
+import io.netty.util.ReferenceCountUtil;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.metadata.WellKnownMimeType;
@@ -41,11 +42,14 @@ public class UserServiceTest {
     @Test
     public void testFindById() throws Exception {
         RSocketCompositeMetadata compositeMetadata = new RSocketCompositeMetadata();
-        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata("", "com.alibaba.user.UserService", "findById", "");
+        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata("", "com.alibaba.user.UserService2", "findById", "");
         compositeMetadata.addMetadata(routingMetadata);
         MessageMimeTypeMetadata dataEncodingMetadata = new MessageMimeTypeMetadata(WellKnownMimeType.APPLICATION_JSON);
         compositeMetadata.addMetadata(dataEncodingMetadata);
         rsocket.requestResponse(DefaultPayload.create(Unpooled.wrappedBuffer(objectMapper.writeValueAsBytes(1)), compositeMetadata.getContent()))
+                .doOnTerminate(()->{
+                    ReferenceCountUtil.safeRelease(compositeMetadata);
+                })
                 .subscribe(payload -> {
                     System.out.println(payload.getDataUtf8());
                 });
