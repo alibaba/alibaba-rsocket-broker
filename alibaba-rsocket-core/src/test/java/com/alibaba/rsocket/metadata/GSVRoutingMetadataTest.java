@@ -1,7 +1,8 @@
 package com.alibaba.rsocket.metadata;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * GSV Routing Metadata test
@@ -12,18 +13,16 @@ public class GSVRoutingMetadataTest {
 
     @Test
     public void testParse() {
-        GSVRoutingMetadata routing = new GSVRoutingMetadata();
-        routing.setGroup("dc1");
-        routing.setService("com.alibaba.UserService");
-        routing.setMethod("findById");
-        routing.setVersion("1.0.0");
-        //routing.setEndpoint("192.168.0.1");
-        String routingStr = routing.formatData();
-        System.out.println(routingStr);
-        GSVRoutingMetadata routing2 = GSVRoutingMetadata.from(routing.getContent());
-        String routingStr2 = routing2.formatData();
-        System.out.println(routingStr2);
-        Assertions.assertEquals(routingStr, routingStr2);
+        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata();
+        routingMetadata.setGroup("dc1");
+        routingMetadata.setService("com.alibaba.UserService");
+        routingMetadata.setMethod("findById");
+        routingMetadata.setVersion("1.0.0");
+        //routingMetadata.setEndpoint("192.168.0.1");
+        String routing = routingMetadata.routing();
+        System.out.println(routing);
+        assertThat(routing).contains(":");
+
     }
 
     @Test
@@ -31,11 +30,8 @@ public class GSVRoutingMetadataTest {
         GSVRoutingMetadata routing = new GSVRoutingMetadata();
         routing.setService("com.alibaba.UserService");
         routing.setMethod("findById");
-        String routingStr = routing.formatData();
+        String routingStr = routing.routing();
         System.out.println(routingStr);
-        GSVRoutingMetadata routing2 = GSVRoutingMetadata.from(routing.getContent());
-        String routingStr2 = routing2.formatData();
-        System.out.println(routingStr2);
-        Assertions.assertEquals(routingStr, routingStr2);
+        assertThat(routingStr).doesNotContain(":");
     }
 }
