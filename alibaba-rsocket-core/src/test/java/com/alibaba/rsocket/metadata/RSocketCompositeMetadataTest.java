@@ -6,6 +6,7 @@ import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.rsocket.Payload;
+import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.util.ByteBufPayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -75,6 +76,22 @@ public class RSocketCompositeMetadataTest {
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         Assertions.assertNotNull(dataEncodingMetadata);
         System.out.println(dataEncodingMetadata.getMimeType());
+    }
+
+    @Test
+    public void testServiceIdRoutingMetadata() {
+        Integer remoteServiceId = 114;
+        ServiceIdRoutingMetadata serviceIdRoutingMetadata = new ServiceIdRoutingMetadata(remoteServiceId, 112);
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(serviceIdRoutingMetadata);
+        ByteBuf compositeByteBuf = compositeMetadata.getContent();
+        compositeByteBuf.resetReaderIndex();
+        byte metadataTypeId = compositeByteBuf.getByte(0);
+        System.out.println(metadataTypeId);
+        Assertions.assertEquals(metadataTypeId, (byte) (WellKnownMimeType.MESSAGE_RSOCKET_BINARY_ROUTING.getIdentifier() | 0x80));
+        int length = compositeByteBuf.getInt(0) & 0xFF;
+        Assertions.assertEquals(length, 8);
+        int serviceId = compositeByteBuf.getInt(4);
+        Assertions.assertEquals(serviceId, remoteServiceId);
     }
 
     public static Payload cloudEventToPayload(CloudEventImpl<?> cloudEvent) {
