@@ -81,7 +81,7 @@ public class RSocketCompositeMetadataTest {
     @Test
     public void testServiceIdRoutingMetadata() {
         Integer remoteServiceId = 114;
-        ServiceIdRoutingMetadata serviceIdRoutingMetadata = new ServiceIdRoutingMetadata(remoteServiceId, 112);
+        BinaryRoutingMetadata serviceIdRoutingMetadata = new BinaryRoutingMetadata(remoteServiceId, 112);
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(serviceIdRoutingMetadata);
         ByteBuf compositeByteBuf = compositeMetadata.getContent();
         compositeByteBuf.resetReaderIndex();
