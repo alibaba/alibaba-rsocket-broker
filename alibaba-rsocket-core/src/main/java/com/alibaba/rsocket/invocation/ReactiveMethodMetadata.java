@@ -1,7 +1,9 @@
 package com.alibaba.rsocket.invocation;
 
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.reactive.ReactiveAdapter;
+import com.alibaba.rsocket.utils.MurmurHash3;
 import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.rsocket.frame.FrameType;
@@ -41,6 +43,10 @@ public class ReactiveMethodMetadata {
      * service version
      */
     private String version;
+    /**
+     * service ID
+     */
+    private Integer serviceId;
     /**
      * endpoint
      */
@@ -95,6 +101,7 @@ public class ReactiveMethodMetadata {
         this.name = method.getName();
         this.group = group;
         this.version = version;
+        this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, serviceFullName, version));
         this.endpoint = endpoint;
         //result type & generic type
         this.returnType = method.getReturnType();
