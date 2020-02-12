@@ -5,9 +5,6 @@ import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.AbstractRSocket;
@@ -25,7 +22,6 @@ import reactor.util.function.Tuple2;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 /**
@@ -33,15 +29,10 @@ import java.util.stream.Stream;
  *
  * @author leijuan
  */
-public abstract class RSocketResponderSupport extends AbstractRSocket implements AttributeMap {
+public abstract class RSocketResponderSupport extends AbstractRSocket {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected LocalReactiveServiceCaller localServiceCaller;
     protected RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
-
-    /**
-     * attribute map
-     */
-    private Map<String, Object> attributes = new ConcurrentHashMap<>();
 
     protected Mono<Payload> localRequestResponse(GSVRoutingMetadata routing,
                                                  MessageMimeTypeMetadata dataEncodingMetadata,
@@ -233,18 +224,6 @@ public abstract class RSocketResponderSupport extends AbstractRSocket implements
             result = methodHandler.invoke();
         }
         return result;
-    }
-
-    @Override
-    public @Nullable Object attr(String name) {
-        return attributes.get(name);
-    }
-
-    @Override
-    public void attr(String name, @Nullable Object value) {
-        if (value != null) {
-            attributes.put(name, value);
-        }
     }
 
     private RSocketMimeType resultEncodingType(@Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata, RSocketMimeType defaultEncodingType) {
