@@ -18,14 +18,14 @@ import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.security.JwtPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
 import io.rsocket.exceptions.InvalidSetupException;
+import org.eclipse.collections.api.multimap.Multimap;
+import org.eclipse.collections.impl.multimap.list.FastListMultimap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     /**
      * handlers for App name, the key is app name, and value is list of handlers
      */
-    private Multimap<String, RSocketBrokerResponderHandler> appHandlers = MultimapBuilder.treeKeys().hashSetValues().build();
+    private FastListMultimap<String, RSocketBrokerResponderHandler> appHandlers = new FastListMultimap<>();
     private RSocketBrokerManager rSocketBrokerManager;
     private ServiceMeshInspector serviceMeshInspector;
     private boolean authRequired;
@@ -160,7 +160,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
 
     @Override
     public Collection<String> findAllAppNames() {
-        return appHandlers.keySet();
+        return appHandlers.keySet().toList();
     }
 
     @Override
@@ -204,8 +204,8 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     }
 
     @Override
-    public Map<String, Collection<RSocketBrokerResponderHandler>> appHandlers() {
-        return appHandlers.asMap();
+    public Multimap<String, RSocketBrokerResponderHandler> appHandlers() {
+        return appHandlers;
     }
 
     @Override
