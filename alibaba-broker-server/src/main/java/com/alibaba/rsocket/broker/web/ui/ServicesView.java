@@ -48,12 +48,12 @@ public class ServicesView extends VerticalLayout {
                     if (serviceId.contains(":")) {
                         String[] parts = serviceId.split(":");
                         serviceInfo = new ServiceInfo(parts[0], parts[1], parts.length > 2 ? parts[2] : "",
-                                ((long) (Metrics.counter(parts[1] + ".all").count())),
+                                ((long) (Metrics.counter(parts[1] + ".counter").count())),
                                 routingSelector.getInstanceCount(MurmurHash3.hash32(serviceId)));
 
                     } else {
                         serviceInfo = new ServiceInfo("", serviceId, "",
-                                (long) Metrics.counter(serviceId + ".all").count(),
+                                (long) Metrics.counter(serviceId + ".counter").count(),
                                 routingSelector.getInstanceCount(MurmurHash3.hash32(serviceId)));
                     }
                     //serviceInfo.setOrgs(Joiner.on(",").join(serviceRoutingSelector.getServiceOrgs(serviceId)));

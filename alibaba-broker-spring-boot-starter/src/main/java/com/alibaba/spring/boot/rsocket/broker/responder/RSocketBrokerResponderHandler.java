@@ -440,6 +440,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         tags.add(Tag.of("frame", frameType));
         Metrics.counter(routing.getService(), tags).increment();
         Metrics.counter("rsocket.request.count").increment();
-        Metrics.counter(routing.getService() + ".all").increment();
+        Metrics.counter(routing.getService() + ".counter").increment();
     }
 }
