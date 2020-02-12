@@ -29,6 +29,7 @@ public enum RSocketMimeType {
     BearerToken("Meta-BearerToken", WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION),
     Tracing("Meta-Tracing", WellKnownMimeType.MESSAGE_RSOCKET_TRACING_ZIPKIN),
     Routing("Meta-Routing", WellKnownMimeType.MESSAGE_RSOCKET_ROUTING),
+    BinaryRouting("Meta-BinaryRouting", WellKnownMimeType.MESSAGE_RSOCKET_BINARY_ROUTING),
     MessageMimeType("Message-MimeType", WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE),
     MessageAcceptMimeTypes("Message-Accept-MimeTypes", WellKnownMimeType.MESSAGE_RSOCKET_ACCEPT_MIMETYPES),
     CompositeMetadata("Meta-Composite", WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA),
