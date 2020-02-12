@@ -14,6 +14,8 @@ public class ServiceLocator {
     private String service;
     private String version;
     private String[] tags;
+    private String gsv;
+    private Integer id;
 
     public ServiceLocator() {
     }
@@ -22,6 +24,8 @@ public class ServiceLocator {
         this.group = group;
         this.service = service;
         this.version = version;
+        this.gsv = serviceId(group, service, version);
+        this.id = MurmurHash3.hash32(this.gsv);
     }
 
     public ServiceLocator(String group, String service, String version, String[] tags) {
@@ -61,12 +65,12 @@ public class ServiceLocator {
         this.tags = tags;
     }
 
-    public String gsv() {
-        return serviceId(group, service, version);
+    public String getGsv() {
+        return this.gsv;
     }
 
-    public Integer id() {
-        return MurmurHash3.hash32(gsv());
+    public Integer getId() {
+        return this.id;
     }
 
     @Override
@@ -79,9 +83,7 @@ public class ServiceLocator {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ServiceLocator that = (ServiceLocator) o;
-        return Objects.equals(group, that.group) &&
-                Objects.equals(service, that.service) &&
-                Objects.equals(version, that.version);
+        return this.id.equals(that.id);
     }
 
     @Override
