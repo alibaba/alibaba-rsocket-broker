@@ -65,7 +65,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         }
         //request filters
         if (filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, routingMetaData, payload);
+            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
             return filterChain.filter(exchange).then(localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload));
         }
         return localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
