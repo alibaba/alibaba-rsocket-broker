@@ -11,15 +11,6 @@ import java.util.Set;
  * @author leijuan
  */
 public interface LocalReactiveServiceCaller {
-    /**
-     * invoke real service
-     *
-     * @param serviceName service full name
-     * @param rpc         rpc name
-     * @param args        args
-     * @return result
-     */
-    Object invoke(String serviceName, String rpc, Object... args) throws Exception;
 
     /**
      * validate service and method

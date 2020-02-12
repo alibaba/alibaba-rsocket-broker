@@ -16,12 +16,7 @@ import java.util.Set;
 public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCaller {
     private Map<String, Object> rsocketServices = new HashMap<>();
     private Map<String, ReactiveMethodHandler> methodInvokeEntrances = new HashMap<>();
-
-    @Override
-    public Object invoke(String serviceName, String rpc, Object... args) throws Exception {
-        return methodInvokeEntrances.get(serviceName + "." + rpc).invoke(args);
-    }
-
+    
     @Override
     public boolean contains(String serviceName, String rpc) {
         return methodInvokeEntrances.containsKey(serviceName + "." + rpc);
