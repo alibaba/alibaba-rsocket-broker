@@ -2,13 +2,13 @@ package com.alibaba.spring.boot.rsocket.broker.route.impl;
 
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.multimap.list.FastListMultimap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.IntConsumer;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -20,11 +20,11 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     /**
      * service to instances bitmap
      */
-    private Map<Integer, RoaringBitmap> servicesBitmap = new ConcurrentHashMap<>();
+    private IntObjectHashMap<RoaringBitmap> servicesBitmap = new IntObjectHashMap<>();
     /**
      * distinct Services
      */
-    private Map<Integer, String> distinctServices = new ConcurrentHashMap<>();
+    private IntObjectHashMap<String> distinctServices = new IntObjectHashMap<>();
 
     /**
      * instance to services
@@ -37,7 +37,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
             return;
         }
         for (String serviceRouting : services) {
-            Integer serviceId = MurmurHash3.hash32(serviceRouting);
+            int serviceId = MurmurHash3.hash32(serviceRouting);
             instanceServices.put(instanceId, serviceId);
             if (!servicesBitmap.containsKey(serviceId)) {
                 servicesBitmap.put(serviceId, new RoaringBitmap());
