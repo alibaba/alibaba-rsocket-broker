@@ -2,7 +2,6 @@ package com.alibaba.rsocket.broker.web.model;
 
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.metadata.AppMetadata;
-import com.google.common.base.Joiner;
 
 import java.util.Date;
 import java.util.Set;
@@ -125,7 +124,7 @@ public class AppInstance {
         if (consumedServices == null || consumedServices.isEmpty()) {
             return "";
         }
-        return Joiner.on("<br/>").join(consumedServices);
+        return String.join("<br/>", consumedServices);
     }
 
 }
