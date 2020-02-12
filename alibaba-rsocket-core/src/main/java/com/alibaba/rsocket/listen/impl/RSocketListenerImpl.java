@@ -49,6 +49,10 @@ public class RSocketListenerImpl implements RSocketListener {
     private Integer status = -1;
     private List<Disposable> responders = new ArrayList<>();
 
+    public void host(String host) {
+        this.host = host;
+    }
+
     public void listen(String schema, int port) {
         this.schemas.put(port, schema);
     }
