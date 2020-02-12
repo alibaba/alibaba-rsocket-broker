@@ -19,9 +19,9 @@ public class GSVRoutingMetadataTest {
         routingMetadata.setMethod("findById");
         routingMetadata.setVersion("1.0.0");
         //routingMetadata.setEndpoint("192.168.0.1");
-        String routing = routingMetadata.routing();
-        System.out.println(routing);
-        assertThat(routing).contains(":");
+        String gsv = routingMetadata.gsv();
+        System.out.println(gsv);
+        assertThat(gsv).contains(":");
 
     }
 
@@ -30,8 +30,8 @@ public class GSVRoutingMetadataTest {
         GSVRoutingMetadata routing = new GSVRoutingMetadata();
         routing.setService("com.alibaba.UserService");
         routing.setMethod("findById");
-        String routingStr = routing.routing();
-        System.out.println(routingStr);
-        assertThat(routingStr).doesNotContain(":");
+        String gsv = routing.gsv();
+        System.out.println(gsv);
+        assertThat(gsv).doesNotContain(":");
     }
 }
