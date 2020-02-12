@@ -59,7 +59,7 @@ public class DashboardView extends VerticalLayout {
         top.add(connectionPanel);
         // requests count panel
         Panel requestsPanel = new Panel("Requests");
-        Text requestsCounter = new Text(metricsCounterValue("rsocket.request.count"));
+        Text requestsCounter = new Text(metricsCounterValue("rsocket.request.counter"));
         requestsPanel.add(requestsCounter);
         top.add(requestsPanel);
         //--- last ten apps
