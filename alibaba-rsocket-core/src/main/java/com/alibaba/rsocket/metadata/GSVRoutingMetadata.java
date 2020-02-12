@@ -54,10 +54,10 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     public GSVRoutingMetadata(String group, String routeKey, String version) {
         this.group = group;
-        if (routeKey.contains(".")) {
-            int offset = routeKey.lastIndexOf('.');
-            this.service = routeKey.substring(0, offset);
-            this.method = routeKey.substring(offset + 1);
+        int methodSymbolPosition = routeKey.lastIndexOf('.');
+        if (methodSymbolPosition > 0) {
+            this.service = routeKey.substring(0, methodSymbolPosition);
+            this.method = routeKey.substring(methodSymbolPosition + 1);
         } else {
             this.service = routeKey;
         }
@@ -98,7 +98,11 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     public Integer id() {
         if (this.serviceHashCode == null) {
-            this.serviceHashCode = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
+            if (group == null && version == null) {
+                this.serviceHashCode = MurmurHash3.hash32(service);
+            } else {
+                this.serviceHashCode = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
+            }
         }
         return this.serviceHashCode;
     }
@@ -162,21 +166,23 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     private void parseRoutingKey(String routingKey) {
         String temp = routingKey;
-        //group
-        if (temp.contains("!")) {
-            this.group = temp.substring(0, temp.indexOf('!'));
-            temp = temp.substring(temp.indexOf('!') + 1);
+        //group parse
+        int groupSymbolPosition = temp.indexOf('!');
+        if (groupSymbolPosition > 0) {
+            this.group = temp.substring(0, groupSymbolPosition);
+            temp = temp.substring(groupSymbolPosition + 1);
         }
         //version
-        if (temp.contains(":")) {
-            this.version = temp.substring(temp.lastIndexOf(':') + 1);
-            temp = temp.substring(0, temp.indexOf(':'));
+        int versionSymbolPosition = temp.lastIndexOf(':');
+        if (versionSymbolPosition > 0) {
+            this.version = temp.substring(versionSymbolPosition + 1);
+            temp = temp.substring(0, versionSymbolPosition);
         }
         //service & method
-        if (temp.contains(".")) {
-            int offset = temp.lastIndexOf('.');
-            this.service = temp.substring(0, offset);
-            this.method = temp.substring(offset + 1);
+        int methodSymbolPosition = temp.lastIndexOf('.');
+        if (methodSymbolPosition > 0) {
+            this.service = temp.substring(0, methodSymbolPosition);
+            this.method = temp.substring(methodSymbolPosition + 1);
         } else {
             this.service = temp;
         }
@@ -186,17 +192,17 @@ public class GSVRoutingMetadata implements MetadataAware {
         StringBuilder routingBuilder = new StringBuilder();
         //group
         if (group != null && !group.isEmpty()) {
-            routingBuilder.append(group).append("!");
+            routingBuilder.append(group).append('!');
         }
         //service
         routingBuilder.append(service);
         //method
         if (method != null && !method.isEmpty()) {
-            routingBuilder.append(".").append(method);
+            routingBuilder.append('.').append(method);
         }
         //version
         if (version != null && !version.isEmpty()) {
-            routingBuilder.append(":").append(version);
+            routingBuilder.append(':').append(version);
         }
         return routingBuilder.toString();
     }
