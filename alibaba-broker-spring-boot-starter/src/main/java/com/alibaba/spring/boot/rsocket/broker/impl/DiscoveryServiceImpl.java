@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.impl;
 
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.discovery.DiscoveryService;
 import com.alibaba.rsocket.discovery.RSocketServiceInstance;
 import com.alibaba.rsocket.events.AppStatusEvent;
@@ -10,8 +11,6 @@ import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
-
-import java.util.Collection;
 
 /**
  * discovery service implementation
@@ -32,7 +31,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 
     @Override
     public Flux<String> getAllServices() {
-        return Flux.fromIterable(routingSelector.findAllServices());
+        return Flux.fromIterable(routingSelector.findAllServices()).map(ServiceLocator::getGsv);
     }
 
     @NotNull
