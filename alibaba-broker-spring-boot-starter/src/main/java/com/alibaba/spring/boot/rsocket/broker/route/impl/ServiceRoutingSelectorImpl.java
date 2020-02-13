@@ -4,7 +4,7 @@ import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
-import org.eclipse.collections.impl.multimap.list.FastListMultimap;
+import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.IntConsumer;
 import org.roaringbitmap.RoaringBitmap;
@@ -30,7 +30,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     /**
      * instance to services
      */
-    private FastListMultimap<Integer, Integer> instanceServices = new FastListMultimap<>();
+    private UnifiedSetMultimap<Integer, Integer> instanceServices = new UnifiedSetMultimap<>();
 
     @Override
     public void register(Integer instanceId, Set<ServiceLocator> services) {
