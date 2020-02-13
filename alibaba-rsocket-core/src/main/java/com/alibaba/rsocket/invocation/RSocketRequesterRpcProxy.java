@@ -15,6 +15,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.Payload;
+import io.rsocket.RSocket;
 import io.rsocket.frame.FrameType;
 import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * @author leijuan
  */
 public class RSocketRequesterRpcProxy implements InvocationHandler {
-    private UpstreamCluster upstream;
+    private RSocket rsocket;
     /**
      * service interface
      */
@@ -104,7 +105,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, @Nullable String service, String version,
                                     RSocketMimeType encodingType, Duration timeout, @Nullable String endpoint) {
-        this.upstream = upstream;
+        this.rsocket = upstream.getLoadBalancedRSocket();
         this.serviceInterface = serviceInterface;
         this.service = serviceInterface.getCanonicalName();
         if (service != null && !service.isEmpty()) {
@@ -150,7 +151,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 source = (Flux<Object>) args[1];
             }
             Flux<Payload> payloadFlux = source.startWith(routePayload).map(obj -> ByteBufPayload.create(encodingFacade.encodingResult(obj, encodingType), compositeMetadataBuf));
-            Flux<Payload> payloads = upstream.requestChannel(payloadFlux);
+            Flux<Payload> payloads = rsocket.requestChannel(payloadFlux);
             return payloads.concatMap(payload -> {
                 try {
                     RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
@@ -176,7 +177,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         return cachedMono;
                     }
                 }
-                Mono<Payload> payloadMono = upstream.requestResponse(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf)).timeout(timeout);
+                Mono<Payload> payloadMono = rsocket.requestResponse(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf)).timeout(timeout);
                 Mono<Object> result = payloadMono.handle((payload, sink) -> {
                     try {
                         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
@@ -203,10 +204,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
                 metrics(methodMetadata);
-                return upstream.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
+                return rsocket.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
                 metrics(methodMetadata);
-                Flux<Payload> flux = upstream.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
+                Flux<Payload> flux = rsocket.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
                 Flux<Object> result = flux.concatMap((payload) -> {
                     try {
                         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
