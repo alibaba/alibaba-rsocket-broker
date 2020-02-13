@@ -95,7 +95,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
         this.healthCheckCompositeByteBuf = compositeMetadata.getContent();
         //start health check timer
-        // startHealthCheckTimer();
+        startHealthCheckTimer();
     }
 
     private void refreshRsockets(Collection<String> rsocketUris) {
