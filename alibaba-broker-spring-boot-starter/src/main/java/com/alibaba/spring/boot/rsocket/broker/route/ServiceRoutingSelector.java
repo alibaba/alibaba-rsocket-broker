@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * service routing selector: find handler according service id
+ * service routing selector: find handler according to service id
  *
  * @author leijuan
  */
