@@ -48,7 +48,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private Flux<Collection<String>> urisFactory;
     private Map<String, RSocket> activeSockets;
     /**
-     * un health uri set
+     * unhealthy uris
      */
     private Set<String> unHealthUriSet = new HashSet<>();
     private long lastHealthCheckTimeStamp = System.currentTimeMillis();
@@ -58,9 +58,9 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
      */
     private static int HEALTH_CHECK_INTERVAL_SECONDS = 15;
     /**
-     * retry count because of connection error
+     * retry count because of connection error and interval is 5 seconds
      */
-    private int retryCount = 3;
+    private int retryCount = 12;
     private RSocketRequesterSupport requesterSupport;
     private ByteBuf healthCheckCompositeByteBuf;
 
@@ -93,7 +93,9 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(
                 new GSVRoutingMetadata(null, RSocketServiceHealth.class.getCanonicalName(), "check", null),
                 new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
-        this.healthCheckCompositeByteBuf = compositeMetadata.getContent();
+        ByteBuf compositeMetadataContent = compositeMetadata.getContent();
+        this.healthCheckCompositeByteBuf = compositeMetadataContent.copy();
+        ReferenceCountUtil.release(compositeMetadata);
         //start health check timer
         startHealthCheckTimer();
     }
@@ -187,6 +189,24 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         try {
             Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
             return metadataPush(payload);
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+    }
+
+    /**
+     * fire cloud event to upstream active rsockets
+     *
+     * @param cloudEvent cloud event
+     * @return void
+     */
+    public Mono<Void> fireCloudEventToUpstreamAll(CloudEventImpl<?> cloudEvent) {
+        try {
+            Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
+            return Flux.fromIterable(this.getActiveSockets().values())
+                    .flatMap(rsocket -> rsocket.metadataPush(payload))
+                    .doOnError(throwable -> log.error("Failed to fire event to upstream", throwable))
+                    .then();
         } catch (Exception e) {
             return Mono.error(e);
         }
@@ -289,7 +309,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     public void tryToReconnect(String rsocketUri) {
         //try to reconnect every 5 seconds in 1 minute
-        Flux.range(1, 12)
+        Flux.range(1, retryCount)
                 .delayElements(Duration.ofSeconds(5))
                 .subscribe(number -> {
                     if (!activeSockets.containsKey(rsocketUri)) {
