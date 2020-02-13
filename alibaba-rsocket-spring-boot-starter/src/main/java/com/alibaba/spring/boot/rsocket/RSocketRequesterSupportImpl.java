@@ -17,8 +17,6 @@ import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.util.DefaultPayload;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -36,12 +34,11 @@ import java.util.stream.Collectors;
 import static com.alibaba.rsocket.transport.NetworkUtil.getLocalIP;
 
 /**
- * RSocket Requester Support implementation
+ * RSocket Requester Support implementation: setup payload, published service, token and app info
  *
  * @author leijuan
  */
 public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, ApplicationContextAware {
-    private Logger log = LoggerFactory.getLogger(RSocketRequesterSupportImpl.class);
     private Properties env;
     private RSocketProperties properties;
     private String appName;
