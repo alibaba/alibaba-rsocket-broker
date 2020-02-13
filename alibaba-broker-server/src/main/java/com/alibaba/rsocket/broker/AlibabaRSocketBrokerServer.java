@@ -1,14 +1,15 @@
 package com.alibaba.rsocket.broker;
 
+import com.alibaba.rsocket.RSocketExchange;
+import com.alibaba.rsocket.route.RSocketFilter;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 /**
@@ -32,4 +33,20 @@ public class AlibabaRSocketBrokerServer implements DisposableBean {
     public void destroy() throws Exception {
         brokerManager.stopLocalBroker();
     }
+
+    /*@Bean
+    public RSocketFilter demoFilter() {
+        return new RSocketFilter() {
+            @Override
+            public Mono<Boolean> shouldFilter(RSocketExchange exchange) {
+                return Mono.just(true);
+            }
+
+            @Override
+            public Mono<Void> run(RSocketExchange exchange) {
+                System.out.println("call: " + exchange.getType().name());
+                return Mono.empty();
+            }
+        };
+    }*/
 }
