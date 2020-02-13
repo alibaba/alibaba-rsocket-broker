@@ -16,3 +16,9 @@ RSocket Broker的核心功能，以Spring Boot starter方式呈现，方便第�
 * 添加RSocket拦截器Interceptor
 * 添加Ops REST API接口
 * Metrics采集
+
+### RSocket Services
+
+* DiscoveryService: Discovery service
+* RSocketServiceHealth: Health Service
+* ConfigurationService: Configuration Service
