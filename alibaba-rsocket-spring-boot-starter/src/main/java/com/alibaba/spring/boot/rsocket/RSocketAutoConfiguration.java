@@ -4,8 +4,6 @@ import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
 import com.alibaba.rsocket.observability.MetricsService;
-import com.alibaba.rsocket.route.RSocketFilter;
-import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.route.RoutingEndpoint;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.RSocketResponderHandler;
@@ -36,8 +34,6 @@ import org.springframework.core.env.Environment;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
-import java.util.stream.Collectors;
-
 /**
  * RSocket Auto configuration: listen, upstream manager, handler etc
  *
@@ -60,25 +56,18 @@ public class RSocketAutoConfiguration {
         return new RequesterCloudEventProcessor();
     }
 
-    @Bean
-    public RSocketFilterChain rsocketFilterChain(ObjectProvider<RSocketFilter> rsocketFilters) {
-        return new RSocketFilterChain(rsocketFilters.orderedStream().collect(Collectors.toList()));
-    }
-
     /**
      * socket responder handler as SocketAcceptor bean
      *
-     * @param serviceCaller      service caller
-     * @param eventProcessor     event processor
-     * @param rsocketFilterChain rsocket filter chain
+     * @param serviceCaller  service caller
+     * @param eventProcessor event processor
      * @return handler factor
      */
     @Bean
     @ConditionalOnMissingBean
     public RSocketResponderHandlerFactory rsocketResponderHandlerFactory(@Autowired LocalReactiveServiceCaller serviceCaller,
-                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
-                                                                         @Autowired RSocketFilterChain rsocketFilterChain) {
-        return (setup, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, rsocketFilterChain, requester));
+                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
+        return (setup, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, requester));
     }
 
     @Bean
