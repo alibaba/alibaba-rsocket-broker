@@ -77,6 +77,12 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         return localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
     }
 
+    /**
+     * receive cloud event from metadataPush
+     *
+     * @param cloudEvent cloud event
+     * @return void
+     */
     @Override
     public Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent) {
         return Mono.fromRunnable(() -> eventProcessor.onNext(cloudEvent));
@@ -134,6 +140,12 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         return Mono.empty();
     }
 
+    /**
+     * fire cloud event to peer
+     *
+     * @param cloudEvent cloud event
+     * @return void
+     */
     public Mono<Void> fireCloudEventToPeer(CloudEventImpl<?> cloudEvent) {
         try {
             Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
