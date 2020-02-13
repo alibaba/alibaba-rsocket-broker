@@ -230,7 +230,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         //request filters
         Mono<RSocket> destination = findDestination(routingMetaData);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_FNF, compositeMetadata, payload);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
@@ -269,7 +269,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
         Mono<RSocket> destination = findDestination(routingMetaData);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
+            RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_STREAM, compositeMetadata, payload);
             destination = filterChain.filter(requestContext).then(destination);
         }
         return destination.flatMapMany(rsocket -> {
