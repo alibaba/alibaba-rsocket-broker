@@ -46,7 +46,7 @@ public class AlibabaRSocketBrokerServer implements DisposableBean {
 
             @Override
             public Mono<Void> run(RSocketExchange exchange) {
-                System.out.println("call: " + exchange.getType().name());
+                System.out.println("call: " + exchange.getFrameType().name());
                 return Mono.empty();
             }
         };
