@@ -24,10 +24,10 @@ import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
 public class MainController {
     private static MessageMimeTypeMetadata jsonMetaEncoding = new MessageMimeTypeMetadata(RSocketMimeType.Json);
     private static MessageAcceptMimeTypesMetadata acceptMimeTypes = new MessageAcceptMimeTypesMetadata(RSocketMimeType.Json);
-    private RSocket rSocketMono;
+    private RSocket rsocket;
 
     public MainController(UpstreamManager upstreamManager) {
-        rSocketMono = upstreamManager.findBroker();
+        rsocket = upstreamManager.findBroker().getLoadBalancedRSocket();
     }
 
     @RequestMapping("/{serviceName}/{method}")
@@ -43,7 +43,7 @@ public class MainController {
             GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, serviceName, method, version);
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding, acceptMimeTypes);
             ByteBuf bodyBuf = body == null ? EMPTY_BUFFER : Unpooled.wrappedBuffer(body);
-            return rSocketMono.requestResponse(DefaultPayload.create(bodyBuf, compositeMetadata.getContent()))
+            return rsocket.requestResponse(DefaultPayload.create(bodyBuf, compositeMetadata.getContent()))
                     .map(payload -> {
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(MediaType.APPLICATION_JSON);
