@@ -8,7 +8,6 @@ import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilterChain;
-import com.alibaba.rsocket.route.RSocketRequestType;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
@@ -16,6 +15,7 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.ResponderRSocket;
 import io.rsocket.exceptions.InvalidException;
+import io.rsocket.frame.FrameType;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,7 +28,6 @@ import reactor.extra.processor.TopicProcessor;
  */
 @SuppressWarnings("Duplicates")
 public class RSocketResponderHandler extends RSocketResponderSupport implements ResponderRSocket, CloudEventRSocket {
-    private RSocketFilterChain filterChain;
     /**
      * requester from peer
      */
@@ -41,10 +40,8 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
 
     public RSocketResponderHandler(LocalReactiveServiceCaller serviceCall,
                                    TopicProcessor<CloudEventImpl> eventProcessor,
-                                   RSocketFilterChain filterChain,
                                    RSocket requester) {
         this.localServiceCaller = serviceCall;
-        this.filterChain = filterChain;
         this.eventProcessor = eventProcessor;
         this.requester = requester;
         this.comboOnClose = Mono.first(super.onClose(), requester.onClose());
@@ -62,11 +59,6 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         if (dataEncodingMetadata == null) {
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
-        }
-        //request filters
-        if (filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
-            return filterChain.filter(exchange).then(localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload));
         }
         return localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
     }
