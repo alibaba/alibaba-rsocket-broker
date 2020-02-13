@@ -57,7 +57,8 @@ public class RSocketAutoConfiguration {
     }
 
     /**
-     * socket responder handler as SocketAcceptor bean
+     * socket responder handler as SocketAcceptor bean.
+     * To validate connection, please use RSocketListenerCustomizer and add AcceptorInterceptor by addSocketAcceptorInterceptor api
      *
      * @param serviceCaller  service caller
      * @param eventProcessor event processor
