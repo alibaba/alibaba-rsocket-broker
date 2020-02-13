@@ -41,6 +41,11 @@ public class PortalController {
         return userService.error("Hi");
     }
 
+    @GetMapping("/job1")
+    public Mono<Void> job1() {
+        return userService.job1();
+    }
+
     @RequestMapping("/appName")
     public Mono<String> appName() {
         return userService.getAppName();
