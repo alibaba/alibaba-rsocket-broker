@@ -105,7 +105,7 @@ public class RSocketEndpoint {
                 .withDataContentType("application/json")
                 .withData(new AppStatusEvent(RSocketAppContext.ID, status))
                 .build();
-        return Flux.fromIterable(upstreamManager.findAllClusters()).flatMap(upstreamCluster -> upstreamCluster.fireCloudEventToUpstreamAll(appStatusEventCloudEvent)).then();
+        return Flux.fromIterable(upstreamManager.findAllClusters()).flatMap(upstreamCluster -> upstreamCluster.getLoadBalancedRSocket().fireCloudEventToUpstreamAll(appStatusEventCloudEvent)).then();
     }
 
 
