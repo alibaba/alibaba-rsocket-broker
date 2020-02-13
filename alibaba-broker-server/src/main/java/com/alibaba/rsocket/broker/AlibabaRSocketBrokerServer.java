@@ -7,6 +7,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Mono;
 
@@ -34,8 +35,9 @@ public class AlibabaRSocketBrokerServer implements DisposableBean {
         brokerManager.stopLocalBroker();
     }
 
-    /*@Bean
-    public RSocketFilter demoFilter() {
+    @Bean
+    @ConditionalOnExpression(value = "false")
+    public RSocketFilter demoRSocketFilter() {
         return new RSocketFilter() {
             @Override
             public Mono<Boolean> shouldFilter(RSocketExchange exchange) {
@@ -48,5 +50,5 @@ public class AlibabaRSocketBrokerServer implements DisposableBean {
                 return Mono.empty();
             }
         };
-    }*/
+    }
 }
