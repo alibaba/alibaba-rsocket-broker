@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public interface RSocketServiceHealth {
     int SERVING_STATUS = 1;
     int UNKNOWN_STATUS = 0;
-    int ERROR_STATUS = -1;
+    int DOWN_STATUS = -1;
 
     /**
      * health status: 0:unknown, 1: serving, -1: out of service
