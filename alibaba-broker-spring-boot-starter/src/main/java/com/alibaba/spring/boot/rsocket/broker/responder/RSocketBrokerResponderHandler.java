@@ -8,7 +8,6 @@ import com.alibaba.rsocket.listen.RSocketResponderSupport;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilterChain;
-import com.alibaba.rsocket.route.RSocketRequestType;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
@@ -28,9 +27,9 @@ import io.rsocket.RSocket;
 import io.rsocket.ResponderRSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.InvalidException;
+import io.rsocket.frame.FrameType;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.util.ByteBufPayload;
-import io.rsocket.util.NumberUtils;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -200,7 +199,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         //request filters
         Mono<RSocket> destination = findDestination(routingMetaData);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_RESPONSE, compositeMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, compositeMetadata, payload);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
@@ -230,7 +229,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         //request filters
         Mono<RSocket> destination = findDestination(routingMetaData);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(RSocketRequestType.REQUEST_FNF, compositeMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, compositeMetadata, payload);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
@@ -269,7 +268,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
         Mono<RSocket> destination = findDestination(routingMetaData);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange requestContext = new RSocketExchange(RSocketRequestType.REQUEST_STREAM, compositeMetadata, payload);
+            RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, compositeMetadata, payload);
             destination = filterChain.filter(requestContext).then(destination);
         }
         return destination.flatMapMany(rsocket -> {
