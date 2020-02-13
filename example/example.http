@@ -16,6 +16,9 @@ GET http://localhost:8181/users
 ### get error
 GET http://localhost:8181/error
 
+### FNF
+GET http://localhost:8181/job1
+
 ### save user
 POST http://localhost:8181/user/save
 Content-Type: application/json
