@@ -26,10 +26,10 @@ public class RSocketFilterChain {
         return this.filtersPresent;
     }
 
-    public Mono<Void> filter(RSocketExchange requestContext) {
+    public Mono<Void> filter(RSocketExchange rsocketExchange) {
         return filterFlux
-                .filterWhen(rSocketFilter -> rSocketFilter.shouldFilter(requestContext))
-                .map(rSocketFilter -> rSocketFilter.run(requestContext))
+                .filterWhen(rsocketFilter -> rsocketFilter.shouldFilter(rsocketExchange))
+                .concatMap(rsocketFilter -> rsocketFilter.run(rsocketExchange))
                 .then();
     }
 
