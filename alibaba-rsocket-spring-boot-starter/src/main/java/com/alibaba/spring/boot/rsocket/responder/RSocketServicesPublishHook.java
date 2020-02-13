@@ -6,6 +6,7 @@ import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.spring.boot.rsocket.RSocketProperties;
@@ -55,13 +56,13 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
                 .withData(new AppStatusEvent(RSocketAppContext.ID, AppStatusEvent.STATUS_SERVING))
                 .build();
         LoadBalancedRSocket loadBalancedRSocket = brokerCluster.getLoadBalancedRSocket();
-        loadBalancedRSocket.fireCloudEventToUpstreamAll(appStatusEventCloudEvent).doOnSuccess(aVoid -> log.info("App status: Serving")).subscribe();
+        String brokers = String.join(",", loadBalancedRSocket.getActiveSockets().keySet());
+        loadBalancedRSocket.fireCloudEventToUpstreamAll(appStatusEventCloudEvent).doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", brokers))).subscribe();
         CloudEventImpl<ServicesExposedEvent> servicesExposedEventCloudEvent = rsocketRequesterSupport.servicesExposedEvent().get();
         if (servicesExposedEventCloudEvent != null) {
             loadBalancedRSocket.fireCloudEventToUpstreamAll(servicesExposedEventCloudEvent).doOnSuccess(aVoid -> {
                 String exposedServices = rsocketRequesterSupport.exposedServices().get().stream().map(ServiceLocator::getGsv).collect(Collectors.joining(","));
-                String brokers = String.join(",", loadBalancedRSocket.getActiveSockets().keySet());
-                log.info("Services(" + exposedServices + ") published on Brokers(" + brokers + ")!");
+                log.info(RsocketErrorCode.message("RST-301201", exposedServices, brokers));
             }).subscribe();
         }
     }
