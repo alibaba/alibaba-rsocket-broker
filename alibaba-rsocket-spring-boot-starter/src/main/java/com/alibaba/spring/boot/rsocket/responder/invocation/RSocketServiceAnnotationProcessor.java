@@ -13,7 +13,6 @@ import org.springframework.core.annotation.AnnotationUtils;
  * @author leijuan
  */
 public class RSocketServiceAnnotationProcessor extends LocalReactiveServiceCallerImpl implements BeanPostProcessor {
-
     private RSocketProperties rSocketProperties;
 
     public RSocketServiceAnnotationProcessor(RSocketProperties rSocketProperties) {
@@ -39,14 +38,14 @@ public class RSocketServiceAnnotationProcessor extends LocalReactiveServiceCalle
         }
     }
 
-    private void registerRSocketService(RSocketService rSocketService, Object bean) {
-        String serviceName = rSocketService.name();
+    private void registerRSocketService(RSocketService rsocketServiceAnnotation, Object bean) {
+        String serviceName = rsocketServiceAnnotation.name();
         if (serviceName.isEmpty()) {
-            serviceName = rSocketService.serviceInterface().getCanonicalName();
+            serviceName = rsocketServiceAnnotation.serviceInterface().getCanonicalName();
         }
         String group = rSocketProperties.getGroup();
-        String version = rSocketService.version().isEmpty() ? rSocketProperties.getVersion() : rSocketService.version();
-        addProvider(group, serviceName, version, rSocketService.serviceInterface(), bean);
+        String version = rsocketServiceAnnotation.version().isEmpty() ? rSocketProperties.getVersion() : rsocketServiceAnnotation.version();
+        addProvider(group, serviceName, version, rsocketServiceAnnotation.serviceInterface(), bean);
     }
 
 
