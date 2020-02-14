@@ -66,8 +66,8 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
-    public ServiceMeshInspector serviceMeshInspector() {
-        return new ServiceMeshInspectorImpl();
+    public ServiceMeshInspector serviceMeshInspector(RSocketBrokerProperties brokerProperties) {
+        return new ServiceMeshInspectorImpl(brokerProperties.isAuthRequired());
     }
 
     @Bean
