@@ -460,10 +460,9 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     @Nullable
     private int[] binaryRoutingInfo(ByteBuf compositeByteBuf) {
         if (compositeByteBuf.capacity() >= 12) {
-            byte metadataTypeId = compositeByteBuf.getByte(0);
-            int length = compositeByteBuf.getInt(0) & 0xFF;
-            if (metadataTypeId == BINARY_ROUTING_MARK && length == 8) {
-                return new int[]{compositeByteBuf.getInt(4), compositeByteBuf.getInt(4)};
+            long typeAndService = compositeByteBuf.getLong(0);
+            if (typeAndService >> 56 == BINARY_ROUTING_MARK) {
+                return new int[]{(int)(typeAndService << 32), compositeByteBuf.getInt(7)};
             }
         }
         return null;
