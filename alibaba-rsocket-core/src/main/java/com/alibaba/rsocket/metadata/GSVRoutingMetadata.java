@@ -181,7 +181,7 @@ public class GSVRoutingMetadata implements MetadataAware {
         }
     }
 
-    private String assembleRoutingKey() {
+    public String assembleRoutingKey() {
         StringBuilder routingBuilder = new StringBuilder();
         //group
         if (group != null && !group.isEmpty()) {
