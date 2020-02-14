@@ -14,9 +14,20 @@ public class ServiceMeshInspectorImpl implements ServiceMeshInspector {
      * white relation bitmap
      */
     private RoaringBitmap whiteRelationBitmap = new RoaringBitmap();
-    private boolean authRequired;
+    /**
+     * auth required
+     */
+    private boolean authRequired = true;
+
+    public ServiceMeshInspectorImpl() {
+
+    }
 
     public ServiceMeshInspectorImpl(boolean authRequired) {
+        this.authRequired = authRequired;
+    }
+
+    public void setAuthRequired(boolean authRequired) {
         this.authRequired = authRequired;
     }
 
