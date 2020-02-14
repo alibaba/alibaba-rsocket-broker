@@ -1,7 +1,18 @@
 Alibaba RSocket Broker变更记录
 ==========================
 
-## 0.1.0
+## 0.1.0-Alpha2
+
+### 新特性
+
+* Load Balance & Health Check
+* Filter Chain
+* Binary Routing
+* Docker image & tgz
+* Spring Boot Actuator
+* Performance enhancement
+
+## 0.1.0-Alpha1: 2019/12/12
 
 ### 新特性
 
