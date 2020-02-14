@@ -205,4 +205,10 @@ public class GSVRoutingMetadata implements MetadataAware {
         temp.load(content);
         return temp;
     }
+
+    public static GSVRoutingMetadata from(String routingKey) {
+        GSVRoutingMetadata temp = new GSVRoutingMetadata();
+        temp.parseRoutingKey(routingKey);
+        return temp;
+    }
 }
