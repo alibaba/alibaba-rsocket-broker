@@ -14,9 +14,15 @@ public class ServiceMeshInspectorImpl implements ServiceMeshInspector {
      * white relation bitmap
      */
     private RoaringBitmap whiteRelationBitmap = new RoaringBitmap();
+    private boolean authRequired;
+
+    public ServiceMeshInspectorImpl(boolean authRequired) {
+        this.authRequired = authRequired;
+    }
 
     @Override
     public boolean isRequestAllowed(RSocketAppPrincipal requesterPrincipal, String routing, RSocketAppPrincipal responderPrincipal) {
+        if (!authRequired) return true;
         //org & service account relation
         int relationHashCode = (requesterPrincipal.hashCode() + ":" + responderPrincipal.hashCode()).hashCode();
         if (whiteRelationBitmap.contains(relationHashCode)) {
