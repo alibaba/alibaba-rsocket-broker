@@ -182,6 +182,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Override
     public Mono<Payload> requestResponse(Payload payload) {
+        //BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
         GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
         if (routingMetaData == null) {
@@ -457,13 +458,11 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         Metrics.counter(routingMetadata.getService() + ".counter").increment();
     }
 
-    @Nullable
-    private int[] binaryRoutingInfo(ByteBuf compositeByteBuf) {
-        if (compositeByteBuf.capacity() >= 12) {
-            long typeAndService = compositeByteBuf.getLong(0);
-            if (typeAndService >> 56 == BINARY_ROUTING_MARK) {
-                return new int[]{(int)(typeAndService << 32), compositeByteBuf.getInt(7)};
-            }
+    private BinaryRoutingMetadata binaryRoutingMetadata(ByteBuf compositeByteBuf) {
+        long typeAndService = compositeByteBuf.getLong(0);
+        if ((typeAndService >> 56) == BINARY_ROUTING_MARK) {
+            int metadataContentLen = (int) (typeAndService >> 32) & 0x00FFFFFF;
+            return BinaryRoutingMetadata.from(compositeByteBuf.slice(4, metadataContentLen));
         }
         return null;
     }
