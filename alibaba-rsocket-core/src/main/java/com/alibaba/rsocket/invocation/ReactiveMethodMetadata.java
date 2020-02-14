@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -135,11 +136,12 @@ public class ReactiveMethodMetadata {
         //param encoding type
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
-        //payload binary routing metadata
-        BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId);
         //payload routing metadata
         GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.service, this.name, version);
         routingMetadata.setEndpoint(this.endpoint);
+        //payload binary routing metadata
+        BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId,
+                routingMetadata.assembleRoutingKey().getBytes(StandardCharsets.UTF_8));
         //add param encoding
         MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
         //set accepted mimetype
