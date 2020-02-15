@@ -39,7 +39,7 @@
         <hessian.version>4.0.63</hessian.version>
         <jackson.version>2.10.2</jackson.version>
         <protostuff.version>1.6.2</protostuff.version>
-        <avor.version>1.9.1</avor.version>
+        <avro.version>1.9.2</avro.version>
         <eclipse-collections.version>10.2.0</eclipse-collections.version>
         <spring-cloud-release.version>Hoxton.SR1</spring-cloud-release.version>
         <cloudevents.version>1.2.0</cloudevents.version>
