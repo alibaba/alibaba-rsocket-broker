@@ -2,6 +2,7 @@ package com.alibaba.rsocket.rpc;
 
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
+import com.alibaba.rsocket.metadata.BinaryRoutingMetadata;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
@@ -17,6 +18,8 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * RSocket responder handler implementation, not singleton, per handler per connection
@@ -47,10 +50,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Mono<Payload> requestResponse(Payload payload) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        BinaryRoutingMetadata binaryRoutingMetadata = compositeMetadata.getBinaryRoutingMetadata();
         GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
+        if (binaryRoutingMetadata == null && routingMetaData == null) {
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        if (binaryRoutingMetadata != null && routingMetaData == null) {
+            routingMetaData = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getRoutingText(), StandardCharsets.UTF_8));
         }
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         if (dataEncodingMetadata == null) {
@@ -63,10 +70,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Mono<Void> fireAndForget(Payload payload) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        BinaryRoutingMetadata binaryRoutingMetadata = compositeMetadata.getBinaryRoutingMetadata();
         GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
+        if (binaryRoutingMetadata == null && routingMetaData == null) {
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        if (binaryRoutingMetadata != null && routingMetaData == null) {
+            routingMetaData = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getRoutingText(), StandardCharsets.UTF_8));
         }
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         if (dataEncodingMetadata == null) {
@@ -91,10 +102,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Flux<Payload> requestStream(Payload payload) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+        BinaryRoutingMetadata binaryRoutingMetadata = compositeMetadata.getBinaryRoutingMetadata();
         GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
+        if (binaryRoutingMetadata == null && routingMetaData == null) {
             ReferenceCountUtil.safeRelease(payload);
             return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        if (binaryRoutingMetadata != null && routingMetaData == null) {
+            routingMetaData = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getRoutingText(), StandardCharsets.UTF_8));
         }
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         if (dataEncodingMetadata == null) {
@@ -107,10 +122,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Flux<Payload> requestChannel(Payload signal, Publisher<Payload> payloads) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
+        BinaryRoutingMetadata binaryRoutingMetadata = compositeMetadata.getBinaryRoutingMetadata();
         GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
+        if (binaryRoutingMetadata == null && routingMetaData == null) {
             ReferenceCountUtil.safeRelease(signal);
             return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        }
+        if (binaryRoutingMetadata != null && routingMetaData == null) {
+            routingMetaData = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getRoutingText(), StandardCharsets.UTF_8));
         }
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
         if (dataEncodingMetadata == null) {
