@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -73,6 +74,10 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     public @Nullable Object decodeResult(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?> targetClass) {
         try {
             if (data == null || data.capacity() == 0) return null;
+            //convert to raw output without decoding
+            if (targetClass == ByteBuffer.class) {
+                return data.nioBuffer();
+            }
             return handlerMap.get(encodingType).decodeResult(data, targetClass);
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-700501", encodingType.getName(), targetClass != null ? targetClass.getName() : "Null"), e);
