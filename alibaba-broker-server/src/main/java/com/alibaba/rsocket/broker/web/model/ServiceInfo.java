@@ -89,6 +89,6 @@ public class ServiceInfo {
     }
 
     public String getServiceIdHex() {
-        return String.format("0x%08x", getServiceId());
+        return String.format("0x%08X", getServiceId());
     }
 }
