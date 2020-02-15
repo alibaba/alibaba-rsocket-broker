@@ -13,7 +13,7 @@ import io.rsocket.util.NumberUtils;
 public class BinaryRoutingMetadata implements MetadataAware {
     private Integer serviceId;
     private Integer handlerId;
-    private byte[] metadata;
+    private byte[] comment;
 
     public BinaryRoutingMetadata() {
     }
@@ -23,10 +23,10 @@ public class BinaryRoutingMetadata implements MetadataAware {
         this.handlerId = handlerId;
     }
 
-    public BinaryRoutingMetadata(Integer serviceId, Integer handlerId, byte[] metadata) {
+    public BinaryRoutingMetadata(Integer serviceId, Integer handlerId, byte[] comment) {
         this.serviceId = serviceId;
         this.handlerId = handlerId;
-        this.metadata = metadata;
+        this.comment = comment;
     }
 
     @Override
@@ -47,25 +47,25 @@ public class BinaryRoutingMetadata implements MetadataAware {
         return handlerId;
     }
 
-    public byte[] getMetadata() {
-        return metadata;
+    public byte[] getComment() {
+        return comment;
     }
 
-    public void setMetadata(byte[] metadata) {
-        this.metadata = metadata;
+    public void setComment(byte[] comment) {
+        this.comment = comment;
     }
 
     @Override
     public ByteBuf getContent() {
         int capacity = 8;
-        if (this.metadata != null) {
-            capacity = 8 + this.metadata.length;
+        if (this.comment != null) {
+            capacity = 8 + this.comment.length;
         }
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(capacity, capacity);
         byteBuf.writeInt(this.serviceId);
         byteBuf.writeInt(this.handlerId);
-        if (this.metadata != null) {
-            byteBuf.writeBytes(this.metadata);
+        if (this.comment != null) {
+            byteBuf.writeBytes(this.comment);
         }
         return byteBuf;
     }
@@ -73,16 +73,16 @@ public class BinaryRoutingMetadata implements MetadataAware {
 
     public ByteBuf getHeaderAndContent() {
         int capacity = 12;
-        if (this.metadata != null) {
-            capacity = 12 + this.metadata.length;
+        if (this.comment != null) {
+            capacity = 12 + this.comment.length;
         }
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(capacity, capacity);
         byteBuf.writeByte(WellKnownMimeType.MESSAGE_RSOCKET_BINARY_ROUTING.getIdentifier() | 0x80);
         NumberUtils.encodeUnsignedMedium(byteBuf, capacity - 4);
         byteBuf.writeInt(this.serviceId);
         byteBuf.writeInt(this.handlerId);
-        if (this.metadata != null) {
-            byteBuf.writeBytes(this.metadata);
+        if (this.comment != null) {
+            byteBuf.writeBytes(this.comment);
         }
         return byteBuf;
     }
@@ -97,8 +97,8 @@ public class BinaryRoutingMetadata implements MetadataAware {
         this.handlerId = byteBuf.readInt();
         int readableBytesLen = byteBuf.readableBytes();
         if (readableBytesLen > 0) {
-            this.metadata = new byte[readableBytesLen];
-            byteBuf.readBytes(this.metadata);
+            this.comment = new byte[readableBytesLen];
+            byteBuf.readBytes(this.comment);
         }
     }
 
