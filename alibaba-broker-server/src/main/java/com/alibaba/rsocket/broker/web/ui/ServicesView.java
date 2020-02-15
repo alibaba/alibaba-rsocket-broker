@@ -30,9 +30,9 @@ public class ServicesView extends VerticalLayout {
         Grid<ServiceInfo> servicesGrid = new Grid<>();
         servicesGrid.setItems(services(handlerRegistry, routingSelector));
         servicesGrid.addColumn(ServiceInfo::getGroup).setHeader("Group");
-        servicesGrid.addColumn(ServiceInfo::getService).setHeader("Service");
+        servicesGrid.addColumn(ServiceInfo::getService).setHeader("Service").setAutoWidth(true);
         servicesGrid.addColumn(ServiceInfo::getVersion).setHeader("Version");
-        servicesGrid.addColumn(ServiceInfo::getServiceId).setHeader("ID");
+        servicesGrid.addColumn(ServiceInfo::getServiceIdHex).setHeader("ID");
         servicesGrid.addColumn(ServiceInfo::getCounter).setHeader("Counter");
         servicesGrid.addColumn(ServiceInfo::getInstances).setHeader("Instances");
         servicesGrid.addColumn(ServiceInfo::getOrgs).setHeader("Orgs");
