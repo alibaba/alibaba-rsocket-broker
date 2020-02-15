@@ -59,4 +59,9 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
     public @Nullable ReactiveMethodHandler getInvokeMethod(Integer handlerId) {
         return methodHashCodeInvokeEntrances.get(handlerId);
     }
+
+    @Override
+    public boolean containsHandler(Integer handlerId) {
+        return methodHashCodeInvokeEntrances.containsKey(handlerId);
+    }
 }

@@ -72,4 +72,6 @@ public interface LocalReactiveServiceCaller {
      */
     @Nullable
     ReactiveMethodHandler getInvokeMethod(Integer handlerId);
+
+    boolean containsHandler(Integer handlerId);
 }
