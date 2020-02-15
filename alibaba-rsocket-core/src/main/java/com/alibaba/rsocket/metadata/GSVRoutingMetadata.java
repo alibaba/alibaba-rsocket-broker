@@ -100,6 +100,10 @@ public class GSVRoutingMetadata implements MetadataAware {
         }
     }
 
+    public Integer handlerId() {
+        return MurmurHash3.hash32(service + "." + method);
+    }
+
     public String gsv() {
         return ServiceLocator.serviceId(group, service, version);
     }
