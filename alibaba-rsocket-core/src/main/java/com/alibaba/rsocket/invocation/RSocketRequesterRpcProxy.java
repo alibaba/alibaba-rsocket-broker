@@ -104,7 +104,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, @Nullable String service, String version,
-                                    RSocketMimeType encodingType, Duration timeout, @Nullable String endpoint) {
+                                    RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
+                                    Duration timeout, @Nullable String endpoint) {
         this.rsocket = upstream.getLoadBalancedRSocket();
         this.serviceInterface = serviceInterface;
         this.service = serviceInterface.getCanonicalName();
@@ -115,7 +116,11 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         this.version = version;
         this.endpoint = endpoint;
         this.encodingType = encodingType;
-        this.acceptEncodingTypes = defaultAcceptEncodingTypes();
+        if (acceptEncodingType == null) {
+            this.acceptEncodingTypes = defaultAcceptEncodingTypes();
+        } else {
+            this.acceptEncodingTypes = new RSocketMimeType[]{acceptEncodingType};
+        }
         this.timeout = timeout;
     }
 
