@@ -188,7 +188,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         Integer serviceId;
         final boolean encodingMetadataIncluded;
         if (binaryRoutingMetadata != null) {
-            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getComment(), StandardCharsets.UTF_8));
             serviceId = binaryRoutingMetadata.getServiceId();
             encodingMetadataIncluded = true;
         } else {
@@ -230,7 +230,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         Integer serviceId;
         final boolean encodingMetadataIncluded;
         if (binaryRoutingMetadata != null) {
-            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getComment(), StandardCharsets.UTF_8));
             serviceId = binaryRoutingMetadata.getServiceId();
             encodingMetadataIncluded = true;
         } else {
@@ -281,7 +281,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         Integer serviceId;
         final boolean encodingMetadataIncluded;
         if (binaryRoutingMetadata != null) {
-            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getComment(), StandardCharsets.UTF_8));
             serviceId = binaryRoutingMetadata.getServiceId();
             encodingMetadataIncluded = true;
         } else {
@@ -319,7 +319,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(signal.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
         if (binaryRoutingMetadata != null) {
-            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getComment(), StandardCharsets.UTF_8));
         } else {
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
