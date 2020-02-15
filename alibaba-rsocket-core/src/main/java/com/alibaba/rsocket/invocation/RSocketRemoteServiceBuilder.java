@@ -24,6 +24,7 @@ public class RSocketRemoteServiceBuilder<T> {
     private String endpoint;
     private Class<T> serviceInterface;
     private RSocketMimeType encodingType = RSocketMimeType.Hessian;
+    private RSocketMimeType acceptEncodingType;
     private UpstreamCluster upstreamCluster;
 
     public static <T> RSocketRemoteServiceBuilder<T> client(Class<T> serviceInterface) {
@@ -76,6 +77,11 @@ public class RSocketRemoteServiceBuilder<T> {
         return this;
     }
 
+    public RSocketRemoteServiceBuilder<T> acceptEncodingType(RSocketMimeType encodingType) {
+        this.acceptEncodingType = encodingType;
+        return this;
+    }
+
     public RSocketRemoteServiceBuilder<T> upstreamManager(UpstreamManager upstreamManager) {
         String serviceId = ServiceLocator.serviceId(group, service, version);
         UpstreamCluster upstream = upstreamManager.findClusterByServiceId(serviceId);
@@ -92,6 +98,7 @@ public class RSocketRemoteServiceBuilder<T> {
         return (T) Proxy.newProxyInstance(
                 serviceInterface.getClassLoader(),
                 new Class[]{serviceInterface},
-                new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version, encodingType, timeout, endpoint));
+                new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
+                        encodingType, acceptEncodingType, timeout, endpoint));
     }
 }
