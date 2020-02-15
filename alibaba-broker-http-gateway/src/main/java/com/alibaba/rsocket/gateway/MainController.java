@@ -1,6 +1,9 @@
 package com.alibaba.rsocket.gateway;
 
-import com.alibaba.rsocket.metadata.*;
+import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
+import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
+import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -23,7 +26,6 @@ import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
 @Controller
 public class MainController {
     private static MessageMimeTypeMetadata jsonMetaEncoding = new MessageMimeTypeMetadata(RSocketMimeType.Json);
-    private static MessageAcceptMimeTypesMetadata acceptMimeTypes = new MessageAcceptMimeTypesMetadata(RSocketMimeType.Json);
     private RSocket rsocket;
 
     public MainController(UpstreamManager upstreamManager) {
@@ -41,7 +43,7 @@ public class MainController {
         // please add auth code here
         try {
             GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, serviceName, method, version);
-            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding, acceptMimeTypes);
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding);
             ByteBuf bodyBuf = body == null ? EMPTY_BUFFER : Unpooled.wrappedBuffer(body);
             return rsocket.requestResponse(DefaultPayload.create(bodyBuf, compositeMetadata.getContent()))
                     .map(payload -> {
