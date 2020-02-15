@@ -494,7 +494,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Nullable
-    private BinaryRoutingMetadata binaryRoutingMetadata(ByteBuf compositeByteBuf) {
+    protected BinaryRoutingMetadata binaryRoutingMetadata(ByteBuf compositeByteBuf) {
         long typeAndService = compositeByteBuf.getLong(0);
         if ((typeAndService >> 56) == BINARY_ROUTING_MARK) {
             int metadataContentLen = (int) (typeAndService >> 32) & 0x00FFFFFF;
