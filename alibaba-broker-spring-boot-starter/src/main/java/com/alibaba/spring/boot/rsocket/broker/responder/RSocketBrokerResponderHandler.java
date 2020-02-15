@@ -39,6 +39,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.TopicProcessor;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -182,62 +183,84 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Override
     public Mono<Payload> requestResponse(Payload payload) {
-        //BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
-        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
-            ReferenceCountUtil.safeRelease(payload);
-            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
+        GSVRoutingMetadata gsvRoutingMetadata;
+        Integer serviceId;
+        final boolean encodingMetadataIncluded;
+        if (binaryRoutingMetadata != null) {
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+            serviceId = binaryRoutingMetadata.getServiceId();
+            encodingMetadataIncluded = true;
+        } else {
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+            gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
+            if (gsvRoutingMetadata == null) {
+                ReferenceCountUtil.safeRelease(payload);
+                return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+            }
+            encodingMetadataIncluded = compositeMetadata.contains(RSocketMimeType.MessageMimeType);
+            serviceId = gsvRoutingMetadata.id();
         }
         // broker local service call check: don't introduce interceptor, performance consideration
-        if (localServiceCaller.contains(routingMetaData.getService())) {
-            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-            if (dataEncodingMetadata == null) {
-                dataEncodingMetadata = defaultMessageMimeType;
-            }
-            return localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        if (localServiceCaller.contains(serviceId)) {
+            return localRequestResponse(gsvRoutingMetadata, defaultMessageMimeType, null, payload);
         }
         //request filters
-        Mono<RSocket> destination = findDestination(routingMetaData);
+        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, compositeMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, gsvRoutingMetadata, payload);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
         return destination.flatMap(rsocket -> {
-            recordServiceInvoke(principal.getName(), routingMetaData.gsv());
-            metrics(routingMetaData, "0x05");
-            return rsocket.requestResponse(payloadWithDataEncoding(compositeMetadata, payload));
+            recordServiceInvoke(principal.getName(), gsvRoutingMetadata.gsv());
+            metrics(gsvRoutingMetadata, "0x05");
+            if (encodingMetadataIncluded) {
+                return rsocket.requestResponse(payload);
+            } else {
+                return rsocket.requestResponse(payloadWithDataEncoding(payload));
+            }
         });
     }
 
     @Override
     public Mono<Void> fireAndForget(Payload payload) {
-        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
-            ReferenceCountUtil.safeRelease(payload);
-            return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
-        }
-        // broker local service call check: don't introduce interceptor, performance consideration
-        if (localServiceCaller.contains(routingMetaData.getService())) {
-            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-            if (dataEncodingMetadata == null) {
-                dataEncodingMetadata = defaultMessageMimeType;
+        BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
+        GSVRoutingMetadata gsvRoutingMetadata;
+        Integer serviceId;
+        final boolean encodingMetadataIncluded;
+        if (binaryRoutingMetadata != null) {
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+            serviceId = binaryRoutingMetadata.getServiceId();
+            encodingMetadataIncluded = true;
+        } else {
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+            gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
+            if (gsvRoutingMetadata == null) {
+                ReferenceCountUtil.safeRelease(payload);
+                return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
-            return localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
+            encodingMetadataIncluded = compositeMetadata.contains(RSocketMimeType.MessageMimeType);
+            serviceId = gsvRoutingMetadata.id();
+        }
+        if (localServiceCaller.contains(serviceId)) {
+            return localFireAndForget(gsvRoutingMetadata, defaultMessageMimeType, payload);
         }
         //request filters
-        Mono<RSocket> destination = findDestination(routingMetaData);
+        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, compositeMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, gsvRoutingMetadata, payload);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
         return destination.flatMap(rsocket -> {
-            recordServiceInvoke(principal.getName(), routingMetaData.gsv());
-            metrics(routingMetaData, "0x05");
-            return rsocket.fireAndForget(payloadWithDataEncoding(compositeMetadata, payload));
+            recordServiceInvoke(principal.getName(), gsvRoutingMetadata.gsv());
+            metrics(gsvRoutingMetadata, "0x05");
+            if (encodingMetadataIncluded) {
+                return rsocket.fireAndForget(payload);
+            } else {
+                return rsocket.fireAndForget(payloadWithDataEncoding(payload));
+            }
         });
     }
 
@@ -253,47 +276,64 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Override
     public Flux<Payload> requestStream(Payload payload) {
-        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
-            ReferenceCountUtil.safeRelease(payload);
-            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
+        GSVRoutingMetadata gsvRoutingMetadata;
+        Integer serviceId;
+        final boolean encodingMetadataIncluded;
+        if (binaryRoutingMetadata != null) {
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+            serviceId = binaryRoutingMetadata.getServiceId();
+            encodingMetadataIncluded = true;
+        } else {
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+            gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
+            if (gsvRoutingMetadata == null) {
+                ReferenceCountUtil.safeRelease(payload);
+                return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+            }
+            encodingMetadataIncluded = compositeMetadata.contains(RSocketMimeType.MessageMimeType);
+            serviceId = gsvRoutingMetadata.id();
         }
         // broker local service call check: don't introduce interceptor, performance consideration
-        if (localServiceCaller.contains(routingMetaData.getService())) {
-            MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
-            if (dataEncodingMetadata == null) {
-                dataEncodingMetadata = defaultMessageMimeType;
-            }
-            return localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        if (localServiceCaller.contains(serviceId)) {
+            return localRequestStream(gsvRoutingMetadata, defaultMessageMimeType, null, payload);
         }
-        Mono<RSocket> destination = findDestination(routingMetaData);
+        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, compositeMetadata, payload);
+            RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, gsvRoutingMetadata, payload);
             destination = filterChain.filter(requestContext).then(destination);
         }
         return destination.flatMapMany(rsocket -> {
-            recordServiceInvoke(principal.getName(), routingMetaData.gsv());
-            metrics(routingMetaData, "0x06");
-            return rsocket.requestStream(payloadWithDataEncoding(compositeMetadata, payload));
+            recordServiceInvoke(principal.getName(), gsvRoutingMetadata.gsv());
+            metrics(gsvRoutingMetadata, "0x06");
+            if (encodingMetadataIncluded) {
+                return rsocket.requestStream(payload);
+            } else {
+                return rsocket.requestStream(payloadWithDataEncoding(payload));
+            }
         });
     }
 
     @Override
     public Flux<Payload> requestChannel(Payload signal, Publisher<Payload> payloads) {
-        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
-        GSVRoutingMetadata routingMetaData = compositeMetadata.getRoutingMetaData();
-        if (routingMetaData == null) {
-            ReferenceCountUtil.safeRelease(signal);
-            return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+        BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(signal.metadata());
+        GSVRoutingMetadata gsvRoutingMetadata;
+        if (binaryRoutingMetadata != null) {
+            gsvRoutingMetadata = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getMetadata(), StandardCharsets.UTF_8));
+        } else {
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
+            gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
+            if (gsvRoutingMetadata == null) {
+                ReferenceCountUtil.safeRelease(signal);
+                return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
+            }
         }
-        Mono<RSocket> destination = findDestination(routingMetaData);
+        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         return destination.flatMapMany(rsocket -> {
-            recordServiceInvoke(principal.getName(), routingMetaData.gsv());
-            metrics(routingMetaData, "0x07");
+            recordServiceInvoke(principal.getName(), gsvRoutingMetadata.gsv());
+            metrics(gsvRoutingMetadata, "0x07");
             return rsocket.requestChannel(payloads);
         });
-
     }
 
     @Override
@@ -364,23 +404,18 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     /**
      * payload with data encoding if
      *
-     * @param compositeMetadata composite metadata
-     * @param payload           payload
+     * @param payload payload
      * @return payload
      */
-    public Payload payloadWithDataEncoding(RSocketCompositeMetadata compositeMetadata, Payload payload) {
-        if (compositeMetadata.contains(RSocketMimeType.MessageMimeType)) {
-            return payload;
-        } else {
-            ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5);
-            buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
-            buf.writeByte(0);
-            buf.writeByte(0);
-            buf.writeByte(1);
-            buf.writeByte(defaultMessageMimeType.getRSocketMimeType().getId() | 0x80);
-            CompositeByteBuf compositeByteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 3, payload.metadata(), buf);
-            return ByteBufPayload.create(payload.data(), compositeByteBuf);
-        }
+    public Payload payloadWithDataEncoding(Payload payload) {
+        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5);
+        buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
+        buf.writeByte(0);
+        buf.writeByte(0);
+        buf.writeByte(1);
+        buf.writeByte(defaultMessageMimeType.getRSocketMimeType().getId() | 0x80);
+        CompositeByteBuf compositeByteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, payload.metadata(), buf);
+        return ByteBufPayload.create(payload.data(), compositeByteBuf);
     }
 
     private Mono<RSocket> findDestination(GSVRoutingMetadata routingMetaData) {
@@ -458,6 +493,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         Metrics.counter(routingMetadata.getService() + ".counter").increment();
     }
 
+    @Nullable
     private BinaryRoutingMetadata binaryRoutingMetadata(ByteBuf compositeByteBuf) {
         long typeAndService = compositeByteBuf.getLong(0);
         if ((typeAndService >> 56) == BINARY_ROUTING_MARK) {
@@ -466,4 +502,5 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
         return null;
     }
+
 }
