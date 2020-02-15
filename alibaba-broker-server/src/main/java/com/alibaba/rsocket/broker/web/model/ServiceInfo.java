@@ -85,6 +85,10 @@ public class ServiceInfo {
     }
 
     public Integer getServiceId() {
-       return MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
+        return MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
+    }
+
+    public String getServiceIdHex() {
+        return String.format("0x%08x", getServiceId());
     }
 }
