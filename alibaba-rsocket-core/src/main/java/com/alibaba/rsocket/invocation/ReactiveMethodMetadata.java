@@ -147,13 +147,14 @@ public class ReactiveMethodMetadata {
         //set accepted mimetype
         MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
         //construct default composite metadata
-        this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
         CompositeByteBuf compositeMetadataContent;
+        //add gsv routing data if endpoint not empty
         if (endpoint != null && !endpoint.isEmpty()) {
+            this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
             this.compositeMetadata.addMetadata(binaryRoutingMetadata);
-            //construct composite metadata bytebuf
             compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
         } else {
+            this.compositeMetadata = RSocketCompositeMetadata.from(messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
             compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
             //add BinaryRoutingMetadata as first
             compositeMetadataContent.addComponent(true, 0, binaryRoutingMetadata.getHeaderAndContent());
