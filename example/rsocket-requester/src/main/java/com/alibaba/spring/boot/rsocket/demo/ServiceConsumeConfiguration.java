@@ -39,6 +39,16 @@ public class ServiceConsumeConfiguration {
     }
 
     @Bean
+    public UserServiceExtra userServiceExtra(UpstreamManager upstreamManager) {
+        return RSocketRemoteServiceBuilder
+                .client(UserServiceExtra.class)
+                .service(UserService.class.getCanonicalName())
+                .upstreamManager(upstreamManager)
+                .acceptEncodingType(RSocketMimeType.Json)
+                .build();
+    }
+
+    @Bean
     public RxUserService rxUserService(UpstreamManager upstreamManager) {
         return RSocketRemoteServiceBuilder
                 .client(RxUserService.class)
