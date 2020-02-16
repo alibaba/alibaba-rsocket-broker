@@ -108,9 +108,14 @@ public class ReactiveMethodMetadata {
         this.name = method.getName();
         this.group = group;
         this.version = version;
+        this.endpoint = endpoint;
+        //deal with @ServiceMapping for method
+        ServiceMapping serviceMapping = method.getAnnotation(ServiceMapping.class);
+        if (serviceMapping != null) {
+            initServiceMapping(serviceMapping);
+        }
         this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
         this.handlerId = MurmurHash3.hash32(service + "." + name);
-        this.endpoint = endpoint;
         //result type & generic type
         this.returnType = method.getReturnType();
         Type genericReturnType = method.getGenericReturnType();
@@ -136,32 +141,8 @@ public class ReactiveMethodMetadata {
         //param encoding type
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
-        //payload routing metadata
-        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.service, this.name, version);
-        routingMetadata.setEndpoint(this.endpoint);
-        //payload binary routing metadata
-        BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId,
-                routingMetadata.assembleRoutingKey().getBytes(StandardCharsets.UTF_8));
-        //add param encoding
-        MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
-        //set accepted mimetype
-        MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
-        //construct default composite metadata
-        CompositeByteBuf compositeMetadataContent;
-        //add gsv routing data if endpoint not empty
-        if (endpoint != null && !endpoint.isEmpty()) {
-            this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
-            this.compositeMetadata.addMetadata(binaryRoutingMetadata);
-            compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
-        } else {
-            this.compositeMetadata = RSocketCompositeMetadata.from(messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
-            compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
-            //add BinaryRoutingMetadata as first
-            compositeMetadataContent.addComponent(true, 0, binaryRoutingMetadata.getHeaderAndContent());
-        }
-        // convert composite bytebuf to bytebuf for performance
-        this.compositeMetadataByteBuf = compositeMetadataContent.copy();
-        ReferenceCountUtil.safeRelease(compositeMetadataContent);
+        //init composite metadata for invocation
+        initCompositeMetadata();
         //bi direction check: param's type is Flux for 1st param or 2nd param
         if (paramCount == 1 && method.getParameterTypes()[0].equals(Flux.class)) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
@@ -190,6 +171,60 @@ public class ReactiveMethodMetadata {
         }
         metricsTags.add(Tag.of("method", this.name));
         metricsTags.add(Tag.of("frame", String.valueOf(this.rsocketFrameType.getEncodedType())));
+    }
+
+    public void initServiceMapping(ServiceMapping serviceMapping) {
+        String serviceName = serviceMapping.value();
+        if (serviceName.contains(".")) {
+            this.service = serviceName.substring(0, serviceName.lastIndexOf('.'));
+            this.name = serviceName.substring(serviceName.lastIndexOf('.') + 1);
+        } else {
+            this.name = serviceName;
+        }
+        if (!serviceMapping.group().isEmpty()) {
+            this.group = serviceMapping.group();
+        }
+        if (!serviceMapping.version().isEmpty()) {
+            this.version = serviceMapping.version();
+        }
+        if (!serviceMapping.endpoint().isEmpty()) {
+            this.endpoint = serviceMapping.endpoint();
+        }
+        if (!serviceMapping.encoding().isEmpty()) {
+            this.paramEncoding = RSocketMimeType.valueOfType(serviceMapping.encoding());
+        }
+        if (!serviceMapping.encoding().isEmpty()) {
+            this.acceptEncodingTypes = new RSocketMimeType[]{RSocketMimeType.valueOfType(serviceMapping.decoding())};
+        }
+    }
+
+    public void initCompositeMetadata() {
+        //payload routing metadata
+        GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.service, this.name, version);
+        routingMetadata.setEndpoint(this.endpoint);
+        //payload binary routing metadata
+        BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId,
+                routingMetadata.assembleRoutingKey().getBytes(StandardCharsets.UTF_8));
+        //add param encoding
+        MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
+        //set accepted mimetype
+        MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
+        //construct default composite metadata
+        CompositeByteBuf compositeMetadataContent;
+        //add gsv routing data if endpoint not empty
+        if (endpoint != null && !endpoint.isEmpty()) {
+            this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
+            this.compositeMetadata.addMetadata(binaryRoutingMetadata);
+            compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
+        } else {
+            this.compositeMetadata = RSocketCompositeMetadata.from(messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
+            compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
+            //add BinaryRoutingMetadata as first
+            compositeMetadataContent.addComponent(true, 0, binaryRoutingMetadata.getHeaderAndContent());
+        }
+        // convert composite bytebuf to bytebuf for performance
+        this.compositeMetadataByteBuf = compositeMetadataContent.copy();
+        ReferenceCountUtil.safeRelease(compositeMetadataContent);
     }
 
     public String getService() {
