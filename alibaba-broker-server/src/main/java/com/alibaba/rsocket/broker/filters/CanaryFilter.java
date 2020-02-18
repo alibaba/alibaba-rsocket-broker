@@ -27,7 +27,7 @@ public class CanaryFilter implements RSocketFilter {
 
     @Override
     public String name() {
-        return "RSocket Canary filter - " + trafficRating + "0% traffic to canary version";
+        return "RSocket Canary filter -- " + trafficRating + "% traffic to canary version";
     }
 
     @Override
