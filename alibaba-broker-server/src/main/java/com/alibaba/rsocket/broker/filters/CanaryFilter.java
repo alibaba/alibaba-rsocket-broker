@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author leijuan
  */
-public class CanaryFilter implements RSocketFilter {
+public class CanaryFilter extends RSocketFilter {
     private List<String> canaryServices = Arrays.asList("com.alibaba.Service1", "com.alibaba.Service2");
     private static String canaryVersion = "canary";
     private int roundRobinIndex = 0;
