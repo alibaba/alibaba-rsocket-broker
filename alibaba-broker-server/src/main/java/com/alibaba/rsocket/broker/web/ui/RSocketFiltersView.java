@@ -2,9 +2,11 @@ package com.alibaba.rsocket.broker.web.ui;
 
 import com.alibaba.rsocket.route.RSocketFilter;
 import com.alibaba.rsocket.route.RSocketFilterChain;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +29,12 @@ public class RSocketFiltersView extends VerticalLayout {
         filterGrid.setItems(filterChain.getFilters());
         filterGrid.addColumn(RSocketFilter::getClass).setHeader("Filter Class").setAutoWidth(true);
         filterGrid.addColumn(RSocketFilter::name).setHeader("Name");
+        filterGrid.addColumn(new ComponentRenderer<>(filter -> {
+                    Checkbox checkbox = new Checkbox(filter.isEnabled());
+                    checkbox.addValueChangeListener(event -> filter.setEnabled(checkbox.getValue()));
+                    return checkbox;
+                })
+        ).setHeader("Enabled");
         add(filterGrid);
     }
 
