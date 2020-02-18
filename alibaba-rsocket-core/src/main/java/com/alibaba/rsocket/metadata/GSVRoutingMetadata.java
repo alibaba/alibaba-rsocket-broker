@@ -37,6 +37,10 @@ public class GSVRoutingMetadata implements MetadataAware {
      * endpoint
      */
     private String endpoint;
+    /**
+     * target instance ID
+     */
+    private transient Integer targetId;
 
     public GSVRoutingMetadata() {
     }
@@ -92,7 +96,16 @@ public class GSVRoutingMetadata implements MetadataAware {
         this.version = version;
     }
 
+    public int getTargetId() {
+        return targetId;
+    }
+
+    public void setTargetId(int targetId) {
+        this.targetId = targetId;
+    }
+
     public Integer id() {
+        if (targetId != null) return targetId;
         if (group == null && version == null) {
             return MurmurHash3.hash32(service);
         } else {
