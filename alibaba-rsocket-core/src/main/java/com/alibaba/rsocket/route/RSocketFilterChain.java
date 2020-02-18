@@ -35,6 +35,7 @@ public class RSocketFilterChain {
 
     public Mono<Void> filter(RSocketExchange rsocketExchange) {
         return filterFlux
+                .filter(RSocketFilter::isEnabled)
                 .filterWhen(rsocketFilter -> rsocketFilter.shouldFilter(rsocketExchange))
                 .concatMap(rsocketFilter -> rsocketFilter.run(rsocketExchange))
                 .then();
