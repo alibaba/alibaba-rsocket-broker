@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
+import io.cloudevents.v1.CloudEventImpl;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -61,6 +62,11 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
 
     }
 
+    @Override
+    public Mono<String> spread(CloudEventImpl<?> cloudEvent) {
+        return Mono.empty();
+    }
+
     public Collection<RSocketBroker> hostsToBrokers() {
         return this.hosts.stream().map(host -> {
             RSocketBroker broker = new RSocketBroker();
@@ -68,5 +74,6 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
             return broker;
         }).collect(Collectors.toList());
     }
+
 
 }

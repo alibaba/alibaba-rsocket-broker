@@ -3,6 +3,8 @@ package com.alibaba.spring.boot.rsocket.broker.cluster;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.transport.NetworkUtil;
+import io.cloudevents.json.Json;
+import io.cloudevents.v1.CloudEventImpl;
 import io.scalecube.cluster.Cluster;
 import io.scalecube.cluster.ClusterImpl;
 import io.scalecube.cluster.ClusterMessageHandler;
@@ -101,12 +103,18 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
 
     @Override
     public void onMessage(Message message) {
-
+        //peer to peer cluster.send()
     }
 
     @Override
     public void onGossip(Message gossip) {
+        //cluster.spreadGossip()
+    }
 
+    @Override
+    public Mono<String> spread(CloudEventImpl<?> cloudEvent) {
+        Message message = Message.builder().data(Json.encode(cloudEvent)).build();
+        return cluster.spreadGossip(message);
     }
 
     @Override
