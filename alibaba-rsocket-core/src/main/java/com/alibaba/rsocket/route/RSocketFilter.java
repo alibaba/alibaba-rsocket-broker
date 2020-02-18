@@ -23,4 +23,10 @@ public interface RSocketFilter {
      * @param exchange request exchange
      */
     Mono<Void> run(RSocketExchange exchange);
+
+    String name();
+
+    default void refresh(String properties) {
+
+    }
 }
