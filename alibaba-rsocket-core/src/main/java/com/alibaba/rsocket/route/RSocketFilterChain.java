@@ -13,13 +13,19 @@ import java.util.List;
  */
 public class RSocketFilterChain {
     private boolean filtersPresent;
+    private List<RSocketFilter> filters;
     private Flux<RSocketFilter> filterFlux;
 
     public RSocketFilterChain(List<RSocketFilter> filters) {
         if (filters != null && !filters.isEmpty()) {
             this.filtersPresent = true;
+            this.filters = filters;
             this.filterFlux = Flux.fromIterable(filters);
         }
+    }
+
+    public List<RSocketFilter> getFilters() {
+        return filters;
     }
 
     public boolean isFiltersPresent() {
