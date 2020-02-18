@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -14,9 +13,8 @@ import java.util.function.Supplier;
  * @author leijuan
  */
 public class RandomSelector<T> implements Supplier<Mono<T>> {
-    // atomic性能更好一些
-    //private Random randomGenerator = new Random();
-    private AtomicInteger position = new AtomicInteger(0);
+    // round robin index
+    private int index;
     private List<T> elements;
     private int size;
     private String name;
@@ -25,6 +23,7 @@ public class RandomSelector<T> implements Supplier<Mono<T>> {
         this.elements = elements;
         this.size = elements.size();
         this.name = name;
+        this.index = 0;
     }
 
     @Nullable
@@ -34,7 +33,8 @@ public class RandomSelector<T> implements Supplier<Mono<T>> {
         } else if (size == 1) {
             return elements.get(0);
         } else {
-            T t = elements.get((this.position.incrementAndGet() & 0x7FFFFFFF) % size);
+            T t = elements.get(index);
+            index = (index + 1) % size;
             if (t == null) {
                 t = elements.get(0);
             }
