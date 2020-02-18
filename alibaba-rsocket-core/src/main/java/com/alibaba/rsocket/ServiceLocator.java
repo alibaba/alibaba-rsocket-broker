@@ -105,4 +105,8 @@ public class ServiceLocator {
         }
         return routingBuilder.toString();
     }
+
+    public static Integer serviceHashCode(String routingKey) {
+        return MurmurHash3.hash32(routingKey);
+    }
 }
