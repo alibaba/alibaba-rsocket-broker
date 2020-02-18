@@ -4,6 +4,7 @@ import com.alibaba.rsocket.RSocketExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class RSocketFilterChain {
     }
 
     public List<RSocketFilter> getFilters() {
-        return filters;
+        return filters == null ? Collections.emptyList() : filters;
     }
 
     public boolean isFiltersPresent() {
