@@ -37,7 +37,7 @@ public class ConfigurationEventProcessor {
     public void init() {
         eventProcessor.subscribe(cloudEvent -> {
             String type = cloudEvent.getAttributes().getType();
-            if ("com.alibaba.rsocket.events.ConfigEven".equalsIgnoreCase(type)) {
+            if (ConfigEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleConfigurationEvent(cloudEvent);
             }
         });
