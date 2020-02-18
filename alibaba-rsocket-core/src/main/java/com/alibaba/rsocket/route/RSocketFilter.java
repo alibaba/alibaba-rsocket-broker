@@ -24,8 +24,18 @@ public interface RSocketFilter {
      */
     Mono<Void> run(RSocketExchange exchange);
 
+    /**
+     * filter name or description
+     *
+     * @return filter name
+     */
     String name();
 
+    /**
+     * refresh filter logic dynamically
+     *
+     * @param properties properties configuration
+     */
     default void refresh(String properties) {
 
     }
