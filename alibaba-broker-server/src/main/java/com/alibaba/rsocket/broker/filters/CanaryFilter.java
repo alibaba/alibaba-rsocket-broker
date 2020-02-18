@@ -19,10 +19,16 @@ import java.util.List;
 public class CanaryFilter implements RSocketFilter {
     private List<String> canaryServices = Arrays.asList("com.alibaba.Service1", "com.alibaba.Service2");
     private static String canaryVersion = "canary";
-    private int index = 0;
+    private int roundRobinIndex = 0;
+    private int trafficRating = 30;
 
     @Autowired
     private ServiceRoutingSelector routingSelector;
+
+    @Override
+    public String name() {
+        return "RSocket Canary filter - " + trafficRating + "0% traffic to canary version";
+    }
 
     @Override
     public Mono<Boolean> shouldFilter(RSocketExchange exchange) {
@@ -38,11 +44,11 @@ public class CanaryFilter implements RSocketFilter {
 
     @Override
     public Mono<Void> run(RSocketExchange exchange) {
-        if (index % 10 < 3) {
+        if (roundRobinIndex % 100 < trafficRating) {
             GSVRoutingMetadata routingMetadata = exchange.getRoutingMetadata();
             routingMetadata.setVersion(canaryVersion);
         }
-        index = (index + 1) % 10;
+        roundRobinIndex = (roundRobinIndex + 1) % 100;
         return Mono.empty();
     }
 }
