@@ -2,6 +2,8 @@ package com.alibaba.rsocket.broker.web.ui;
 
 import com.alibaba.rsocket.route.RSocketFilter;
 import com.alibaba.rsocket.route.RSocketFilterChain;
+import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
+import com.alibaba.spring.boot.rsocket.broker.events.RSocketFilterEnableEvent;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
@@ -9,6 +11,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.net.URI;
 
 import static com.alibaba.rsocket.broker.web.ui.RSocketFiltersView.NAV;
 
@@ -22,7 +26,7 @@ import static com.alibaba.rsocket.broker.web.ui.RSocketFiltersView.NAV;
 public class RSocketFiltersView extends VerticalLayout {
     public static final String NAV = "filtersView";
 
-    public RSocketFiltersView(@Autowired RSocketFilterChain filterChain) {
+    public RSocketFiltersView(@Autowired RSocketFilterChain filterChain, @Autowired RSocketBrokerManager brokerManager) {
         add(new H1("RSocket Filters"));
         //services & applications
         Grid<RSocketFilter> filterGrid = new Grid<>();
@@ -32,6 +36,8 @@ public class RSocketFiltersView extends VerticalLayout {
         filterGrid.addColumn(new ComponentRenderer<>(filter -> {
                     Checkbox checkbox = new Checkbox(filter.isEnabled());
                     checkbox.addValueChangeListener(event -> filter.setEnabled(checkbox.getValue()));
+                    RSocketFilterEnableEvent filterEnableEvent = new RSocketFilterEnableEvent(filter.getClass().getCanonicalName(), checkbox.getValue());
+                    brokerManager.spread(filterEnableEvent.toCloudEvent(URI.create("broker:" + brokerManager.localBroker().getIp()))).subscribe();
                     return checkbox;
                 })
         ).setHeader("Enabled");
