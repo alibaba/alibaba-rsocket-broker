@@ -1,5 +1,7 @@
 package com.alibaba.rsocket.broker.web.ui;
 
+import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
+import com.alibaba.spring.boot.rsocket.broker.events.AppConfigEvent;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
@@ -14,6 +16,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.net.URI;
+
 import static com.alibaba.rsocket.broker.web.ui.AppConfigView.NAV;
 
 /**
@@ -25,14 +29,16 @@ import static com.alibaba.rsocket.broker.web.ui.AppConfigView.NAV;
 public class AppConfigView extends VerticalLayout {
     public static final String NAV = "AppConfigView";
     private ConfigurationService configurationService;
+    private RSocketBrokerManager brokerManager;
     private TextField appName;
     private TextField configName;
     private TextArea configValue;
     private Button saveButton;
 
-    public AppConfigView(@Autowired ConfigurationService configurationService) {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+    public AppConfigView(@Autowired ConfigurationService configurationService, @Autowired RSocketBrokerManager brokerManager) {
         this.configurationService = configurationService;
+        this.brokerManager = brokerManager;
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
         VerticalLayout appList = makeAppList();
         VerticalLayout content = makeConfigForm();
         // Compose layout
@@ -51,8 +57,10 @@ public class AppConfigView extends VerticalLayout {
         HorizontalLayout buttons = new HorizontalLayout();
         saveButton = new Button("Save", buttonClickEvent -> {
             String key = appName.getValue() + ":" + configName.getValue();
+            AppConfigEvent appConfigEvent = new AppConfigEvent(appName.getValue(), configName.getValue(), configValue.getValue());
             configurationService.put(key, configValue.getValue())
                     .doOnSuccess(aVoid -> Notification.show("Saved Successfully"))
+                    .then(brokerManager.spread(appConfigEvent.toCloudEvent(URI.create("broker:" + brokerManager.localBroker().getIp()))))
                     .subscribe();
         });
         content.add(new H3("Key/Value"));
