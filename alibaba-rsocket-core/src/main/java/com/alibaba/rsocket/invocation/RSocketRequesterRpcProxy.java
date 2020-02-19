@@ -8,8 +8,6 @@ import com.alibaba.rsocket.metadata.MessageTagsMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import io.micrometer.core.instrument.Metrics;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -35,7 +33,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -86,13 +83,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      * encoding facade
      */
     private RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
-    /**
-     * cache for Request/Response result
-     */
-    public static final Cache<String, Mono<Object>> rpcCache = Caffeine.newBuilder()
-            .maximumSize(500_000)
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .build();
     /**
      * java method metadata map cache for performance
      */
@@ -173,15 +163,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             Class<?> returnType = method.getReturnType();
             if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_RESPONSE) {
                 metrics(methodMetadata);
-                final boolean cachedMethod = cachedMethods.containsKey(method);
-                if (cachedMethod) {
-                    CacheResult cacheResult = cachedMethods.get(method);
-                    String key = cacheResult.cacheName() + ":" + generateCacheKey(args);
-                    Mono<Object> cachedMono = rpcCache.getIfPresent(key);
-                    if (cachedMono != null) {
-                        return cachedMono;
-                    }
-                }
                 Mono<Payload> payloadMono = rsocket.requestResponse(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf)).timeout(timeout);
                 Mono<Object> result = payloadMono.handle((payload, sink) -> {
                     try {
@@ -198,14 +179,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         ReferenceCountUtil.safeRelease(payload);
                     }
                 });
-                //cache result
-                if (cachedMethod) {
-                    result = result.doOnNext(obj -> {
-                        CacheResult cacheResult = cachedMethods.get(method);
-                        String key = cacheResult.cacheName() + ":" + generateCacheKey(args);
-                        rpcCache.put(key, Mono.just(obj).cache());
-                    });
-                }
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
                 metrics(methodMetadata);
@@ -232,15 +205,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     protected void metrics(ReactiveMethodMetadata methodMetadata) {
         Metrics.counter(this.service, methodMetadata.getMetricsTags());
-    }
-
-    /**
-     * Invalidate RPC cache
-     *
-     * @param key cache key
-     */
-    public static void invalidateCache(String key) {
-        rpcCache.invalidate(key);
     }
 
     /**
