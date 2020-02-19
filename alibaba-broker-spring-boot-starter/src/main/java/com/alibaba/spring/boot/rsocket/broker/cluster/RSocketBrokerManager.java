@@ -16,6 +16,8 @@ public interface RSocketBrokerManager {
 
     Flux<Collection<RSocketBroker>> requestAll();
 
+    RSocketBroker localBroker();
+
     Collection<RSocketBroker> currentBrokers();
 
     Mono<RSocketBroker> findByIp(String ip);

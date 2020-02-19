@@ -19,22 +19,31 @@ import static com.alibaba.rsocket.transport.NetworkUtil.getLocalIP;
  */
 public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
     private Collection<String> hosts;
+    private RSocketBroker localBroker;
 
     public DefaultRSocketBrokerManager() {
         try {
-            this.hosts = Collections.singletonList(getLocalIP());
+            String localIP = getLocalIP();
+            this.localBroker = new RSocketBroker(localIP);
+            this.hosts = Collections.singletonList(localIP);
         } catch (Exception ignore) {
 
         }
     }
 
     public DefaultRSocketBrokerManager(String... hosts) {
+        this.localBroker = new RSocketBroker(getLocalIP());
         this.hosts = Arrays.asList(hosts);
     }
 
     @Override
     public Flux<Collection<RSocketBroker>> requestAll() {
         return Flux.just(hostsToBrokers());
+    }
+
+    @Override
+    public RSocketBroker localBroker() {
+        return this.localBroker;
     }
 
     @Override

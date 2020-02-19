@@ -57,6 +57,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     private ApplicationContext applicationContext;
 
     private Cluster cluster;
+    private RSocketBroker localBroker;
     /**
      * rsocket brokers, key is ip address
      */
@@ -76,6 +77,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .handler(cluster1 -> this)
                 .startAwait();
         brokers.put(localIp, new RSocketBroker(localIp));
+        this.localBroker = new RSocketBroker(localIp);
         log.info("Start cluster with Gossip support!");
     }
 
@@ -87,6 +89,11 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Override
     public Collection<RSocketBroker> currentBrokers() {
         return this.brokers.values();
+    }
+
+    @Override
+    public RSocketBroker localBroker() {
+        return this.localBroker;
     }
 
     @Override
