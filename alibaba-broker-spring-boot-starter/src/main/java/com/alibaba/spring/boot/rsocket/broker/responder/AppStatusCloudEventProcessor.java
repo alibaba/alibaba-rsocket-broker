@@ -41,9 +41,9 @@ public class AppStatusCloudEventProcessor {
     public void init() {
         eventProcessor.subscribe(cloudEvent -> {
             String type = cloudEvent.getAttributes().getType();
-            if ("com.alibaba.rsocket.events.AppStatusEvent".equalsIgnoreCase(type)) {
+            if (AppStatusEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleAppStatusEvent(cloudEvent);
-            } else if ("com.alibaba.rsocket.events.ServicesExposedEvent".equalsIgnoreCase(type)) {
+            } else if (ServicesExposedEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleServicesExposedEvent(cloudEvent);
             }
         });
@@ -66,7 +66,7 @@ public class AppStatusCloudEventProcessor {
                     }
                 } else if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_OUT_OF_SERVICE)) { //app out of service
                     responderHandler.unRegisterPublishedServices();
-                } else {  //app stopped
+                } else {
 
                 }
             }
