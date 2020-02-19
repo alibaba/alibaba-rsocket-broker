@@ -26,7 +26,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
-        <micrometer.version>1.3.3</micrometer.version>
+        <micrometer.version>1.3.5</micrometer.version>
         <reactor-bom.version>Dysprosium-SR4</reactor-bom.version>
         <netty.version>4.1.45.Final</netty.version>
         <rsocket.version>1.0.0-RC6</rsocket.version>
@@ -41,7 +41,7 @@
         <protostuff.version>1.6.2</protostuff.version>
         <avro.version>1.9.2</avro.version>
         <eclipse-collections.version>10.2.0</eclipse-collections.version>
-        <spring-cloud-release.version>Hoxton.SR1</spring-cloud-release.version>
+        <spring-cloud-release.version>Hoxton.SR2</spring-cloud-release.version>
         <cloudevents.version>1.2.0</cloudevents.version>
         <junit5.version>5.6.0</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
