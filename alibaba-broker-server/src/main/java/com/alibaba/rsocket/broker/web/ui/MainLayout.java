@@ -108,7 +108,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
         final Span label = new Span("AppConfig");
         final Icon icon = DATABASE.create();
         final Tab tab = new Tab(new HorizontalLayout(icon, label));
-        tab2Workspace.put(tab, new AppConfigView(this.configurationService));
+        tab2Workspace.put(tab, new AppConfigView(this.configurationService, this.rSocketBrokerManager));
         return tab;
     }
 
@@ -166,7 +166,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
         final Span label = new Span("RSocket Filters");
         final Icon icon = FILTER.create();
         final Tab tab = new Tab(new HorizontalLayout(icon, label));
-        tab2Workspace.put(tab, new RSocketFiltersView(this.filterChain));
+        tab2Workspace.put(tab, new RSocketFiltersView(this.filterChain, this.rSocketBrokerManager));
         return tab;
     }
 
