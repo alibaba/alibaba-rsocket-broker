@@ -244,7 +244,7 @@ public class AppMetadata implements MetadataAware {
     @JsonIgnore
     public ByteBuf getContent() {
         try {
-            return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(this));
+            return JsonUtils.toJsonByteBuf(this);
         } catch (Exception e) {
             return Unpooled.EMPTY_BUFFER;
         }
