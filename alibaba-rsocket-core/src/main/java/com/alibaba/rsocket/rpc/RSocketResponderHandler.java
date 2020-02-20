@@ -1,15 +1,14 @@
 package com.alibaba.rsocket.rpc;
 
+import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
-import com.alibaba.rsocket.metadata.BinaryRoutingMetadata;
-import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
-import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
-import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
+import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.ResponderRSocket;
@@ -32,6 +31,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
      * requester from peer
      */
     protected RSocket requester;
+    protected MessageMimeTypeMetadata defaultMessageMimeType;
     /**
      * combo onClose from responder and requester
      */
@@ -40,11 +40,24 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
 
     public RSocketResponderHandler(LocalReactiveServiceCaller serviceCall,
                                    TopicProcessor<CloudEventImpl> eventProcessor,
-                                   RSocket requester) {
+                                   RSocket requester,
+                                   ConnectionSetupPayload setupPayload) {
         this.localServiceCaller = serviceCall;
         this.eventProcessor = eventProcessor;
         this.requester = requester;
         this.comboOnClose = Mono.first(super.onClose(), requester.onClose());
+        //parse composite metadata
+        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(setupPayload.metadata());
+        if (compositeMetadata.contains(RSocketMimeType.Application)) {
+            AppMetadata appMetadata = AppMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.Application));
+            //from remote
+            if (!appMetadata.getUuid().equals(RSocketAppContext.ID)) {
+                RSocketMimeType dataType = RSocketMimeType.valueOfType(setupPayload.dataMimeType());
+                if (dataType != null) {
+                    this.defaultMessageMimeType = new MessageMimeTypeMetadata(dataType);
+                }
+            }
+        }
     }
 
     @Override
@@ -60,6 +73,9 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             routingMetaData = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getRoutingText(), StandardCharsets.UTF_8));
         }
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        if (dataEncodingMetadata == null && this.defaultMessageMimeType != null) {
+            dataEncodingMetadata = this.defaultMessageMimeType;
+        }
         if (dataEncodingMetadata == null) {
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
@@ -80,6 +96,9 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             routingMetaData = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getRoutingText(), StandardCharsets.UTF_8));
         }
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        if (dataEncodingMetadata == null && this.defaultMessageMimeType != null) {
+            dataEncodingMetadata = this.defaultMessageMimeType;
+        }
         if (dataEncodingMetadata == null) {
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
@@ -112,6 +131,9 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             routingMetaData = GSVRoutingMetadata.from(new String(binaryRoutingMetadata.getRoutingText(), StandardCharsets.UTF_8));
         }
         MessageMimeTypeMetadata dataEncodingMetadata = compositeMetadata.getDataEncodingMetadata();
+        if (dataEncodingMetadata == null && this.defaultMessageMimeType != null) {
+            dataEncodingMetadata = this.defaultMessageMimeType;
+        }
         if (dataEncodingMetadata == null) {
             ReferenceCountUtil.safeRelease(payload);
             return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
