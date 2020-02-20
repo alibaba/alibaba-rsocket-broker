@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.broker.web.model;
 
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 
 import java.util.Date;
@@ -55,6 +56,10 @@ public class AppInstance {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getStatusText() {
+        return AppStatusEvent.statusText(this.status);
     }
 
     public Set<ServiceLocator> getServices() {
