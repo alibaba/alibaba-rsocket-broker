@@ -7,6 +7,9 @@ GET http://localhost:9998/ops/connections
 ### brokers
 GET http://localhost:9998/ops/brokers
 
+### stop broker
+POST http://localhost:9998/ops/stop_local_broker
+
 ### update config
 POST http://localhost:9998/config/refresh/rsocket-config-client
 Authorization: Bearer your_jwt_token_here
