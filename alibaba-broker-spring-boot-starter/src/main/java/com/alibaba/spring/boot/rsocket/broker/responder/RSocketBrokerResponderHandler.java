@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
@@ -66,6 +67,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      * default message mime type metadata
      */
     private MessageMimeTypeMetadata defaultMessageMimeType;
+    /**
+     * default data encoding bytebuf
+     */
+    private ByteBuf defaultEncodingBytebuf;
     /**
      * app metadata
      */
@@ -123,6 +128,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             RSocketMimeType dataType = RSocketMimeType.valueOfType(setupPayload.dataMimeType());
             if (dataType != null) {
                 this.defaultMessageMimeType = new MessageMimeTypeMetadata(dataType);
+                this.defaultEncodingBytebuf = constructDefaultDataEncoding();
             }
             this.id = appMetadata.getId();
             this.appMetadata = appMetadata;
@@ -408,14 +414,18 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      * @return payload
      */
     public Payload payloadWithDataEncoding(Payload payload) {
-        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5);
+        CompositeByteBuf compositeByteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, payload.metadata(), this.defaultEncodingBytebuf.retainedDuplicate());
+        return ByteBufPayload.create(payload.data(), compositeByteBuf);
+    }
+
+    private ByteBuf constructDefaultDataEncoding() {
+        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5,5);
         buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
         buf.writeByte(0);
         buf.writeByte(0);
         buf.writeByte(1);
         buf.writeByte(defaultMessageMimeType.getRSocketMimeType().getId() | 0x80);
-        CompositeByteBuf compositeByteBuf = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, payload.metadata(), buf);
-        return ByteBufPayload.create(payload.data(), compositeByteBuf);
+        return buf;
     }
 
     private Mono<RSocket> findDestination(GSVRoutingMetadata routingMetaData) {
