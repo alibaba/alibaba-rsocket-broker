@@ -10,7 +10,9 @@ import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.MessageLite;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.util.ReferenceCountUtil;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -59,12 +61,20 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result != null) {
-            if (result instanceof MessageLite) {
-                return Unpooled.wrappedBuffer(((MessageLite) result).toByteArray());
-            } else {
-                LinkedBuffer buffer = LinkedBuffer.allocate(256);
-                Schema schema = RuntimeSchema.getSchema(result.getClass());
-                return Unpooled.wrappedBuffer(ProtostuffIOUtil.toByteArray(result, schema, buffer));
+            ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
+            try {
+                ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+                if (result instanceof MessageLite) {
+                    ((MessageLite) result).writeTo(bos);
+                } else {
+                    LinkedBuffer buffer = LinkedBuffer.allocate(256);
+                    Schema schema = RuntimeSchema.getSchema(result.getClass());
+                    ProtostuffIOUtil.writeTo(bos, result, schema, buffer);
+                }
+                return byteBuf;
+            } catch (Exception e) {
+                ReferenceCountUtil.safeRelease(byteBuf);
+                throw new EncodingException(RsocketErrorCode.message("RST-700500", result.getClass().getCanonicalName(), "bytebuf"), e);
             }
         }
         return EMPTY_BUFFER;

@@ -6,9 +6,13 @@ import com.alibaba.rsocket.encoding.ObjectEncodingHandler;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.util.ReferenceCountUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
@@ -28,9 +32,13 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
         if (isArrayEmpty(args)) {
             return EMPTY_BUFFER;
         }
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         try {
-            return JsonUtils.toJsonByteBuf(args);
+            ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+            JsonUtils.objectMapper.writeValue((OutputStream) bos, args);
+            return byteBuf;
         } catch (Exception e) {
+            ReferenceCountUtil.safeRelease(byteBuf);
             throw new EncodingException(RsocketErrorCode.message("RST-700500", "Object[]", "ByteBuf"), e);
         }
     }
@@ -54,9 +62,13 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
         if (result == null) {
             return EMPTY_BUFFER;
         }
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         try {
-            return JsonUtils.toJsonByteBuf(result);
+            ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+            JsonUtils.objectMapper.writeValue((OutputStream) bos, result);
+            return byteBuf;
         } catch (Exception e) {
+            ReferenceCountUtil.safeRelease(byteBuf);
             throw new EncodingException(RsocketErrorCode.message("RST-700500", result.getClass().getCanonicalName(), "ByteBuf"), e);
         }
     }

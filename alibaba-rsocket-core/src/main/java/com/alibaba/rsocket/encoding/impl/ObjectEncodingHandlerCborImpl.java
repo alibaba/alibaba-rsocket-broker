@@ -8,11 +8,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.util.ReferenceCountUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
@@ -34,9 +37,13 @@ public class ObjectEncodingHandlerCborImpl implements ObjectEncodingHandler {
         if (isArrayEmpty(args)) {
             return EMPTY_BUFFER;
         }
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         try {
-            return Unpooled.wrappedBuffer(objectMapper.writeValueAsBytes(args[0]));
+            ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+            objectMapper.writeValue((OutputStream) bos, args[0]);
+            return byteBuf;
         } catch (Exception e) {
+            ReferenceCountUtil.safeRelease(byteBuf);
             throw new EncodingException(RsocketErrorCode.message("RST-700500", Arrays.toString(args), "Bytebuf"), e);
         }
     }
@@ -57,9 +64,13 @@ public class ObjectEncodingHandlerCborImpl implements ObjectEncodingHandler {
     @NotNull
     public ByteBuf encodingResult(@Nullable Object result) throws EncodingException {
         if (result != null) {
+            ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
             try {
-                return Unpooled.wrappedBuffer(objectMapper.writeValueAsBytes(result));
+                ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+                objectMapper.writeValue((OutputStream) bos, result);
+                return byteBuf;
             } catch (Exception e) {
+                ReferenceCountUtil.safeRelease(byteBuf);
                 throw new EncodingException(RsocketErrorCode.message("RST-700500", result.toString(), "Bytebuf"), e);
             }
         }
