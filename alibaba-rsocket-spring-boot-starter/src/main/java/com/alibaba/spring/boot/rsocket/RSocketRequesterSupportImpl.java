@@ -15,6 +15,7 @@ import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.plugins.RSocketInterceptor;
+import io.rsocket.util.ByteBufPayload;
 import io.rsocket.util.DefaultPayload;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
@@ -73,7 +74,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
             if (this.jwtToken != null && this.jwtToken.length > 0) {
                 compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
             }
-            return DefaultPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent());
+            return ByteBufPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent());
         };
     }
 
