@@ -347,24 +347,16 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             for (RSocketInterceptor responderInterceptor : requesterSupport.responderInterceptors()) {
                 clientRSocketFactory = clientRSocketFactory.addResponderPlugin(responderInterceptor);
             }
-            Payload payload = requesterSupport.setupPayload().get();
             return clientRSocketFactory
                     .keepAliveMissedAcks(12)
-                    .setupPayload(payload)
+                    .setupPayload(requesterSupport.setupPayload().get())
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
                     .errorConsumer(error -> log.error(RsocketErrorCode.message("RST-200501"), error))
                     .frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
-                    .start()
-                    .doOnSuccess(rSocket -> {
-                        ReferenceCountUtil.release(payload.metadata());
-                        ReferenceCountUtil.release(payload);
-                    }).doOnError(error -> {
-                        ReferenceCountUtil.release(payload.metadata());
-                        ReferenceCountUtil.release(payload);
-                    });
+                    .start();
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-400500", uri), e);
             return Mono.error(new ConnectionErrorException(uri));
