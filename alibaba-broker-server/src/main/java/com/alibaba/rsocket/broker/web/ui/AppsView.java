@@ -36,7 +36,7 @@ public class AppsView extends VerticalLayout {
         appMetadataGrid.addColumn(AppInstance::getRoles).setHeader("Roles");
         appMetadataGrid.addColumn(AppInstance::getIp).setHeader("IP");
         appMetadataGrid.addColumn(AppInstance::getConnectedAt).setHeader("Started Time");
-        appMetadataGrid.addColumn(AppInstance::getStatus).setHeader("Status");
+        appMetadataGrid.addColumn(AppInstance::getStatusText).setHeader("Status");
         appMetadataGrid.addColumn(TemplateRenderer.<AppInstance>of("<b inner-h-t-m-l='[[item.servicesText]]'></b>")
                 .withProperty("servicesText", AppInstance::getServicesHTML)).setHeader("Services");
         appMetadataGrid.addColumn(TemplateRenderer.<AppInstance>of("<b inner-h-t-m-l='[[item.servicesText]]'></b>")
