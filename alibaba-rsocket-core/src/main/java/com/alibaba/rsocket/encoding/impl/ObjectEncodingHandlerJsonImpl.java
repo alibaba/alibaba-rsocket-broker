@@ -6,7 +6,6 @@ import com.alibaba.rsocket.encoding.ObjectEncodingHandler;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +29,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
             return EMPTY_BUFFER;
         }
         try {
-            return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(args));
+            return JsonUtils.toJsonByteBuf(args);
         } catch (Exception e) {
             throw new EncodingException(RsocketErrorCode.message("RST-700500", "Object[]", "ByteBuf"), e);
         }
@@ -56,7 +55,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
             return EMPTY_BUFFER;
         }
         try {
-            return Unpooled.wrappedBuffer(JsonUtils.toJsonBytes(result));
+            return JsonUtils.toJsonByteBuf(result);
         } catch (Exception e) {
             throw new EncodingException(RsocketErrorCode.message("RST-700500", result.getClass().getCanonicalName(), "ByteBuf"), e);
         }
