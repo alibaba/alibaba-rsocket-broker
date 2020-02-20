@@ -34,6 +34,7 @@ public class RSocketEndpoint {
     private RSocketProperties properties;
     private RSocketRequesterSupport rsocketRequesterSupport;
     private UpstreamManager upstreamManager;
+    private Integer rsocketServiceStatus = AppStatusEvent.STATUS_SERVING;
 
     public RSocketEndpoint(RSocketProperties properties, UpstreamManager upstreamManager, RSocketRequesterSupport rsocketRequesterSupport) {
         this.properties = properties;
@@ -45,6 +46,7 @@ public class RSocketEndpoint {
     public Map<String, Object> info() {
         Map<String, Object> info = new HashMap<>();
         info.put("id", RSocketAppContext.ID);
+        info.put("serviceStatus", AppStatusEvent.statusText(this.rsocketServiceStatus));
         Set<ServiceLocator> exposedServices = rsocketRequesterSupport.exposedServices().get();
         if (!exposedServices.isEmpty()) {
             info.put("published", exposedServices);
@@ -83,11 +85,14 @@ public class RSocketEndpoint {
     @WriteOperation
     public Mono<String> operate(@Selector String action) {
         if ("online".equalsIgnoreCase(action)) {
-            return sendAppStatus(AppStatusEvent.STATUS_SERVING).thenReturn("Succeed to online!");
+            this.rsocketServiceStatus = AppStatusEvent.STATUS_SERVING;
+            return sendAppStatus(this.rsocketServiceStatus).thenReturn("Succeed to online!");
         } else if ("offline".equalsIgnoreCase(action)) {
-            return sendAppStatus(AppStatusEvent.STATUS_OUT_OF_SERVICE).thenReturn("Succeed to offline!");
+            this.rsocketServiceStatus = AppStatusEvent.STATUS_OUT_OF_SERVICE;
+            return sendAppStatus(this.rsocketServiceStatus).thenReturn("Succeed to offline!");
         } else if ("shutdown".equalsIgnoreCase(action)) {
-            return sendAppStatus(AppStatusEvent.STATUS_STOPPED)
+            this.rsocketServiceStatus = AppStatusEvent.STATUS_STOPPED;
+            return sendAppStatus(this.rsocketServiceStatus)
                     .delayElement(Duration.ofSeconds(15))
                     .thenReturn("Succeed to shutdown!");
         } else {
