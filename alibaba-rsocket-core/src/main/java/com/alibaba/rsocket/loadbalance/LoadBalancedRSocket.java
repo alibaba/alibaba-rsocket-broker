@@ -46,6 +46,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private Logger log = LoggerFactory.getLogger(LoadBalancedRSocket.class);
     private String serviceId;
     private Flux<Collection<String>> urisFactory;
+    private Collection<String> lastRSocketUris = new ArrayList<>();
     private Map<String, RSocket> activeSockets;
     /**
      * unhealthy uris
@@ -66,6 +67,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     public Set<String> getUnHealthUriSet() {
         return unHealthUriSet;
+    }
+
+    public Collection<String> getLastRSocketUris() {
+        return lastRSocketUris;
     }
 
     public long getLastHealthCheckTimeStamp() {
@@ -101,7 +106,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     private void refreshRsockets(Collection<String> rsocketUris) {
+        //no changes
+        if (isSameWithLastUris(rsocketUris)) {
+            return;
+        }
         this.lastRefreshTimeStamp = System.currentTimeMillis();
+        this.lastRSocketUris = rsocketUris;
         this.unHealthUriSet.clear();
         Flux.fromIterable(rsocketUris)
                 .flatMap(rsocketUri -> {
@@ -272,18 +282,21 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void onRSocketClosed(String rsocketUri, RSocket rsocket) {
-        this.unHealthUriSet.add(rsocketUri);
-        if (activeSockets.containsKey(rsocketUri)) {
-            activeSockets.remove(rsocketUri);
-            this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
-            log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
-            tryToReconnect(rsocketUri);
-        }
-        if (!rsocket.isDisposed()) {
-            try {
-                rsocket.dispose();
-            } catch (Exception ignore) {
+        //in last rsocket uris or not
+        if (this.lastRSocketUris.contains(rsocketUri)) {
+            this.unHealthUriSet.add(rsocketUri);
+            if (activeSockets.containsKey(rsocketUri)) {
+                activeSockets.remove(rsocketUri);
+                this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
+                log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
+                tryToReconnect(rsocketUri);
+            }
+            if (!rsocket.isDisposed()) {
+                try {
+                    rsocket.dispose();
+                } catch (Exception ignore) {
 
+                }
             }
         }
     }
@@ -374,6 +387,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         }
                     }).subscribe();
                 });
+    }
+
+    public boolean isSameWithLastUris(Collection<String> newRSocketUris) {
+        return this.lastRSocketUris.size() == newRSocketUris.size() && this.lastRSocketUris.containsAll(newRSocketUris) && newRSocketUris.containsAll(this.lastRSocketUris);
     }
 
 }
