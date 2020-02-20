@@ -4,7 +4,6 @@ import com.alibaba.rsocket.encoding.EncodingException;
 import com.alibaba.rsocket.encoding.ObjectEncodingHandler;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import com.caucho.hessian.io.HessianSerializerInput;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;

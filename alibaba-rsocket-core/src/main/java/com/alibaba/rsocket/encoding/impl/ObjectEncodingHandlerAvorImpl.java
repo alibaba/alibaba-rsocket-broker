@@ -20,7 +20,6 @@ import java.nio.ByteBuffer;
  *
  * @author leijuan
  */
-@SuppressWarnings("unchecked")
 public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
     LoadingCache<Class<?>, Method> fromByteBufferMethodStore = Caffeine.newBuilder()
             .maximumSize(Integer.MAX_VALUE)
@@ -72,7 +71,6 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
         return EMPTY_BUFFER;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
