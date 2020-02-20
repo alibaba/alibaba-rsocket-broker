@@ -20,6 +20,7 @@ import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.net.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -42,7 +43,7 @@ import static com.alibaba.rsocket.cloudevents.CloudEventRSocket.CLOUD_EVENT_TYPE
  *
  * @author leijuan
  */
-public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, ClusterMessageHandler {
+public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, ClusterMessageHandler, DisposableBean {
     private Logger log = LoggerFactory.getLogger(RSocketBrokerManagerGossipImpl.class);
     /**
      * Gossip listen port
@@ -190,5 +191,10 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Override
     public void stopLocalBroker() {
         this.cluster.shutdown();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        this.stopLocalBroker();
     }
 }
