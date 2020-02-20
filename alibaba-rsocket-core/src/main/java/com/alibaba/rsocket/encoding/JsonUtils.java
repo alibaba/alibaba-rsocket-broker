@@ -13,9 +13,13 @@ import io.cloudevents.json.ZonedDateTimeDeserializer;
 import io.cloudevents.json.ZonedDateTimeSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.util.ReferenceCountUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -45,6 +49,18 @@ public class JsonUtils {
 
     public static byte[] toJsonBytes(Object object) throws JsonProcessingException {
         return objectMapper.writeValueAsBytes(object);
+    }
+
+    public static ByteBuf toJsonByteBuf(Object object) throws EncodingException {
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
+        try {
+            ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+            objectMapper.writeValue((OutputStream) bos, object);
+            return byteBuf;
+        } catch (Exception e) {
+            ReferenceCountUtil.release(byteBuf);
+            throw new EncodingException(e.getMessage());
+        }
     }
 
     public static void updateJsonValue(ByteBuf byteBuf, Object object) throws IOException {
