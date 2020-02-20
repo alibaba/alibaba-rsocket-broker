@@ -149,10 +149,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     }
                     this.activeSockets = newActiveRSockets;
                     this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
-                    //close all stale rsocket after 15 for drain mode
+                    //close all stale rsocket after 45 seconds for drain mode
                     if (!staleRSockets.isEmpty()) {
                         Flux.fromIterable(staleRSockets.entrySet())
-                                .delaySubscription(Duration.ofSeconds(15))
+                                .delaySubscription(Duration.ofSeconds(45))
                                 .subscribe(entry -> {
                                     log.info(RsocketErrorCode.message("RST-200011", entry.getKey()));
                                     entry.getValue().dispose();
