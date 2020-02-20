@@ -78,7 +78,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .startAwait();
         brokers.put(localIp, new RSocketBroker(localIp));
         this.localBroker = new RSocketBroker(localIp);
-        log.info("Start cluster with Gossip support!");
+        log.info(RsocketErrorCode.message("RST-300002"));
     }
 
     @Override
