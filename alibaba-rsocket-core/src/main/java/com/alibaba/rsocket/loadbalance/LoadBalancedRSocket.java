@@ -202,9 +202,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
      */
     public Mono<Void> fireCloudEventToUpstreamAll(CloudEventImpl<?> cloudEvent) {
         try {
-            Payload payload = cloudEventToMetadataPushPayload(cloudEvent);
             return Flux.fromIterable(this.getActiveSockets().values())
-                    .flatMap(rsocket -> rsocket.metadataPush(payload))
+                    .flatMap(rsocket -> rsocket.metadataPush(cloudEventToMetadataPushPayload(cloudEvent)))
                     .doOnError(throwable -> log.error("Failed to fire event to upstream", throwable))
                     .then();
         } catch (Exception e) {
