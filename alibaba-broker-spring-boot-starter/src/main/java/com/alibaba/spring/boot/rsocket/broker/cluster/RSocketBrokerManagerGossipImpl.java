@@ -124,6 +124,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Override
     public void onMessage(Message message) {
         //peer to peer cluster.send()
+        System.out.println(message);
     }
 
     @Override
@@ -150,7 +151,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             AppConfigEvent appConfigEvent = CloudEventSupport.unwrapData(cloudEvent, AppConfigEvent.class);
             if (appConfigEvent != null) {
                 ConfigurationService configurationService = applicationContext.getBean(ConfigurationService.class);
-                configurationService.put(appConfigEvent.getAppName() + "." + appConfigEvent.getKey(), appConfigEvent.getVale());
+                configurationService.put(appConfigEvent.getAppName() + "." + appConfigEvent.getKey(), appConfigEvent.getVale()).subscribe();
             }
         }
     }
