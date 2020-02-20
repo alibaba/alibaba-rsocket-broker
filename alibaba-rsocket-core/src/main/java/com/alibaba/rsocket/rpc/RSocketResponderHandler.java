@@ -50,7 +50,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(setupPayload.metadata());
         if (compositeMetadata.contains(RSocketMimeType.Application)) {
             AppMetadata appMetadata = AppMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.Application));
-            //from remote
+            //from remote requester
             if (!appMetadata.getUuid().equals(RSocketAppContext.ID)) {
                 RSocketMimeType dataType = RSocketMimeType.valueOfType(setupPayload.dataMimeType());
                 if (dataType != null) {
