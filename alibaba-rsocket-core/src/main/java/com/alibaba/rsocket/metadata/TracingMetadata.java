@@ -1,10 +1,9 @@
 package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 
 import java.nio.charset.StandardCharsets;
-
-import static io.netty.buffer.Unpooled.buffer;
 
 /**
  * Tracing metadata
@@ -90,7 +89,7 @@ public class TracingMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        ByteBuf buffer = buffer(TRACING_BYTES_LENGTH);
+        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer(TRACING_BYTES_LENGTH);
         buffer.writeByte(flag);
         byte[] source = id.getBytes(StandardCharsets.UTF_8);
         if (source.length == ID_BYTES_LENGTH) {

@@ -1,7 +1,7 @@
 package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.PooledByteBufAllocator;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +42,10 @@ public class OriginMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        return Unpooled.wrappedBuffer(this.origin.toString().getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = this.origin.toString().getBytes(StandardCharsets.UTF_8);
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(bytes.length, bytes.length);
+        byteBuf.writeBytes(bytes);
+        return byteBuf;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class OriginMetadata implements MetadataAware {
         String text = byteBuf.toString(StandardCharsets.UTF_8);
         this.origin = URI.create(text);
     }
-    
+
     public static OriginMetadata from(ByteBuf content) {
         OriginMetadata temp = new OriginMetadata();
         temp.load(content);
