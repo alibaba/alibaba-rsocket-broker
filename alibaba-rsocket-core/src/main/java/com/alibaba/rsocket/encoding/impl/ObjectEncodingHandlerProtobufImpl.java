@@ -89,8 +89,6 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
                     Method method = parseFromMethodStore.get(targetClass);
                     if (method != null) {
                         return method.invoke(null, data.nioBuffer());
-                    } else {
-                        throw new EncodingException("Failed to find parseFrom  for class: " + targetClass);
                     }
                 } else {
                     Schema schema = RuntimeSchema.getSchema(targetClass);
