@@ -2,13 +2,10 @@ package com.alibaba.rsocket.encoding;
 
 import com.caucho.hessian.io.HessianSerializerInput;
 import com.caucho.hessian.io.HessianSerializerOutput;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
@@ -24,11 +21,13 @@ public class HessianUtils {
             return Unpooled.EMPTY_BUFFER;
         }
         //bos and output close not necessary
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
+        ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+        bos.flush();
         HessianSerializerOutput output = new HessianSerializerOutput(bos);
         output.writeObject(obj);
         output.flush();
-        return Unpooled.wrappedBuffer(bos.toByteArray());
+        return byteBuf;
     }
 
     @Nullable
