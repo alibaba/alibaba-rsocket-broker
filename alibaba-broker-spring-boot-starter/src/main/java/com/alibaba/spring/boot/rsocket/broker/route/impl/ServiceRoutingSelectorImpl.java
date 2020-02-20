@@ -61,6 +61,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
                     }
                 }
             }
+            instanceServices.removeAll(instanceId);
         }
     }
 
