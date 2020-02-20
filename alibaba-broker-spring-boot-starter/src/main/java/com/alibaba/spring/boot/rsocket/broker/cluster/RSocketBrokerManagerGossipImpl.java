@@ -151,7 +151,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             AppConfigEvent appConfigEvent = CloudEventSupport.unwrapData(cloudEvent, AppConfigEvent.class);
             if (appConfigEvent != null) {
                 ConfigurationService configurationService = applicationContext.getBean(ConfigurationService.class);
-                configurationService.put(appConfigEvent.getAppName() + "." + appConfigEvent.getKey(), appConfigEvent.getVale()).subscribe();
+                configurationService.put(appConfigEvent.getAppName() + ":" + appConfigEvent.getKey(), appConfigEvent.getVale()).subscribe();
             }
         }
     }
