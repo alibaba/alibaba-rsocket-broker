@@ -44,13 +44,13 @@ public class AppStatusEvent implements CloudEventSupport<AppStatusEvent> {
     }
 
     public static String statusText(Integer status) {
-        if (status.equals(STATUS_CONNECTED)) {
+        if (STATUS_CONNECTED.equals(status)) {
             return "Connected";
-        } else if (status.equals(STATUS_SERVING)) {
+        } else if (STATUS_SERVING.equals(status)) {
             return "Serving";
-        } else if (status.equals(STATUS_OUT_OF_SERVICE)) {
+        } else if (STATUS_OUT_OF_SERVICE.equals(status)) {
             return "OutOfService";
-        } else if (status.equals(STATUS_STOPPED)) {
+        } else if (STATUS_STOPPED.equals(status)) {
             return "Stopped";
         } else {
             return "Unknown";
