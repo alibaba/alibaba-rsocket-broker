@@ -43,4 +43,18 @@ public class AppStatusEvent implements CloudEventSupport<AppStatusEvent> {
         this.status = status;
     }
 
+    public static String statusText(Integer status) {
+        if (status.equals(STATUS_CONNECTED)) {
+            return "Connected";
+        } else if (status.equals(STATUS_SERVING)) {
+            return "Serving";
+        } else if (status.equals(STATUS_OUT_OF_SERVICE)) {
+            return "OutOfService";
+        } else if (status.equals(STATUS_STOPPED)) {
+            return "Stopped";
+        } else {
+            return "Unknown";
+        }
+    }
+
 }
