@@ -57,7 +57,9 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
                 .build();
         LoadBalancedRSocket loadBalancedRSocket = brokerCluster.getLoadBalancedRSocket();
         String brokers = String.join(",", loadBalancedRSocket.getActiveSockets().keySet());
-        loadBalancedRSocket.fireCloudEventToUpstreamAll(appStatusEventCloudEvent).doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", brokers))).subscribe();
+        loadBalancedRSocket.fireCloudEventToUpstreamAll(appStatusEventCloudEvent)
+                .doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", brokers)))
+                .subscribe();
         CloudEventImpl<ServicesExposedEvent> servicesExposedEventCloudEvent = rsocketRequesterSupport.servicesExposedEvent().get();
         if (servicesExposedEventCloudEvent != null) {
             loadBalancedRSocket.fireCloudEventToUpstreamAll(servicesExposedEventCloudEvent).doOnSuccess(aVoid -> {
