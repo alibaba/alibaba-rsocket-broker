@@ -1,13 +1,18 @@
 package com.alibaba.rsocket.broker.web.ui;
 
 import com.alibaba.rsocket.broker.web.model.AppInstance;
+import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
+import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +42,25 @@ public class AppsView extends VerticalLayout {
         appMetadataGrid.addColumn(AppInstance::getIp).setHeader("IP");
         appMetadataGrid.addColumn(AppInstance::getConnectedAt).setHeader("Started Time");
         appMetadataGrid.addColumn(AppInstance::getStatusText).setHeader("Status");
+        appMetadataGrid.addColumn(new ComponentRenderer<>(appInstance -> {
+                    Checkbox checkbox = new Checkbox(appInstance.getStatus().equals(AppStatusEvent.STATUS_SERVING));
+                    checkbox.addValueChangeListener(event -> {
+                        RSocketBrokerResponderHandler responderHandler = handlerRegistry.findByUUID(appInstance.getId());
+                        if (responderHandler != null) {
+                            if (checkbox.getValue()) {
+                                responderHandler.registerPublishedServices();
+                                appInstance.setStatus(AppStatusEvent.STATUS_SERVING);
+                                Notification.show(appInstance.getName() + "'s status is " + appInstance.getStatusText());
+                            } else {
+                                responderHandler.unRegisterPublishedServices();
+                                appInstance.setStatus(AppStatusEvent.STATUS_OUT_OF_SERVICE);
+                                Notification.show(appInstance.getName() + "'s status is " + appInstance.getStatusText());
+                            }
+                        }
+                    });
+                    return checkbox;
+                })
+        ).setHeader("Enabled");
         appMetadataGrid.addColumn(TemplateRenderer.<AppInstance>of("<b inner-h-t-m-l='[[item.servicesText]]'></b>")
                 .withProperty("servicesText", AppInstance::getServicesHTML)).setHeader("Services");
         appMetadataGrid.addColumn(TemplateRenderer.<AppInstance>of("<b inner-h-t-m-l='[[item.servicesText]]'></b>")
@@ -52,7 +76,6 @@ public class AppsView extends VerticalLayout {
         });
 
     }
-
 
     public List<AppInstance> appMetadataList(RSocketBrokerHandlerRegistry handlerFactory) {
         return handlerFactory.findAll()
