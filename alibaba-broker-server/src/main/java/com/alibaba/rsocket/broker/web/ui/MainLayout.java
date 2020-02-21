@@ -7,13 +7,16 @@ import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegi
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.page.Viewport;
@@ -23,6 +26,9 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import reactor.core.Disposable;
+import reactor.extra.processor.TopicProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +54,8 @@ public class MainLayout extends AppLayout implements DisposableBean {
     private ConfigurationService configurationService;
     private AuthenticationService authenticationService;
     private RSocketFilterChain filterChain;
+    private TopicProcessor<String> notificationProcessor;
+    private Disposable notificationSubscribe = null;
 
     public MainLayout(@Autowired RSocketBrokerHandlerRegistry handlerRegistry,
                       @Autowired ServiceRoutingSelector serviceRoutingSelector,
@@ -55,7 +63,8 @@ public class MainLayout extends AppLayout implements DisposableBean {
                       @Autowired DnsResolveService resolveService,
                       @Autowired ConfigurationService configurationService,
                       @Autowired AuthenticationService authenticationService,
-                      @Autowired RSocketFilterChain filterChain) {
+                      @Autowired RSocketFilterChain filterChain,
+                      @Autowired @Qualifier("notificationProcessor") TopicProcessor<String> notificationProcessor) {
         this.handlerRegistry = handlerRegistry;
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.rSocketBrokerManager = rSocketBrokerManager;
@@ -63,6 +72,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
         this.configurationService = configurationService;
         this.authenticationService = authenticationService;
         this.filterChain = filterChain;
+        this.notificationProcessor = notificationProcessor;
         //init the Layout
         Image logo = new Image("/rsocket-logo.svg", "RSocket Logo");
         logo.setHeight("44px");
@@ -176,6 +186,30 @@ public class MainLayout extends AppLayout implements DisposableBean {
             if (value instanceof DisposableBean) {
                 ((DisposableBean) value).destroy();
             }
+        }
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        closeSubscribeQuietly();
+        this.notificationSubscribe = this.notificationProcessor.subscribe(text -> {
+            attachEvent.getUI().access(() -> {
+                Notification.show(text);
+            });
+        });
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        super.onDetach(detachEvent);
+        closeSubscribeQuietly();
+    }
+
+    private void closeSubscribeQuietly() {
+        if (this.notificationSubscribe != null) {
+            notificationSubscribe.dispose();
+            notificationSubscribe = null;
         }
     }
 }
