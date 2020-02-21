@@ -53,6 +53,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     private LocalReactiveServiceCaller localReactiveServiceCaller;
     private ServiceRoutingSelector routingSelector;
     private TopicProcessor<CloudEventImpl> eventProcessor;
+    private TopicProcessor<String> notificationProcessor;
     private AuthenticationService authenticationService;
     /**
      * connections, key is connection id
@@ -73,6 +74,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     public RSocketBrokerHandlerRegistryImpl(LocalReactiveServiceCaller localReactiveServiceCaller, RSocketFilterChain rsocketFilterChain,
                                             ServiceRoutingSelector routingSelector,
                                             TopicProcessor<CloudEventImpl> eventProcessor,
+                                            TopicProcessor<String> notificationProcessor,
                                             AuthenticationService authenticationService,
                                             RSocketBrokerManager rSocketBrokerManager,
                                             ServiceMeshInspector serviceMeshInspector,
@@ -81,6 +83,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         this.rsocketFilterChain = rsocketFilterChain;
         this.routingSelector = routingSelector;
         this.eventProcessor = eventProcessor;
+        this.notificationProcessor = notificationProcessor;
         this.authenticationService = authenticationService;
         this.rSocketBrokerManager = rSocketBrokerManager;
         this.serviceMeshInspector = serviceMeshInspector;
@@ -185,22 +188,26 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
 
     @Override
     public void onHandlerRegistered(RSocketBrokerResponderHandler responderHandler) {
-        responderHandlers.put(responderHandler.getAppMetadata().getUuid(), responderHandler);
+        AppMetadata appMetadata = responderHandler.getAppMetadata();
+        responderHandlers.put(appMetadata.getUuid(), responderHandler);
         connectionHandlers.put(responderHandler.getId(), responderHandler);
-        appHandlers.put(responderHandler.getAppMetadata().getName(), responderHandler);
-        eventProcessor.onNext(appStatusEventCloudEvent(responderHandler.getAppMetadata(), AppStatusEvent.STATUS_CONNECTED));
+        appHandlers.put(appMetadata.getName(), responderHandler);
+        eventProcessor.onNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_CONNECTED));
         if (!rSocketBrokerManager.isStandAlone()) {
             responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rSocketBrokerManager.currentBrokers())).subscribe();
         }
+        this.notificationProcessor.onNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
     }
 
     @Override
     public void onHandlerDisposed(RSocketBrokerResponderHandler responderHandler) {
+        AppMetadata appMetadata = responderHandler.getAppMetadata();
         responderHandlers.remove(responderHandler.getUuid());
         connectionHandlers.remove(responderHandler.getId());
-        appHandlers.remove(responderHandler.getAppMetadata().getName(), responderHandler);
+        appHandlers.remove(appMetadata.getName(), responderHandler);
         log.info(RsocketErrorCode.message("RST-500202"));
-        eventProcessor.onNext(appStatusEventCloudEvent(responderHandler.getAppMetadata(), AppStatusEvent.STATUS_STOPPED));
+        eventProcessor.onNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_STOPPED));
+        this.notificationProcessor.onNext(RsocketErrorCode.message("RST-300204", appMetadata.getName(), appMetadata.getIp()));
     }
 
     @Override
