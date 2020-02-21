@@ -90,12 +90,13 @@ public class RSocketBrokerAutoConfiguration {
                                                                         @Autowired RSocketFilterChain rsocketFilterChain,
                                                                         @Autowired ServiceRoutingSelector routingSelector,
                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
+                                                                        @Autowired @Qualifier("notificationProcessor") TopicProcessor<String> notificationProcessor,
                                                                         @Autowired AuthenticationService authenticationService,
                                                                         @Autowired RSocketBrokerManager rSocketBrokerManager,
                                                                         @Autowired ServiceMeshInspector serviceMeshInspector,
                                                                         @Autowired RSocketBrokerProperties properties) {
         return new RSocketBrokerHandlerRegistryImpl(localReactiveServiceCaller, rsocketFilterChain, routingSelector,
-                eventProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector, properties.isAuthRequired());
+                eventProcessor, notificationProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector, properties.isAuthRequired());
     }
 
     @Bean
@@ -176,6 +177,11 @@ public class RSocketBrokerAutoConfiguration {
     @Bean
     public TopicProcessor<CloudEventImpl> reactiveCloudEventProcessor() {
         return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
+    }
+
+    @Bean
+    public TopicProcessor<String> notificationProcessor() {
+        return TopicProcessor.<String>builder().name("notifications-processor").build();
     }
 
     @Bean(initMethod = "init")
