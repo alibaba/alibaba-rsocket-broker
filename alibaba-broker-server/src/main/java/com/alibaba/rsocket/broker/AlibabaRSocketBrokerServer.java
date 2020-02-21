@@ -2,8 +2,6 @@ package com.alibaba.rsocket.broker;
 
 import com.alibaba.rsocket.broker.filters.CanaryFilter;
 import com.alibaba.rsocket.route.RSocketFilter;
-import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -19,7 +17,7 @@ import java.time.LocalDateTime;
 @SpringBootApplication
 public class AlibabaRSocketBrokerServer {
     public static final LocalDateTime STARTED_AT = LocalDateTime.now();
-    
+
     public static void main(String[] args) {
         //BlockHound.install();
         SpringApplication.run(AlibabaRSocketBrokerServer.class, args);
