@@ -3,6 +3,7 @@ package com.alibaba.rsocket.broker.web.ui;
 import com.alibaba.rsocket.broker.web.model.ServiceInfo;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,12 +24,15 @@ import static com.alibaba.rsocket.broker.web.ui.ServicesView.NAV;
 @Route(value = NAV, layout = MainLayout.class)
 public class ServicesView extends VerticalLayout {
     public static final String NAV = "servicesView";
+    private final RSocketBrokerHandlerRegistry handlerRegistry;
+    private final ServiceRoutingSelector routingSelector;
+    private Grid<ServiceInfo> servicesGrid = new Grid<>();
 
     public ServicesView(@Autowired RSocketBrokerHandlerRegistry handlerRegistry, @Autowired ServiceRoutingSelector routingSelector) {
+        this.handlerRegistry = handlerRegistry;
+        this.routingSelector = routingSelector;
         add(new H1("Service List"));
         //services & applications
-        Grid<ServiceInfo> servicesGrid = new Grid<>();
-        servicesGrid.setItems(services(handlerRegistry, routingSelector));
         servicesGrid.addColumn(ServiceInfo::getGroup).setHeader("Group");
         servicesGrid.addColumn(ServiceInfo::getService).setHeader("Service").setAutoWidth(true);
         servicesGrid.addColumn(ServiceInfo::getVersion).setHeader("Version");
@@ -38,6 +42,12 @@ public class ServicesView extends VerticalLayout {
         servicesGrid.addColumn(ServiceInfo::getOrgs).setHeader("Orgs");
         servicesGrid.addColumn(ServiceInfo::getServiceAccounts).setHeader("ServiceAccounts");
         add(servicesGrid);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        servicesGrid.setItems(services(handlerRegistry, routingSelector));
+        super.onAttach(attachEvent);
     }
 
     public List<ServiceInfo> services(RSocketBrokerHandlerRegistry handlerRegistry, ServiceRoutingSelector routingSelector) {
