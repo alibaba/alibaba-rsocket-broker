@@ -36,7 +36,7 @@ public class AppsView extends VerticalLayout {
 
     public AppsView(@Autowired RSocketBrokerHandlerRegistry handlerRegistry) {
         this.handlerRegistry = handlerRegistry;
-        add(new H1("Application List"));
+        add(new H1("App Instances List"));
         appMetadataGrid.addColumn(AppInstance::getName).setHeader("App Name");
         appMetadataGrid.addColumn(AppInstance::getOrgs).setHeader("Organizations");
         appMetadataGrid.addColumn(AppInstance::getServiceAccounts).setHeader("ServiceAccounts");
