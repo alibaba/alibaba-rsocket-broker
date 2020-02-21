@@ -62,7 +62,7 @@ public class DashboardView extends VerticalLayout {
         top.add(appsPanel);
         // services panel
         Panel servicePanel = new Panel("Services");
-        servicePanel.add(servicePanel);
+        servicePanel.add(servicesCount);
         top.add(servicePanel);
         // connections panel
         Panel connectionPanel = new Panel("Connections");
