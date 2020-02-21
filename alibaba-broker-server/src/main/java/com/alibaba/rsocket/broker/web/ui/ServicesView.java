@@ -47,7 +47,6 @@ public class ServicesView extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         servicesGrid.setItems(services(handlerRegistry, routingSelector));
-        super.onAttach(attachEvent);
     }
 
     public List<ServiceInfo> services(RSocketBrokerHandlerRegistry handlerRegistry, ServiceRoutingSelector routingSelector) {

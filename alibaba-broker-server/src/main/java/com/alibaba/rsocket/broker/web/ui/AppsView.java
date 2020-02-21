@@ -5,6 +5,7 @@ import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.grid.Grid;
@@ -30,11 +31,12 @@ import static com.alibaba.rsocket.broker.web.ui.AppsView.NAV;
 @Route(value = NAV, layout = MainLayout.class)
 public class AppsView extends VerticalLayout {
     public static final String NAV = "AppsView";
+    private Grid<AppInstance> appMetadataGrid = new Grid<>();
+    private RSocketBrokerHandlerRegistry handlerRegistry;
 
     public AppsView(@Autowired RSocketBrokerHandlerRegistry handlerRegistry) {
+        this.handlerRegistry = handlerRegistry;
         add(new H1("Application List"));
-        Grid<AppInstance> appMetadataGrid = new Grid<>();
-        appMetadataGrid.setItems(appMetadataList(handlerRegistry));
         appMetadataGrid.addColumn(AppInstance::getName).setHeader("App Name");
         appMetadataGrid.addColumn(AppInstance::getOrgs).setHeader("Organizations");
         appMetadataGrid.addColumn(AppInstance::getServiceAccounts).setHeader("ServiceAccounts");
@@ -75,6 +77,11 @@ public class AppsView extends VerticalLayout {
             detailPanel.setHumans(appInstance.getMetadata().getHumansMd());
         });
 
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        appMetadataGrid.setItems(appMetadataList(handlerRegistry));
     }
 
     public List<AppInstance> appMetadataList(RSocketBrokerHandlerRegistry handlerFactory) {

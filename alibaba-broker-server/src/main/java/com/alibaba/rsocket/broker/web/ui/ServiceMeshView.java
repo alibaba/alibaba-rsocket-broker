@@ -3,6 +3,7 @@ package com.alibaba.rsocket.broker.web.ui;
 import com.alibaba.rsocket.broker.web.model.AppTrafficAccess;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,16 +23,22 @@ import static com.alibaba.rsocket.broker.web.ui.ServiceMeshView.NAV;
 @Route(value = NAV, layout = MainLayout.class)
 public class ServiceMeshView extends VerticalLayout {
     public static final String NAV = "ServiceMeshView";
+    private Grid<AppTrafficAccess> trafficAccessGrid = new Grid<>();
+    private RSocketBrokerHandlerRegistry handlerRegistry;
 
     public ServiceMeshView(@Autowired RSocketBrokerHandlerRegistry handlerRegistry) {
+        this.handlerRegistry = handlerRegistry;
         add(new H1("Service Mesh"));
-        Grid<AppTrafficAccess> trafficAccessGrid = new Grid<>();
-        trafficAccessGrid.setItems(appTrafficAccesses(handlerRegistry));
         trafficAccessGrid.addColumn(AppTrafficAccess::getAppName).setHeader("App Name");
         trafficAccessGrid.addColumn(appTrafficAccess -> appTrafficAccess.getOrgs() + ":" + appTrafficAccess.getServiceAccounts()).setHeader("Service Accounts");
         trafficAccessGrid.addColumn(appTrafficAccess -> "").setHeader("Internal Services");
         trafficAccessGrid.addColumn(appTrafficAccess -> "com.alibaba.item.ItemService").setHeader("Granted Services");
         add(trafficAccessGrid);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        this.trafficAccessGrid.setItems(appTrafficAccesses(handlerRegistry));
     }
 
     public List<AppTrafficAccess> appTrafficAccesses(RSocketBrokerHandlerRegistry handlerFactory) {

@@ -3,6 +3,7 @@ package com.alibaba.rsocket.broker.web.ui;
 import com.alibaba.rsocket.broker.dns.Answer;
 import com.alibaba.rsocket.broker.dns.DnsResolveService;
 import com.alibaba.rsocket.broker.web.model.Pair;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,15 +24,19 @@ import static com.alibaba.rsocket.broker.web.ui.DNSView.NAV;
 public class DNSView extends VerticalLayout {
     public static final String NAV = "dnsView";
     private DnsResolveService resolveService;
+    private Grid<Pair> domainNameGrid = new Grid<>();
 
     public DNSView(DnsResolveService resolveService) {
         this.resolveService = resolveService;
         add(new H1("Domain List"));
-        Grid<Pair> domainNameGrid = new Grid<>();
-        domainNameGrid.setItems(domains());
         domainNameGrid.addColumn(Pair::getName).setHeader("Name");
         domainNameGrid.addColumn(Pair::getValue).setHeader("A");
         add(domainNameGrid);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        this.domainNameGrid.setItems(domains());
     }
 
     @SuppressWarnings("ConstantConditions")

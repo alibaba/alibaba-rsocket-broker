@@ -51,7 +51,6 @@ public class SystemView extends VerticalLayout {
         pairs.add(new Pair("Java Boot Class Path", System.getProperty("sun.boot.class.path")));
         pairs.add(new Pair("Java Command", System.getProperty("sun.java.command")));
         pairs.add(new Pair("Started Time", AlibabaRSocketBrokerServer.STARTED_AT.format(DateTimeFormatter.ISO_DATE_TIME)));
-        pairs.add(new Pair("Current Time", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)));
         return pairs;
     }
 }
