@@ -3,7 +3,7 @@ package com.alibaba.rsocket.discovery;
 import reactor.core.publisher.Flux;
 
 /**
- * discovery service
+ * discovery service for registry client
  *
  * @author leijuan
  */
