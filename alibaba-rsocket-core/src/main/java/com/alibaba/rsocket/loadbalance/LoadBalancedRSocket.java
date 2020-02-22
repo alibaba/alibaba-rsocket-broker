@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.loadbalance;
 
+import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
@@ -18,10 +19,12 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.exceptions.ConnectionErrorException;
+import io.rsocket.exceptions.SetupException;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.ByteBufPayload;
+import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,7 +164,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     //subscribe rsocket close event
                     for (Map.Entry<String, RSocket> entry : newAddedRSockets.entrySet()) {
                         entry.getValue().onClose().subscribe(aVoid -> {
-                            onRSocketClosed(entry.getKey(), entry.getValue());
+                            onRSocketClosed(entry.getKey(), entry.getValue(), null);
                         });
                     }
                 });
@@ -175,7 +178,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
         return next.requestResponse(payload)
                 .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
-                    onRSocketClosed(next);
+                    onRSocketClosed(next, error);
                     return requestResponse(payload);
                 });
     }
@@ -189,7 +192,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
         return next.fireAndForget(payload)
                 .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
-                    onRSocketClosed(next);
+                    onRSocketClosed(next, error);
                     return fireAndForget(payload);
                 });
     }
@@ -229,7 +232,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
         return next.requestStream(payload)
                 .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
-                    onRSocketClosed(next);
+                    onRSocketClosed(next, error);
                     return requestStream(payload);
                 });
     }
@@ -242,7 +245,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
         return next.requestChannel(payloads)
                 .onErrorResume(CONNECTION_ERROR_PREDICATE, error -> {
-                    onRSocketClosed(next);
+                    onRSocketClosed(next, error);
                     return requestChannel(payloads);
                 });
     }
@@ -266,10 +269,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
 
-    public void onRSocketClosed(RSocket rsocket) {
+    public void onRSocketClosed(RSocket rsocket, @Nullable Throwable cause) {
         for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
             if (entry.getValue() == rsocket) {
-                onRSocketClosed(entry.getKey(), entry.getValue());
+                onRSocketClosed(entry.getKey(), entry.getValue(), null);
             }
         }
         if (!rsocket.isDisposed()) {
@@ -281,7 +284,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
     }
 
-    public void onRSocketClosed(String rsocketUri, RSocket rsocket) {
+    public void onRSocketClosed(String rsocketUri, RSocket rsocket, @Nullable Throwable cause) {
         //in last rsocket uris or not
         if (this.lastRSocketUris.contains(rsocketUri)) {
             this.unHealthUriSet.add(rsocketUri);
@@ -289,7 +292,9 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 activeSockets.remove(rsocketUri);
                 this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
                 log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
-                tryToReconnect(rsocketUri);
+                if (cause instanceof ClosedChannelException) {
+                    tryToReconnect(rsocketUri);
+                }
             }
             if (!rsocket.isDisposed()) {
                 try {
@@ -305,9 +310,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         this.activeSockets.put(rsocketUri, rsocket);
         this.unHealthUriSet.remove(rsocketUri);
         this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
-        rsocket.onClose().subscribe(aVoid -> {
-            onRSocketClosed(rsocketUri, rsocket);
-        });
+        rsocket.onClose().subscribe(aVoid -> onRSocketClosed(rsocketUri, rsocket, null));
         CloudEventImpl<ServicesExposedEvent> cloudEvent = requesterSupport.servicesExposedEvent().get();
         if (cloudEvent != null) {
             try {
@@ -323,18 +326,17 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         //try to reconnect every 5 seconds in 1 minute
         Flux.range(1, retryCount)
                 .delayElements(Duration.ofSeconds(5))
+                .filter(id -> activeSockets.isEmpty() || !activeSockets.containsKey(rsocketUri))
                 .subscribe(number -> {
-                    if (!activeSockets.containsKey(rsocketUri)) {
-                        connect(rsocketUri)
-                                .doOnError(e -> {
-                                    this.getUnHealthUriSet().add(rsocketUri);
-                                    log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
-                                })
-                                .subscribe(rsocket -> {
-                                    onRSocketReconnected(rsocketUri, rsocket);
-                                    log.info(RsocketErrorCode.message("RST-500203", rsocketUri));
-                                });
-                    }
+                    connect(rsocketUri)
+                            .doOnError(e -> {
+                                this.getUnHealthUriSet().add(rsocketUri);
+                                log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
+                            })
+                            .subscribe(rsocket -> {
+                                onRSocketReconnected(rsocketUri, rsocket);
+                                log.info(RsocketErrorCode.message("RST-500203", rsocketUri));
+                            });
                 });
     }
 
@@ -352,7 +354,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .setupPayload(requesterSupport.setupPayload().get())
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
-                    .errorConsumer(error -> log.error(RsocketErrorCode.message("RST-200501"), error))
+                    .errorConsumer(error -> log.error(error.getMessage(), error))
                     .frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
@@ -374,8 +376,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 .subscribe(entry -> {
                     Mono<Payload> mono = entry.getValue().requestResponse(ByteBufPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.retainedDuplicate()));
                     mono.doOnError(error -> {
-                        if (error instanceof ClosedChannelException) { //connection closed
-                            onRSocketClosed(entry.getKey(), entry.getValue());
+                        if (error instanceof ClosedChannelException || error instanceof SetupException) { //connection closed
+                            onRSocketClosed(entry.getKey(), entry.getValue(), error);
                         }
                     }).subscribe();
                 });
