@@ -3,6 +3,7 @@ package com.alibaba.spring.boot.rsocket.broker.impl;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.discovery.DiscoveryService;
 import com.alibaba.rsocket.discovery.RSocketServiceInstance;
+import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
@@ -42,23 +43,40 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     private Flux<RSocketServiceInstance> findServiceInstances(String serviceId) {
         Integer serviceHashCode = ServiceLocator.serviceHashCode(serviceId);
         Collection<Integer> instanceIdList = routingSelector.findHandlers(serviceHashCode);
+        if (instanceIdList.isEmpty()) {
+            return findServiceInstancesByAppName(serviceId);
+        }
         List<RSocketServiceInstance> serviceInstances = new ArrayList<>();
         for (Integer handlerId : instanceIdList) {
             RSocketBrokerResponderHandler handler = handlerRegistry.findById(handlerId);
             if (handler != null) {
-                AppMetadata appMetadata = handler.getAppMetadata();
-                RSocketServiceInstance serviceInstance = new RSocketServiceInstance();
-                serviceInstance.setInstanceId(appMetadata.getUuid());
-                serviceInstance.setServiceId(appMetadata.getName());
-                serviceInstance.setHost(appMetadata.getIp());
-                serviceInstance.setPort(appMetadata.getPort());
-                serviceInstance.setSchema(appMetadata.getSchema());
-                serviceInstance.setSecure(appMetadata.isSecure());
-                serviceInstance.setUri(appMetadata.getUri());
-                serviceInstance.setMetadata(appMetadata.getMetadata());
-                serviceInstances.add(serviceInstance);
+                serviceInstances.add(constructServiceInstance(handler));
             }
         }
         return Flux.fromIterable(serviceInstances);
     }
+
+    @NotNull
+    private Flux<RSocketServiceInstance> findServiceInstancesByAppName(String appName) {
+        return Flux.fromIterable(handlerRegistry.findAll())
+                .filter(handler -> handler.getAppMetadata().getName().equalsIgnoreCase(appName))
+                .filter(handler -> handler.getAppStatus().equals(AppStatusEvent.STATUS_SERVING))
+                .map(this::constructServiceInstance);
+    }
+
+    @NotNull
+    private RSocketServiceInstance constructServiceInstance(RSocketBrokerResponderHandler handler) {
+        AppMetadata appMetadata = handler.getAppMetadata();
+        RSocketServiceInstance serviceInstance = new RSocketServiceInstance();
+        serviceInstance.setInstanceId(appMetadata.getUuid());
+        serviceInstance.setServiceId(appMetadata.getName());
+        serviceInstance.setHost(appMetadata.getIp());
+        serviceInstance.setPort(appMetadata.getPort());
+        serviceInstance.setSchema(appMetadata.getSchema());
+        serviceInstance.setSecure(appMetadata.isSecure());
+        serviceInstance.setUri(appMetadata.getUri());
+        serviceInstance.setMetadata(appMetadata.getMetadata());
+        return serviceInstance;
+    }
+
 }
