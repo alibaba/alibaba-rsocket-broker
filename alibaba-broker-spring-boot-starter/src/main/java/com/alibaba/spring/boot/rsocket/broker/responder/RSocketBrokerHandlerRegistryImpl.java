@@ -23,7 +23,7 @@ import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
-import io.rsocket.exceptions.InvalidSetupException;
+import io.rsocket.exceptions.RejectedSetupException;
 import org.eclipse.collections.api.multimap.Multimap;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.multimap.list.FastListMultimap;
@@ -153,8 +153,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             errorMsg = RsocketErrorCode.message("RST-500405");
         }
         if (errorMsg != null) {
-            ReferenceCountUtil.safeRelease(setupPayload);
-            return Mono.error(new InvalidSetupException(errorMsg));
+            return Mono.error(new RejectedSetupException(errorMsg));
         }
         //create handler
         try {
@@ -171,8 +170,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             return Mono.just(brokerResponderHandler);
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-500406", e.getMessage()), e);
-            ReferenceCountUtil.safeRelease(setupPayload);
-            return Mono.error(new InvalidSetupException(RsocketErrorCode.message("RST-500406", e.getMessage())));
+            return Mono.error(new RejectedSetupException(RsocketErrorCode.message("RST-500406", e.getMessage())));
         }
     }
 
