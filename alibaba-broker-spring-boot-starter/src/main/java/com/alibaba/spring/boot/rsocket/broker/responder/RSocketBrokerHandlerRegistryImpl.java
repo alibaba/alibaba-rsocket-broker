@@ -97,10 +97,11 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     @Nullable
     public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket sendingSocket) {
         //parse setup payload
-        RSocketCompositeMetadata compositeMetadata;
+        RSocketCompositeMetadata compositeMetadata = null;
         AppMetadata appMetadata = null;
         String credentials = "";
         RSocketAppPrincipal principal = null;
+        String errorMsg = null;
         try {
             compositeMetadata = RSocketCompositeMetadata.from(setupPayload.metadata());
             if (!authRequired) {  //authentication not required
@@ -110,17 +111,27 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 BearerTokenMetadata bearerTokenMetadata = BearerTokenMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.BearerToken));
                 credentials = new String(bearerTokenMetadata.getBearerToken());
                 principal = authenticationService.auth("JWT", credentials);
+            } else { // no jwt token supplied
+                errorMsg = RsocketErrorCode.message("RST-500405");
             }
             //validate application information
             if (principal != null && compositeMetadata.contains(RSocketMimeType.Application)) {
                 AppMetadata temp = AppMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.Application));
                 //App registration validation: app id: UUID and unique in server
                 String appId = temp.getUuid();
-                Integer instanceId = MurmurHash3.hash32(credentials + ":" + temp.getUuid());
-                temp.setId(instanceId);
-                if (appId != null && appId.length() >= 32 && !routingSelector.containInstance(instanceId)) {
-                    appMetadata = temp;
-                    appMetadata.setConnectedAt(new Date());
+                //validate appId data format
+                if (appId != null && appId.length() >= 32) {
+                    Integer instanceId = MurmurHash3.hash32(credentials + ":" + temp.getUuid());
+                    temp.setId(instanceId);
+                    //application instance not connected
+                    if (!routingSelector.containInstance(instanceId)) {
+                        appMetadata = temp;
+                        appMetadata.setConnectedAt(new Date());
+                    } else {  // application connected already
+                        errorMsg = RsocketErrorCode.message("RST-500409");
+                    }
+                } else {  //illegal application id, appID should be UUID
+                    errorMsg = RsocketErrorCode.message("RST-500410", appId == null ? "" : appId);
                 }
             }
             //Security authentication
@@ -128,18 +139,20 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 appMetadata.addMetadata("_orgs", String.join(",", principal.getOrganizations()));
                 appMetadata.addMetadata("_roles", String.join(",", principal.getRoles()));
                 appMetadata.addMetadata("_serviceAccounts", String.join(",", principal.getServiceAccounts()));
+            } else {
+                errorMsg = RsocketErrorCode.message("RST-500411");
             }
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-500402"), e);
-            ReferenceCountUtil.safeRelease(setupPayload);
-            return Mono.error(new InvalidSetupException("RST-500405"));
+            errorMsg = RsocketErrorCode.message("RST-600500", e.getMessage());
         }
         //validate connection legal or not
         if (principal == null) {
-            final String message = RsocketErrorCode.message("RST-500405");
-            log.error(message);
+            errorMsg = RsocketErrorCode.message("RST-500405");
+        }
+        if (errorMsg != null) {
             ReferenceCountUtil.safeRelease(setupPayload);
-            return Mono.error(new InvalidSetupException(message));
+            return Mono.error(new InvalidSetupException(errorMsg));
         }
         //create handler
         try {
@@ -155,9 +168,9 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             log.info(RsocketErrorCode.message("RST-500200", appMetadata.getName()));
             return Mono.just(brokerResponderHandler);
         } catch (Exception e) {
-            log.error(RsocketErrorCode.message("RST-500406"), e);
+            log.error(RsocketErrorCode.message("RST-500406", e.getMessage()), e);
             ReferenceCountUtil.safeRelease(setupPayload);
-            return Mono.error(new InvalidSetupException("RST-500406: " + e.getMessage()));
+            return Mono.error(new InvalidSetupException(RsocketErrorCode.message("RST-500406", e.getMessage())));
         }
     }
 
