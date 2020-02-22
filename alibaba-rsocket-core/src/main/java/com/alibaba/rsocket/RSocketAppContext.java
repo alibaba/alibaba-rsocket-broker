@@ -1,7 +1,5 @@
 package com.alibaba.rsocket;
 
-import com.alibaba.rsocket.metadata.RSocketMimeType;
-
 import java.util.UUID;
 
 /**
