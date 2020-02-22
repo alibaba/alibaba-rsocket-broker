@@ -20,13 +20,13 @@ import com.alibaba.spring.boot.rsocket.broker.security.JwtPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
-import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
 import io.rsocket.exceptions.RejectedSetupException;
 import org.eclipse.collections.api.multimap.Multimap;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.multimap.list.FastListMultimap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +95,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
 
     @Override
     @Nullable
-    public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket sendingSocket) {
+    public Mono<RSocket> accept(final ConnectionSetupPayload setupPayload, final RSocket requesterSocket) {
         //parse setup payload
         RSocketCompositeMetadata compositeMetadata = null;
         AppMetadata appMetadata = null;
@@ -153,12 +153,12 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             errorMsg = RsocketErrorCode.message("RST-500405");
         }
         if (errorMsg != null) {
-            return Mono.error(new RejectedSetupException(errorMsg));
+            return returnRejectedRSocket(errorMsg, requesterSocket);
         }
         //create handler
         try {
             RSocketBrokerResponderHandler brokerResponderHandler = new RSocketBrokerResponderHandler(setupPayload, compositeMetadata, appMetadata, principal,
-                    sendingSocket, routingSelector, eventProcessor, this, serviceMeshInspector);
+                    requesterSocket, routingSelector, eventProcessor, this, serviceMeshInspector);
             brokerResponderHandler.setFilterChain(rsocketFilterChain);
             brokerResponderHandler.setLocalReactiveServiceCaller(localReactiveServiceCaller);
             brokerResponderHandler.onClose()
@@ -170,7 +170,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             return Mono.just(brokerResponderHandler);
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-500406", e.getMessage()), e);
-            return Mono.error(new RejectedSetupException(RsocketErrorCode.message("RST-500406", e.getMessage())));
+            return returnRejectedRSocket(RsocketErrorCode.message("RST-500406", e.getMessage()), requesterSocket);
         }
     }
 
@@ -309,5 +309,20 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 new HashSet<>(Arrays.asList("default")),
                 new HashSet<>(Arrays.asList("1"))
         );
+    }
+
+    /**
+     * return rejected Rsocket with dispose logic
+     *
+     * @param errorMsg        error msg
+     * @param requesterSocket requesterSocket
+     * @return Mono with RejectedSetupException error
+     */
+    private Mono<RSocket> returnRejectedRSocket(@NotNull String errorMsg, @NotNull RSocket requesterSocket) {
+        return Mono.<RSocket>error(new RejectedSetupException(errorMsg)).doFinally((signalType -> {
+            if (requesterSocket.isDisposed()) {
+                requesterSocket.dispose();
+            }
+        }));
     }
 }
