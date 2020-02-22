@@ -134,13 +134,15 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                     errorMsg = RsocketErrorCode.message("RST-500410", appId == null ? "" : appId);
                 }
             }
-            //Security authentication
-            if (appMetadata != null) {
-                appMetadata.addMetadata("_orgs", String.join(",", principal.getOrganizations()));
-                appMetadata.addMetadata("_roles", String.join(",", principal.getRoles()));
-                appMetadata.addMetadata("_serviceAccounts", String.join(",", principal.getServiceAccounts()));
-            } else {
-                errorMsg = RsocketErrorCode.message("RST-500411");
+            if (errorMsg == null) {
+                //Security authentication
+                if (appMetadata != null) {
+                    appMetadata.addMetadata("_orgs", String.join(",", principal.getOrganizations()));
+                    appMetadata.addMetadata("_roles", String.join(",", principal.getRoles()));
+                    appMetadata.addMetadata("_serviceAccounts", String.join(",", principal.getServiceAccounts()));
+                } else {
+                    errorMsg = RsocketErrorCode.message("RST-500411");
+                }
             }
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-500402"), e);
