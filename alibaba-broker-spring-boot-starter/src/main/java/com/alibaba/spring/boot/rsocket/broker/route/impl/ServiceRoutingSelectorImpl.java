@@ -3,13 +3,14 @@ package com.alibaba.spring.boot.rsocket.broker.route.impl;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
+import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
+import org.eclipse.collections.impl.multimap.list.FastListMultimap;
 import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.IntConsumer;
-import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -19,9 +20,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     /**
-     * service to instances bitmap
+     * service to handlers
      */
-    private IntObjectHashMap<RoaringBitmap> servicesBitmap = new IntObjectHashMap<>();
+    private FastListMultimap<Integer, Integer> serviceHandlers = new FastListMultimap<>();
     /**
      * distinct Services
      */
@@ -40,10 +41,9 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
         for (ServiceLocator serviceLocator : services) {
             int serviceId = serviceLocator.getId();
             instanceServices.put(instanceId, serviceId);
-            if (!servicesBitmap.containsKey(serviceId)) {
-                servicesBitmap.put(serviceId, new RoaringBitmap());
+            if (!serviceHandlers.containsKeyAndValue(serviceId, instanceId)) {
+                serviceHandlers.put(serviceId, instanceId);
             }
-            servicesBitmap.get(serviceId).add(instanceId);
             distinctServices.put(serviceId, serviceLocator);
         }
     }
@@ -52,13 +52,9 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     public void deregister(Integer instanceId) {
         if (instanceServices.containsKey(instanceId)) {
             for (Integer serviceId : instanceServices.get(instanceId)) {
-                RoaringBitmap bitmap = servicesBitmap.get(serviceId);
-                if (bitmap != null) {
-                    bitmap.remove(instanceId);
-                    if (bitmap.getCardinality() == 0) {
-                        servicesBitmap.remove(serviceId);
-                        distinctServices.remove(serviceId);
-                    }
+                serviceHandlers.remove(serviceId, instanceId);
+                if (!serviceHandlers.containsKey(serviceId)) {
+                    distinctServices.remove(serviceId);
                 }
             }
             instanceServices.removeAll(instanceId);
@@ -72,7 +68,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
 
     @Override
     public boolean containService(Integer serviceId) {
-        return servicesBitmap.containsKey(serviceId);
+        return serviceHandlers.containsKey(serviceId);
     }
 
     @Override
@@ -83,35 +79,30 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     @Nullable
     @Override
     public Integer findHandler(Integer serviceId) {
-        RoaringBitmap bitmap = servicesBitmap.get(serviceId);
-        if (bitmap != null) {
-            int cardinality = bitmap.getCardinality();
-            if (cardinality > 0) {
-                return bitmap.select(ThreadLocalRandom.current().nextInt(cardinality));
+        MutableList<Integer> handlers = serviceHandlers.get(serviceId);
+        int handlerCount = handlers.size();
+        if (handlerCount > 1) {
+            try {
+                return handlers.get(ThreadLocalRandom.current().nextInt(handlerCount));
+            } catch (Exception e) {
+                return handlers.get(0);
             }
+        } else if (handlerCount == 1) {
+            return handlers.get(0);
+        } else {
+            return null;
         }
-        return null;
     }
 
     @Override
     public Collection<Integer> findHandlers(Integer serviceId) {
-        RoaringBitmap bitmap = servicesBitmap.get(serviceId);
-        if (bitmap != null) {
-            List<Integer> ids = new ArrayList<>();
-            bitmap.forEach((IntConsumer) ids::add);
-            return ids;
-        } else {
-            return Collections.emptyList();
-        }
+        return serviceHandlers.get(serviceId);
+
     }
 
     @Override
     public Integer getInstanceCount(Integer serviceId) {
-        RoaringBitmap bitmap = servicesBitmap.get(serviceId);
-        if (bitmap != null) {
-            return bitmap.getCardinality();
-        }
-        return 0;
+        return serviceHandlers.get(serviceId).size();
     }
 
     @Override
