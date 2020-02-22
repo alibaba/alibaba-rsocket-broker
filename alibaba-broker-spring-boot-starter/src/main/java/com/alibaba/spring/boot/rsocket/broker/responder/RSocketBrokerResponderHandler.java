@@ -31,6 +31,7 @@ import io.rsocket.exceptions.InvalidException;
 import io.rsocket.frame.FrameType;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.util.ByteBufPayload;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -115,10 +116,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      */
     private Integer id;
 
-    public RSocketBrokerResponderHandler(ConnectionSetupPayload setupPayload,
-                                         RSocketCompositeMetadata compositeMetadata,
-                                         AppMetadata appMetadata,
-                                         RSocketAppPrincipal principal,
+    public RSocketBrokerResponderHandler(@NotNull ConnectionSetupPayload setupPayload,
+                                         @NotNull RSocketCompositeMetadata compositeMetadata,
+                                         @NotNull AppMetadata appMetadata,
+                                         @NotNull RSocketAppPrincipal principal,
                                          RSocket peerRsocket,
                                          ServiceRoutingSelector routingSelector,
                                          TopicProcessor<CloudEventImpl> eventProcessor,
