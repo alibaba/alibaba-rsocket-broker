@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.loadbalance;
 
-import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
@@ -284,6 +283,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
     }
 
+    public void onRSocketClosed(String uri, @Nullable Throwable cause) {
+        if (activeSockets.containsKey(uri)) {
+            onRSocketClosed(uri, activeSockets.get(uri), cause);
+        }
+    }
+
     public void onRSocketClosed(String rsocketUri, RSocket rsocket, @Nullable Throwable cause) {
         //in last rsocket uris or not
         if (this.lastRSocketUris.contains(rsocketUri)) {
@@ -354,7 +359,13 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .setupPayload(requesterSupport.setupPayload().get())
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
-                    .errorConsumer(error -> log.error(error.getMessage(), error))
+                    .errorConsumer(error -> {
+                        //trigger RSocket close if setup exception from responder side
+                        if (error instanceof SetupException) {
+                            onRSocketClosed(uri, error);
+                        }
+                        log.error(error.getMessage(), error);
+                    })
                     .frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
