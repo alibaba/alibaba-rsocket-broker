@@ -121,10 +121,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         return Mono.just(Tuples.of(rsocketUri, activeSockets.get(rsocketUri)));
                     } else {
                         return connect(rsocketUri)
+                                //health check after connection
+                                .flatMap(rsocket -> healthCheck(rsocket).map(aVoid -> Tuples.of(rsocketUri, rsocket)))
                                 .doOnError(e -> {
                                     log.error(RsocketErrorCode.message("RST-400500", rsocketUri), e);
                                     tryToReconnect(rsocketUri);
-                                }).map(rSocket -> Tuples.of(rsocketUri, rSocket));
+                                });
                     }
                 })
                 .collectList()
@@ -385,13 +387,16 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
                 .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
                 .subscribe(entry -> {
-                    Mono<Payload> mono = entry.getValue().requestResponse(ByteBufPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.retainedDuplicate()));
-                    mono.doOnError(error -> {
+                    healthCheck(entry.getValue()).doOnError(error -> {
                         if (error instanceof ClosedChannelException || error instanceof SetupException) { //connection closed
                             onRSocketClosed(entry.getKey(), entry.getValue(), error);
                         }
                     }).subscribe();
                 });
+    }
+
+    private Mono<Payload> healthCheck(RSocket rsocket) {
+        return rsocket.requestResponse(ByteBufPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.retainedDuplicate()));
     }
 
     public boolean isSameWithLastUris(Collection<String> newRSocketUris) {
