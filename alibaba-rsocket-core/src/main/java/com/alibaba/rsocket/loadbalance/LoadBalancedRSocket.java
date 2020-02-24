@@ -122,7 +122,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     } else {
                         return connect(rsocketUri)
                                 //health check after connection
-                                .flatMap(rsocket -> healthCheck(rsocket).map(aVoid -> Tuples.of(rsocketUri, rsocket)))
+                                .flatMap(rsocket -> healthCheck(rsocket).map(payload -> Tuples.of(rsocketUri, rsocket)))
                                 .doOnError(error -> {
                                     log.error(RsocketErrorCode.message("RST-400500", rsocketUri), error);
                                     tryToReconnect(rsocketUri, error);
@@ -335,6 +335,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .filter(id -> activeSockets.isEmpty() || !activeSockets.containsKey(rsocketUri))
                     .subscribe(number -> {
                         connect(rsocketUri)
+                                .flatMap(rsocket -> healthCheck(rsocket).map(payload -> rsocket))
                                 .doOnError(e -> {
                                     this.getUnHealthUriSet().add(rsocketUri);
                                     log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
