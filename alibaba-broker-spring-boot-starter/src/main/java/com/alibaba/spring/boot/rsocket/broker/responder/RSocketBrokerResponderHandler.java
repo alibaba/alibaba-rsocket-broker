@@ -202,7 +202,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
             if (gsvRoutingMetadata == null) {
-                ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
             encodingMetadataIncluded = compositeMetadata.contains(RSocketMimeType.MessageMimeType);
@@ -244,7 +243,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
             if (gsvRoutingMetadata == null) {
-                ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
             encodingMetadataIncluded = compositeMetadata.contains(RSocketMimeType.MessageMimeType);
@@ -295,7 +293,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
             if (gsvRoutingMetadata == null) {
-                ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
             encodingMetadataIncluded = compositeMetadata.contains(RSocketMimeType.MessageMimeType);
@@ -331,7 +328,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
             if (gsvRoutingMetadata == null) {
-                ReferenceCountUtil.safeRelease(signal);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
         }
