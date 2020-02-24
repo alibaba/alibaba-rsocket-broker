@@ -76,8 +76,6 @@ public enum WellKnownMimeType {
     MESSAGE_RSOCKET_APPLICATION("message/x.rsocket.application+json", (byte) 0x51),
     MESSAGE_RSOCKET_DATA_CACHE_CONTROL("message/x.rsocket.rsocket.data.cache-control", (byte) 0x53),
     MESSAGE_RSOCKET_SERVICE_REGISTRY("message/x.rsocket.service.registry.v0+json", (byte) 0x54),
-    MESSAGE_RSOCKET_BEARER_TOKEN("message/x.rsocket.authentication.bearer.v0", (byte) 0x55),
-    MESSAGE_RSOCKET_COMPOSITE_METADATA_JSON("message/x.rsocket.composite-metadata.v0+json", (byte) 0x56),
     MESSAGE_RSOCKET_MESSAGE_TAGS("message/x.rsocket.message.tags", (byte) 0x57),
     MESSAGE_RSOCKET_MESSAGE_ORIGIN("message/x.rsocket.message.origin", (byte) 0x58),
 
