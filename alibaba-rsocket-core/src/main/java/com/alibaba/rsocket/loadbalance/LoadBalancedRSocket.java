@@ -123,9 +123,9 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         return connect(rsocketUri)
                                 //health check after connection
                                 .flatMap(rsocket -> healthCheck(rsocket).map(aVoid -> Tuples.of(rsocketUri, rsocket)))
-                                .doOnError(e -> {
-                                    log.error(RsocketErrorCode.message("RST-400500", rsocketUri), e);
-                                    tryToReconnect(rsocketUri);
+                                .doOnError(error -> {
+                                    log.error(RsocketErrorCode.message("RST-400500", rsocketUri), error);
+                                    tryToReconnect(rsocketUri, error);
                                 });
                     }
                 })
@@ -299,9 +299,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 activeSockets.remove(rsocketUri);
                 this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
                 log.error(RsocketErrorCode.message("RST-500407", rsocketUri));
-                if (cause instanceof ClosedChannelException) {
-                    tryToReconnect(rsocketUri);
-                }
+                tryToReconnect(rsocketUri, cause);
             }
             if (!rsocket.isDisposed()) {
                 try {
@@ -329,22 +327,24 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
     }
 
-    public void tryToReconnect(String rsocketUri) {
-        //try to reconnect every 5 seconds in 1 minute
-        Flux.range(1, retryCount)
-                .delayElements(Duration.ofSeconds(5))
-                .filter(id -> activeSockets.isEmpty() || !activeSockets.containsKey(rsocketUri))
-                .subscribe(number -> {
-                    connect(rsocketUri)
-                            .doOnError(e -> {
-                                this.getUnHealthUriSet().add(rsocketUri);
-                                log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
-                            })
-                            .subscribe(rsocket -> {
-                                onRSocketReconnected(rsocketUri, rsocket);
-                                log.info(RsocketErrorCode.message("RST-500203", rsocketUri));
-                            });
-                });
+    public void tryToReconnect(String rsocketUri, @Nullable Throwable error) {
+        //try to reconnect every 5 seconds in 1 minute if ClosedChannelException
+        if (error instanceof ClosedChannelException) {
+            Flux.range(1, retryCount)
+                    .delayElements(Duration.ofSeconds(5))
+                    .filter(id -> activeSockets.isEmpty() || !activeSockets.containsKey(rsocketUri))
+                    .subscribe(number -> {
+                        connect(rsocketUri)
+                                .doOnError(e -> {
+                                    this.getUnHealthUriSet().add(rsocketUri);
+                                    log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
+                                })
+                                .subscribe(rsocket -> {
+                                    onRSocketReconnected(rsocketUri, rsocket);
+                                    log.info(RsocketErrorCode.message("RST-500203", rsocketUri));
+                                });
+                    });
+        }
     }
 
     Mono<RSocket> connect(String uri) {
@@ -362,10 +362,6 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
                     .errorConsumer(error -> {
-                        //trigger RSocket close if setup exception from responder side
-                        if (error instanceof SetupException) {
-                            onRSocketClosed(uri, error);
-                        }
                         log.error(error.getMessage(), error);
                     })
                     .frameDecoder(PayloadDecoder.ZERO_COPY)
