@@ -28,6 +28,10 @@ public class AppMetadata implements MetadataAware {
      */
     private String name;
     /**
+     * name space
+     */
+    private String nameSpace;
+    /**
      * description
      */
     private String description;
@@ -106,6 +110,14 @@ public class AppMetadata implements MetadataAware {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNameSpace() {
+        return nameSpace;
+    }
+
+    public void setNameSpace(String nameSpace) {
+        this.nameSpace = nameSpace;
     }
 
     public String getDescription() {
