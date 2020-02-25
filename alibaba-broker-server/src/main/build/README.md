@@ -16,6 +16,8 @@ Please visit  https://github.com/alibaba/alibaba-rsocket-broker for more.
 ./startup.sh
 ```
 
+And you can visit http://127.0.0.1:9998/ to access RSocket Broker console.
+
 * Shutdown the broker:
 
 ```
