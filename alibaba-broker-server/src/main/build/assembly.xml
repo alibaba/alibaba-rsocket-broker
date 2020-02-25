@@ -28,6 +28,14 @@
             <fileMode>0755</fileMode>
             <outputDirectory>/</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/build/bin</directory>
+            <includes>
+                <include>*.bat</include>
+            </includes>
+            <fileMode>0644</fileMode>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
         <!-- executable jar -->
         <fileSet>
             <directory>${project.build.directory}</directory>
