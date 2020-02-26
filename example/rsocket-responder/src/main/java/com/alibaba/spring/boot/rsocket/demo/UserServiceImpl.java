@@ -4,11 +4,13 @@ import com.alibaba.spring.boot.rsocket.RSocketService;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import com.github.javafaker.Faker;
+import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.RandomUtils;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
@@ -31,9 +33,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findByEmailOrPhone(String email, String phone) {
-        return Mono.fromCallable(() -> {
-            return randomUser(null);
-        });
+        return Mono.fromCallable(() -> randomUser(null));
+    }
+
+    @Override
+    public Mono<User> _findByIdOrNick(ByteBuf byteBuf) {
+        User user = new User();
+        user.setId(byteBuf.readInt());
+        int nickLength = byteBuf.readInt();
+        user.setNick(byteBuf.readCharSequence(nickLength, StandardCharsets.UTF_8).toString());
+        user.setEmail(faker.internet().emailAddress());
+        user.setPhone(faker.phoneNumber().phoneNumber());
+        return Mono.just(user);
     }
 
     @Override
