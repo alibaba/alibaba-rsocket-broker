@@ -266,7 +266,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     }
 
     public RSocketMimeType[] defaultAcceptEncodingTypes() {
-        return new RSocketMimeType[]{this.encodingType, RSocketMimeType.Hessian, RSocketMimeType.Java_Object,
+        return new RSocketMimeType[]{RSocketMimeType.Hessian, RSocketMimeType.Java_Object,
                 RSocketMimeType.Json, RSocketMimeType.Protobuf, RSocketMimeType.Avor, RSocketMimeType.CBOR,
                 RSocketMimeType.Text, RSocketMimeType.Binary};
     }
