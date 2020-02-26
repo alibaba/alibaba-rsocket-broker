@@ -1,6 +1,5 @@
 package com.alibaba.rsocket;
 
-import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import io.rsocket.Payload;
 import io.rsocket.frame.FrameType;
@@ -15,16 +14,16 @@ import java.util.Map;
  */
 public class RSocketExchange {
     private FrameType frameType;
-    private GSVRoutingMetadata routingMetadata;
+    private RSocketCompositeMetadata compositeMetadata;
     private Payload payload;
     private Map<Object, Object> attributes = new HashMap<>();
 
     public RSocketExchange() {
     }
 
-    public RSocketExchange(FrameType frameType, GSVRoutingMetadata routingMetadata, Payload payload) {
+    public RSocketExchange(FrameType frameType, RSocketCompositeMetadata compositeMetadata, Payload payload) {
         this.frameType = frameType;
-        this.routingMetadata = routingMetadata;
+        this.compositeMetadata = compositeMetadata;
         this.payload = payload;
     }
 
@@ -36,12 +35,12 @@ public class RSocketExchange {
         this.frameType = frameType;
     }
 
-    public GSVRoutingMetadata getRoutingMetadata() {
-        return routingMetadata;
+    public RSocketCompositeMetadata getCompositeMetadata() {
+        return compositeMetadata;
     }
 
-    public void setRoutingMetadata(GSVRoutingMetadata routingMetadata) {
-        this.routingMetadata = routingMetadata;
+    public void setCompositeMetadata(RSocketCompositeMetadata compositeMetadata) {
+        this.compositeMetadata = compositeMetadata;
     }
 
     public Payload getPayload() {
