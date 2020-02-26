@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -141,6 +142,13 @@ public class ReactiveMethodMetadata {
         //param encoding type
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
+        //byte buffer binary encoding
+        if (paramCount == 1) {
+            Class<?> parameterType = method.getParameterTypes()[0];
+            if (parameterType.equals(ByteBuf.class) || parameterType.equals(ByteBuffer.class) || parameterType.equals(byte[].class)) {
+                this.paramEncoding = RSocketMimeType.Binary;
+            }
+        }
         //init composite metadata for invocation
         initCompositeMetadata();
         //bi direction check: param's type is Flux for 1st param or 2nd param
