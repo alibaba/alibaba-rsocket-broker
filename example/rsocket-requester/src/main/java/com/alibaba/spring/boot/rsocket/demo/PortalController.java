@@ -21,21 +21,6 @@ public class PortalController {
     @Autowired
     UserService userService;
 
-    @RequestMapping("/users")
-    public Mono<List<User>> all() {
-        return userService.findAll();
-    }
-
-    @PostMapping("/user/save")
-    public Mono<Integer> save(@RequestBody User user) {
-        return userService.save(user);
-    }
-
-    @GetMapping("/user/{id}")
-    public Mono<User> user(@PathVariable Integer id) {
-        return userService.findById(id);
-    }
-
     @GetMapping("/error")
     public Mono<String> error() {
         return userService.error("Hi");
