@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
@@ -191,7 +192,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     public Mono<Payload> requestResponse(Payload payload) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
-        RSocketCompositeMetadata compositeMetadata = null;
         Integer serviceId;
         final boolean encodingMetadataIncluded;
         if (binaryRoutingMetadata != null) {
@@ -199,7 +199,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             serviceId = binaryRoutingMetadata.getServiceId();
             encodingMetadataIncluded = true;
         } else {
-            compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
             if (gsvRoutingMetadata == null) {
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
@@ -214,10 +214,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         //request filters
         Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            if (compositeMetadata == null) {
-                compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-            }
-            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, compositeMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, gsvRoutingMetadata, payload);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
@@ -236,7 +233,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     public Mono<Void> fireAndForget(Payload payload) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
-        RSocketCompositeMetadata compositeMetadata = null;
         Integer serviceId;
         final boolean encodingMetadataIncluded;
         if (binaryRoutingMetadata != null) {
@@ -244,7 +240,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             serviceId = binaryRoutingMetadata.getServiceId();
             encodingMetadataIncluded = true;
         } else {
-            compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
             if (gsvRoutingMetadata == null) {
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
@@ -258,10 +254,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         //request filters
         Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            if (compositeMetadata == null) {
-                compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-            }
-            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, compositeMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, gsvRoutingMetadata, payload);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
@@ -290,7 +283,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     public Flux<Payload> requestStream(Payload payload) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
-        RSocketCompositeMetadata compositeMetadata = null;
         Integer serviceId;
         final boolean encodingMetadataIncluded;
         if (binaryRoutingMetadata != null) {
@@ -298,7 +290,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             serviceId = binaryRoutingMetadata.getServiceId();
             encodingMetadataIncluded = true;
         } else {
-            compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
             gsvRoutingMetadata = compositeMetadata.getRoutingMetaData();
             if (gsvRoutingMetadata == null) {
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
@@ -312,10 +304,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
         Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            if (compositeMetadata == null) {
-                compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-            }
-            RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, compositeMetadata, payload);
+            RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, gsvRoutingMetadata, payload);
             destination = filterChain.filter(requestContext).then(destination);
         }
         return destination.flatMapMany(rsocket -> {
@@ -427,7 +416,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     private ByteBuf constructDefaultDataEncoding() {
-        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5, 5);
+        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5,5);
         buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
         buf.writeByte(0);
         buf.writeByte(0);
