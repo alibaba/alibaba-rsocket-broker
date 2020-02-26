@@ -77,6 +77,8 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
             //convert to raw output without decoding
             if (targetClass == ByteBuffer.class) {
                 return data.nioBuffer();
+            } else if (targetClass == ByteBuf.class) {
+                return data;
             }
             return handlerMap.get(encodingType).decodeResult(data, targetClass);
         } catch (Exception e) {
