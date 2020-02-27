@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.util;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import reactor.util.function.*;
 
 import java.nio.charset.StandardCharsets;
@@ -30,6 +31,14 @@ public class ByteBufTuples {
                 byte[] bytes = new byte[len];
                 buf.readBytes(bytes);
                 return bytes;
+            }
+        });
+        READERS.put(ByteBuf.class, buf -> {
+            int len = buf.readInt();
+            if (len == 0) {
+                return Unpooled.EMPTY_BUFFER;
+            } else {
+                return buf.readSlice(len);
             }
         });
         READERS.put(String.class, buf -> {
