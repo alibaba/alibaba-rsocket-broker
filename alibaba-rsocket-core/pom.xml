@@ -14,6 +14,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.alibaba.rsocket</groupId>
+            <artifactId>rsocket-service-common</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>io.cloudevents</groupId>
             <artifactId>cloudevents-api</artifactId>
             <version>${cloudevents.version}</version>
