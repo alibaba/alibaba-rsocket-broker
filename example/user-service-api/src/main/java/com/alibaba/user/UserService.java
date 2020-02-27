@@ -1,6 +1,6 @@
 package com.alibaba.user;
 
-import com.alibaba.ByteBufBuilder;
+import com.alibaba.rsocket.util.ByteBufBuilder;
 import io.netty.buffer.ByteBuf;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
