@@ -37,10 +37,16 @@ public class ByteBufTuples {
 
 
     public static <T> Object read(ByteBuf buf, T type) {
-        if (type.equals(Integer.class)) {
+        if (type.equals(Byte.class)) {
+            return buf.readByte();
+        } else if (type.equals(Integer.class)) {
             return buf.readInt();
         } else if (type.equals(Long.class)) {
             return buf.readLong();
+        } else if (type.equals(Double.class)) {
+            return buf.readDouble();
+        } else if (type.equals(Boolean.class)) {
+            return buf.readInt() == 1;
         } else if (type.equals(String.class)) {
             int len = buf.readInt();
             if (len == 0) {
@@ -48,8 +54,6 @@ public class ByteBufTuples {
             } else {
                 return buf.readCharSequence(len, StandardCharsets.UTF_8).toString();
             }
-        } else if (type.equals(Byte.class)) {
-            return buf.readByte();
         } else if (type == Date.class) {
             return new Date(buf.readLong());
         }
