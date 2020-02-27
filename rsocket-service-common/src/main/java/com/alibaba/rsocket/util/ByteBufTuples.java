@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import reactor.util.function.*;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public class ByteBufTuples {
+    private static ByteBuffer EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0);
     public static Map<Class<?>, ByteBufValueReader<?>> READERS = new HashMap<>();
 
     static {
@@ -39,6 +41,14 @@ public class ByteBufTuples {
                 return Unpooled.EMPTY_BUFFER;
             } else {
                 return buf.readSlice(len);
+            }
+        });
+        READERS.put(ByteBuffer.class, buf -> {
+            int len = buf.readInt();
+            if (len == 0) {
+                return EMPTY_BYTE_BUFFER;
+            } else {
+                return buf.readSlice(len).nioBuffer();
             }
         });
         READERS.put(String.class, buf -> {
