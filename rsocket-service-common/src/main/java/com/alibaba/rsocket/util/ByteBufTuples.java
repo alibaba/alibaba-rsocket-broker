@@ -1,4 +1,4 @@
-package com.alibaba;
+package com.alibaba.rsocket.util;
 
 import io.netty.buffer.ByteBuf;
 import reactor.util.function.*;
@@ -52,6 +52,17 @@ public class ByteBufTuples {
             Class<T4> t4,
             Class<T5> t5) {
         return (Tuple5<T1, T2, T3, T4, T5>) Tuples.of(read(buf, t1), read(buf, t2), read(buf, t3), read(buf, t4), read(buf, t5));
+    }
+
+    public static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> of(
+            ByteBuf buf,
+            Class<T1> t1,
+            Class<T2> t2,
+            Class<T3> t3,
+            Class<T4> t4,
+            Class<T5> t5,
+            Class<T6> t6) {
+        return (Tuple6<T1, T2, T3, T4, T5, T6>) Tuples.of(read(buf, t1), read(buf, t2), read(buf, t3), read(buf, t4), read(buf, t5), read(buf, t6));
     }
 
 
