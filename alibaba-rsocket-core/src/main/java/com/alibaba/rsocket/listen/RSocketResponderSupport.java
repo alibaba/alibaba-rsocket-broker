@@ -166,7 +166,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
             ReactiveMethodHandler methodHandler = localServiceCaller.getInvokeMethod(routing.getService(), routing.getMethod());
             if (methodHandler != null) {
                 Object result;
-                if (methodHandler.getParameterCount() == 1) {
+                if (methodHandler.getParamCount() == 1) {
                     Flux<Object> paramFlux = payloads
                             .map(payload -> {
                                 return encodingFacade.decodeResult(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getInferredClassForParameter(0));
@@ -213,7 +213,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
     @Nullable
     protected Object invokeLocalService(ReactiveMethodHandler methodHandler, MessageMimeTypeMetadata dataEncodingMetadata, Payload payload) throws Exception {
         Object result;
-        if (methodHandler.getParameterCount() > 0) {
+        if (methodHandler.getParamCount() > 0) {
             Object args = encodingFacade.decodeParams(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getParameterTypes());
             if (args instanceof Object[]) {
                 result = methodHandler.invoke((Object[]) args);
