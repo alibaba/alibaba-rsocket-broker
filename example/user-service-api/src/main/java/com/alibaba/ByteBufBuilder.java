@@ -44,7 +44,7 @@ public class ByteBufBuilder {
     }
 
     public ByteBufBuilder value(String value) {
-        if (value == null) {
+        if (value == null || value.isEmpty()) {
             buf.writeInt(0);
         } else {
             byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
