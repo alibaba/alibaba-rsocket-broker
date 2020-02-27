@@ -39,6 +39,7 @@ Not only can Alibaba RSocket broker route traffic, but it can simplify micro ser
 ## Components
 The Alibaba RSocket broker is written in Spring Framework. It has the following components:
 
+  * rsocket-service-common: RSocket Service Interface support, include RX framework, annotations and support classes.
   * alibaba-rsocket-core: Alibaba's implementation of RSocket spec
   * alibaba-rsocket-spring-boot-starter: Spring Boot Starter for RSocket, Service registration and discovery
   * alibaba-broker-spring-boot-starter: Spring Boot Starter for RSocket Broker, makes it easier for others to add on to
