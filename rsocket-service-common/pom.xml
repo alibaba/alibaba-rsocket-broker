@@ -10,8 +10,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <reactor.version>3.3.3.RELEASE</reactor.version>
-        <rxjava2.version>2.2.18</rxjava2.version>
-        <rxjava3.version>3.0.0</rxjava3.version>
         <netty-buffer.version>4.1.45.Final</netty-buffer.version>
     </properties>
 
@@ -54,16 +52,6 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
             <version>${reactor.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>${rxjava2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex.rxjava3</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>${rxjava3.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
