@@ -9,9 +9,6 @@
 
     <name>user-service-api</name>
     <properties>
-        <reactor.version>3.3.3.RELEASE</reactor.version>
-        <rxjava2.version>2.2.18</rxjava2.version>
-        <rxjava3.version>3.0.0-RC9</rxjava3.version>
         <protobuf-java.version>3.11.3</protobuf-java.version>
         <junit5.version>5.6.0</junit5.version>
     </properties>
@@ -23,19 +20,9 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>${reactor.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>${rxjava2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex.rxjava3</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>${rxjava3.version}</version>
+            <groupId>com.alibaba.rsocket</groupId>
+            <artifactId>rsocket-service-common</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
         <!--protobuf-->
         <dependency>
@@ -45,11 +32,6 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-            <version>4.1.45.Final</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
