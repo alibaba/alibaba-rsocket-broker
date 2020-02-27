@@ -250,6 +250,11 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         return this.compositeMetadata;
     }
 
+    /**
+     * get default composite metadata ByteBuf for remote call. please use .retainedDuplicate() if necessary
+     *
+     * @return composite metadata ByteBuf
+     */
     public ByteBuf getCompositeMetadataByteBuf() {
         return compositeMetadataByteBuf;
     }
