@@ -94,6 +94,7 @@ public interface UserService {
 
 ```
 @RSocketService(serviceInterface = UserService.class)
+@Service
 public class UserServiceImpl implements UserService {
     @Override
     public Mono<User> findById(Integer id) {

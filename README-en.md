@@ -100,6 +100,7 @@ Implement the feature on the responder side. Add an `@RSocketService` annotation
 
 ```
 @RSocketService(serviceInterface = UserService.class)
+@Service
 public class UserServiceImpl implements UserService {
     @Override
     public Mono<User> findById(Integer id) {
