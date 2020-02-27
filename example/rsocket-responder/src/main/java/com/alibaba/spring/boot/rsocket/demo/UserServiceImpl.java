@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
+import com.alibaba.ByteBufTuples;
 import com.alibaba.spring.boot.rsocket.RSocketService;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService;
@@ -9,8 +10,8 @@ import org.apache.commons.lang3.RandomUtils;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,10 +39,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> _findByIdOrNick(ByteBuf byteBuf) {
+        Tuple2<Integer, String> tuple2 = ByteBufTuples.of(byteBuf, Integer.class, String.class);
         User user = new User();
-        user.setId(byteBuf.readInt());
-        int nickLength = byteBuf.readInt();
-        user.setNick(byteBuf.readCharSequence(nickLength, StandardCharsets.UTF_8).toString());
+        user.setId(tuple2.getT1());
+        user.setNick(tuple2.getT2());
         user.setEmail(faker.internet().emailAddress());
         user.setPhone(faker.phoneNumber().phoneNumber());
         return Mono.just(user);
