@@ -4,7 +4,6 @@ package com.alibaba.rsocket.invocation;
 import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
-import com.alibaba.rsocket.metadata.MessageTagsMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
@@ -19,7 +18,6 @@ import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.SynchronousSink;
 
 import javax.cache.annotation.CacheResult;
 import java.lang.invoke.MethodHandle;
@@ -170,7 +168,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         Object obj = encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn());
                         if (obj != null) {
                             sink.next(obj);
-                            injectContext(compositeMetadata, sink);
                         }
                         sink.complete();
                     } catch (Exception e) {
@@ -223,15 +220,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             }
         }
         return Arrays.deepHashCode(params);
-    }
-
-    void injectContext(RSocketCompositeMetadata compositeMetadata, SynchronousSink<?> sink) throws Exception {
-        //message tags
-        if (compositeMetadata.contains(RSocketMimeType.MessageTags)) {
-            MessageTagsMetadata tagsMetadata = MessageTagsMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.MessageTags));
-            Map<String, String> tags = tagsMetadata.getTags();
-            sink.currentContext().put("_tags", tags);
-        }
     }
 
     private RSocketMimeType extractPayloadDataMimeType(RSocketCompositeMetadata compositeMetadata, RSocketMimeType defaultEncodingType) {
