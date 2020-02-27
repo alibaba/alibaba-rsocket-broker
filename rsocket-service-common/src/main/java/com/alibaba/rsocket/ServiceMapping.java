@@ -1,9 +1,9 @@
-package com.alibaba.rsocket.invocation;
+package com.alibaba.rsocket;
 
 import java.lang.annotation.*;
 
 /**
- * Service Mapping for interface method
+ * Service Mapping for reactive interface method
  *
  * @author leijuan
  */

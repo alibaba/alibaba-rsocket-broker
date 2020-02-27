@@ -1,6 +1,4 @@
-package com.alibaba.spring.boot.rsocket;
-
-import org.springframework.stereotype.Service;
+package com.alibaba.rsocket;
 
 import java.lang.annotation.*;
 
@@ -13,7 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Service
 public @interface RSocketService {
     /**
      * service interface
