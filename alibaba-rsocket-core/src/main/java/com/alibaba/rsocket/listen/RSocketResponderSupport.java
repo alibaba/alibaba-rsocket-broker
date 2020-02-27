@@ -15,14 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.Scannable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * rsocket responder support for both sides, supply some base api
@@ -48,23 +42,11 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                     result = Mono.fromCallable(() -> invokeLocalService(methodHandler, dataEncodingMetadata, payload));
                 }
                 //composite data for return value
-                RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
+                RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
                 Mono<Object> monoResult;
                 if (result instanceof Mono) {
                     monoResult = (Mono) result;
-                    //Mono name & tags support
-                    Scannable scannable = Scannable.from(monoResult);
-                    if (scannable.isScanAvailable()) {
-                        Stream<Tuple2<String, String>> tagsStream = scannable.scan(Scannable.Attr.TAGS);
-                        if (tagsStream != null) {
-                            Map<String, String> tags = new HashMap<>();
-                            tagsStream.forEach((tuple) -> {
-                                tags.put(tuple.getT1(), tuple.getT2());
-                            });
-                            resultCompositeMetadata.addMetadata(new MessageTagsMetadata(tags));
-                        }
-                    }
                 } else {
                     monoResult = methodHandler.getReactiveAdapter().toMono(result);
                 }
@@ -133,7 +115,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                     fluxResult = methodHandler.getReactiveAdapter().toFlux(result);
                 }
                 //composite data for return value
-                RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
+                RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
                 ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 return fluxResult
@@ -181,7 +163,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                     result = methodHandler.invoke(paramFirst, paramFlux);
                 }
                 //composite data for return value
-                RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType());
+                RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
                 RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(dataEncodingMetadata);
                 ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 //result return
@@ -226,14 +208,18 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
         return result;
     }
 
-    private RSocketMimeType resultEncodingType(@Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata, RSocketMimeType defaultEncodingType) {
-        RSocketMimeType encodingType = defaultEncodingType;
+    private RSocketMimeType resultEncodingType(@Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata,
+                                               RSocketMimeType defaultEncodingType,
+                                               ReactiveMethodHandler reactiveMethodHandler) {
+        if (reactiveMethodHandler.isBinaryReturn()) {
+            return RSocketMimeType.Binary;
+        }
         if (messageAcceptMimeTypesMetadata != null) {
             RSocketMimeType firstAcceptType = messageAcceptMimeTypesMetadata.getFirstAcceptType();
             if (firstAcceptType != null) {
-                encodingType = firstAcceptType;
+                return firstAcceptType;
             }
         }
-        return encodingType;
+        return defaultEncodingType;
     }
 }
