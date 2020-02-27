@@ -1,13 +1,11 @@
 package com.alibaba.user;
 
+import com.alibaba.ByteBufBuilder;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.cache.annotation.CacheResult;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -32,12 +30,7 @@ public interface UserService {
     }
 
     default Mono<User> findByIdOrNick(Integer id, String nick) {
-        ByteBuffer buffer = StandardCharsets.UTF_8.encode(nick);
-        int capacity = 4 + 4 + buffer.limit();
-        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(capacity, capacity);
-        buf.writeInt(id);
-        buf.writeInt(buffer.limit());
-        buf.writeBytes(buffer);
+        ByteBuf buf = ByteBufBuilder.builder().value(id).value(nick).build();
         return _findByIdOrNick(buf);
     }
 
