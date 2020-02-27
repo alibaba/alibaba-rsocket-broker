@@ -1,12 +1,13 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
-import com.alibaba.spring.boot.rsocket.RSocketService;
+import com.alibaba.rsocket.RSocketService;
 import com.alibaba.user.RxUserService;
 import com.alibaba.user.User;
 import com.github.javafaker.Faker;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @author leijuan
  */
 @RSocketService(serviceInterface = RxUserService.class)
+@Service
 public class RxUserServiceImpl implements RxUserService {
     private Faker faker = new Faker();
 

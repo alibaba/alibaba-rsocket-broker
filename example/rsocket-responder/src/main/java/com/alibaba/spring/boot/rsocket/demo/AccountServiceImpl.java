@@ -2,9 +2,10 @@ package com.alibaba.spring.boot.rsocket.demo;
 
 import com.alibaba.account.Account;
 import com.alibaba.account.AccountService;
-import com.alibaba.spring.boot.rsocket.RSocketService;
+import com.alibaba.rsocket.RSocketService;
 import com.github.javafaker.Faker;
 import com.google.protobuf.Int32Value;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 /**
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
  * @author leijuan
  */
 @RSocketService(serviceInterface = AccountService.class, encoding = "protobuf")
+@Service
 public class AccountServiceImpl implements AccountService {
     private Faker faker = new Faker();
 

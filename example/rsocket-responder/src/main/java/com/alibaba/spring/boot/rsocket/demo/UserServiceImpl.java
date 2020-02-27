@@ -1,13 +1,14 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
-import com.alibaba.ByteBufTuples;
-import com.alibaba.spring.boot.rsocket.RSocketService;
+import com.alibaba.rsocket.RSocketService;
+import com.alibaba.rsocket.util.ByteBufTuples;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import com.github.javafaker.Faker;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.RandomUtils;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -24,6 +25,7 @@ import java.util.Random;
  * @author leijuan
  */
 @RSocketService(serviceInterface = UserService.class)
+@Service
 public class UserServiceImpl implements UserService {
     private Faker faker = new Faker();
 
