@@ -22,6 +22,16 @@ public class ByteBufTuples {
         READERS.put(Long.class, ByteBuf::readLong);
         READERS.put(Double.class, ByteBuf::readDouble);
         READERS.put(Boolean.class, buf -> buf.readByte() == 1);
+        READERS.put(byte[].class, buf -> {
+            int len = buf.readInt();
+            if (len == 0) {
+                return new byte[0];
+            } else {
+                byte[] bytes = new byte[len];
+                buf.readBytes(bytes);
+                return bytes;
+            }
+        });
         READERS.put(String.class, buf -> {
             int len = buf.readInt();
             if (len == 0) {

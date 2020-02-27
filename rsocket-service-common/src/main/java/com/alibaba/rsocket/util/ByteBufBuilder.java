@@ -43,6 +43,18 @@ public class ByteBufBuilder {
         return this;
     }
 
+    public ByteBufBuilder value(byte[] value) {
+        buf.writeInt(value.length);
+        buf.writeBytes(value);
+        return this;
+    }
+
+    public ByteBufBuilder value(ByteBuf value) {
+        buf.writeInt(value.readableBytes());
+        buf.writeBytes(value);
+        return this;
+    }
+
     public ByteBufBuilder value(String value) {
         if (value == null || value.isEmpty()) {
             buf.writeInt(0);
