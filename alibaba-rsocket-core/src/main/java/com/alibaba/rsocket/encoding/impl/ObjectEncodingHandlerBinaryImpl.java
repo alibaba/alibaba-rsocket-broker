@@ -11,11 +11,11 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 
 /**
- * byte buffer binary encoding
+ * binary encoding for ByteBuffer, ByteBuf and byte[]
  *
  * @author leijuan
  */
-public class ObjectEncodingHandlerByteBufferImpl implements ObjectEncodingHandler {
+public class ObjectEncodingHandlerBinaryImpl implements ObjectEncodingHandler {
     @NotNull
     @Override
     public RSocketMimeType mimeType() {
