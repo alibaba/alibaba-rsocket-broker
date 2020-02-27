@@ -4,6 +4,9 @@ GET http://localhost:8181/user/2
 ### get user info from extra
 GET http://localhost:8181/user/extra/2
 
+### get user info by bytebuf
+GET http://localhost:8181/bytebuf/user/2
+
 ### get account info
 GET http://localhost:8181/account/1
 
