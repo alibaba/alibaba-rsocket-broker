@@ -6,6 +6,7 @@ import com.alibaba.user.User;
 import com.github.javafaker.Faker;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
+import org.springframework.stereotype.Service;
 
 /**
  * Rx3UserService implementation
@@ -13,6 +14,7 @@ import io.reactivex.rxjava3.core.Maybe;
  * @author linux_china
  */
 @RSocketService(serviceInterface = Rx3UserService.class)
+@Service
 public class Rx3UserServiceImpl implements Rx3UserService {
     private Faker faker = new Faker();
 
