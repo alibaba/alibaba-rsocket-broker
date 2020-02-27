@@ -1,8 +1,8 @@
 package com.alibaba.spring.boot.rsocket.responder.invocation;
 
+import com.alibaba.rsocket.RSocketService;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCallerImpl;
 import com.alibaba.spring.boot.rsocket.RSocketProperties;
-import com.alibaba.spring.boot.rsocket.RSocketService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;

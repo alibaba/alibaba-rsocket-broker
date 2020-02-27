@@ -1,7 +1,7 @@
 package com.alibaba.spring.boot.rsocket.health;
 
+import com.alibaba.rsocket.RSocketService;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
-import com.alibaba.spring.boot.rsocket.RSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;

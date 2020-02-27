@@ -1,6 +1,6 @@
 package com.alibaba.spring.boot.rsocket.invocation;
 
-import com.alibaba.spring.boot.rsocket.RSocketService;
+import com.alibaba.rsocket.RSocketService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.context.annotation.Primary;
 import reactor.core.publisher.Flux;
