@@ -1,11 +1,13 @@
 package com.alibaba.rsocket.listen;
 
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
-import com.alibaba.rsocket.metadata.*;
+import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
+import com.alibaba.rsocket.metadata.MessageAcceptMimeTypesMetadata;
+import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
+import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
-import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
@@ -43,17 +45,15 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
-                RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
                 Mono<Object> monoResult;
                 if (result instanceof Mono) {
                     monoResult = (Mono) result;
                 } else {
                     monoResult = methodHandler.getReactiveAdapter().toMono(result);
                 }
-                ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 return monoResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, compositeMetadataContent))
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()))
                         .doOnTerminate(() -> {
                             ReferenceCountUtil.safeRelease(payload);
                         });
@@ -116,11 +116,9 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
-                RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(resultEncodingType));
-                ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 return fluxResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, compositeMetadataContent))
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()))
                         .doOnTerminate(() -> {
                             ReferenceCountUtil.safeRelease(payload);
                         });
@@ -164,15 +162,10 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
-                RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(dataEncodingMetadata);
-                ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
                 //result return
                 return ((Flux<Object>) result)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, compositeMetadataContent))
-                        .doOnTerminate(() -> {
-                            ReferenceCountUtil.safeRelease(compositeMetadataContent);
-                        });
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()));
             } else {
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
             }
