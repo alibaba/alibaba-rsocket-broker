@@ -5,4 +5,4 @@ com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerCborImpl
 com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerSerializationImpl
 com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerAvorImpl
 com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerTextImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerByteBufferImpl
+com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerBinaryImpl
