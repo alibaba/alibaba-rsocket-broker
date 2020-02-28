@@ -403,6 +403,14 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return role;
     }
 
+    public RSocketAppPrincipal getPrincipal() {
+        return principal;
+    }
+
+    public RSocket getPeerRsocket() {
+        return peerRsocket;
+    }
+
     /**
      * payload with data encoding if
      *
