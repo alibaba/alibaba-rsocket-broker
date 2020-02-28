@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 import java.io.*;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author leijuan
  */
+@Component
 public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     private List<JWTVerifier> verifiers = new ArrayList<>();
     private static String iss = "RSocketBroker";
