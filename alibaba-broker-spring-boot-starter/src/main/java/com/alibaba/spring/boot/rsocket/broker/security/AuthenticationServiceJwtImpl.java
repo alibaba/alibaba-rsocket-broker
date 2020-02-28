@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * authentication service with JWT implementation, please refer https://github.com/auth0/java-jwt
@@ -32,6 +35,13 @@ import java.util.List;
 public class AuthenticationServiceJwtImpl implements AuthenticationService {
     private List<JWTVerifier> verifiers = new ArrayList<>();
     private static String iss = "RSocketBroker";
+    /**
+     * cache verified principal
+     */
+    Cache<Integer, RSocketAppPrincipal> jwtVerifyCache = Caffeine.newBuilder()
+            .maximumSize(100_000)
+            .expireAfterWrite(30, TimeUnit.MINUTES)
+            .build();
 
     public AuthenticationServiceJwtImpl() throws Exception {
         File rsocketKeysDir = new File(System.getProperty("user.home"), ".rsocket");
@@ -51,14 +61,18 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
     @Override
     @Nullable
     public RSocketAppPrincipal auth(String type, String credentials) {
+        int tokenHashCode = credentials.hashCode();
+        RSocketAppPrincipal principal = jwtVerifyCache.getIfPresent(tokenHashCode);
         for (JWTVerifier verifier : verifiers) {
             try {
-                return new JwtPrincipal(verifier.verify(credentials), credentials);
+                principal = new JwtPrincipal(verifier.verify(credentials), credentials);
+                jwtVerifyCache.put(tokenHashCode, principal);
+                break;
             } catch (JWTVerificationException ignore) {
 
             }
         }
-        return null;
+        return principal;
     }
 
     public String generateCredentials(String[] organizations, String[] serviceAccounts, String[] roles, String[] authorities, String sub, String[] audience) throws Exception {
