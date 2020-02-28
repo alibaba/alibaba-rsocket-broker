@@ -46,7 +46,7 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() > 0 && targetClasses != null && targetClasses.length == 1) {
+        if (data.readableBytes() > 0 && targetClasses != null && targetClasses.length == 1) {
             return decodeResult(data, targetClasses[0]);
         }
         return null;
@@ -74,7 +74,7 @@ public class ObjectEncodingHandlerAvorImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() > 0 && targetClass != null) {
+        if (data.readableBytes() > 0 && targetClass != null) {
             if (SpecificRecordBase.class.equals(targetClass.getSuperclass())) {
                 Method fromByteBufferMethod = fromByteBufferMethodStore.get(targetClass);
                 if (fromByteBufferMethod != null) {

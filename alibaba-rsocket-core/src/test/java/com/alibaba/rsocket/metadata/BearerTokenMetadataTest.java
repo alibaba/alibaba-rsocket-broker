@@ -21,7 +21,7 @@ public class BearerTokenMetadataTest {
     public void testEncode() {
         String token = "123456";
         BearerTokenMetadata tokenMetadata = BearerTokenMetadata.jwt(token.toCharArray());
-        Assertions.assertEquals(token.length() + 1, tokenMetadata.getContent().capacity());
+        Assertions.assertEquals(token.length() + 1, tokenMetadata.getContent().readableBytes());
         BearerTokenMetadata tokenMetadata1 = BearerTokenMetadata.from(tokenMetadata.getContent());
         Assertions.assertEquals(tokenMetadata1.getBearerToken(), token);
         ByteBuf byteBuf = AuthMetadataFlyweight.encodeBearerMetadata(ByteBufAllocator.DEFAULT, token.toCharArray());
@@ -38,7 +38,7 @@ public class BearerTokenMetadataTest {
     }
 
     private String toArrayString(ByteBuf byteBuf) {
-        byte[] bytes = new byte[byteBuf.capacity()];
+        byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
         return Arrays.toString(bytes);
     }

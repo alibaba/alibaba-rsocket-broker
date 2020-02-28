@@ -342,7 +342,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     @Override
     public Mono<Void> metadataPush(Payload payload) {
         try {
-            if (payload.metadata().capacity() > 0) {
+            if (payload.metadata().readableBytes() > 0) {
                 CloudEventImpl<ObjectNode> cloudEvent = Json.decodeValue(payload.getMetadataUtf8(), CLOUD_EVENT_TYPE_REFERENCE);
                 return fireCloudEvent(cloudEvent);
             }

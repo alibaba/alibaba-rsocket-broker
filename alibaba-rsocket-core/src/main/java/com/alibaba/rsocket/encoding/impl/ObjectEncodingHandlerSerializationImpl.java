@@ -37,7 +37,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
 
     @Override
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() > 0 && !isArrayEmpty(targetClasses)) {
+        if (data.readableBytes() > 0 && !isArrayEmpty(targetClasses)) {
             return byteBufToObject(data);
         }
         return null;
@@ -55,7 +55,7 @@ public class ObjectEncodingHandlerSerializationImpl implements ObjectEncodingHan
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() > 0 && targetClass != null) {
+        if (data.readableBytes() > 0 && targetClass != null) {
             return byteBufToObject(data);
         }
         return null;

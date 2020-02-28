@@ -39,7 +39,7 @@ public class RSocketCompositeMetadata implements MetadataAware {
 
     public static RSocketCompositeMetadata from(ByteBuf content) {
         RSocketCompositeMetadata temp = new RSocketCompositeMetadata();
-        if (content.capacity() > 0) {
+        if (content.readableBytes() > 0) {
             temp.load(content);
         }
         return temp;

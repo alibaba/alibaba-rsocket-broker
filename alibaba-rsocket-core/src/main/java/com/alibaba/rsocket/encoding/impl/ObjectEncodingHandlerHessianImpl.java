@@ -39,7 +39,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() > 0) {
+        if (data.readableBytes() > 0) {
             try {
                 return decode(data);
             } catch (Exception e) {
@@ -60,7 +60,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() > 0) {
+        if (data.readableBytes() > 0) {
             try {
                 return decode(data);
             } catch (Exception e) {
@@ -85,7 +85,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
     }
 
     public static Object decode(@Nullable ByteBuf byteBuf) throws IOException {
-        if (byteBuf == null || byteBuf.capacity() == 0) {
+        if (byteBuf == null || byteBuf.readableBytes() == 0) {
             return null;
         }
         return new HessianSerializerInput(new ByteBufInputStream(byteBuf)).readObject();

@@ -83,7 +83,7 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
 
     @Override
     public void load(ByteBuf byteBuf) {
-        this.byteBufLength = byteBuf.capacity();
+        this.byteBufLength = byteBuf.readableBytes();
         while (byteBuf.isReadable()) {
             byte firstByte = byteBuf.readByte();
             if (firstByte < 0) {

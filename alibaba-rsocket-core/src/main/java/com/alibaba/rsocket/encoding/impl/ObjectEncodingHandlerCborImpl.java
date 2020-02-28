@@ -51,7 +51,7 @@ public class ObjectEncodingHandlerCborImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() > 0 && targetClasses != null && targetClasses.length > 0) {
+        if (data.readableBytes() > 0 && targetClasses != null && targetClasses.length > 0) {
             try {
                 return objectMapper.readValue((InputStream) new ByteBufInputStream(data), targetClasses[0]);
             } catch (Exception e) {
@@ -81,7 +81,7 @@ public class ObjectEncodingHandlerCborImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() > 0 && targetClass != null) {
+        if (data.readableBytes() > 0 && targetClass != null) {
             try {
                 return objectMapper.readValue((InputStream) new ByteBufInputStream(data), targetClass);
             } catch (Exception e) {

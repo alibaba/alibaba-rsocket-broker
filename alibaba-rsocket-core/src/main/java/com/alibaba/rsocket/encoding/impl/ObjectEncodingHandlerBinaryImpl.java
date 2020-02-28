@@ -32,7 +32,7 @@ public class ObjectEncodingHandlerBinaryImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() > 0 && !isArrayEmpty(targetClasses)) {
+        if (data.readableBytes() > 0 && !isArrayEmpty(targetClasses)) {
             return decodeResult(data, targetClasses[0]);
         }
         return null;
@@ -59,7 +59,7 @@ public class ObjectEncodingHandlerBinaryImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() > 0 && targetClass != null) {
+        if (data.readableBytes() > 0 && targetClass != null) {
             if (targetClass.equals(ByteBuf.class)) {
                 return data;
             } else if (targetClass.equals(ByteBuffer.class)) {

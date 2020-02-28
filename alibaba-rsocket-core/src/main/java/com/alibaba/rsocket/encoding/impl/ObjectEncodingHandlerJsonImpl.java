@@ -46,7 +46,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
-        if (data.capacity() > 0 && !isArrayEmpty(targetClasses)) {
+        if (data.readableBytes() > 0 && !isArrayEmpty(targetClasses)) {
             try {
                 //noinspection ConstantConditions
                 return JsonUtils.readJsonArray(data, targetClasses);
@@ -77,7 +77,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     @Override
     @Nullable
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
-        if (data.capacity() > 0 && targetClass != null) {
+        if (data.readableBytes() > 0 && targetClass != null) {
             try {
                 return JsonUtils.readJsonValue(data, targetClass);
             } catch (Exception e) {

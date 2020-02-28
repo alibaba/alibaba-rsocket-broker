@@ -148,7 +148,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Mono<Void> metadataPush(Payload payload) {
         try {
-            if (payload.metadata().capacity() > 0) {
+            if (payload.metadata().readableBytes() > 0) {
                 return fireCloudEvent(Json.decodeValue(payload.getMetadataUtf8(), CLOUD_EVENT_TYPE_REFERENCE));
             }
         } catch (Exception e) {

@@ -63,7 +63,7 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     @Override
     public @Nullable Object decodeParams(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?>... targetClasses) {
         try {
-            if (data == null || data.capacity() == 0) return null;
+            if (data == null || data.readableBytes() == 0) return null;
             return handlerMap.get(encodingType).decodeParams(data, targetClasses);
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-700501", encodingType.getName(), "Object[]"), e);
@@ -85,7 +85,7 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     @Override
     public @Nullable Object decodeResult(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?> targetClass) {
         try {
-            if (data == null || data.capacity() == 0) return null;
+            if (data == null || data.readableBytes() == 0) return null;
             //convert to raw output without decoding
             if (targetClass == ByteBuffer.class) {
                 return data.nioBuffer();
