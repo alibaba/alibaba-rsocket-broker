@@ -50,11 +50,15 @@ public class RSocketRestApiController {
                                                @RequestParam(name = "group", required = false, defaultValue = "") String group,
                                                @RequestParam(name = "version", required = false, defaultValue = "") String version,
                                                @RequestBody(required = false) byte[] body,
+                                               @RequestHeader(name = "X-Endpoint", required = false, defaultValue = "") String endpoint,
                                                @RequestHeader(name = "Authorization", required = false, defaultValue = "") String authorizationValue) {
         try {
             GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, serviceName, method, version);
             Integer serviceHashCode = routingMetadata.id();
             Integer targetHandlerId = routingSelector.findHandler(serviceHashCode);
+            if (!endpoint.isEmpty() && endpoint.startsWith("id:")) {
+                targetHandlerId = Integer.valueOf(endpoint.substring(3).trim());
+            }
             if (targetHandlerId != null) {
                 RSocketBrokerResponderHandler targetHandler = handlerRegistry.findById(targetHandlerId);
                 if (targetHandler != null) {
