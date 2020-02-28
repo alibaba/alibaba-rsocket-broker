@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.gateway;
 
+import com.alibaba.rsocket.gateway.auth.JwtAuthenticationService;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
@@ -8,6 +9,8 @@ import com.alibaba.rsocket.upstream.UpstreamManager;
 import io.netty.buffer.ByteBuf;
 import io.rsocket.RSocket;
 import io.rsocket.util.ByteBufPayload;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,10 @@ import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
  */
 @Controller
 public class MainController {
+    @Autowired
+    private JwtAuthenticationService authenticationService;
+    @Value("${restapi.auth-required}")
+    private boolean authRequired;
     private static MessageMimeTypeMetadata jsonMetaEncoding = new MessageMimeTypeMetadata(RSocketMimeType.Json);
     private RSocket rsocket;
 
@@ -35,9 +42,16 @@ public class MainController {
                                                 @RequestParam(name = "group", required = false, defaultValue = "") String group,
                                                 @RequestParam(name = "version", required = false, defaultValue = "") String version,
                                                 @RequestBody(required = false) ByteBuf body,
-                                                @RequestHeader(name = "Authorization", required = false, defaultValue = "") String authorization) {
-        //todo authorization: JWT, SAML etc
-        // please add auth code here
+                                                @RequestHeader(name = "Authorization", required = false, defaultValue = "") String authorizationValue) {
+        boolean authenticated;
+        if (!authRequired) {
+            authenticated = true;
+        } else {
+            authenticated = authAuthorizationValue(authorizationValue);
+        }
+        if (!authenticated) {
+            return Mono.error(new Exception("RST-500403: Failed to validate JWT token, please supply correct token!"));
+        }
         try {
             GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, serviceName, method, version);
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding);
@@ -52,6 +66,17 @@ public class MainController {
         } catch (Exception e) {
             return Mono.error(e);
         }
+    }
+
+    private boolean authAuthorizationValue(String authorizationValue) {
+        if (authorizationValue == null || authorizationValue.isEmpty()) {
+            return false;
+        }
+        String jwtToken = authorizationValue;
+        if (authorizationValue.contains(" ")) {
+            jwtToken = authorizationValue.substring(authorizationValue.lastIndexOf(" ") + 1);
+        }
+        return authenticationService.auth(jwtToken) != null;
     }
 
 }
