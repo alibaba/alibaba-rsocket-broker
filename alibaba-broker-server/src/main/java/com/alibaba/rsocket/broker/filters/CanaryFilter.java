@@ -6,6 +6,8 @@ import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.route.RSocketFilter;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
@@ -16,6 +18,8 @@ import java.util.List;
  *
  * @author leijuan
  */
+@Component
+@ConditionalOnExpression(value = "false")
 public class CanaryFilter extends RSocketFilter {
     private List<String> canaryServices = Arrays.asList("com.alibaba.Service1", "com.alibaba.Service2");
     private static String canaryVersion = "canary";
