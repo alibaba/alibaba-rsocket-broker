@@ -44,6 +44,26 @@ public class TracingMetadata implements MetadataAware {
         this.setParentSpanId(parentSpanId);
     }
 
+    public void sampling(boolean reported) {
+        if (reported) {
+            flag = (byte) (flag | 0x30);
+        }
+    }
+
+    public boolean isSamplingReported() {
+        return (flag & 0x30) == 0;
+    }
+
+    public void debug(boolean reported) {
+        if (reported) {
+            flag = (byte) (flag | 0xC0);
+        }
+    }
+
+    public boolean isDebugReported() {
+        return (flag & 0xC0) == 0;
+    }
+
     public long getTraceIdHigh() {
         return traceIdHigh;
     }
