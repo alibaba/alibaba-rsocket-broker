@@ -13,7 +13,6 @@ import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.util.DefaultPayload;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +61,7 @@ public class RSocketRestApiController {
                     if (authRequired) {
                         RSocketAppPrincipal principal = authAuthorizationValue(authorizationValue);
                         if (principal == null || !serviceMeshInspector.isRequestAllowed(principal, routingMetadata.gsv(), targetHandler.getPrincipal())) {
-                            return Mono.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900401", routingMetadata.gsv())));
+                            return Mono.just(error(RsocketErrorCode.message("RST-900401", routingMetadata.gsv())));
                         }
                     }
                     RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding);
