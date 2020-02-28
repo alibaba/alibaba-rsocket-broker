@@ -1,4 +1,4 @@
-package com.alibaba.rsocket.broker.web;
+package com.alibaba.rsocket.broker.ops;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.ServiceLocator;
