@@ -20,7 +20,6 @@ import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
@@ -214,7 +213,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         //request filters
         Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, gsvRoutingMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, gsvRoutingMetadata, payload, this.appMetadata);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
@@ -254,7 +253,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         //request filters
         Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, gsvRoutingMetadata, payload);
+            RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, gsvRoutingMetadata, payload, this.appMetadata);
             destination = filterChain.filter(exchange).then(destination);
         }
         //call destination
@@ -304,7 +303,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
         Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
-            RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, gsvRoutingMetadata, payload);
+            RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, gsvRoutingMetadata, payload, this.appMetadata);
             destination = filterChain.filter(requestContext).then(destination);
         }
         return destination.flatMapMany(rsocket -> {
@@ -416,7 +415,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     private ByteBuf constructDefaultDataEncoding() {
-        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5,5);
+        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5, 5);
         buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
         buf.writeByte(0);
         buf.writeByte(0);
