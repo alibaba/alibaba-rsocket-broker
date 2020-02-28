@@ -34,6 +34,13 @@ Content-Type: application/json
 
 ```
 
+### gRPC集成
+
+如果你想在gateway中集成gRPC，这里是我们的一些建议：
+
+* Reactive stubs for gRPC: 将gRPC的接口转换为Reactive方式，更方便和RSocket服务集成
+* Spring Boot starter module for gRPC framework: 快速发布你的gRPC服务 https://github.com/LogNet/grpc-spring-boot-starter
+
 ### References
 
 * https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md
