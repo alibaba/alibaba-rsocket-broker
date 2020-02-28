@@ -1,9 +1,6 @@
-package com.alibaba.rsocket.broker.web;
+package com.alibaba.rsocket.broker.dns;
 
 import com.alibaba.rsocket.RSocketAppContext;
-import com.alibaba.rsocket.broker.dns.DnsResolveService;
-import com.alibaba.rsocket.broker.dns.DnsResponse;
-import com.alibaba.rsocket.broker.dns.Question;
 import io.netty.handler.codec.dns.DnsRecordType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +15,6 @@ import reactor.core.publisher.Mono;
  */
 @RestController
 public class DnsOverHTTPController {
-
     @Autowired
     private DnsResolveService dnsResolveService;
 
