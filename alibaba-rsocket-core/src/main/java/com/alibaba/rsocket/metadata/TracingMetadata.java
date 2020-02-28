@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 
 /**
- * Tracing metadata
+ * Tracing metadata: https://github.com/rsocket/rsocket/blob/master/Extensions/Tracing-Zipkin.md
  *
  * @author leijuan
  */
