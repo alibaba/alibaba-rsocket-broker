@@ -3,30 +3,28 @@ package com.alibaba.rsocket.metadata;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * Tracing metadata
  *
  * @author leijuan
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class TracingMetadata implements MetadataAware {
-    /**
-     * trace ID bytes length
-     */
-    private static int ID_BYTES_LENGTH = 16;
-    /**
-     * tracing bytes length
-     */
-    private static int TRACING_BYTES_LENGTH = 33;
+    private static int TRACING_BYTES_MAX_LENGTH = 33;
+    private static byte TRACE_ID_128_MARK = (byte) 0x80;
+    private static byte PARENT_SPAN_MARK = (byte) 0x40;
     /**
      * flag
      */
-    private byte flag;
+    private byte flag = 0;
     /**
-     * trace id: uuid  128 bit= 16 bytes
+     * Upper 64bits of the trace ID
      */
-    private String id;
+    private long traceIdHigh;
+    /**
+     * Lower 64bits of the trace ID
+     */
+    private long traceIdLow;
     /**
      * span id
      */
@@ -39,18 +37,41 @@ public class TracingMetadata implements MetadataAware {
     public TracingMetadata() {
     }
 
-    public TracingMetadata(byte flag, long id, long spanId, long parentSpanId) {
-        this.flag = flag;
+    public TracingMetadata(long traceIdHigh, long traceIdLow, long spanId, long parentSpanId) {
+        this.setTraceIdHigh(traceIdHigh);
+        this.traceIdLow = traceIdLow;
         this.spanId = spanId;
+        this.setParentSpanId(parentSpanId);
+    }
+
+    public long getTraceIdHigh() {
+        return traceIdHigh;
+    }
+
+    public void setTraceIdHigh(long traceIdHigh) {
+        this.traceIdHigh = traceIdHigh;
+        if (traceIdHigh > 0) {
+            flag = (byte) (flag | TRACE_ID_128_MARK);
+        }
+    }
+
+    public long getTraceIdLow() {
+        return traceIdLow;
+    }
+
+    public void setTraceIdLow(long traceIdLow) {
+        this.traceIdLow = traceIdLow;
+    }
+
+    public void setSpanId(long spanId) {
+        this.spanId = spanId;
+    }
+
+    public void setParentSpanId(long parentSpanId) {
         this.parentSpanId = parentSpanId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        if (traceIdHigh > 0) {
+            flag = (byte) (flag | TRACE_ID_128_MARK);
+        }
     }
 
     public Long getSpanId() {
@@ -77,6 +98,17 @@ public class TracingMetadata implements MetadataAware {
         this.flag = flag;
     }
 
+    private int byteBufCapacity() {
+        int len = TRACING_BYTES_MAX_LENGTH;
+        if (this.traceIdHigh == 0) {
+            len = len - 8;
+        }
+        if (this.parentSpanId == 0) {
+            len = len - 8;
+        }
+        return len;
+    }
+
     @Override
     public RSocketMimeType rsocketMimeType() {
         return RSocketMimeType.Tracing;
@@ -89,32 +121,30 @@ public class TracingMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer(TRACING_BYTES_LENGTH);
+        int bytesLength = byteBufCapacity();
+        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer(bytesLength, bytesLength);
         buffer.writeByte(flag);
-        byte[] source = id.getBytes(StandardCharsets.UTF_8);
-        if (source.length == ID_BYTES_LENGTH) {
-            buffer.writeBytes(source);
-        } else {
-            byte[] target = new byte[ID_BYTES_LENGTH];
-            if (source.length > ID_BYTES_LENGTH) {
-                System.arraycopy(source, 0, target, 0, ID_BYTES_LENGTH);
-            } else {
-                System.arraycopy(source, 0, target, ID_BYTES_LENGTH - source.length, source.length);
-            }
-            buffer.writeBytes(target);
+        if (this.traceIdHigh > 0) {
+            buffer.writeLong(this.traceIdHigh);
         }
+        buffer.writeLong(this.traceIdLow);
         buffer.writeLong(spanId);
-        buffer.writeLong(parentSpanId);
+        if (this.parentSpanId > 0) {
+            buffer.writeLong(parentSpanId);
+        }
         return buffer;
     }
 
     public void load(ByteBuf byteBuf) {
         this.flag = byteBuf.readByte();
-        byte[] idBytes = new byte[ID_BYTES_LENGTH];
-        byteBuf.readBytes(idBytes);
-        this.id = new String(idBytes, StandardCharsets.UTF_8);
+        if ((flag & TRACE_ID_128_MARK) > 0) {
+            this.traceIdHigh = byteBuf.readLong();
+        }
+        this.traceIdLow = byteBuf.readLong();
         this.spanId = byteBuf.readLong();
-        this.parentSpanId = byteBuf.readLong();
+        if ((flag & PARENT_SPAN_MARK) > 0) {
+            this.parentSpanId = byteBuf.readLong();
+        }
     }
 
     public static TracingMetadata from(ByteBuf content) {
