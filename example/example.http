@@ -7,6 +7,12 @@ GET http://localhost:8181/user/extra/2
 ### get user info by bytebuf
 GET http://localhost:8181/bytebuf/user/2
 
+### Get Avatar with ByteBuf return
+GET http://localhost:8181/avatar
+
+### ByteBuf as param and ByteBuf as return
+GET http://localhost:8181/bytebuf/bytebuf
+
 ### get account info
 GET http://localhost:8181/account/1
 
