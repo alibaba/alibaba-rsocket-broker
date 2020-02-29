@@ -1,11 +1,14 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
+import com.alibaba.rsocket.util.ByteBufBuilder;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService;
+import io.netty.buffer.ByteBuf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -38,4 +41,14 @@ public class UserController {
         return userService.findByIdOrNick(id, "Fake nick");
     }
 
+    @GetMapping("/user/avatar")
+    public Mono<String> avatar() {
+        return userService.findAvatar(1).map(byteBuf -> byteBuf.toString(StandardCharsets.UTF_8));
+    }
+
+    @GetMapping("/bytebuf/bytebuf")
+    public Mono<String> bytebuf2() {
+        ByteBuf content = ByteBufBuilder.builder().value(1).value("Jackie").build();
+        return userService.findUserByIdAndNick(content).map(byteBuf -> byteBuf.toString(StandardCharsets.UTF_8));
+    }
 }
