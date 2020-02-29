@@ -18,13 +18,13 @@ public @interface ServiceMapping {
      */
     String value() default "";
 
-    String group();
+    String group() default "";
 
-    String version();
+    String version() default "";
 
-    String encoding();
+    String encoding() default "";
 
-    String decoding();
+    String decoding() default "";
 
-    String endpoint();
+    String endpoint() default "";
 }
