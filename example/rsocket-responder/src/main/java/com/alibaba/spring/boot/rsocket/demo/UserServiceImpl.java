@@ -6,6 +6,7 @@ import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import com.github.javafaker.Faker;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.commons.lang3.RandomUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<String> error(String text) {
         return Mono.error(new Exception("this is an Exception!"));
+    }
+
+    @Override
+    public Mono<ByteBuf> findAvatar(Integer id) {
+        return Mono.just(Unpooled.wrappedBuffer("this is avatar".getBytes()));
+    }
+
+    @Override
+    public Mono<ByteBuf> findUserByIdAndNick(ByteBuf byteBuf) {
+        Tuple2<Integer, String> tuple2 = ByteBufTuples.of(byteBuf, Integer.class, String.class);
+        return Mono.just(Unpooled.wrappedBuffer("Hello ByteBuf data".getBytes()));
     }
 
     private User randomUser(@Nullable Integer id) {
