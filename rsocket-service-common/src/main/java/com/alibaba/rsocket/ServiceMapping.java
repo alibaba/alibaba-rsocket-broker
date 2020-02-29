@@ -22,9 +22,9 @@ public @interface ServiceMapping {
 
     String version() default "";
 
-    String encoding() default "";
+    String paramEncoding() default "";
 
-    String decoding() default "";
+    String resultEncoding() default "";
 
     String endpoint() default "";
 }

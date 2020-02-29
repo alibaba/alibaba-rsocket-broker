@@ -166,11 +166,11 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         if (!serviceMapping.endpoint().isEmpty()) {
             this.endpoint = serviceMapping.endpoint();
         }
-        if (!serviceMapping.encoding().isEmpty()) {
-            this.paramEncoding = RSocketMimeType.valueOfType(serviceMapping.encoding());
+        if (!serviceMapping.paramEncoding().isEmpty()) {
+            this.paramEncoding = RSocketMimeType.valueOfType(serviceMapping.paramEncoding());
         }
-        if (!serviceMapping.decoding().isEmpty()) {
-            this.acceptEncodingTypes = new RSocketMimeType[]{RSocketMimeType.valueOfType(serviceMapping.decoding())};
+        if (!serviceMapping.resultEncoding().isEmpty()) {
+            this.acceptEncodingTypes = new RSocketMimeType[]{RSocketMimeType.valueOfType(serviceMapping.resultEncoding())};
         }
     }
 

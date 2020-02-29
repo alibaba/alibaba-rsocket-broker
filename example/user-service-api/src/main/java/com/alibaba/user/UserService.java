@@ -101,10 +101,10 @@ public interface UserService {
 
     Mono<String> error(String text);
 
-    @ServiceMapping(decoding = "application/octet-stream")
+    @ServiceMapping(resultEncoding = "application/octet-stream")
     Mono<ByteBuf> findAvatar(Integer id);
 
-    @ServiceMapping(encoding = "application/octet-stream", decoding = "application/octet-stream")
+    @ServiceMapping(paramEncoding = "application/octet-stream", resultEncoding = "application/octet-stream")
     Mono<ByteBuf> findUserByIdAndNick(ByteBuf byteBuf);
 
 
