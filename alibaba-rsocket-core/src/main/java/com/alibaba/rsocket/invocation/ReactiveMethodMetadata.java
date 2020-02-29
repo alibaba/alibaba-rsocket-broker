@@ -148,12 +148,14 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
     }
 
     public void initServiceMapping(ServiceMapping serviceMapping) {
-        String serviceName = serviceMapping.value();
-        if (serviceName.contains(".")) {
-            this.service = serviceName.substring(0, serviceName.lastIndexOf('.'));
-            this.name = serviceName.substring(serviceName.lastIndexOf('.') + 1);
-        } else {
-            this.name = serviceName;
+        if (!serviceMapping.value().isEmpty()) {
+            String serviceName = serviceMapping.value();
+            if (serviceName.contains(".")) {
+                this.service = serviceName.substring(0, serviceName.lastIndexOf('.'));
+                this.name = serviceName.substring(serviceName.lastIndexOf('.') + 1);
+            } else {
+                this.name = serviceName;
+            }
         }
         if (!serviceMapping.group().isEmpty()) {
             this.group = serviceMapping.group();
@@ -167,7 +169,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         if (!serviceMapping.encoding().isEmpty()) {
             this.paramEncoding = RSocketMimeType.valueOfType(serviceMapping.encoding());
         }
-        if (!serviceMapping.encoding().isEmpty()) {
+        if (!serviceMapping.decoding().isEmpty()) {
             this.acceptEncodingTypes = new RSocketMimeType[]{RSocketMimeType.valueOfType(serviceMapping.decoding())};
         }
     }
