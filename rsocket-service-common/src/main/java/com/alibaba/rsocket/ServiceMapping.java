@@ -22,9 +22,24 @@ public @interface ServiceMapping {
 
     String version() default "";
 
+    /**
+     * params encoding
+     *
+     * @return mime type
+     */
     String paramEncoding() default "";
 
+    /**
+     * result value encoding
+     *
+     * @return mime type
+     */
     String resultEncoding() default "";
 
+    /**
+     * endpoint, such as id:xxxx,  ip:192.168.1.2
+     *
+     * @return endpoint
+     */
     String endpoint() default "";
 }
