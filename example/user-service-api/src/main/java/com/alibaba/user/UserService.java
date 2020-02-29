@@ -1,5 +1,6 @@
 package com.alibaba.user;
 
+import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.util.ByteBufBuilder;
 import io.netty.buffer.ByteBuf;
 import reactor.core.publisher.Flux;
@@ -99,5 +100,12 @@ public interface UserService {
     Flux<User> recent(Flux<Date> point);
 
     Mono<String> error(String text);
+
+    @ServiceMapping(decoding = "application/octet-stream")
+    Mono<ByteBuf> findAvatar(Integer id);
+
+    @ServiceMapping(encoding = "application/octet-stream", decoding = "application/octet-stream")
+    Mono<ByteBuf> findUserByIdAndNick(ByteBuf byteBuf);
+
 
 }
