@@ -33,7 +33,7 @@ Broker完全是异步化的，没有线程池这些概念，而且消息转发�
 * Load balancing: 应用和Broker建立长连接后，负载均衡就非常简单啦。
 * Circuit Breakers: 断路保护，现在调整为Back Pressure支持
 * Distributed messaging: RSocket就是基于消息推送的
-* 多语言支持: RSocket是一套标准协议，主流语言的SDK都有支持
+* 多语言支持: RSocket是一套标准协议，主流语言的SDK都有支持，详情请访问 [RSocket SDK Stack](https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-SDK-Stack)
 
 ### 项目模块
 
