@@ -41,10 +41,7 @@ import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.TopicProcessor;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * RSocket broker responder handler for per connection
@@ -75,6 +72,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      * app metadata
      */
     private AppMetadata appMetadata;
+    /**
+     * app tags hashcode hash set, to make routing based on endpoint fast
+     */
+    private Set<Integer> appTagsHashCodeSet = new HashSet<>();
     /**
      * authorized principal
      */
@@ -130,9 +131,20 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 this.defaultMessageMimeType = new MessageMimeTypeMetadata(dataType);
                 this.defaultEncodingBytebuf = constructDefaultDataEncoding();
             }
-            this.id = appMetadata.getId();
             this.appMetadata = appMetadata;
-            this.uuid = this.appMetadata.getUuid();
+            this.id = appMetadata.getId();
+            this.uuid = appMetadata.getUuid();
+            //app tags hashcode set
+            this.appTagsHashCodeSet.add(("id:" + this.id).hashCode());
+            this.appTagsHashCodeSet.add(("uuid:" + this.uuid).hashCode());
+            if (appMetadata.getIp() != null && !appMetadata.getIp().isEmpty()) {
+                this.appTagsHashCodeSet.add(("ip:" + this.appMetadata.getIp()).hashCode());
+            }
+            if (appMetadata.getMetadata() != null) {
+                for (Map.Entry<String, String> entry : appMetadata.getMetadata().entrySet()) {
+                    this.appTagsHashCodeSet.add((entry.getKey() + ":" + entry.getValue()).hashCode());
+                }
+            }
             this.principal = principal;
             this.peerRsocket = peerRsocket;
             this.routingSelector = routingSelector;
@@ -469,17 +481,11 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Nullable
     private Integer findDestinationWithEndpoint(String endpoint, Integer serviceId) {
-        int sepPosition = endpoint.indexOf(':');
-        String key = endpoint.substring(0, sepPosition);
-        String value = endpoint.substring(sepPosition + 1);
+        int endpointHashCode = endpoint.hashCode();
         for (Integer handlerId : routingSelector.findHandlers(serviceId)) {
             RSocketBrokerResponderHandler handler = handlerRegistry.findById(handlerId);
             if (handler != null) {
-                if (key.equalsIgnoreCase("ip") && value.equalsIgnoreCase(handler.getAppMetadata().getIp())) {
-                    return handlerId;
-                } else if (endpoint.equalsIgnoreCase("id") && value.equalsIgnoreCase(handler.getAppMetadata().getUuid())) {
-                    return handlerId;
-                } else if (appMetadata.getMetadata() != null && value.equalsIgnoreCase(appMetadata.getMetadata(key))) {
+                if (handler.appTagsHashCodeSet.contains(endpointHashCode)) {
                     return handlerId;
                 }
             }
