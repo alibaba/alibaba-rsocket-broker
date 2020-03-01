@@ -5,7 +5,6 @@ import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
-import org.eclipse.collections.impl.multimap.list.FastListMultimap;
 import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +21,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     /**
      * service to handlers
      */
-    private FastListMultimap<Integer, Integer> serviceHandlers = new FastListMultimap<>();
+    private FastListMultimap2<Integer, Integer> serviceHandlers = new FastListMultimap2<>();
     /**
      * distinct Services
      */
@@ -35,15 +34,18 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
 
     @Override
     public void register(Integer instanceId, Set<ServiceLocator> services) {
+        register(instanceId, 1, services);
+    }
+
+    @Override
+    public void register(Integer instanceId, int powerUnit, Set<ServiceLocator> services) {
         if (instanceServices.containsKey(instanceId)) {
             return;
         }
         for (ServiceLocator serviceLocator : services) {
             int serviceId = serviceLocator.getId();
             instanceServices.put(instanceId, serviceId);
-            if (!serviceHandlers.containsKeyAndValue(serviceId, instanceId)) {
-                serviceHandlers.put(serviceId, instanceId);
-            }
+            serviceHandlers.putMultiCopies(serviceId, instanceId, powerUnit);
             distinctServices.put(serviceId, serviceLocator);
         }
     }
@@ -52,7 +54,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     public void deregister(Integer instanceId) {
         if (instanceServices.containsKey(instanceId)) {
             for (Integer serviceId : instanceServices.get(instanceId)) {
-                serviceHandlers.remove(serviceId, instanceId);
+                serviceHandlers.removeAllSameValue(serviceId, instanceId);
                 if (!serviceHandlers.containsKey(serviceId)) {
                     distinctServices.remove(serviceId);
                 }

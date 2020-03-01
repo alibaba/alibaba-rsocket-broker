@@ -2,7 +2,6 @@ package com.alibaba.spring.boot.rsocket.broker.route;
 
 import com.alibaba.rsocket.ServiceLocator;
 import org.jetbrains.annotations.Nullable;
-import reactor.core.publisher.Flux;
 
 import java.util.Collection;
 import java.util.Set;
@@ -15,6 +14,8 @@ import java.util.Set;
 public interface ServiceRoutingSelector {
 
     void register(Integer instanceId, Set<ServiceLocator> services);
+
+    void register(Integer instanceId, int powerUnit, Set<ServiceLocator> services);
 
     void deregister(Integer instanceId);
 
