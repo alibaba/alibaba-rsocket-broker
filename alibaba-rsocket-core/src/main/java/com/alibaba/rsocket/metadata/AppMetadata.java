@@ -105,7 +105,11 @@ public class AppMetadata implements MetadataAware {
     }
 
     public void setPowerRating(int powerRating) {
-        this.powerRating = powerRating;
+        if (powerRating <= 0) {
+            this.powerRating = 1;
+        } else {
+            this.powerRating = powerRating;
+        }
     }
 
     public String getUuid() {
