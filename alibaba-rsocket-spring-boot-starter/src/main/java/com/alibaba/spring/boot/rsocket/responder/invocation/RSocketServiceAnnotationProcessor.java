@@ -39,9 +39,9 @@ public class RSocketServiceAnnotationProcessor extends LocalReactiveServiceCalle
     }
 
     private void registerRSocketService(RSocketService rsocketServiceAnnotation, Object bean) {
-        String serviceName = rsocketServiceAnnotation.name();
-        if (serviceName.isEmpty()) {
-            serviceName = rsocketServiceAnnotation.serviceInterface().getCanonicalName();
+        String serviceName = rsocketServiceAnnotation.serviceInterface().getCanonicalName();
+        if (!rsocketServiceAnnotation.name().isEmpty()) {
+            serviceName = rsocketServiceAnnotation.name();
         }
         String group = rSocketProperties.getGroup();
         String version = rsocketServiceAnnotation.version().isEmpty() ? rSocketProperties.getVersion() : rsocketServiceAnnotation.version();
