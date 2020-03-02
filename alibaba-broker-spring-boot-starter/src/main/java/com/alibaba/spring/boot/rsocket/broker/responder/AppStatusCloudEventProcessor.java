@@ -59,15 +59,12 @@ public class AppStatusCloudEventProcessor {
                 if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_CONNECTED)) {  //app connected
                     registerConfigPush(appMetadata);
                 } else if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_SERVING)) {  //app serving
-                    responderHandler.setAppStatus(AppStatusEvent.STATUS_SERVING);
-                    //if peer services not empty, register services again
-                    if (responderHandler.getPeerServices() != null) {
-                        responderHandler.registerPublishedServices();
-                    }
+                    responderHandler.registerPublishedServices();
                 } else if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_OUT_OF_SERVICE)) { //app out of service
                     responderHandler.unRegisterPublishedServices();
-                } else {
-
+                } else if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_STOPPED)) {
+                    responderHandler.unRegisterPublishedServices();
+                    responderHandler.setAppStatus(AppStatusEvent.STATUS_STOPPED);
                 }
             }
         }
