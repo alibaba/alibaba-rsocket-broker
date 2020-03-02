@@ -101,6 +101,9 @@ public class AppsView extends VerticalLayout {
                     appInstance.setConsumedServices(handler.getConsumedServices());
                     appInstance.setConnectedAt(appMetadata.getConnectedAt());
                     appInstance.setMetadata(appMetadata);
+                    if (appMetadata.getMetadata("power-rating") != null) {
+                        appInstance.setPowerRating(Integer.parseInt(appMetadata.getMetadata("power-rating")));
+                    }
                     return appInstance;
                 })
                 .collect(Collectors.toList());
