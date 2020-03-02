@@ -104,7 +104,12 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
 
     @Override
     public Integer getInstanceCount(Integer serviceId) {
-        return serviceHandlers.get(serviceId).size();
+        MutableList<Integer> handlerCount = serviceHandlers.get(serviceId);
+        if (handlerCount.size() <= 1) {
+            return handlerCount.size();
+        } else {
+            return handlerCount.distinct().size();
+        }
     }
 
     @Override
