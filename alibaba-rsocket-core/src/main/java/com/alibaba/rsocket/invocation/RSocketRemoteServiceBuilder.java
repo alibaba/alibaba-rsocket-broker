@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.invocation;
 
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
@@ -28,10 +29,31 @@ public class RSocketRemoteServiceBuilder<T> {
     private UpstreamCluster upstreamCluster;
 
     public static <T> RSocketRemoteServiceBuilder<T> client(Class<T> serviceInterface) {
-        RSocketRemoteServiceBuilder<T> rSocketServiceBuilder = new RSocketRemoteServiceBuilder<T>();
-        rSocketServiceBuilder.serviceInterface = serviceInterface;
-        rSocketServiceBuilder.service = serviceInterface.getCanonicalName();
-        return rSocketServiceBuilder;
+        RSocketRemoteServiceBuilder<T> builder = new RSocketRemoteServiceBuilder<T>();
+        builder.serviceInterface = serviceInterface;
+        builder.service = serviceInterface.getCanonicalName();
+        ServiceMapping serviceMapping = serviceInterface.getAnnotation(ServiceMapping.class);
+        if (serviceMapping != null) {
+            if (!serviceMapping.group().isEmpty()) {
+                builder.group = serviceMapping.group();
+            }
+            if (!serviceMapping.version().isEmpty()) {
+                builder.version = serviceMapping.group();
+            }
+            if (!serviceMapping.value().isEmpty()) {
+                builder.service = serviceMapping.value();
+            }
+            if (!serviceMapping.endpoint().isEmpty()) {
+                builder.endpoint = serviceMapping.endpoint();
+            }
+            if (!serviceMapping.paramEncoding().isEmpty()) {
+                builder.encodingType = RSocketMimeType.valueOfType(serviceMapping.paramEncoding());
+            }
+            if (!serviceMapping.resultEncoding().isEmpty()) {
+                builder.acceptEncodingType = RSocketMimeType.valueOfType(serviceMapping.resultEncoding());
+            }
+        }
+        return builder;
     }
 
     public RSocketRemoteServiceBuilder<T> group(String group) {
