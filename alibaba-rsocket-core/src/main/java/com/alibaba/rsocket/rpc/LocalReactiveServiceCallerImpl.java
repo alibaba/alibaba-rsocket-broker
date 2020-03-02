@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.rpc;
 
+import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +45,12 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
         rsocketServices.put(serviceName, handler);
         rsocketHashCodeServices.put(MurmurHash3.hash32(serviceName), handler);
         for (Method method : serviceInterface.getMethods()) {
-            String key = serviceName + "." + method.getName();
+            String handlerName = method.getName();
+            ServiceMapping serviceMapping = method.getAnnotation(ServiceMapping.class);
+            if (serviceMapping != null && !serviceMapping.value().isEmpty()) {
+                handlerName = serviceMapping.value();
+            }
+            String key = serviceName + "." + handlerName;
             methodInvokeEntrances.put(key, new ReactiveMethodHandler(serviceInterface, method, handler));
             methodHashCodeInvokeEntrances.put(MurmurHash3.hash32(key), new ReactiveMethodHandler(serviceInterface, method, handler));
         }
