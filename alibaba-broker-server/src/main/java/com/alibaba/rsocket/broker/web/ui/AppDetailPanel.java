@@ -110,7 +110,7 @@ public class AppDetailPanel extends Div {
     public void setSecurityInfo(String orgs, String serviceAccounts, String roles) {
         this.securityInfo.setVisible(true);
         this.securityInfoHeader.setVisible(true);
-        this.securityInfo.setText("Orgs: " + orgs + "\r\n" + "ServiceAccounts: " + serviceAccounts + "\r\n" + "Roles:" + roles);
+        this.securityInfo.setText("Orgs: " + orgs + "\r\n" + "ServiceAccounts: " + serviceAccounts + "\r\n" + "Roles: " + roles);
     }
 
     public void setPublishedServices(Set<ServiceLocator> publishedServices) {
