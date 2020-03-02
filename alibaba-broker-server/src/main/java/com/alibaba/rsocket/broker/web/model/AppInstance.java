@@ -19,6 +19,7 @@ public class AppInstance {
     private String ip;
     private Date connectedAt;
     private Integer status;
+    private Integer powerRating = 1;
     private Set<ServiceLocator> services;
     private Set<String> consumedServices;
     private String orgs;
@@ -60,6 +61,14 @@ public class AppInstance {
 
     public String getStatusText() {
         return AppStatusEvent.statusText(this.status);
+    }
+
+    public Integer getPowerRating() {
+        return powerRating;
+    }
+
+    public void setPowerRating(Integer powerRating) {
+        this.powerRating = powerRating;
     }
 
     public Set<ServiceLocator> getServices() {
