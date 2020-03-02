@@ -6,7 +6,6 @@ import com.alibaba.rsocket.metadata.AppMetadata;
 
 import java.util.Date;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * App Instance
@@ -25,7 +24,7 @@ public class AppInstance {
     private String orgs;
     private String serviceAccounts;
     private String roles;
-    private AppMetadata metadata;
+    private AppMetadata appMetadata;
 
     public String getId() {
         return id;
@@ -119,26 +118,12 @@ public class AppInstance {
         this.roles = roles;
     }
 
-    public AppMetadata getMetadata() {
-        return metadata;
+    public AppMetadata getAppMetadata() {
+        return appMetadata;
     }
 
-    public void setMetadata(AppMetadata metadata) {
-        this.metadata = metadata;
-    }
-
-    public String getServicesHTML() {
-        if (services == null || services.isEmpty()) {
-            return "";
-        }
-        return services.stream().map(ServiceLocator::toString).collect(Collectors.joining("<br/>"));
-    }
-
-    public String getConsumedServicesHTML() {
-        if (consumedServices == null || consumedServices.isEmpty()) {
-            return "";
-        }
-        return String.join("<br/>", consumedServices);
+    public void setAppMetadata(AppMetadata appMetadata) {
+        this.appMetadata = appMetadata;
     }
 
 }
