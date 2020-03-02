@@ -19,7 +19,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -86,15 +85,14 @@ public class RSocketEndpoint {
     public Mono<String> operate(@Selector String action) {
         if ("online".equalsIgnoreCase(action)) {
             this.rsocketServiceStatus = AppStatusEvent.STATUS_SERVING;
-            return sendAppStatus(this.rsocketServiceStatus).thenReturn("Succeed to online!");
+            return sendAppStatus(this.rsocketServiceStatus).thenReturn("Succeed to register RSocket services on brokers!");
         } else if ("offline".equalsIgnoreCase(action)) {
             this.rsocketServiceStatus = AppStatusEvent.STATUS_OUT_OF_SERVICE;
-            return sendAppStatus(this.rsocketServiceStatus).thenReturn("Succeed to offline!");
+            return sendAppStatus(this.rsocketServiceStatus).thenReturn("Succeed to unregister RSocket services on brokers!");
         } else if ("shutdown".equalsIgnoreCase(action)) {
             this.rsocketServiceStatus = AppStatusEvent.STATUS_STOPPED;
             return sendAppStatus(this.rsocketServiceStatus)
-                    .delayElement(Duration.ofSeconds(15))
-                    .thenReturn("Succeed to shutdown!");
+                    .thenReturn("Succeed to unregister RSocket services on brokers! Please wait almost 60 seconds to shutdown the Spring Boot App!");
         } else {
             return Mono.just("Unknown action, please use online, offline and shutdown");
         }
