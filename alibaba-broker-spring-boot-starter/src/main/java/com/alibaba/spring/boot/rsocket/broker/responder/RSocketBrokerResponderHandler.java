@@ -371,7 +371,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     public void registerPublishedServices() {
         if (this.peerServices != null && !this.peerServices.isEmpty()) {
-            routingSelector.register(appMetadata.getId(), appMetadata.getPowerUnit(), peerServices);
+            routingSelector.register(appMetadata.getId(), appMetadata.getPowerRating(), peerServices);
         }
         this.appStatus = AppStatusEvent.STATUS_SERVING;
     }

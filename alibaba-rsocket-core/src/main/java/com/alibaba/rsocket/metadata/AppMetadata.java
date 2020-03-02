@@ -24,9 +24,9 @@ public class AppMetadata implements MetadataAware {
      */
     private String uuid;
     /**
-     * power unit. big number means bigger power to process requests
+     * power rating. big number means bigger power to process requests
      */
-    private int powerUnit = 1;
+    private int powerRating = 1;
     /**
      * app name
      */
@@ -100,12 +100,12 @@ public class AppMetadata implements MetadataAware {
         this.id = id;
     }
 
-    public int getPowerUnit() {
-        return powerUnit;
+    public int getPowerRating() {
+        return powerRating;
     }
 
-    public void setPowerUnit(int powerUnit) {
-        this.powerUnit = powerUnit;
+    public void setPowerRating(int powerRating) {
+        this.powerRating = powerRating;
     }
 
     public String getUuid() {

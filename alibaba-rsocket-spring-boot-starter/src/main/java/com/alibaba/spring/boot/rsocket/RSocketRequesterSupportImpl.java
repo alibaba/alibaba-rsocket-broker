@@ -154,8 +154,8 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
             }
         });
         //power unit
-        if (appMetadata.getMetadata("power-unit") != null) {
-            appMetadata.setPowerUnit(Integer.parseInt(appMetadata.getMetadata("power-unit")));
+        if (appMetadata.getMetadata("power-rating") != null) {
+            appMetadata.setPowerRating(Integer.parseInt(appMetadata.getMetadata("power-rating")));
         }
         //humans.md
         URL humansMd = this.getClass().getResource("/humans.md");
