@@ -44,6 +44,7 @@ public class AppsView extends VerticalLayout {
         appMetadataGrid.addColumn(AppInstance::getIp).setHeader("IP");
         appMetadataGrid.addColumn(AppInstance::getConnectedAt).setHeader("Started Time");
         appMetadataGrid.addColumn(AppInstance::getStatusText).setHeader("Status");
+        appMetadataGrid.addColumn(AppInstance::getPowerRating).setHeader("PowerRating");
         appMetadataGrid.addColumn(new ComponentRenderer<>(appInstance -> {
                     Checkbox checkbox = new Checkbox(appInstance.getStatus().equals(AppStatusEvent.STATUS_SERVING));
                     checkbox.addValueChangeListener(event -> {
