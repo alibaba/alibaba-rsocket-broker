@@ -9,6 +9,7 @@ import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,8 @@ public class OpsRestController {
 
     @Autowired
     private RSocketBrokerManager brokerManager;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @RequestMapping("/services")
     public Mono<Collection<ServiceLocator>> services() {
@@ -63,6 +66,20 @@ public class OpsRestController {
     @PostMapping("/cluster/update")
     public Mono<Void> updateUpstream(@RequestBody String uris) throws Exception {
         final CloudEventImpl<UpstreamClusterChangedEvent> cloudEvent = getUpstreamClusterChangedEventCloudEvent(uris);
+        return handlerRegistry.broadcast("*", cloudEvent);
+    }
+
+    @PostMapping("/broadcast/demo")
+    public Mono<Void> broadcastDemo(@RequestBody Map<String, Object> content) throws Exception {
+        CloudEventImpl<Map<String, Object>> cloudEvent = CloudEventBuilder.<Map<String, Object>>builder()
+                .withId(UUID.randomUUID().toString())
+                .withSource(URI.create("broker://" + RSocketAppContext.ID))
+                .withType("com.alibaba.demo.UnknownType")
+                .withTime(ZonedDateTime.now())
+                .withDataContentType("application/json")
+                .withData(content)
+                .withSubject("subject1")
+                .build();
         return handlerRegistry.broadcast("*", cloudEvent);
     }
 
