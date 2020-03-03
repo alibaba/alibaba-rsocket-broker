@@ -24,4 +24,10 @@ Authorization: Bearer your_jwt_token_here
 ### metrics with prometheus
 GET http://localhost:9997/actuator/prometheus
 
+### broadcast demo
+POST http://127.0.0.1:9998/ops/broadcast/demo
+Content-Type: application/json
+
+{"id": 1,"nick": "leijuan"}
+
 ###
