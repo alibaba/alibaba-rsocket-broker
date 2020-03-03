@@ -33,12 +33,6 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
-            <version>${jackson.version}</version>
-            <optional>true</optional>
-        </dependency>
         <!--unit test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
