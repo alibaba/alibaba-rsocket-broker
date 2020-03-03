@@ -87,7 +87,7 @@ public class RSocketAutoConfiguration {
     }
 
     @Bean(initMethod = "init", destroyMethod = "close")
-    public UpstreamManager rSocketUpstreamManager(@Autowired RSocketRequesterSupport rsocketRequesterSupport) throws JwtTokenNotFoundException {
+    public UpstreamManager rsocketUpstreamManager(@Autowired RSocketRequesterSupport rsocketRequesterSupport) throws JwtTokenNotFoundException {
         UpstreamManager upstreamManager = new UpstreamManagerImpl(rsocketRequesterSupport);
         if (properties.getBrokers() != null && !properties.getBrokers().isEmpty()) {
             if (properties.getJwtToken() == null || properties.getJwtToken().isEmpty()) {
