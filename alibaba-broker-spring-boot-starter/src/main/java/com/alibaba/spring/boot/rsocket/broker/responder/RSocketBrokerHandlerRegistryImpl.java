@@ -22,6 +22,7 @@ import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
+import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.RejectedSetupException;
 import org.eclipse.collections.api.multimap.Multimap;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
@@ -240,7 +241,17 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                     .flatMap(handler -> handler.fireCloudEventToPeer(cloudEvent))
                     .then();
         } else {
-            return Mono.empty();
+            return Mono.error(new ApplicationErrorException("Application not found:" + appName));
+        }
+    }
+
+    @Override
+    public Mono<Void> send(String appUUID, CloudEventImpl cloudEvent) {
+        RSocketBrokerResponderHandler responderHandler = responderHandlers.get(appUUID);
+        if (responderHandler != null) {
+            return responderHandler.fireCloudEvent(cloudEvent);
+        } else {
+            return Mono.error(new ApplicationErrorException("Application not found:" + appUUID));
         }
     }
 
