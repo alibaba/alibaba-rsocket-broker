@@ -18,9 +18,11 @@ import java.util.UUID;
  */
 public interface BroadcastSpread {
 
-    Mono<Void> send(String appUUID, final CloudEventImpl cloudEvent);
+    Mono<Void> send(@NotNull String appUUID, final CloudEventImpl cloudEvent);
 
-    Mono<Void> broadcast(String appName, final CloudEventImpl cloudEvent);
+    Mono<Void> broadcast(@NotNull String appName, final CloudEventImpl cloudEvent);
+
+    Mono<Void> broadcastAll(CloudEventImpl cloudEvent);
 
     default CloudEventImpl<Map<String, Object>> buildMapCloudEvent(@NotNull String type, @NotNull String subject, @NotNull Map<String, Object> data) {
         return CloudEventBuilder.<Map<String, Object>>builder()
