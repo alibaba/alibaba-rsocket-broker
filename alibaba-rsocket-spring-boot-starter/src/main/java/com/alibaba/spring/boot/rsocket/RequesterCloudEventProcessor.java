@@ -40,6 +40,8 @@ public class RequesterCloudEventProcessor {
                 handleUpstreamClusterChangedEvent(cloudEvent);
             } else if (InvalidCacheEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleInvalidCache(cloudEvent);
+            } else {
+                log.info(RsocketErrorCode.message("RST-610501", type));
             }
         });
     }
