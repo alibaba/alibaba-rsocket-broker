@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.hessian;
 
+import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Encoder;
@@ -19,12 +20,13 @@ import java.util.Map;
 public class HessianEncoder extends HessianCodecSupport implements Encoder<Object> {
 
     @Override
-    public boolean canEncode(ResolvableType elementType, MimeType mimeType) {
+    public boolean canEncode(@NotNull ResolvableType elementType, MimeType mimeType) {
         return HESSIAN_MIME_TYPE.equals(mimeType);
     }
 
+    @NotNull
     @Override
-    public Flux<DataBuffer> encode(Publisher<?> inputStream, DataBufferFactory bufferFactory, ResolvableType elementType, MimeType mimeType, Map<String, Object> hints) {
+    public Flux<DataBuffer> encode(@NotNull Publisher<?> inputStream, @NotNull DataBufferFactory bufferFactory, ResolvableType elementType, MimeType mimeType, Map<String, Object> hints) {
         return Flux.from(inputStream)
                 .handle((obj, sink) -> {
                     try {
@@ -35,6 +37,7 @@ public class HessianEncoder extends HessianCodecSupport implements Encoder<Objec
                 });
     }
 
+    @NotNull
     @Override
     public DataBuffer encodeValue(Object value, DataBufferFactory bufferFactory, ResolvableType valueType, MimeType mimeType, Map<String, Object> hints) {
         if (value == null) {
@@ -47,6 +50,7 @@ public class HessianEncoder extends HessianCodecSupport implements Encoder<Objec
         }
     }
 
+    @NotNull
     @Override
     public List<MimeType> getEncodableMimeTypes() {
         return HESSIAN_MIME_TYPES;

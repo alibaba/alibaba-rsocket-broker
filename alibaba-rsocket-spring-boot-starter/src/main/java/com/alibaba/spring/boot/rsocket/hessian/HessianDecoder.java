@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.hessian;
 
+import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Decoder;
@@ -16,16 +17,16 @@ import java.util.Map;
  *
  * @author leijuan
  */
-@SuppressWarnings("NullableProblems")
 public class HessianDecoder extends HessianCodecSupport implements Decoder<Object> {
 
     @Override
-    public boolean canDecode(ResolvableType elementType, MimeType mimeType) {
+    public boolean canDecode(@NotNull ResolvableType elementType, MimeType mimeType) {
         return HESSIAN_MIME_TYPE.equals(mimeType);
     }
 
+    @NotNull
     @Override
-    public Flux<Object> decode(Publisher<DataBuffer> inputStream, ResolvableType elementType, MimeType mimeType, Map<String, Object> hints) {
+    public Flux<Object> decode(@NotNull Publisher<DataBuffer> inputStream, @NotNull ResolvableType elementType, MimeType mimeType, Map<String, Object> hints) {
         return Flux.from(inputStream).handle(((dataBuffer, sink) -> {
             try {
                 sink.next(decode(dataBuffer));
@@ -35,8 +36,9 @@ public class HessianDecoder extends HessianCodecSupport implements Decoder<Objec
         }));
     }
 
+    @NotNull
     @Override
-    public Mono<Object> decodeToMono(Publisher<DataBuffer> inputStream, ResolvableType elementType, MimeType mimeType, Map<String, Object> hints) {
+    public Mono<Object> decodeToMono(@NotNull Publisher<DataBuffer> inputStream, @NotNull ResolvableType elementType, MimeType mimeType, Map<String, Object> hints) {
         return Mono.from(inputStream).handle((dataBuffer, sink) -> {
             try {
                 sink.next(decode(dataBuffer));
@@ -46,6 +48,7 @@ public class HessianDecoder extends HessianCodecSupport implements Decoder<Objec
         });
     }
 
+    @NotNull
     @Override
     public List<MimeType> getDecodableMimeTypes() {
         return HESSIAN_MIME_TYPES;
