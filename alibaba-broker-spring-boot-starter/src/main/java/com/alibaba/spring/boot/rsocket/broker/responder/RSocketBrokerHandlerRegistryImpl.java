@@ -230,23 +230,26 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     }
 
     @Override
-    public Mono<Void> broadcast(String appName, final CloudEventImpl cloudEvent) {
+    public Mono<Void> broadcast(@NotNull String appName, final CloudEventImpl cloudEvent) {
         if (appHandlers.containsKey(appName)) {
             return Flux.fromIterable(appHandlers.get(appName))
                     .flatMap(handler -> handler.fireCloudEventToPeer(cloudEvent))
                     .then();
-        } else if (appName.equals("*")) {
-            return Flux.fromIterable(appHandlers.keySet())
-                    .flatMap(name -> Flux.fromIterable(appHandlers.get(name)))
-                    .flatMap(handler -> handler.fireCloudEventToPeer(cloudEvent))
-                    .then();
-        } else {
+        }  else {
             return Mono.error(new ApplicationErrorException("Application not found:" + appName));
         }
     }
 
     @Override
-    public Mono<Void> send(String appUUID, CloudEventImpl cloudEvent) {
+    public Mono<Void> broadcastAll(CloudEventImpl cloudEvent) {
+        return Flux.fromIterable(appHandlers.keySet())
+                .flatMap(name -> Flux.fromIterable(appHandlers.get(name)))
+                .flatMap(handler -> handler.fireCloudEventToPeer(cloudEvent))
+                .then();
+    }
+
+    @Override
+    public Mono<Void> send(@NotNull String appUUID, CloudEventImpl cloudEvent) {
         RSocketBrokerResponderHandler responderHandler = responderHandlers.get(appUUID);
         if (responderHandler != null) {
             return responderHandler.fireCloudEvent(cloudEvent);
