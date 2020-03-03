@@ -9,7 +9,6 @@ import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import com.alibaba.spring.boot.rsocket.RSocketProperties;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.metadata.WellKnownMimeType;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 
 import java.net.URI;
@@ -32,13 +30,9 @@ import java.util.stream.Collectors;
  * @author leijuan
  */
 public class RSocketServicesPublishHook implements ApplicationListener<ApplicationReadyEvent> {
-    private Logger log = LoggerFactory.getLogger(RSocketServicesPublishHook.class);
-    @Autowired
-    private ApplicationContext appContext;
+    private static Logger log = LoggerFactory.getLogger(RSocketServicesPublishHook.class);
     @Autowired
     private UpstreamManager upstreamManager;
-    @Autowired
-    private RSocketProperties rsocketProperties;
     @Autowired
     private RSocketRequesterSupport rsocketRequesterSupport;
 
