@@ -109,7 +109,6 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Flux<Payload> requestStream(Payload payload) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
-        BinaryRoutingMetadata binaryRoutingMetadata = compositeMetadata.getBinaryRoutingMetadata();
         GSVRoutingMetadata routingMetaData = getGsvRoutingMetadata(compositeMetadata);
         if (routingMetaData == null) {
             ReferenceCountUtil.safeRelease(payload);
