@@ -1,6 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration,\
 com.alibaba.spring.boot.rsocket.RSocketListenerAutoConfiguration,\
-com.alibaba.spring.boot.rsocket.RSocketKotlinAutoConfiguration
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 com.alibaba.spring.boot.rsocket.upstream.JwtTokenFailureAnalyzer
