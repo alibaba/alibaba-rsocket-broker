@@ -158,7 +158,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     }
 
     @Override
-    public Mono<String> spread(CloudEventImpl<?> cloudEvent) {
+    public Mono<String> broadcast(CloudEventImpl<?> cloudEvent) {
         Message message = Message.builder()
                 .header("cloudevents", "true")
                 .data(Json.encode(cloudEvent))

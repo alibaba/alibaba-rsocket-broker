@@ -72,7 +72,7 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
     }
 
     @Override
-    public Mono<String> spread(CloudEventImpl<?> cloudEvent) {
+    public Mono<String> broadcast(CloudEventImpl<?> cloudEvent) {
         return Mono.empty();
     }
 

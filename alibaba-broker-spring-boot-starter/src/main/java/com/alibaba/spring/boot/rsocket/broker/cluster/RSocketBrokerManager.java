@@ -28,6 +28,6 @@ public interface RSocketBrokerManager {
 
     void stopLocalBroker();
 
-    Mono<String> spread(CloudEventImpl<?> cloudEvent);
+    Mono<String> broadcast(CloudEventImpl<?> cloudEvent);
 
 }
