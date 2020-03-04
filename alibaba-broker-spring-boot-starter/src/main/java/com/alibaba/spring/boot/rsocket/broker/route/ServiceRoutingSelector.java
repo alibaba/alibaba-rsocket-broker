@@ -36,4 +36,6 @@ public interface ServiceRoutingSelector {
     Integer getInstanceCount(String serviceName);
 
     Collection<ServiceLocator> findAllServices();
+
+    int getDistinctServiceCount();
 }
