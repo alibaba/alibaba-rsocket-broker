@@ -207,7 +207,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.0.0-RC1</version>
+                        <version>4.0.0</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -215,6 +215,7 @@
                 </configuration>
             </plugin>
         </plugins>
+
         <pluginManagement>
             <plugins>
                 <plugin>
