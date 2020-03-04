@@ -20,10 +20,12 @@ import com.alibaba.spring.boot.rsocket.broker.security.JwtPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
+import io.micrometer.core.instrument.Metrics;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.RejectedSetupException;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.eclipse.collections.api.multimap.Multimap;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.multimap.list.FastListMultimap;
@@ -68,7 +70,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
      * handlers for App name, the key is app name, and value is list of handlers
      */
     private FastListMultimap<String, RSocketBrokerResponderHandler> appHandlers = new FastListMultimap<>();
-    private RSocketBrokerManager rSocketBrokerManager;
+    private RSocketBrokerManager rsocketBrokerManager;
     private ServiceMeshInspector serviceMeshInspector;
     private boolean authRequired;
 
@@ -77,7 +79,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                                             TopicProcessor<CloudEventImpl> eventProcessor,
                                             TopicProcessor<String> notificationProcessor,
                                             AuthenticationService authenticationService,
-                                            RSocketBrokerManager rSocketBrokerManager,
+                                            RSocketBrokerManager rsocketBrokerManager,
                                             ServiceMeshInspector serviceMeshInspector,
                                             boolean authRequired) {
         this.localReactiveServiceCaller = localReactiveServiceCaller;
@@ -86,12 +88,16 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         this.eventProcessor = eventProcessor;
         this.notificationProcessor = notificationProcessor;
         this.authenticationService = authenticationService;
-        this.rSocketBrokerManager = rSocketBrokerManager;
+        this.rsocketBrokerManager = rsocketBrokerManager;
         this.serviceMeshInspector = serviceMeshInspector;
         this.authRequired = authRequired;
-        if (!rSocketBrokerManager.isStandAlone()) {
-            this.rSocketBrokerManager.requestAll().flatMap(this::broadcastClusterTopology).subscribe();
+        if (!rsocketBrokerManager.isStandAlone()) {
+            this.rsocketBrokerManager.requestAll().flatMap(this::broadcastClusterTopology).subscribe();
         }
+        //gauge metrics
+        Metrics.globalRegistry.gauge("broker.apps.count", this, (DoubleFunction<RSocketBrokerHandlerRegistryImpl>) handlerRegistry -> handlerRegistry.appHandlers.size());
+        Metrics.globalRegistry.gauge("broker.service.provider.count", this, (DoubleFunction<RSocketBrokerHandlerRegistryImpl>) handlerRegistry -> handlerRegistry.appHandlers.valuesView().sumOfInt(handler -> handler.getPeerServices() == null ? 0 : 1));
+        Metrics.globalRegistry.gauge("broker.service.count", this.routingSelector, (DoubleFunction<ServiceRoutingSelector>) ServiceRoutingSelector::getDistinctServiceCount);
     }
 
     @Override
@@ -207,8 +213,8 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         connectionHandlers.put(responderHandler.getId(), responderHandler);
         appHandlers.put(appMetadata.getName(), responderHandler);
         eventProcessor.onNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_CONNECTED));
-        if (!rSocketBrokerManager.isStandAlone()) {
-            responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rSocketBrokerManager.currentBrokers())).subscribe();
+        if (!rsocketBrokerManager.isStandAlone()) {
+            responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rsocketBrokerManager.currentBrokers())).subscribe();
         }
         this.notificationProcessor.onNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
     }
@@ -235,7 +241,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             return Flux.fromIterable(appHandlers.get(appName))
                     .flatMap(handler -> handler.fireCloudEventToPeer(cloudEvent))
                     .then();
-        }  else {
+        } else {
             return Mono.error(new ApplicationErrorException("Application not found:" + appName));
         }
     }
