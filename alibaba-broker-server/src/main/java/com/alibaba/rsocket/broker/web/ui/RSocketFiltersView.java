@@ -39,7 +39,7 @@ public class RSocketFiltersView extends VerticalLayout {
                     Checkbox checkbox = new Checkbox(filter.isEnabled());
                     checkbox.addValueChangeListener(event -> filter.setEnabled(checkbox.getValue()));
                     RSocketFilterEnableEvent filterEnableEvent = new RSocketFilterEnableEvent(filter.getClass().getCanonicalName(), checkbox.getValue());
-                    brokerManager.spread(filterEnableEvent.toCloudEvent(URI.create("broker:" + brokerManager.localBroker().getIp()))).subscribe();
+                    brokerManager.broadcast(filterEnableEvent.toCloudEvent(URI.create("broker:" + brokerManager.localBroker().getIp()))).subscribe();
                     return checkbox;
                 })
         ).setHeader("Enabled");
