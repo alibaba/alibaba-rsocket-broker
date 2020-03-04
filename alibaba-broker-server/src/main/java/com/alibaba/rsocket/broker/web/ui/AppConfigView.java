@@ -60,7 +60,7 @@ public class AppConfigView extends VerticalLayout {
             AppConfigEvent appConfigEvent = new AppConfigEvent(appName.getValue(), configName.getValue(), configValue.getValue());
             configurationService.put(key, configValue.getValue())
                     .doOnSuccess(aVoid -> Notification.show("Saved Successfully"))
-                    .then(brokerManager.spread(appConfigEvent.toCloudEvent(URI.create("broker:" + brokerManager.localBroker().getIp()))))
+                    .then(brokerManager.broadcast(appConfigEvent.toCloudEvent(URI.create("broker:" + brokerManager.localBroker().getIp()))))
                     .subscribe();
         });
         content.add(new H3("Key/Value"));
