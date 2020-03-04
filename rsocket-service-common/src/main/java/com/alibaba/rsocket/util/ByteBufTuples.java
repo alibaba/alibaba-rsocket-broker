@@ -16,8 +16,8 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public class ByteBufTuples {
-    private static ByteBuffer EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0);
-    public static Map<Class<?>, ByteBufValueReader<?>> READERS = new HashMap<>();
+    private static final ByteBuffer EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0);
+    private static final Map<Class<?>, ByteBufValueReader<?>> READERS = new HashMap<>();
 
     static {
         READERS.put(Byte.class, ByteBuf::readByte);
