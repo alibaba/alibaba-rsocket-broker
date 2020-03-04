@@ -11,6 +11,7 @@ import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
+import io.micrometer.core.instrument.Metrics;
 import io.scalecube.cluster.Cluster;
 import io.scalecube.cluster.ClusterImpl;
 import io.scalecube.cluster.ClusterMessageHandler;
@@ -18,6 +19,7 @@ import io.scalecube.cluster.Member;
 import io.scalecube.cluster.membership.MembershipEvent;
 import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.net.Address;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -80,6 +82,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
         brokers.put(localIp, new RSocketBroker(localIp));
         this.localBroker = new RSocketBroker(localIp);
         log.info(RsocketErrorCode.message("RST-300002"));
+        Metrics.globalRegistry.gauge("cluster.broker.count", this, (DoubleFunction<RSocketBrokerManagerGossipImpl>) brokerManagerGossip -> brokerManagerGossip.brokers.size());
     }
 
     @Override

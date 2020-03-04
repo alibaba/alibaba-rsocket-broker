@@ -2,6 +2,8 @@ package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
 import io.cloudevents.v1.CloudEventImpl;
+import io.micrometer.core.instrument.Metrics;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -34,6 +36,7 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
     public DefaultRSocketBrokerManager(String... hosts) {
         this.localBroker = new RSocketBroker(getLocalIP());
         this.hosts = Arrays.asList(hosts);
+        Metrics.globalRegistry.gauge("cluster.broker.count", this, (DoubleFunction<DefaultRSocketBrokerManager>) brokerManagerGossip -> brokerManagerGossip.hosts.size());
     }
 
     @Override
