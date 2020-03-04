@@ -121,4 +121,9 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     public Collection<ServiceLocator> findAllServices() {
         return distinctServices.values();
     }
+
+    @Override
+    public int getDistinctServiceCount() {
+        return distinctServices.keySet().size();
+    }
 }
