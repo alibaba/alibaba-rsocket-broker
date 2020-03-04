@@ -17,8 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author leijuan
  */
 public class ReactiveMethodSupport {
-    public static List<Class<?>> BINARY_CLASS_LIST = Arrays.asList(ByteBuf.class, ByteBuffer.class, byte[].class);
-    private static Map<Type, Class<?>> genericTypesCache = new ConcurrentHashMap<>();
+    public static final List<Class<?>> BINARY_CLASS_LIST = Arrays.asList(ByteBuf.class, ByteBuffer.class, byte[].class);
+    private static final Map<Type, Class<?>> genericTypesCache = new ConcurrentHashMap<>();
     protected Method method;
     protected int paramCount;
     /**
