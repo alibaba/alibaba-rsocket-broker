@@ -37,7 +37,7 @@ Broker完全是异步化的，没有线程池这些概念，而且消息转发�
 
 ### 项目模块
 
-* rsocket-service-common: RSocket服务接口定义基础模块，包括Annotation, Reactive相关框架和支撑类
+* alibaba-rsocket-service-common: RSocket服务接口定义基础模块，包括Annotation, Reactive相关框架和支撑类
 * alibaba-rsocket-core: RSocket核心功能模块
 * alibaba-rsocket-spring-boot-starter: Spring Boot Starter for RSocket, 包括RSocket服务发布和消费
 * alibaba-broker-spring-boot-starter: Spring Boot Starter for RSocket Broker, 方便第三方进行扩展
