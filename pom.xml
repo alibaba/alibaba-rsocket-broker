@@ -20,7 +20,7 @@
         <module>alibaba-broker-config-client-spring-boot-starter</module>
         <module>alibaba-broker-http-gateway</module>
         <module>example</module>
-        <module>rsocket-service-common</module>
+        <module>alibaba-rsocket-service-common</module>
     </modules>
 
     <properties>
