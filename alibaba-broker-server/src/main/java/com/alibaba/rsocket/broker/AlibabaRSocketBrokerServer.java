@@ -25,4 +25,11 @@ public class AlibabaRSocketBrokerServer {
     MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
         return registry -> registry.config().commonTags("application", "alibaba-rsocket-broker");
     }
+
+    /*@Bean
+    public RSocketListenerCustomizer websocketListenerCustomizer() {
+        return builder -> {
+            builder.listen("ws", 19999);
+        };
+    }*/
 }
