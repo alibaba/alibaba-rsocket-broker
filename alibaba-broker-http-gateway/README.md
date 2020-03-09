@@ -23,7 +23,7 @@ rsocket-frame: 0x04
 
 ### 安全验证
 
-RSocket HTTPGate默认不启动REST API安全验证，如果想启动REST API，请确保"~/.rsocket/jwt_rsa.pub"文件存在，这个机制和RSocket Broker一致。
+RSocket HTTP Gateway默认不启动REST API安全验证，如果想启动REST API，请确保"~/.rsocket/jwt_rsa.pub"文件存在，这个机制和RSocket Broker一致。
 
 请求发发起请求，需要提供对应的JWT Token， HTTP REST API许请求格式如下：
 
