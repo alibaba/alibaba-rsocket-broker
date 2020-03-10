@@ -14,7 +14,7 @@
     <description>Alibaba RSocket Broker Spring Boot Starter for extension</description>
 
     <properties>
-        <scalecube-cluster.version>2.4.10-RC9</scalecube-cluster.version>
+        <scalecube-cluster.version>2.4.10</scalecube-cluster.version>
         <java-jwt.version>3.9.0</java-jwt.version>
     </properties>
 
