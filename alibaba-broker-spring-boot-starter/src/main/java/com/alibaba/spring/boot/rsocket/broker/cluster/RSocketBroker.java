@@ -9,6 +9,7 @@ public class RSocketBroker {
     private String id;
     private String schema = "tcp";
     private String ip;
+    private String externalDomain;
     private int port = 9999;
     private Integer status = 1;
     private long startedAt;
@@ -42,6 +43,14 @@ public class RSocketBroker {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getExternalDomain() {
+        return externalDomain;
+    }
+
+    public void setExternalDomain(String externalDomain) {
+        this.externalDomain = externalDomain;
     }
 
     public int getPort() {
