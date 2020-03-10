@@ -23,6 +23,7 @@ public class RSocketBroker {
 
     public RSocketBroker(String ip, String externalDomain) {
         this.ip = ip;
+        this.externalDomain = externalDomain;
     }
 
     public String getId() {
