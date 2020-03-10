@@ -5,9 +5,13 @@ import com.alibaba.rsocket.events.CloudEventSupport;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilter;
 import com.alibaba.rsocket.transport.NetworkUtil;
+import com.alibaba.spring.boot.rsocket.broker.RSocketBrokerProperties;
+import com.alibaba.spring.boot.rsocket.broker.cluster.jsonrpc.JsonRpcRequest;
+import com.alibaba.spring.boot.rsocket.broker.cluster.jsonrpc.JsonRpcResponse;
 import com.alibaba.spring.boot.rsocket.broker.events.AppConfigEvent;
 import com.alibaba.spring.boot.rsocket.broker.events.RSocketFilterEnableEvent;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
@@ -58,6 +62,8 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     private String[] seeds;
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private RSocketBrokerProperties brokerProperties;
 
     private Cluster cluster;
     private RSocketBroker localBroker;
@@ -127,8 +133,26 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
 
     @Override
     public void onMessage(Message message) {
-        //peer to peer cluster.send()
-        System.out.println(message);
+        if (message.header("jsonrpc") != null) {
+            JsonRpcRequest request = message.data();
+            Message replyMessage = Message.builder()
+                    .correlationId(message.correlationId())
+                    .data(jsonRpcCall(request))
+                    .build();
+            this.cluster.send(message.sender(), replyMessage).subscribe();
+        }
+    }
+
+    public JsonRpcResponse jsonRpcCall(JsonRpcRequest request) {
+        Object result;
+        if (request.getMethod().equals("BrokerService.getConfiguration")) {
+            Map<String, String> config = new HashMap<>();
+            config.put("rsocket.broker.externalDomain", brokerProperties.getExternalDomain());
+            result = config;
+        } else {
+            result = "";
+        }
+        return new JsonRpcResponse(request.getId(), result);
     }
 
     @Override
