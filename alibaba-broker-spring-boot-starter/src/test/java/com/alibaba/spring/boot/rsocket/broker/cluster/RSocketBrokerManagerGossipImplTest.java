@@ -6,8 +6,7 @@ import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.cluster.transport.api.MessageCodec;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -25,15 +24,10 @@ import java.util.Map;
 public class RSocketBrokerManagerGossipImplTest {
     private MessageCodec messageCodec = MessageCodec.INSTANCE;
 
-    @BeforeAll
-    public static void setUp() throws Exception {
-
-    }
-
     @Test
     public void testDefaultScalecubeMessageCodec() {
         MessageCodec messageCodec = MessageCodec.INSTANCE;
-        Assertions.assertEquals(messageCodec.getClass(), JacksonMessageCodec.class);
+        Assertions.assertThat(messageCodec.getClass()).isEqualTo(JacksonMessageCodec.class);
     }
 
     @Test
@@ -45,7 +39,7 @@ public class RSocketBrokerManagerGossipImplTest {
         messageCodec.serialize(message, bos);
         Message message1 = messageCodec.deserialize(new ByteArrayInputStream(bos.toByteArray()));
         Map<String, String> value2 = message1.data();
-        Assertions.assertEquals(value.get("nick"), value2.get("nick"));
+        Assertions.assertThat(value).containsEntry("nick", value2.get("nick"));
     }
 
     @Test
@@ -65,6 +59,6 @@ public class RSocketBrokerManagerGossipImplTest {
         messageCodec.serialize(message, bos);
         Message message1 = messageCodec.deserialize(new ByteArrayInputStream(bos.toByteArray()));
         CloudEventImpl<AppStatusEvent> cloudEvent2 = message1.data();
-        cloudEvent2.getData().get().getId();
+        Assertions.assertThat(cloudEvent2.getData()).isPresent();
     }
 }
