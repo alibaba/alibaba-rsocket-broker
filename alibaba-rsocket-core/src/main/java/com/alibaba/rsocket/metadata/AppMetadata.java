@@ -7,6 +7,7 @@ import io.netty.buffer.Unpooled;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +45,10 @@ public class AppMetadata implements MetadataAware {
      */
     private String device;
     /**
+     * rsocket schema
+     */
+    private String schema = "tcp";
+    /**
      * ip
      */
     private String ip;
@@ -52,9 +57,9 @@ public class AppMetadata implements MetadataAware {
      */
     private Integer port;
     /**
-     * rsocket schema
+     * connected brokers
      */
-    private String schema = "tcp";
+    List<String> brokers;
     /**
      * secure or not
      */
@@ -182,6 +187,14 @@ public class AppMetadata implements MetadataAware {
 
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    public List<String> getBrokers() {
+        return brokers;
+    }
+
+    public void setBrokers(List<String> brokers) {
+        this.brokers = brokers;
     }
 
     public boolean isSecure() {
