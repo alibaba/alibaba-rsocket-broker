@@ -21,6 +21,10 @@ public class RSocketBrokerProperties {
      */
     private String topology;
     /**
+     * external domain for requester from external: the requester can not access broker's internal ip
+     */
+    private String externalDomain;
+    /**
      * auth required
      */
     private boolean authRequired = true;
@@ -33,6 +37,14 @@ public class RSocketBrokerProperties {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getExternalDomain() {
+        return externalDomain;
+    }
+
+    public void setExternalDomain(String externalDomain) {
+        this.externalDomain = externalDomain;
     }
 
     public boolean isAuthRequired() {
