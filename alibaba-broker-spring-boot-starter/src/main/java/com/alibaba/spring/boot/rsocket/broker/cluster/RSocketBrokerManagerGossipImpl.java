@@ -20,6 +20,8 @@ import io.scalecube.cluster.membership.MembershipEvent;
 import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.net.Address;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -76,8 +78,8 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .transport(transportConfig -> transportConfig.host(localIp).port(gossipListenPort))
                 .handler(cluster1 -> this)
                 .startAwait();
-        brokers.put(localIp, new RSocketBroker(localIp));
-        this.localBroker = new RSocketBroker(localIp);
+        this.localBroker = new RSocketBroker(localIp, brokerProperties.getExternalDomain());
+        brokers.put(localIp, localBroker);
         log.info(RsocketErrorCode.message("RST-300002"));
         Metrics.globalRegistry.gauge("cluster.broker.count", this, (DoubleFunction<RSocketBrokerManagerGossipImpl>) brokerManagerGossip -> brokerManagerGossip.brokers.size());
     }
@@ -128,13 +130,13 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             JsonRpcRequest request = message.data();
             Message replyMessage = Message.builder()
                     .correlationId(message.correlationId())
-                    .data(jsonRpcCall(request))
+                    .data(OnJsonRpcCall(request))
                     .build();
             this.cluster.send(message.sender(), replyMessage).subscribe();
         }
     }
 
-    public JsonRpcResponse jsonRpcCall(JsonRpcRequest request) {
+    public JsonRpcResponse OnJsonRpcCall(JsonRpcRequest request) {
         Object result;
         if (request.getMethod().equals("BrokerService.getConfiguration")) {
             Map<String, String> config = new HashMap<>();
@@ -144,6 +146,16 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             result = "";
         }
         return new JsonRpcResponse(request.getId(), result);
+    }
+
+    public Mono<JsonRpcResponse> makeJsonRpcCall(@NotNull Member member, @NotNull String methodName, @Nullable Object params) {
+        String uuid = UUID.randomUUID().toString();
+        Message jsonRpcMessage = Message.builder()
+                .correlationId(uuid)
+                .header("jsonrpc", "2.0")
+                .data(new JsonRpcRequest(methodName, params, uuid))
+                .build();
+        return cluster.requestResponse(member, jsonRpcMessage).map(Message::data);
     }
 
     @Override
@@ -188,8 +200,11 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     public void onMembershipEvent(MembershipEvent event) {
         RSocketBroker broker = memberToBroker(event.member());
         if (event.isAdded()) {
-            brokers.put(broker.getIp(), broker);
-            log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "added"));
+            makeJsonRpcCall(event.member(), "BrokerService.getConfiguration", null).subscribe(response -> {
+                broker.setExternalDomain((String) response.getResult());
+                brokers.put(broker.getIp(), broker);
+                log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "added"));
+            });
         } else if (event.isRemoved()) {
             brokers.remove(broker.getIp());
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "removed"));
