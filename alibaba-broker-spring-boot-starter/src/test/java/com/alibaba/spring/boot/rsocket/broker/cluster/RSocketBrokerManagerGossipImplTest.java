@@ -1,12 +1,13 @@
 package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.events.AppStatusEvent;
+import com.alibaba.spring.boot.rsocket.broker.cluster.scaleccube.codec.jackson.JacksonMessageCodec;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
-import io.scalecube.cluster.transport.api.JdkMessageCodec;
 import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.cluster.transport.api.MessageCodec;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -22,7 +23,18 @@ import java.util.Map;
  * @author leijuan
  */
 public class RSocketBrokerManagerGossipImplTest {
-    private MessageCodec messageCodec = new JdkMessageCodec();
+    private MessageCodec messageCodec = MessageCodec.INSTANCE;
+
+    @BeforeAll
+    public static void setUp() throws Exception {
+
+    }
+
+    @Test
+    public void testDefaultScalecubeMessageCodec() {
+        MessageCodec messageCodec = MessageCodec.INSTANCE;
+        Assertions.assertEquals(messageCodec.getClass(), JacksonMessageCodec.class);
+    }
 
     @Test
     public void testGossipMessageEncoding() throws Exception {
