@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.broker.cluster.scaleccube.codec.jackson;
+package com.alibaba.spring.boot.rsocket.broker.cluster.scalecube.codec.jackson;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
