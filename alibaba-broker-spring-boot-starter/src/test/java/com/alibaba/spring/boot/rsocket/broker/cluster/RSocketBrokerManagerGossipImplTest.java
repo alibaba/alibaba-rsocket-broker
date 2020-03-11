@@ -1,7 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.events.AppStatusEvent;
-import com.alibaba.spring.boot.rsocket.broker.cluster.scaleccube.codec.jackson.JacksonMessageCodec;
+import com.alibaba.spring.boot.rsocket.broker.cluster.scalecube.codec.jackson.JacksonMessageCodec;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.scalecube.cluster.transport.api.Message;
