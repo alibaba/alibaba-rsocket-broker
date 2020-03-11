@@ -58,7 +58,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Autowired
     private RSocketBrokerProperties brokerProperties;
 
-    private Cluster cluster;
+    private Mono<Cluster> monoCluster;
     private RSocketBroker localBroker;
     /**
      * rsocket brokers, key is ip address
@@ -72,12 +72,12 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @PostConstruct
     public void init() {
         final String localIp = NetworkUtil.getLocalIP();
-        cluster = new ClusterImpl()
+        monoCluster = new ClusterImpl()
                 .config(clusterConfig -> clusterConfig.containerHost(localIp).containerPort(gossipListenPort))
                 .membership(membershipConfig -> membershipConfig.seedMembers(seedMembers()).syncInterval(5_000))
                 .transport(transportConfig -> transportConfig.host(localIp).port(gossipListenPort))
                 .handler(cluster1 -> this)
-                .startAwait();
+                .start();
         this.localBroker = new RSocketBroker(localIp, brokerProperties.getExternalDomain());
         brokers.put(localIp, localBroker);
         log.info(RsocketErrorCode.message("RST-300002"));
@@ -132,7 +132,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                     .correlationId(message.correlationId())
                     .data(OnJsonRpcCall(request))
                     .build();
-            this.cluster.send(message.sender(), replyMessage).subscribe();
+            this.monoCluster.flatMap(cluster -> cluster.send(message.sender(), replyMessage)).subscribe();
         }
     }
 
@@ -155,7 +155,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .header("jsonrpc", "2.0")
                 .data(new JsonRpcRequest(methodName, params, uuid))
                 .build();
-        return cluster.requestResponse(member, jsonRpcMessage).map(Message::data);
+        return monoCluster.flatMap(cluster -> cluster.requestResponse(member, jsonRpcMessage)).map(Message::data);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .header("cloudevents", "true")
                 .data(cloudEvent)
                 .build();
-        return cluster.spreadGossip(message);
+        return monoCluster.flatMap(cluster -> cluster.spreadGossip(message));
     }
 
     @Override
@@ -223,7 +223,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
 
     @Override
     public void stopLocalBroker() {
-        this.cluster.shutdown();
+        this.monoCluster.subscribe(Cluster::shutdown);
     }
 
     @Override
