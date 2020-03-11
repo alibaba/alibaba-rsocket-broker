@@ -1,1 +1,1 @@
-com.alibaba.spring.boot.rsocket.broker.cluster.scaleccube.codec.jackson.CloudEventsModule
+com.alibaba.spring.boot.rsocket.broker.cluster.scalecube.codec.jackson.CloudEventsModule
