@@ -9,6 +9,7 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
+import com.alibaba.rsocket.transport.NetworkUtil;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
@@ -25,6 +26,7 @@ import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.RejectedSetupException;
+import io.rsocket.metadata.WellKnownMimeType;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.eclipse.collections.api.multimap.Multimap;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
@@ -299,7 +301,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
                 .withDataschema(URI.create("rsocket:event:com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent"))
-                .withDataContentType("application/json")
+                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
                 .withSource(URI.create("broker://" + RSocketAppContext.ID))
                 .withData(upstreamClusterChangedEvent)
                 .build();
