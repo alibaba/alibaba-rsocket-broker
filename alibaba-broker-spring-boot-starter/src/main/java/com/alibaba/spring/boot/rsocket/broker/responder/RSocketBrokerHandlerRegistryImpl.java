@@ -306,6 +306,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     }
 
     private Flux<Void> broadcastClusterTopology(Collection<RSocketBroker> rSocketBrokers) {
+        //todo 根据不同的接入方式，如外部接入和内部接入进行不同地址的推送
         final CloudEventImpl<UpstreamClusterChangedEvent> brokerClustersEvent = getBrokerClustersEvent(rSocketBrokers);
         return Flux.fromIterable(findAll()).flatMap(handler -> {
             Integer roles = handler.getRoles();
