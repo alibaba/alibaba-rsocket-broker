@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.transport.NetworkUtil;
 import io.cloudevents.v1.CloudEventImpl;
 import io.micrometer.core.instrument.Metrics;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
@@ -12,7 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static com.alibaba.rsocket.transport.NetworkUtil.getLocalIP;
 
 /**
  * Default RSocket Broker Manager
@@ -25,7 +25,7 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
 
     public DefaultRSocketBrokerManager() {
         try {
-            String localIP = getLocalIP();
+            String localIP = NetworkUtil.LOCAL_IP;
             this.localBroker = new RSocketBroker(localIP);
             this.hosts = Collections.singletonList(localIP);
         } catch (Exception ignore) {
@@ -34,7 +34,7 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
     }
 
     public DefaultRSocketBrokerManager(String... hosts) {
-        this.localBroker = new RSocketBroker(getLocalIP());
+        this.localBroker = new RSocketBroker(NetworkUtil.LOCAL_IP);
         this.hosts = Arrays.asList(hosts);
         Metrics.globalRegistry.gauge("cluster.broker.count", this, (DoubleFunction<DefaultRSocketBrokerManager>) brokerManagerGossip -> brokerManagerGossip.hosts.size());
     }

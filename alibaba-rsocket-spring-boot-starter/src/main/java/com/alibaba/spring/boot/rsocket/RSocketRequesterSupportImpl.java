@@ -9,6 +9,7 @@ import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.MetricsService;
+import com.alibaba.rsocket.transport.NetworkUtil;
 import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.Unpooled;
@@ -32,7 +33,6 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.alibaba.rsocket.transport.NetworkUtil.getLocalIP;
 
 /**
  * RSocket Requester Support implementation: setup payload, published service, token and app info
@@ -131,7 +131,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         AppMetadata appMetadata = new AppMetadata();
         appMetadata.setUuid(RSocketAppContext.ID);
         appMetadata.setName(appName);
-        appMetadata.setIp(getLocalIP());
+        appMetadata.setIp(NetworkUtil.LOCAL_IP);
         appMetadata.setDevice("SpringBootApp");
         //rsocket schema
         if (env.containsKey("rsocket.schema")) {

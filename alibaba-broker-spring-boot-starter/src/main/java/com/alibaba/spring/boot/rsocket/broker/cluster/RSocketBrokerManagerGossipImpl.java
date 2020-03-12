@@ -71,7 +71,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
 
     @PostConstruct
     public void init() {
-        final String localIp = NetworkUtil.getLocalIP();
+        final String localIp = NetworkUtil.LOCAL_IP;
         monoCluster = new ClusterImpl()
                 .config(clusterConfig -> clusterConfig.containerHost(localIp).containerPort(gossipListenPort))
                 .membership(membershipConfig -> membershipConfig.seedMembers(seedMembers()).syncInterval(5_000))
