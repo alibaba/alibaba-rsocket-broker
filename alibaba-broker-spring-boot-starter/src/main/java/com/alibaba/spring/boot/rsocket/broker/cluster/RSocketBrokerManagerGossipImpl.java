@@ -65,6 +65,10 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
      */
     private Map<String, RSocketBroker> brokers = new HashMap<>();
     /**
+     * broker aliases for external
+     */
+    private Map<String, RSocketBroker> brokerAliases = new HashMap<>();
+    /**
      * brokers changes emitter processor
      */
     private EmitterProcessor<Collection<RSocketBroker>> brokersEmitterProcessor = EmitterProcessor.create();
@@ -80,6 +84,9 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .start();
         this.localBroker = new RSocketBroker(localIp, brokerProperties.getExternalDomain());
         brokers.put(localIp, localBroker);
+        if (brokerProperties.getExternalDomain() != null) {
+            brokerAliases.put(brokerProperties.getExternalDomain(), localBroker);
+        }
         log.info(RsocketErrorCode.message("RST-300002"));
         Metrics.globalRegistry.gauge("cluster.broker.count", this, (DoubleFunction<RSocketBrokerManagerGossipImpl>) brokerManagerGossip -> brokerManagerGossip.brokers.size());
     }
@@ -199,17 +206,27 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Override
     public void onMembershipEvent(MembershipEvent event) {
         RSocketBroker broker = memberToBroker(event.member());
+        String brokerIp = event.member().address().host();
         if (event.isAdded()) {
             makeJsonRpcCall(event.member(), "BrokerService.getConfiguration", null).subscribe(response -> {
-                broker.setExternalDomain((String) response.getResult());
                 brokers.put(broker.getIp(), broker);
+                if (response.getResult() != null) {
+                    broker.setExternalDomain((String) response.getResult());
+                    brokerAliases.put(brokerProperties.getExternalDomain(), broker);
+                }
                 log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "added"));
             });
         } else if (event.isRemoved()) {
-            brokers.remove(broker.getIp());
+            RSocketBroker removedBroker = brokers.remove(brokerIp);
+            if (removedBroker.getExternalDomain() != null) {
+                brokerAliases.remove(removedBroker.getExternalDomain());
+            }
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "removed"));
         } else if (event.isLeaving()) {
-            brokers.remove(broker.getIp());
+            RSocketBroker leavingBroker = brokers.remove(brokerIp);
+            if (leavingBroker.getExternalDomain() != null) {
+                brokerAliases.remove(leavingBroker.getExternalDomain());
+            }
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "left"));
         }
         brokersEmitterProcessor.onNext(brokers.values());
