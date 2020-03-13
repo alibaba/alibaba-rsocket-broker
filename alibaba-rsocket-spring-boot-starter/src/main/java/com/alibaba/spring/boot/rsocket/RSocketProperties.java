@@ -1,6 +1,5 @@
 package com.alibaba.spring.boot.rsocket;
 
-import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.route.RoutingEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -28,6 +27,10 @@ public class RSocketProperties {
      * broker url, such tcp://127.0.0.1:42252
      */
     private List<String> brokers;
+    /**
+     * topology, intranet or internet
+     */
+    private String topology = "intranet";
     /**
      * metadata
      */
@@ -100,6 +103,14 @@ public class RSocketProperties {
 
     public void setBrokers(List<String> brokers) {
         this.brokers = brokers;
+    }
+
+    public String getTopology() {
+        return topology;
+    }
+
+    public void setTopology(String topology) {
+        this.topology = topology;
     }
 
     public List<RoutingEndpoint> getRoutes() {
