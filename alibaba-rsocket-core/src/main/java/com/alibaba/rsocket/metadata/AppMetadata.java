@@ -59,7 +59,11 @@ public class AppMetadata implements MetadataAware {
     /**
      * connected brokers
      */
-    List<String> brokers;
+    private List<String> brokers;
+    /**
+     * topology, such as intranet or internet
+     */
+    private String topology = "intranet";
     /**
      * secure or not
      */
@@ -195,6 +199,14 @@ public class AppMetadata implements MetadataAware {
 
     public void setBrokers(List<String> brokers) {
         this.brokers = brokers;
+    }
+
+    public String getTopology() {
+        return topology;
+    }
+
+    public void setTopology(String topology) {
+        this.topology = topology;
     }
 
     public boolean isSecure() {
