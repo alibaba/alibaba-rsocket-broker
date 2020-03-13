@@ -49,8 +49,8 @@ public class JsonRpcResponse {
         this.id = id;
     }
 
-    public Object getResult() {
-        return result;
+    public <T> T  getResult() {
+        return (T) result;
     }
 
     public void setResult(Object result) {
