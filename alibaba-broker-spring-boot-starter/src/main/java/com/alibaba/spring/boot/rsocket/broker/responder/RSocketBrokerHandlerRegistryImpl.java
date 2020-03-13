@@ -9,7 +9,6 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
-import com.alibaba.rsocket.transport.NetworkUtil;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
@@ -216,7 +215,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         appHandlers.put(appMetadata.getName(), responderHandler);
         eventProcessor.onNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_CONNECTED));
         if (!rsocketBrokerManager.isStandAlone()) {
-            responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rsocketBrokerManager.currentBrokers())).subscribe();
+            responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rsocketBrokerManager.currentBrokers(), appMetadata.getTopology())).subscribe();
         }
         this.notificationProcessor.onNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
     }
@@ -284,11 +283,19 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 .build();
     }
 
-    private CloudEventImpl<UpstreamClusterChangedEvent> getBrokerClustersEvent(Collection<RSocketBroker> rSocketBrokers) {
-        List<String> uris = rSocketBrokers.stream()
-                .filter(RSocketBroker::isActive)
-                .map(RSocketBroker::getUrl)
-                .collect(Collectors.toList());
+    private CloudEventImpl<UpstreamClusterChangedEvent> getBrokerClustersEvent(Collection<RSocketBroker> rSocketBrokers, String topology) {
+        List<String> uris;
+        if ("internet".equals(topology)) {
+            uris = rSocketBrokers.stream()
+                    .filter(rsocketBroker -> rsocketBroker.isActive() && rsocketBroker.getExternalDomain() != null)
+                    .map(RSocketBroker::getAliasUrl)
+                    .collect(Collectors.toList());
+        } else {
+            uris = rSocketBrokers.stream()
+                    .filter(RSocketBroker::isActive)
+                    .map(RSocketBroker::getUrl)
+                    .collect(Collectors.toList());
+        }
         UpstreamClusterChangedEvent upstreamClusterChangedEvent = new UpstreamClusterChangedEvent();
         upstreamClusterChangedEvent.setGroup("");
         upstreamClusterChangedEvent.setInterfaceName("*");
@@ -308,11 +315,12 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     }
 
     private Flux<Void> broadcastClusterTopology(Collection<RSocketBroker> rSocketBrokers) {
-        //todo 根据不同的接入方式，如外部接入和内部接入进行不同地址的推送
-        final CloudEventImpl<UpstreamClusterChangedEvent> brokerClustersEvent = getBrokerClustersEvent(rSocketBrokers);
+        final CloudEventImpl<UpstreamClusterChangedEvent> brokerClustersEvent = getBrokerClustersEvent(rSocketBrokers, "intranet");
+        final CloudEventImpl<UpstreamClusterChangedEvent> brokerClusterAliasesEvent = getBrokerClustersEvent(rSocketBrokers, "internet");
         return Flux.fromIterable(findAll()).flatMap(handler -> {
             Integer roles = handler.getRoles();
-            Mono<Void> fireEvent = handler.fireCloudEventToPeer(brokerClustersEvent);
+            String topology = handler.getAppMetadata().getTopology();
+            Mono<Void> fireEvent = "internet".equals(topology) ? handler.fireCloudEventToPeer(brokerClusterAliasesEvent) : handler.fireCloudEventToPeer(brokerClustersEvent);
             if (roles == 2) { // publish services only
                 return fireEvent;
             } else if (roles == 3) { //consume and publish services
