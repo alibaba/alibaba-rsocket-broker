@@ -96,9 +96,28 @@ rsocket.broker.seeds=192.168.1.2,192.168.1.3,192.168.1.4
 * 基于Gossip的集群管理，我们建议一个集群的最低配置为三台服务
 * 优雅关闭Broker: 在关闭broker时，如broker程序更新，先调用 http://localhost:9998/ops/stop_local_broker 将该broker从集群摘除，然后再停止应用。我们建议在线上发布扩容时候，一台台进行，这样对SDK的通知简单不少。
 
-##### 产品环境部署实践
+### 产品环境网络拓扑结构支持
 
-* WebSocket开启: 如果有从外部网络接入的应用，建议Broker使用多端口监听，TCP + WebSocket，外部应用通过WebSocket接入，内部网络依然走TCP
+在某些情况下，RSocket Broker集群可能要为外部应用跨互联网提供接入支持，如跨不同的云厂商，也就是要同时支持intranet和internet接入支持。
+
+##### intranet模式
+所有的应用都可以访问broker实例的内部IP地址，Gossip广播的broker IP地址都可以被应用访问，这个也是最简单的。
+
+*注意*: 如果外部应用跨互联网但是是VPN接入，这个是属于intranet范畴。
+
+##### internet模式
+应用从互联网接入，这个时候broker实例要以外部域名对外提供接入，这个时候需要broker包含对外的域名，你需要给每一个broker实例设置外部域名，如果是容器环境，你可以设置环境变量"RSOCKET_BROKER_EXTERNAL_DOMAIN"
+
+```
+rsocket.broker.external-domain=broker1.rsocket.foobar.com
+```
+
+对于外部应用来说，在设置rsocket broker的互联网域名后，同时要将rsocket.topology设置为internet，如下:
+
+```
+rsocket.brokers=tcp://broker1.rsocket.foobar.com:9999,tcp://broker2.rsocket.foobar.com:9999
+rsocket.topology=internet
+```
 
 ### Vaadin Flow
 Alibaba RSocket Broker的Web控制台使用Vaadin 14开发，为了方便你扩展界面，将Vaadin的开发资源列一下，方便二次开发。
