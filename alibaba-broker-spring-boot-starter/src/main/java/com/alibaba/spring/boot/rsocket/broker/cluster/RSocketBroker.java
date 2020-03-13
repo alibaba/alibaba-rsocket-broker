@@ -89,4 +89,8 @@ public class RSocketBroker {
     public String getUrl() {
         return schema + "://" + ip + ":" + port;
     }
+
+    public String getAliasUrl() {
+        return schema + "://" + externalDomain + ":" + port;
+    }
 }
