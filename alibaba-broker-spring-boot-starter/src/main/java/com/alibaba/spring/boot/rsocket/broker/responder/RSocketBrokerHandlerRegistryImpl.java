@@ -227,6 +227,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         connectionHandlers.remove(responderHandler.getId());
         appHandlers.remove(appMetadata.getName(), responderHandler);
         log.info(RsocketErrorCode.message("RST-500202"));
+        responderHandler.clean();
         eventProcessor.onNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_STOPPED));
         this.notificationProcessor.onNext(RsocketErrorCode.message("RST-300204", appMetadata.getName(), appMetadata.getIp()));
     }
