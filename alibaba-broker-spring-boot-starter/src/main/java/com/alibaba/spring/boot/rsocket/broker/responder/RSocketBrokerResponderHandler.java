@@ -370,7 +370,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     public void registerPublishedServices() {
-        if(!AppStatusEvent.STATUS_SERVING.equals(this.appStatus)) {
+        if (!AppStatusEvent.STATUS_SERVING.equals(this.appStatus)) {
             if (this.peerServices != null && !this.peerServices.isEmpty()) {
                 routingSelector.register(appMetadata.getId(), appMetadata.getPowerRating(), peerServices);
             }
@@ -523,6 +523,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             return BinaryRoutingMetadata.from(compositeByteBuf.slice(4, metadataContentLen));
         }
         return null;
+    }
+
+    public void clean() {
+        ReferenceCountUtil.release(this.defaultEncodingBytebuf);
     }
 
 }
