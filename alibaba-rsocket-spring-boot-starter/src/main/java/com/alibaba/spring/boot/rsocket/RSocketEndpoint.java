@@ -63,8 +63,8 @@ public class RSocketEndpoint {
                 temp.put("uris", upstreamCluster.getUris());
                 LoadBalancedRSocket loadBalancedRSocket = upstreamCluster.getLoadBalancedRSocket();
                 temp.put("activeUris", loadBalancedRSocket.getActiveSockets().keySet());
-                if (!loadBalancedRSocket.getUnHealthUriSet().isEmpty()) {
-                    temp.put("unHealthUris", loadBalancedRSocket.getUnHealthUriSet());
+                if (!loadBalancedRSocket.getUnHealthyUriSet().isEmpty()) {
+                    temp.put("unHealthyUris", loadBalancedRSocket.getUnHealthyUriSet());
                 }
                 temp.put("lastRefreshTimeStamp", new Date(loadBalancedRSocket.getLastRefreshTimeStamp()));
                 temp.put("lastHealthCheckTimeStamp", new Date(loadBalancedRSocket.getLastHealthCheckTimeStamp()));
@@ -93,6 +93,12 @@ public class RSocketEndpoint {
             this.rsocketServiceStatus = AppStatusEvent.STATUS_STOPPED;
             return sendAppStatus(this.rsocketServiceStatus)
                     .thenReturn("Succeed to unregister RSocket services on brokers! Please wait almost 60 seconds to shutdown the Spring Boot App!");
+        } else if ("refreshUpstreams".equalsIgnoreCase(action)) {
+            Collection<UpstreamCluster> allClusters = this.upstreamManager.findAllClusters();
+            for (UpstreamCluster upstreamCluster : allClusters) {
+                upstreamCluster.getLoadBalancedRSocket().refreshUnHealthyUris();
+            }
+            return Mono.just("Begin to refresh unHealthy upstream clusters now!");
         } else {
             return Mono.just("Unknown action, please use online, offline and shutdown");
         }
