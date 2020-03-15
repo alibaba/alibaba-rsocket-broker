@@ -263,6 +263,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .doOnTerminate(() -> activeSockets.clear())
                     .subscribe(Disposable::dispose);
         }
+        ReferenceCountUtil.release(this.healthCheckCompositeByteBuf);
     }
 
     public Map<String, RSocket> getActiveSockets() {
