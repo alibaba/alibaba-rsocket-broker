@@ -3,7 +3,7 @@ package com.alibaba.rsocket.metadata;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.metadata.RoutingMetadata;
 import io.rsocket.metadata.TaggingMetadataFlyweight;
 
@@ -150,7 +150,7 @@ public class GSVRoutingMetadata implements MetadataAware {
         if (endpoint != null && !endpoint.isEmpty()) {
             tags.add("e=" + endpoint);
         }
-        return TaggingMetadataFlyweight.createTaggingContent(ByteBufAllocator.DEFAULT, tags);
+        return TaggingMetadataFlyweight.createTaggingContent(PooledByteBufAllocator.DEFAULT, tags);
     }
 
     /**
