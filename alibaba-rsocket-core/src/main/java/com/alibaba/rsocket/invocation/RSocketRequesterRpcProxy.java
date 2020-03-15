@@ -26,7 +26,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -185,6 +184,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 });
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else {
+                ReferenceCountUtil.safeRelease(bodyBuffer);
                 return Mono.error(new Exception("Unknown RSocket Frame type"));
             }
         }
@@ -192,24 +192,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     protected void metrics(ReactiveMethodMetadata methodMetadata) {
         Metrics.counter(this.service, methodMetadata.getMetricsTags());
-    }
-
-    /**
-     * Generate cache key, compatible with Spring SimpleKeyGenerator
-     *
-     * @param params params
-     * @return hashcode
-     */
-    public static Integer generateCacheKey(Object... params) {
-        if (params == null || params.length == 0) {
-            return 0;
-        } else if (params.length == 1) {
-            Object param = params[0];
-            if (param != null && !param.getClass().isArray()) {
-                return param.hashCode();
-            }
-        }
-        return Arrays.deepHashCode(params);
     }
 
     private RSocketMimeType extractPayloadDataMimeType(RSocketCompositeMetadata compositeMetadata, RSocketMimeType defaultEncodingType) {
