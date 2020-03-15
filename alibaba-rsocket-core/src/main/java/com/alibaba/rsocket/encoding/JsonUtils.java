@@ -58,7 +58,7 @@ public class JsonUtils {
             objectMapper.writeValue((OutputStream) bos, object);
             return byteBuf;
         } catch (Exception e) {
-            ReferenceCountUtil.release(byteBuf);
+            ReferenceCountUtil.safeRelease(byteBuf);
             throw new EncodingException(e.getMessage());
         }
     }
