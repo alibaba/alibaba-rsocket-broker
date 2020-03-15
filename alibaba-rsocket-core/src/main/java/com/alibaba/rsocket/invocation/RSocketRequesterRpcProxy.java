@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.cache.annotation.CacheResult;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -44,10 +43,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      * service interface
      */
     private Class<?> serviceInterface;
-    /**
-     * cached methods
-     */
-    private Map<Method, CacheResult> cachedMethods = new HashMap<>();
     /**
      * group, such as datacenter name, region name
      */
@@ -122,13 +117,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
                     method, encodingType, this.acceptEncodingTypes, endpoint));
-            if (method.getAnnotation(CacheResult.class) != null) {
-                cachedMethods.put(method, method.getAnnotation(CacheResult.class));
-            }
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
-        //metadata data content
-        ByteBuf compositeMetadataBuf = methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate();
         //----- return type deal------
         if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_CHANNEL) {
             metrics(methodMetadata);
@@ -136,14 +126,14 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             Flux<Object> source;
             //1 param or 2 params
             if (args.length == 1) {
-                routePayload = ByteBufPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadataBuf);
+                routePayload = ByteBufPayload.create(Unpooled.EMPTY_BUFFER, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate());
                 source = (Flux<Object>) args[0];
             } else {
                 ByteBuf bodyBuffer = encodingFacade.encodingResult(args[0], methodMetadata.getParamEncoding());
-                routePayload = ByteBufPayload.create(bodyBuffer, compositeMetadataBuf);
+                routePayload = ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate());
                 source = (Flux<Object>) args[1];
             }
-            Flux<Payload> payloadFlux = source.startWith(routePayload).map(obj -> ByteBufPayload.create(encodingFacade.encodingResult(obj, encodingType), compositeMetadataBuf));
+            Flux<Payload> payloadFlux = source.startWith(routePayload).map(obj -> ByteBufPayload.create(encodingFacade.encodingResult(obj, encodingType), methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()));
             Flux<Payload> payloads = rsocket.requestChannel(payloadFlux);
             return payloads.concatMap(payload -> {
                 try {
@@ -161,7 +151,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             Class<?> returnType = method.getReturnType();
             if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_RESPONSE) {
                 metrics(methodMetadata);
-                Mono<Payload> payloadMono = rsocket.requestResponse(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf)).timeout(timeout);
+                Mono<Payload> payloadMono = rsocket.requestResponse(ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate())).timeout(timeout);
                 Mono<Object> result = payloadMono.handle((payload, sink) -> {
                     try {
                         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
@@ -179,10 +169,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
                 metrics(methodMetadata);
-                return rsocket.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
+                return rsocket.fireAndForget(ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()));
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
                 metrics(methodMetadata);
-                Flux<Payload> flux = rsocket.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadataBuf));
+                Flux<Payload> flux = rsocket.requestStream(ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()));
                 Flux<Object> result = flux.concatMap((payload) -> {
                     try {
                         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
