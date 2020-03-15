@@ -53,7 +53,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     /**
      * unhealthy uris
      */
-    private Set<String> unHealthUriSet = new HashSet<>();
+    private Set<String> unHealthyUriSet = new HashSet<>();
     private long lastHealthCheckTimeStamp = System.currentTimeMillis();
     private long lastRefreshTimeStamp = System.currentTimeMillis();
     /**
@@ -67,8 +67,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private RSocketRequesterSupport requesterSupport;
     private ByteBuf healthCheckCompositeByteBuf;
 
-    public Set<String> getUnHealthUriSet() {
-        return unHealthUriSet;
+    public Set<String> getUnHealthyUriSet() {
+        return unHealthyUriSet;
     }
 
     public Collection<String> getLastRSocketUris() {
@@ -114,7 +114,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         }
         this.lastRefreshTimeStamp = System.currentTimeMillis();
         this.lastRSocketUris = rsocketUris;
-        this.unHealthUriSet.clear();
+        this.unHealthyUriSet.clear();
         Flux.fromIterable(rsocketUris)
                 .flatMap(rsocketUri -> {
                     if (activeSockets.containsKey(rsocketUri)) {
@@ -270,6 +270,11 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         return activeSockets;
     }
 
+    public void refreshUnHealthyUris() {
+        for (String unHealthyUri : unHealthyUriSet) {
+            tryToReconnect(unHealthyUri, null);
+        }
+    }
 
     public void onRSocketClosed(RSocket rsocket, @Nullable Throwable cause) {
         for (Map.Entry<String, RSocket> entry : activeSockets.entrySet()) {
@@ -295,7 +300,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public void onRSocketClosed(String rsocketUri, RSocket rsocket, @Nullable Throwable cause) {
         //in last rsocket uris or not
         if (this.lastRSocketUris.contains(rsocketUri)) {
-            this.unHealthUriSet.add(rsocketUri);
+            this.unHealthyUriSet.add(rsocketUri);
             if (activeSockets.containsKey(rsocketUri)) {
                 activeSockets.remove(rsocketUri);
                 this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
@@ -314,7 +319,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     public void onRSocketReconnected(String rsocketUri, RSocket rsocket) {
         this.activeSockets.put(rsocketUri, rsocket);
-        this.unHealthUriSet.remove(rsocketUri);
+        this.unHealthyUriSet.remove(rsocketUri);
         this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
         rsocket.onClose().subscribe(aVoid -> onRSocketClosed(rsocketUri, rsocket, null));
         CloudEventImpl<ServicesExposedEvent> cloudEvent = requesterSupport.servicesExposedEvent().get();
@@ -338,7 +343,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                         connect(rsocketUri)
                                 .flatMap(rsocket -> healthCheck(rsocket).map(payload -> rsocket))
                                 .doOnError(e -> {
-                                    this.getUnHealthUriSet().add(rsocketUri);
+                                    this.getUnHealthyUriSet().add(rsocketUri);
                                     log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
                                 })
                                 .subscribe(rsocket -> {
