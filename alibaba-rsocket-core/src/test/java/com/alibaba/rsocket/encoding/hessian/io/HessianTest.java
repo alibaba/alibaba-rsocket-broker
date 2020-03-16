@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.*;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Hessian test
@@ -31,6 +32,7 @@ public class HessianTest {
         hessianObject.setYearMonth(YearMonth.of(3, 2));
         hessianObject.setOptional(Optional.of("hello world"));
         hessianObject.setLocale(Locale.CHINESE);
+        hessianObject.setUuid(UUID.randomUUID());
         hessianObject.setOffsetTime(OffsetTime.of(1, 2, 13, 11, ZoneOffset.UTC));
         hessianObject.setOffsetDateTime(OffsetDateTime.now());
         hessianObject.setZonedDateTime(ZonedDateTime.now());
