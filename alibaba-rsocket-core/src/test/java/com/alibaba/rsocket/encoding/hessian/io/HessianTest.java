@@ -36,6 +36,7 @@ public class HessianTest {
         hessianObject.setOffsetTime(OffsetTime.of(1, 2, 13, 11, ZoneOffset.UTC));
         hessianObject.setOffsetDateTime(OffsetDateTime.now());
         hessianObject.setZonedDateTime(ZonedDateTime.now());
+        hessianObject.setLongArray(new Long[]{1L, 3L});
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         HessianSerializerOutput output = new HessianSerializerOutput(bos);
         output.writeObject(hessianObject);
