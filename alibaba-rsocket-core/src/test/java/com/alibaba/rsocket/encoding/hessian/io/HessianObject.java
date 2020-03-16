@@ -25,6 +25,7 @@ public class HessianObject implements java.io.Serializable {
     private OffsetDateTime offsetDateTime;
     private ZonedDateTime zonedDateTime;
     private UUID uuid;
+    private Long[] longArray;
 
     public LocalDateTime getLocalDateTime() {
         return localDateTime;
@@ -136,5 +137,13 @@ public class HessianObject implements java.io.Serializable {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public Long[] getLongArray() {
+        return longArray;
+    }
+
+    public void setLongArray(Long[] longArray) {
+        this.longArray = longArray;
     }
 }
