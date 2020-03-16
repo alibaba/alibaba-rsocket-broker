@@ -2,6 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>3.5.0</maven>
+    </prerequisites>
     <groupId>com.alibaba.rsocket</groupId>
     <artifactId>alibaba-rsocket-service-common</artifactId>
     <version>0.1.0-SNAPSHOT</version>
@@ -10,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <reactor.version>3.3.3.RELEASE</reactor.version>
-        <netty-buffer.version>4.1.46.Final</netty-buffer.version>
+        <netty-buffer.version>4.1.47.Final</netty-buffer.version>
     </properties>
 
     <name>alibaba-rsocket-service-common</name>
