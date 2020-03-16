@@ -1,0 +1,15 @@
+java.time.LocalDate=com.alibaba.rsocket.encoding.hessian.io.java8.LocalDateSerializer
+java.time.LocalDateTime=com.alibaba.rsocket.encoding.hessian.io.java8.LocalDateTimeSerializer
+java.time.LocalTime=com.alibaba.rsocket.encoding.hessian.io.java8.LocalTimeSerializer
+java.time.Duration=com.alibaba.rsocket.encoding.hessian.io.java8.DurationSerializer
+java.time.Instant=com.alibaba.rsocket.encoding.hessian.io.java8.InstantSerializer
+java.time.Period=com.alibaba.rsocket.encoding.hessian.io.java8.PeriodSerializer
+java.time.MonthDay=com.alibaba.rsocket.encoding.hessian.io.java8.MonthDaySerializer
+java.time.YearMonth=com.alibaba.rsocket.encoding.hessian.io.java8.YearMonthSerializer
+java.util.Optional=com.alibaba.rsocket.encoding.hessian.io.java8.OptionalSerializer
+java.time.OffsetTime=com.alibaba.rsocket.encoding.hessian.io.java8.OffsetTimeSerializer
+java.time.ZoneOffset=com.alibaba.rsocket.encoding.hessian.io.java8.ZoneOffsetSerializer
+java.time.ZoneId=com.alibaba.rsocket.encoding.hessian.io.java8.ZoneIdSerializer
+java.time.OffsetDateTime=com.alibaba.rsocket.encoding.hessian.io.java8.OffsetDateTimeSerializer
+java.time.ZonedDateTime=com.alibaba.rsocket.encoding.hessian.io.java8.ZonedDateTimeSerializer
+java.time.Year=com.alibaba.rsocket.encoding.hessian.io.java8.YearSerializer
