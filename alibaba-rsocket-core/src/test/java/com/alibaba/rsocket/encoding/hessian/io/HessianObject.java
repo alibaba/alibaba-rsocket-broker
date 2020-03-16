@@ -3,6 +3,7 @@ package com.alibaba.rsocket.encoding.hessian.io;
 import java.time.*;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Hessian object for serializer test
@@ -23,6 +24,7 @@ public class HessianObject implements java.io.Serializable {
     private OffsetTime offsetTime;
     private OffsetDateTime offsetDateTime;
     private ZonedDateTime zonedDateTime;
+    private UUID uuid;
 
     public LocalDateTime getLocalDateTime() {
         return localDateTime;
@@ -126,5 +128,13 @@ public class HessianObject implements java.io.Serializable {
 
     public void setZonedDateTime(ZonedDateTime zonedDateTime) {
         this.zonedDateTime = zonedDateTime;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }
