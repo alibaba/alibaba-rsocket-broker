@@ -27,7 +27,7 @@ start_gossip_broker:
 
 # display outdated maven artifacts
 updates:
-   mvn compile versions:display-dependency-updates versions:display-plugin-updates
+   mvn compile versions:display-dependency-updates versions:display-plugin-updates > updates.txt
 
 dependency_tree:
    mvn clean compile com.github.ferstl:depgraph-maven-plugin:3.3.0:aggregate -DgraphFormat=text -Dscope=compile -DshowVersions=true
