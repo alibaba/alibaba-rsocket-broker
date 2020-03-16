@@ -26,6 +26,7 @@ public class HessianObject implements java.io.Serializable {
     private ZonedDateTime zonedDateTime;
     private UUID uuid;
     private Long[] longArray;
+    private String emojiBear = "🐻";
 
     public LocalDateTime getLocalDateTime() {
         return localDateTime;
@@ -145,5 +146,13 @@ public class HessianObject implements java.io.Serializable {
 
     public void setLongArray(Long[] longArray) {
         this.longArray = longArray;
+    }
+
+    public String getEmojiBear() {
+        return emojiBear;
+    }
+
+    public void setEmojiBear(String emojiBear) {
+        this.emojiBear = emojiBear;
     }
 }
