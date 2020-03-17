@@ -1,6 +1,9 @@
 ### get user info
 GET http://localhost:8181/user/2
 
+### get user info from default method
+GET http://localhost:8181/user/default/2
+
 ### get user info from extra
 GET http://localhost:8181/user/extra/2
 
