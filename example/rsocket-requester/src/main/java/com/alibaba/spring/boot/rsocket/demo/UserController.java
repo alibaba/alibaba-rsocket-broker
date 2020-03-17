@@ -36,6 +36,11 @@ public class UserController {
         return userService.findById(id);
     }
 
+    @GetMapping("/user/default/{id}")
+    public Mono<User> userFromDefaultMethod(@PathVariable Integer id) {
+        return userService.findByIdFromDefault(id);
+    }
+
     @GetMapping("/bytebuf/user/{id}")
     public Mono<User> byteBufUser(@PathVariable Integer id) {
         return userService.findByIdOrNick(id, "Fake nick");
