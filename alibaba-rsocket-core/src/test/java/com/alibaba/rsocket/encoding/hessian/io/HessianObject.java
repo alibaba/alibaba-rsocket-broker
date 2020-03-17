@@ -26,7 +26,7 @@ public class HessianObject implements java.io.Serializable {
     private ZonedDateTime zonedDateTime;
     private UUID uuid;
     private Long[] longArray;
-    private String emojiBear = "🐻";
+    private String emojiBear = "我是🐻";
 
     public LocalDateTime getLocalDateTime() {
         return localDateTime;

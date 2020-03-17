@@ -45,5 +45,6 @@ public class HessianTest {
         HessianSerializerInput input = new HessianSerializerInput(bis);
         HessianObject hessianObject2 = (HessianObject) input.readObject();
         Assertions.assertThat(hessianObject).isEqualToComparingFieldByField(hessianObject2);
+        System.out.println(hessianObject2.getEmojiBear());
     }
 }
