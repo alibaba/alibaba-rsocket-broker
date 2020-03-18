@@ -53,10 +53,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 }
                 return monoResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()))
-                        .doOnTerminate(() -> {
-                            ReferenceCountUtil.safeRelease(payload);
-                        });
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()));
             } else {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
@@ -88,9 +85,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                     } catch (Exception e) {
                         log.error(RsocketErrorCode.message("RST-200500"), e);
                         sink.error(e);
-                    } finally {
-                        ReferenceCountUtil.safeRelease(payload);
-                    }
+                    } 
                 });
             }
         } else {
@@ -118,10 +113,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
                 return fluxResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()))
-                        .doOnTerminate(() -> {
-                            ReferenceCountUtil.safeRelease(payload);
-                        });
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()));
             } else {
                 ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
