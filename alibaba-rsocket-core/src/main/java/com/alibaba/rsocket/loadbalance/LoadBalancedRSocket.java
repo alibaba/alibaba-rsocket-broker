@@ -371,7 +371,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .errorConsumer(error -> {
                         log.error(error.getMessage(), error);
                     })
-                    .frameDecoder(PayloadDecoder.ZERO_COPY)
+                    //.frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
                     .start();
