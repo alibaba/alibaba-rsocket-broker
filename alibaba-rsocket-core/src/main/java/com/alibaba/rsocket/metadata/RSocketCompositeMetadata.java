@@ -3,7 +3,6 @@ package com.alibaba.rsocket.metadata;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.util.ReferenceCountUtil;
 import io.rsocket.metadata.CompositeMetadata;
 import io.rsocket.metadata.CompositeMetadataFlyweight;
 import io.rsocket.metadata.WellKnownMimeType;
@@ -108,7 +107,6 @@ public class RSocketCompositeMetadata implements MetadataAware {
         if (binaryRoutingMetadata == null && metadataStore.containsKey(RSocketMimeType.BinaryRouting.getType())) {
             ByteBuf content = metadataStore.get(RSocketMimeType.BinaryRouting.getType());
             this.binaryRoutingMetadata = BinaryRoutingMetadata.from(content);
-            content.release();
         }
         return this.binaryRoutingMetadata;
     }
@@ -119,7 +117,6 @@ public class RSocketCompositeMetadata implements MetadataAware {
             this.routingMetadata = new GSVRoutingMetadata();
             ByteBuf byteBuf = metadataStore.get(RSocketMimeType.Routing.getType());
             routingMetadata.load(byteBuf);
-            byteBuf.release();
         }
         return routingMetadata;
     }
@@ -130,7 +127,6 @@ public class RSocketCompositeMetadata implements MetadataAware {
             this.encodingMetadata = new MessageMimeTypeMetadata();
             ByteBuf byteBuf = metadataStore.get(RSocketMimeType.MessageMimeType.getType());
             this.encodingMetadata.load(byteBuf);
-            byteBuf.release();
         }
         return encodingMetadata;
     }
@@ -141,7 +137,6 @@ public class RSocketCompositeMetadata implements MetadataAware {
             this.acceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata();
             ByteBuf byteBuf = metadataStore.get(RSocketMimeType.MessageAcceptMimeTypes.getType());
             this.acceptMimeTypesMetadata.load(byteBuf);
-            byteBuf.release();
         }
         return acceptMimeTypesMetadata;
     }
