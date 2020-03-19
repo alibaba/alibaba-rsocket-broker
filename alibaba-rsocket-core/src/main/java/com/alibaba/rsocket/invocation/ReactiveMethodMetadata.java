@@ -9,6 +9,7 @@ import com.alibaba.rsocket.utils.MurmurHash3;
 import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.frame.FrameType;
 import org.jetbrains.annotations.NotNull;
@@ -187,19 +188,18 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
         //construct default composite metadata
         CompositeByteBuf compositeMetadataContent;
+        this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
         //add gsv routing data if endpoint not empty
         if (endpoint != null && !endpoint.isEmpty()) {
-            this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
             this.compositeMetadata.addMetadata(binaryRoutingMetadata);
             compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
         } else {
-            this.compositeMetadata = RSocketCompositeMetadata.from(messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
             compositeMetadataContent = (CompositeByteBuf) this.compositeMetadata.getContent();
             //add BinaryRoutingMetadata as first
             compositeMetadataContent.addComponent(true, 0, binaryRoutingMetadata.getHeaderAndContent());
         }
         // convert composite bytebuf to bytebuf for performance
-        this.compositeMetadataByteBuf = compositeMetadataContent.copy();
+        this.compositeMetadataByteBuf = Unpooled.copiedBuffer(compositeMetadataContent);
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
     }
 
