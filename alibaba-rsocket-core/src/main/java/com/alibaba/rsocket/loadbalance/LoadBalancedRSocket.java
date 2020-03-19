@@ -19,7 +19,6 @@ import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.exceptions.ConnectionErrorException;
 import io.rsocket.exceptions.SetupException;
-import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.ByteBufPayload;
@@ -101,7 +100,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 new GSVRoutingMetadata(null, RSocketServiceHealth.class.getCanonicalName(), "check", null),
                 new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
         ByteBuf compositeMetadataContent = compositeMetadata.getContent();
-        this.healthCheckCompositeByteBuf = compositeMetadataContent.copy();
+        this.healthCheckCompositeByteBuf = Unpooled.copiedBuffer(compositeMetadataContent);
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
         //start health check timer
         startHealthCheckTimer();
@@ -363,12 +362,16 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             for (RSocketInterceptor responderInterceptor : requesterSupport.responderInterceptors()) {
                 clientRSocketFactory = clientRSocketFactory.addResponderPlugin(responderInterceptor);
             }
+            Payload payload = requesterSupport.setupPayload().get();
             return clientRSocketFactory
                     .keepAliveMissedAcks(12)
-                    .setupPayload(requesterSupport.setupPayload().get())
+                    .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
                     .errorConsumer(error -> {
+                        if (payload.refCnt() > 0) {
+                            ReferenceCountUtil.safeRelease(payload);
+                        }
                         log.error(error.getMessage(), error);
                     })
                     //.frameDecoder(PayloadDecoder.ZERO_COPY)
