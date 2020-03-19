@@ -137,9 +137,7 @@ public class RSocketListenerImpl implements RSocketListener {
                 //payload decoder
                 if (payloadDecoder != null) {
                     serverRSocketFactory = serverRSocketFactory.frameDecoder(payloadDecoder);
-                } else {
-                    serverRSocketFactory = serverRSocketFactory.frameDecoder(PayloadDecoder.ZERO_COPY);
-                }
+                } 
                 //acceptor interceptor
                 for (SocketAcceptorInterceptor acceptorInterceptor : acceptorInterceptors) {
                     serverRSocketFactory = serverRSocketFactory.addSocketAcceptorPlugin(acceptorInterceptor);
