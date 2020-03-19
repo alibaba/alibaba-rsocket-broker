@@ -78,6 +78,8 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 .transport(transportConfig -> transportConfig.host(localIp).port(gossipListenPort))
                 .handler(cluster1 -> this)
                 .start();
+        //subscribe and start & join the cluster
+        monoCluster.subscribe();
         this.localBroker = new RSocketBroker(localIp, brokerProperties.getExternalDomain());
         brokers.put(localIp, localBroker);
         log.info(RsocketErrorCode.message("RST-300002"));
