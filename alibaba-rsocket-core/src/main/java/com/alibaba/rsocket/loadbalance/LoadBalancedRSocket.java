@@ -174,6 +174,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public Mono<Payload> requestResponse(Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
+            ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
         return next.requestResponse(payload)
@@ -188,6 +189,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public Mono<Void> fireAndForget(Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
+            ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
         return next.fireAndForget(payload)
@@ -228,6 +230,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     public Flux<Payload> requestStream(Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
+            ReferenceCountUtil.safeRelease(payload);
             return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
         }
         return next.requestStream(payload)
