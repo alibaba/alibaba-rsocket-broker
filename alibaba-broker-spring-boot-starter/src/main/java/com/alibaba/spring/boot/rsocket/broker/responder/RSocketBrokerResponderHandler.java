@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
@@ -437,7 +438,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     private ByteBuf constructDefaultDataEncoding() {
-        ByteBuf buf = PooledByteBufAllocator.DEFAULT.buffer(5, 5);
+        ByteBuf buf = Unpooled.buffer(5, 5);
         buf.writeByte((byte) (WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.getIdentifier() | 0x80));
         buf.writeByte(0);
         buf.writeByte(0);
