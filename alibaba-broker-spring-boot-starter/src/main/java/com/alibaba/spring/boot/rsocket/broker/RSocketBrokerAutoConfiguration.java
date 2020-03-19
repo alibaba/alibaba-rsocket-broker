@@ -118,7 +118,6 @@ public class RSocketBrokerAutoConfiguration {
         return builder -> {
             builder.acceptor(registry);
             builder.listen("tcp", properties.getPort());
-            builder.payloadDecoder(PayloadDecoder.ZERO_COPY);
         };
     }
 
