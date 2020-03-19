@@ -17,7 +17,7 @@ public class RSocketBrokerProperties {
      */
     private int port = 9999;
     /**
-     * topology: vip, k8s, standalone
+     * topology: gossip, k8s, standalone
      */
     private String topology;
     /**
