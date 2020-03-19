@@ -8,6 +8,7 @@ import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
             handlerMap.put(mimeType, objectEncodingHandler);
             RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(mimeType));
             ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
-            this.compositeMetadataForMimeTypes.put(mimeType, compositeMetadataContent.copy());
+            this.compositeMetadataForMimeTypes.put(mimeType, Unpooled.copiedBuffer(compositeMetadataContent));
             ReferenceCountUtil.safeRelease(compositeMetadataContent);
         }
     }
