@@ -3,13 +3,11 @@ package com.alibaba.spring.boot.rsocket.demo;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
-import java.util.Date;
-import java.util.List;
 
 /**
  * portal demo for test
@@ -41,11 +39,16 @@ public class PortalController {
         return userService.findAllPeople("vip");
     }
 
-    @RequestMapping("/channel")
-    public Flux<User> channel() {
-        Flux<Date> dates = Flux.interval(Duration.ofMillis(1000))
-                .map(Date::new);
-        return userService.recent(dates);
+    @RequestMapping("/channel1")
+    public Flux<User> channel1() {
+        Flux<Integer> userIdFlux = Flux.range(1, 20);
+        return userService.recent(userIdFlux);
+    }
+
+    @RequestMapping("/channel2")
+    public Flux<User> channel2() {
+        Flux<Integer> userIdFlux = Flux.range(1, 20);
+        return userService.recentWithType("VIP", userIdFlux);
     }
 
     @RequestMapping("/")
