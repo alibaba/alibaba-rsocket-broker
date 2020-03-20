@@ -65,6 +65,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private int retryCount = 12;
     private RSocketRequesterSupport requesterSupport;
     private ByteBuf healthCheckCompositeByteBuf;
+    private boolean isServiceProvider = false;
 
     public Set<String> getUnHealthyUriSet() {
         return unHealthyUriSet;
@@ -93,6 +94,9 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>());
         this.urisFactory = urisFactory;
         this.requesterSupport = requesterSupport;
+        if (!requesterSupport.exposedServices().get().isEmpty()) {
+            this.isServiceProvider = true;
+        }
         this.activeSockets = new HashMap<>();
         this.urisFactory.subscribe(this::refreshRsockets);
         //composite metadata for health check
@@ -155,10 +159,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     }
                     this.activeSockets = newActiveRSockets;
                     this.randomSelector = new RandomSelector<>(this.serviceId, new ArrayList<>(activeSockets.values()));
-                    //close all stale rsocket after 45 seconds for drain mode
+                    //close all stale rsocket
                     if (!staleRSockets.isEmpty()) {
+                        //Drain mode support, close consumer first, then provider
+                        int delaySeconds = this.isServiceProvider ? 45 : 15;
                         Flux.fromIterable(staleRSockets.entrySet())
-                                .delaySubscription(Duration.ofSeconds(45))
+                                .delaySubscription(Duration.ofSeconds(delaySeconds))
                                 .subscribe(entry -> {
                                     log.info(RsocketErrorCode.message("RST-200011", entry.getKey()));
                                     entry.getValue().dispose();
