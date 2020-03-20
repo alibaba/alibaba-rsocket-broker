@@ -18,7 +18,6 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.RSocketFactory;
 import io.rsocket.exceptions.ConnectionErrorException;
-import io.rsocket.exceptions.SetupException;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.ByteBufPayload;
@@ -105,6 +104,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
         //start health check timer
         startHealthCheckTimer();
+        //reconnect unhealthy uris every 3 minutes
+        checkUnhealthyUris();
     }
 
     private void refreshRsockets(Collection<String> rsocketUris) {
@@ -397,10 +398,27 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
                 .subscribe(entry -> {
                     healthCheck(entry.getValue()).doOnError(error -> {
-                        if (error instanceof ClosedChannelException || error instanceof SetupException) { //connection closed
+                        if (CONNECTION_ERROR_PREDICATE.test(error)) { //connection closed
                             onRSocketClosed(entry.getKey(), entry.getValue(), error);
                         }
                     }).subscribe();
+                });
+    }
+
+    public void checkUnhealthyUris() {
+        Flux.interval(Duration.ofMinutes(3))
+                .filter(sequence -> !unHealthyUriSet.isEmpty())
+                .subscribe(entry -> {
+                    for (String unhealthyUri : unHealthyUriSet) {
+                        if (!activeSockets.containsKey(unhealthyUri)) {
+                            connect(unhealthyUri)
+                                    .flatMap(rsocket -> healthCheck(rsocket).map(payload -> rsocket))
+                                    .subscribe(rsocket -> {
+                                        onRSocketReconnected(unhealthyUri, rsocket);
+                                        log.info(RsocketErrorCode.message("RST-500203", unhealthyUri));
+                                    });
+                        }
+                    }
                 });
     }
 
