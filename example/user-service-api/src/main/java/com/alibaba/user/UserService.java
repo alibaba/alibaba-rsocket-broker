@@ -97,7 +97,9 @@ public interface UserService {
      * @param point point
      * @return user
      */
-    Flux<User> recent(Flux<Date> point);
+    Flux<User> recent(Flux<Integer> userIdFlux);
+
+    Flux<User> recentWithType(String type, Flux<Integer> userIdFlux);
 
     Mono<String> error(String text);
 
