@@ -85,7 +85,8 @@ public class DashboardView extends VerticalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        this.brokersCount.setText(String.valueOf(rSocketBrokerManager.currentBrokers().size()));
+        String brokerClusterType = rSocketBrokerManager.isStandAlone() ? "alone" : "gossip";
+        this.brokersCount.setText(rSocketBrokerManager.currentBrokers().size() + " (" + brokerClusterType + ")");
         this.appsCount.setText(String.valueOf(handlerRegistry.appHandlers().size()));
         this.servicesCount.setText(String.valueOf(serviceRoutingSelector.findAllServices().size()));
         this.connectionsCount.setText(String.valueOf(handlerRegistry.findAll().size()));
