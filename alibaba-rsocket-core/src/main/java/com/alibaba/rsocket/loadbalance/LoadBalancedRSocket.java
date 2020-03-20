@@ -372,15 +372,13 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
                     .errorConsumer(error -> {
-                        if (payload.refCnt() > 0) {
-                            ReferenceCountUtil.safeRelease(payload);
-                        }
                         log.error(error.getMessage(), error);
                     })
                     //.frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
-                    .start();
+                    .start()
+                    .doOnError(error -> ReferenceCountUtil.safeRelease(payload));
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-400500", uri), e);
             return Mono.error(new ConnectionErrorException(uri));
