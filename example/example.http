@@ -34,6 +34,12 @@ GET http://localhost:8181/error
 ### FNF
 GET http://localhost:8181/job1
 
+### Channel1 with Flux
+GET http://localhost:8181/channel1
+
+### Channel2 with param & Flux
+GET http://localhost:8181/channel2
+
 ### save user
 POST http://localhost:8181/user/save
 Content-Type: application/json
