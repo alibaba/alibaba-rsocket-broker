@@ -14,7 +14,7 @@ GET http://localhost:8181/bytebuf/user/2
 GET http://localhost:8181/user/avatar
 
 ### ByteBuf as param and ByteBuf as return
-GET http://localhost:8181/bytebuf/bytebuf
+GET http://localhost:8181/user/bytebuf
 
 ### get account info
 GET http://localhost:8181/account/1
