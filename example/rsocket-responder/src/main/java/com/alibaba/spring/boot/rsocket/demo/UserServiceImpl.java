@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -107,7 +108,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<ByteBuf> findUserByIdAndNick(ByteBuf byteBuf) {
         Tuple2<Integer, String> tuple2 = ByteBufTuples.of(byteBuf, Integer.class, String.class);
-        return Mono.just(Unpooled.wrappedBuffer("Hello ByteBuf data".getBytes()));
+        //language=json
+        String jsonData = "{\n" +
+                "  \"id\": " + tuple2.getT1() + ",\n" +
+                "  \"nick\": \"" + tuple2.getT2() + "\"\n" +
+                "}";
+        return Mono.just(Unpooled.wrappedBuffer(jsonData.getBytes(StandardCharsets.UTF_8)));
     }
 
     private User randomUser(@Nullable Integer id) {
