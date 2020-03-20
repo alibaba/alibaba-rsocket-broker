@@ -144,8 +144,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                     return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
                 } catch (Exception e) {
                     return Flux.error(e);
-                } finally {
-                    ReferenceCountUtil.safeRelease(payload);
                 }
             }).subscriberContext(mutableContext::putAll);
         } else {
@@ -165,8 +163,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         sink.complete();
                     } catch (Exception e) {
                         sink.error(e);
-                    } finally {
-                        ReferenceCountUtil.safeRelease(payload);
                     }
                 });
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
@@ -182,8 +178,6 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
                     } catch (Exception e) {
                         return Mono.error(e);
-                    } finally {
-                        ReferenceCountUtil.safeRelease(payload);
                     }
                 });
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
