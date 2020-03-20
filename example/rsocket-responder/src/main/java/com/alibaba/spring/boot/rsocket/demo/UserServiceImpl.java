@@ -14,9 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
-import java.time.Duration;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -85,12 +83,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Flux<User> recent(Flux<Date> point) {
-        point.subscribe(t -> {
-            System.out.println("time:" + point);
-        });
-        return Flux.interval(Duration.ofMillis(1000))
-                .map(timestamp -> new User((int) (timestamp % 1000), "nick"));
+    public Flux<User> recent(Flux<Integer> userIdFlux) {
+        return userIdFlux
+                .map(id -> new User(id, "nick:" + id));
+    }
+
+    @Override
+    public Flux<User> recentWithType(String type, Flux<Integer> userIdFlux) {
+        return userIdFlux
+                .map(id -> new User(id, type + ":" + id));
     }
 
     @Override
