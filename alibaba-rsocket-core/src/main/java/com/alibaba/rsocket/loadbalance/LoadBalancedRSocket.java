@@ -32,6 +32,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import java.net.ConnectException;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.*;
@@ -85,7 +86,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     /**
      * connection error predicate
      */
-    private static Predicate<? super Throwable> CONNECTION_ERROR_PREDICATE = e -> e instanceof ClosedChannelException || e instanceof ConnectionErrorException;
+    private static Predicate<? super Throwable> CONNECTION_ERROR_PREDICATE = e -> e instanceof ClosedChannelException || e instanceof ConnectionErrorException || e instanceof ConnectException;
 
     public LoadBalancedRSocket(String serviceId, Flux<Collection<String>> urisFactory,
                                RSocketRequesterSupport requesterSupport) {
@@ -124,6 +125,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                                 .flatMap(rsocket -> healthCheck(rsocket).map(payload -> Tuples.of(rsocketUri, rsocket)))
                                 .doOnError(error -> {
                                     log.error(RsocketErrorCode.message("RST-400500", rsocketUri), error);
+                                    this.unHealthyUriSet.add(rsocketUri);
                                     tryToReconnect(rsocketUri, error);
                                 });
                     }
@@ -336,8 +338,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void tryToReconnect(String rsocketUri, @Nullable Throwable error) {
-        //try to reconnect every 5 seconds in 1 minute if ClosedChannelException
-        if (error instanceof ClosedChannelException) {
+        //try to reconnect every 5 seconds in 1 minute if connection error
+        if (CONNECTION_ERROR_PREDICATE.test(error)) {
             Flux.range(1, retryCount)
                     .delayElements(Duration.ofSeconds(5))
                     .filter(id -> activeSockets.isEmpty() || !activeSockets.containsKey(rsocketUri))
