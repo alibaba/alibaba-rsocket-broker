@@ -14,5 +14,11 @@ requester_testing:
 benchmarking_rpc:
   wrk -t5 -c50 -d30s --latency http://localhost:8181/user/2
 
+benchmarking_fnf:
+  wrk -t5 -c50 -d30s --latency http://localhost:8181/job1
+
 benchmarking_stream:
   wrk -t5 -c50 -d30s --latency http://localhost:8181/users
+
+benchmarking_channel:
+  wrk -t5 -c50 -d30s --latency http://localhost:8181/channel2
