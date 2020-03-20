@@ -51,7 +51,7 @@ public class UserController {
         return userService.findAvatar(1).map(byteBuf -> byteBuf.toString(StandardCharsets.UTF_8));
     }
 
-    @GetMapping("/bytebuf/bytebuf")
+    @GetMapping("/user/bytebuf")
     public Mono<String> bytebuf2() {
         ByteBuf content = ByteBufBuilder.builder().value(1).value("Jackie").build();
         return userService.findUserByIdAndNick(content).map(byteBuf -> byteBuf.toString(StandardCharsets.UTF_8));
