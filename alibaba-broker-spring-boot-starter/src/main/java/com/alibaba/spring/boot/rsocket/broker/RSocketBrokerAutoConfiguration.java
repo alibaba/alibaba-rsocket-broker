@@ -21,10 +21,7 @@ import com.alibaba.spring.boot.rsocket.broker.route.impl.ServiceMeshInspectorImp
 import com.alibaba.spring.boot.rsocket.broker.route.impl.ServiceRoutingSelectorImpl;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationServiceJwtImpl;
-import com.alibaba.spring.boot.rsocket.broker.services.ConfigController;
-import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
-import com.alibaba.spring.boot.rsocket.broker.services.KVStorageServiceImpl;
-import com.alibaba.spring.boot.rsocket.broker.services.MetricsScrapeController;
+import com.alibaba.spring.boot.rsocket.broker.services.*;
 import com.alibaba.spring.boot.rsocket.broker.smi.TrafficAccessControl;
 import com.alibaba.spring.boot.rsocket.broker.smi.TrafficSplit;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficAccessControlImpl;
@@ -83,6 +80,11 @@ public class RSocketBrokerAutoConfiguration {
     @Bean
     public ConfigController configController() {
         return new ConfigController();
+    }
+
+    @Bean
+    public AppQueryController appQueryController() {
+        return new AppQueryController();
     }
 
     @Bean
