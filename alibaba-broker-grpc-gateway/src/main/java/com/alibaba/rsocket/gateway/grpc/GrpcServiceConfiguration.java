@@ -7,12 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * RSocket Service Configuration
+ * gRPC Service Configuration
  *
  * @author leijuan
  */
 @Configuration
-public class RSocketServiceConfiguration {
+public class GrpcServiceConfiguration {
 
     @Bean
     public RSocket rsocketBroker(UpstreamManager upstreamManager) {
