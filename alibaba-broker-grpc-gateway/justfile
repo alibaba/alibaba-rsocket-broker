@@ -1,0 +1,5 @@
+findById:
+   grpcurl -plaintext -d "1" localhost:50051 com.alibaba.account.AccountService/findById
+
+findByStatus:
+   grpcurl -plaintext -d "1" localhost:50051 com.alibaba.account.AccountService/findByStatus
