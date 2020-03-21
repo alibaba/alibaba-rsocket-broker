@@ -91,6 +91,10 @@ public class RSocketBroker {
     }
 
     public String getAliasUrl() {
-        return schema + "://" + externalDomain + ":" + port;
+        if (externalDomain.contains("://")) {
+            return this.externalDomain;
+        } else {
+            return schema + "://" + externalDomain + ":" + port;
+        }
     }
 }
