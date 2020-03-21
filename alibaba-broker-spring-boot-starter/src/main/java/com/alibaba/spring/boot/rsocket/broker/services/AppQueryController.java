@@ -34,6 +34,7 @@ public class AppQueryController {
                 app.put("consumed", handler.getConsumedServices());
                 AppMetadata appMetadata = handler.getAppMetadata();
                 app.put("ip", appMetadata.getIp());
+                app.put("uuid", appMetadata.getUuid());
                 app.put("startedAt", appMetadata.getConnectedAt());
                 apps.add(app);
             }
