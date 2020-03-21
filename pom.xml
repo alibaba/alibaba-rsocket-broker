@@ -19,6 +19,7 @@
         <module>alibaba-broker-registry-client-spring-boot-starter</module>
         <module>alibaba-broker-config-client-spring-boot-starter</module>
         <module>alibaba-broker-http-gateway</module>
+        <module>alibaba-broker-grpc-gateway</module>
         <module>example</module>
         <module>alibaba-rsocket-service-common</module>
     </modules>
