@@ -5,6 +5,7 @@ import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import io.netty.buffer.ByteBuf;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +21,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired(required = false)
+    private RSocketRequester requester;
 
     @RequestMapping("/users")
     public Mono<List<User>> all() {
@@ -55,5 +59,11 @@ public class UserController {
     public Mono<String> bytebuf2() {
         ByteBuf content = ByteBufBuilder.builder().value(1).value("Jackie").build();
         return userService.findUserByIdAndNick(content).map(byteBuf -> byteBuf.toString(StandardCharsets.UTF_8));
+    }
+
+    @GetMapping("/user/requester/{id}")
+    public Mono<User> findByIdNative(@PathVariable Integer id) {
+        return requester.route("com.alibaba.user.UserService.findById").data(id).retrieveMono(User.class);
+        // return requester.route("com.alibaba.user.UserService.findByEmailOrPhone").data(new Object[]{"libing.chen@gmail.com", "18888"}).retrieveMono(User.class);
     }
 }
