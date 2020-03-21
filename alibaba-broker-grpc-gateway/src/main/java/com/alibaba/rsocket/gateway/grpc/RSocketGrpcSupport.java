@@ -1,4 +1,4 @@
-package com.alibaba.rsocket.gateway.grpc.impl;
+package com.alibaba.rsocket.gateway.grpc;
 
 import com.alibaba.rsocket.gateway.grpc.PayloadUtils;
 import io.rsocket.Payload;
