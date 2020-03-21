@@ -39,7 +39,7 @@ public class AppsView extends VerticalLayout {
         this.handlerRegistry = handlerRegistry;
         add(new H1("App Instances List"));
         appMetadataGrid.addColumn(AppInstance::getName).setHeader("App Name");
-        appMetadataGrid.addColumn(AppInstance::getId).setHeader("UUID");
+        appMetadataGrid.addColumn(AppInstance::getId).setHeader("UUID").setAutoWidth(true);
         appMetadataGrid.addColumn(AppInstance::getIp).setHeader("IP");
         appMetadataGrid.addColumn(AppInstance::getConnectedAt).setHeader("Started Time");
         appMetadataGrid.addColumn(AppInstance::getStatusText).setHeader("Status");
