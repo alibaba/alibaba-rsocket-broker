@@ -3,6 +3,7 @@ package com.alibaba.rsocket.gateway.grpc;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
+import io.grpc.BindableService;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -18,14 +19,13 @@ import java.time.Duration;
  *
  * @author leijuan
  */
-public class GrpcServiceRSocketImplBuilder<T> {
+public class GrpcServiceRSocketImplBuilder<T extends BindableService> {
     private Class<?> serviceStub;
     private GrpcReactiveCallInterceptor interceptor = new GrpcReactiveCallInterceptor();
 
-    public static <T> GrpcServiceRSocketImplBuilder<T> stub(Class<T> serviceStub, String serviceName) {
+    public static <T extends BindableService> GrpcServiceRSocketImplBuilder<T> stub(Class<T> serviceStub) {
         GrpcServiceRSocketImplBuilder<T> builder = new GrpcServiceRSocketImplBuilder<T>();
         builder.serviceStub = serviceStub;
-        builder.interceptor.setService(serviceName);
         return builder;
     }
 
@@ -41,6 +41,11 @@ public class GrpcServiceRSocketImplBuilder<T> {
 
     public GrpcServiceRSocketImplBuilder<T> group(String group) {
         interceptor.setGroup(group);
+        return this;
+    }
+
+    public GrpcServiceRSocketImplBuilder<T> service(String service) {
+        interceptor.setService(service);
         return this;
     }
 
@@ -62,6 +67,7 @@ public class GrpcServiceRSocketImplBuilder<T> {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public T build() throws Exception {
         Class<T> dynamicType = (Class<T>) new ByteBuddy()
                 .subclass(serviceStub)
@@ -72,7 +78,11 @@ public class GrpcServiceRSocketImplBuilder<T> {
                 .make()
                 .load(getClass().getClassLoader())
                 .getLoaded();
-        return dynamicType.newInstance();
+        T instance = dynamicType.newInstance();
+        if (this.interceptor.getService() == null) {
+            this.interceptor.setService(instance.bindService().getServiceDescriptor().getName());
+        }
+        return instance;
     }
 
 }
