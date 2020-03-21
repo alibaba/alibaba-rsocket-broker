@@ -24,13 +24,13 @@ import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationServiceJwtI
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigController;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import com.alibaba.spring.boot.rsocket.broker.services.KVStorageServiceImpl;
+import com.alibaba.spring.boot.rsocket.broker.services.MetricsScrapeController;
 import com.alibaba.spring.boot.rsocket.broker.smi.TrafficAccessControl;
 import com.alibaba.spring.boot.rsocket.broker.smi.TrafficSplit;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficAccessControlImpl;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficSplitImpl;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalServiceAnnotationProcessor;
 import io.cloudevents.v1.CloudEventImpl;
-import io.rsocket.frame.decoder.PayloadDecoder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -83,6 +83,11 @@ public class RSocketBrokerAutoConfiguration {
     @Bean
     public ConfigController configController() {
         return new ConfigController();
+    }
+
+    @Bean
+    public MetricsScrapeController metricsScrapeController() {
+        return new MetricsScrapeController();
     }
 
     @Bean
