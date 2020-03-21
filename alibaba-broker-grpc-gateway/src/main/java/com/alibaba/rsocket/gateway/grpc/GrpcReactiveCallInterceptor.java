@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.gateway.grpc;
 
-import com.alibaba.rsocket.gateway.grpc.impl.RSocketGrpcSupport;
 import com.google.protobuf.GeneratedMessageV3;
 import io.rsocket.RSocket;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
