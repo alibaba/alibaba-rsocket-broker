@@ -1,0 +1,5 @@
+[default]
+protoPath = ["src/main/proto"]
+protoFile = ["account.proto"]
+package = "com.alibaba.account"
+service = "AccountService"
