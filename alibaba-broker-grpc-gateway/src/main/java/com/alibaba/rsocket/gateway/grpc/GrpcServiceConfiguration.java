@@ -20,9 +20,9 @@ public class GrpcServiceConfiguration {
     }
 
     @Bean
-    public ReactorAccountServiceGrpc.AccountServiceImplBase userService(UpstreamManager upstreamManager) throws Exception {
+    public ReactorAccountServiceGrpc.AccountServiceImplBase grpcAccountService(UpstreamManager upstreamManager) throws Exception {
         return GrpcServiceRSocketImplBuilder
-                .stub(ReactorAccountServiceGrpc.AccountServiceImplBase.class, "com.alibaba.account.AccountService")
+                .stub(ReactorAccountServiceGrpc.AccountServiceImplBase.class)
                 .upstreamManager(upstreamManager)
                 .build();
     }
