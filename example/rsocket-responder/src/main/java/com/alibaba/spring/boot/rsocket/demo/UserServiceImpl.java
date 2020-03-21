@@ -36,7 +36,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findByEmailOrPhone(String email, String phone) {
-        return Mono.fromCallable(() -> randomUser(null));
+        return Mono.fromCallable(() -> {
+            User user = randomUser(null);
+            user.setEmail(email);
+            user.setPhone(phone);
+            return user;
+        });
     }
 
     @Override
@@ -62,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> flush(String name) {
-        System.out.println("flush");
+        System.out.println("Flush triggered by FNF");
         return Mono.empty();
     }
 
@@ -73,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Void> job1() {
-        System.out.println("job1");
+        System.out.println("job1 triggered by FNF");
         return Mono.empty();
     }
 
