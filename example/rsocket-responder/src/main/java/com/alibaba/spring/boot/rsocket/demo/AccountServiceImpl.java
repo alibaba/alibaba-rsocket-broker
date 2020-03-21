@@ -6,7 +6,10 @@ import com.alibaba.rsocket.RSocketService;
 import com.github.javafaker.Faker;
 import com.google.protobuf.Int32Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Random;
 
 /**
  * account service implementation
@@ -25,5 +28,22 @@ public class AccountServiceImpl implements AccountService {
                 .setPhone(faker.phoneNumber().cellPhone())
                 .setNick(faker.name().name())
                 .build());
+    }
+
+    @Override
+    public Flux<Account> findByStatus(Int32Value status) {
+        return Flux.just(Account.newBuilder().setId(new Random().nextInt())
+                        .setEmail(faker.internet().emailAddress())
+                        .setPhone(faker.phoneNumber().cellPhone())
+                        .setNick(faker.name().name())
+                        .setStatus(status.getValue())
+                        .build(),
+                Account.newBuilder().setId(new Random().nextInt())
+                        .setEmail(faker.internet().emailAddress())
+                        .setPhone(faker.phoneNumber().cellPhone())
+                        .setNick(faker.name().name())
+                        .setStatus(status.getValue())
+                        .build()
+        );
     }
 }
