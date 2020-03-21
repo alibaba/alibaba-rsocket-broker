@@ -30,4 +30,9 @@ Content-Type: application/json
 
 {"id": 1,"nick": "leijuan"}
 
-###
+### app query
+GET http://localhost:9998/app/rsocket-user-service
+
+### metrics scrape
+GET http://localhost:9998/metrics/b739c100-9c4c-4eac-96fd-00821716fedb
+
