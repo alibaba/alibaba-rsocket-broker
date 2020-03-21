@@ -108,9 +108,12 @@ rsocket.broker.seeds=192.168.1.2,192.168.1.3,192.168.1.4
 ##### internet模式
 应用从互联网接入，这个时候broker实例要以外部域名对外提供接入，这个时候需要broker包含对外的域名，你需要给每一个broker实例设置外部域名，如果是容器环境，你可以设置环境变量"RSOCKET_BROKER_EXTERNAL_DOMAIN"
 
-```
+```properties
 rsocket.broker.external-domain=broker1.rsocket.foobar.com
+#rsocket.broker.external-domain=ws://broker1.rsocket.foobar.com:8080/
 ```
+
+如果你对外使用不同的端口和协议，如对互联网接入使用WebSocket，请将external-domain设置为URI方式
 
 对于外部应用来说，在设置rsocket broker的互联网域名后，同时要将rsocket.topology设置为internet，如下:
 
