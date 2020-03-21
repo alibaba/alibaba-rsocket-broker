@@ -30,8 +30,6 @@ public class AppQueryController {
         if (handlers != null) {
             for (RSocketBrokerResponderHandler handler : handlers) {
                 Map<String, Object> app = new HashMap<>();
-                app.put("published", handler.getPeerServices());
-                app.put("consumed", handler.getConsumedServices());
                 AppMetadata appMetadata = handler.getAppMetadata();
                 app.put("ip", appMetadata.getIp());
                 app.put("uuid", appMetadata.getUuid());
