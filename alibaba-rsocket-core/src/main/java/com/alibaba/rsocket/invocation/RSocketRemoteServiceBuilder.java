@@ -5,6 +5,10 @@ import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.ClassFileVersion;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.Proxy;
 import java.time.Duration;
@@ -117,10 +121,31 @@ public class RSocketRemoteServiceBuilder<T> {
     @SuppressWarnings("unchecked")
     public T build() {
         CONSUMED_SERVICES.add(new ServiceLocator(group, service, version));
+        RSocketRequesterRpcProxy proxy = new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
+                encodingType, acceptEncodingType, timeout, endpoint);
+        Class<T> dynamicType = (Class<T>) new ByteBuddy(ClassFileVersion.JAVA_V8)
+                .subclass(serviceInterface)
+                .name(serviceInterface.getSimpleName() + "RSocketStub")
+                .method(ElementMatchers.not(ElementMatchers.isDefaultMethod()))
+                .intercept(MethodDelegation.to(proxy))
+                .make()
+                .load(serviceInterface.getClassLoader())
+                .getLoaded();
+        try {
+            return dynamicType.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public T buildJdkProxy() {
+        CONSUMED_SERVICES.add(new ServiceLocator(group, service, version));
+        RSocketRequesterRpcProxy proxy = new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
+                encodingType, acceptEncodingType, timeout, endpoint);
         return (T) Proxy.newProxyInstance(
                 serviceInterface.getClassLoader(),
                 new Class[]{serviceInterface},
-                new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
-                        encodingType, acceptEncodingType, timeout, endpoint));
+                proxy);
     }
 }
