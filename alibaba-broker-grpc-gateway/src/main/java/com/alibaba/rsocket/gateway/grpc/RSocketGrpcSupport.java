@@ -34,4 +34,15 @@ public interface RSocketGrpcSupport {
                 });
     }
 
+    default <T> Flux<T> rsocketChannel(RSocket rsocket, Flux<Payload> requestPayload, final Class<T> responseClass) {
+        return rsocket.requestChannel(requestPayload)
+                .handle((payload, sink) -> {
+                    try {
+                        sink.next(PayloadUtils.payloadToResponseObject(payload, responseClass));
+                    } catch (Exception e) {
+                        sink.error(e);
+                    }
+                });
+    }
+
 }
