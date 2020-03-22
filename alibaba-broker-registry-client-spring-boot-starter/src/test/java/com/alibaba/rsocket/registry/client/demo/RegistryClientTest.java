@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.registry.client.demo;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * @author leijuan
  */
+@Disabled
 public class RegistryClientTest extends RegistryBaseTestCase {
     @Autowired
     private DiscoveryClient discoveryClient;
