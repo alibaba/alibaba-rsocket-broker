@@ -11,10 +11,7 @@ import io.rsocket.RSocketFactory;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.DefaultPayload;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 
 /**
  * user service test
@@ -22,6 +19,7 @@ import org.junit.jupiter.api.TestInstance;
  * @author leijuan
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Disabled
 public class UserServiceTest {
     private ObjectMapper objectMapper = new ObjectMapper();
     RSocket rsocket;
@@ -47,7 +45,7 @@ public class UserServiceTest {
         MessageMimeTypeMetadata dataEncodingMetadata = new MessageMimeTypeMetadata(WellKnownMimeType.APPLICATION_JSON);
         compositeMetadata.addMetadata(dataEncodingMetadata);
         rsocket.requestResponse(DefaultPayload.create(Unpooled.wrappedBuffer(objectMapper.writeValueAsBytes(1)), compositeMetadata.getContent()))
-                .doOnTerminate(()->{
+                .doOnTerminate(() -> {
                     ReferenceCountUtil.safeRelease(compositeMetadata);
                 })
                 .subscribe(payload -> {
