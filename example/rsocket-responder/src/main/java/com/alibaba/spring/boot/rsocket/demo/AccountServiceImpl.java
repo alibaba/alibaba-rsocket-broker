@@ -46,4 +46,15 @@ public class AccountServiceImpl implements AccountService {
                         .build()
         );
     }
+
+    @Override
+    public Flux<Account> findByIdStream(Flux<Int32Value> idStream) {
+        return idStream.map(id -> Account.newBuilder()
+                .setId(id.getValue())
+                .setEmail(faker.internet().emailAddress())
+                .setPhone(faker.phoneNumber().cellPhone())
+                .setNick(faker.name().name())
+                .setStatus(1)
+                .build());
+    }
 }

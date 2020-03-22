@@ -15,4 +15,6 @@ public interface AccountService {
     Mono<Account> findById(Int32Value id);
 
     Flux<Account> findByStatus(Int32Value status);
+
+    Flux<Account> findByIdStream(Flux<Int32Value> idStream);
 }
