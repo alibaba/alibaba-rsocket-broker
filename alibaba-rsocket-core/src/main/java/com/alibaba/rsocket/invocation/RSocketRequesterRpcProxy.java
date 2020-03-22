@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.invocation;
 
-
 import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
@@ -15,6 +14,10 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.frame.FrameType;
 import io.rsocket.util.ByteBufPayload;
+import net.bytebuddy.implementation.bind.annotation.AllArguments;
+import net.bytebuddy.implementation.bind.annotation.Origin;
+import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import net.bytebuddy.implementation.bind.annotation.This;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -107,11 +110,12 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        //interface default method validation
-        if (method.isDefault()) {
+    @RuntimeType
+    public Object invoke(@This Object proxy, @Origin Method method, @AllArguments Object[] args) throws Throwable {
+        //interface default method validation for JDK Proxy only, not necessary for ByteBuddy
+        /*if (method.isDefault()) {
             return getMethodHandle(method, serviceInterface).bindTo(proxy).invokeWithArguments(args);
-        }
+        }*/
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
