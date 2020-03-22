@@ -18,9 +18,11 @@ message Account {
 
 service AccountService {
 
-    rpc findById(google.protobuf.Int32Value) returns (Account) {
-    }
+    rpc findById (google.protobuf.Int32Value) returns (Account);
 
-    rpc findByStatus(google.protobuf.Int32Value) returns (stream Account);
+    rpc findByStatus (google.protobuf.Int32Value) returns (stream Account);
+
+    rpc findByIdStream (stream google.protobuf.Int32Value) returns (stream Account);
+
 }
 
