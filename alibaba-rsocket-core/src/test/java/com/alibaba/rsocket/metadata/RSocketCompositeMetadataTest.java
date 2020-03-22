@@ -40,7 +40,7 @@ public class RSocketCompositeMetadataTest {
         compositeMetadata.addMetadata(new GSVRoutingMetadata("", "com.alibaba.UserService", "findById", "1.0.0"));
         ByteBuf buffer = compositeMetadata.getContent();
         //System.out.println(buffer.capacity());
-        RSocketCompositeMetadata temp = RSocketCompositeMetadata.from(Unpooled.wrappedBuffer(buffer.array()));
+        RSocketCompositeMetadata temp = RSocketCompositeMetadata.from(Unpooled.copiedBuffer(buffer));
         Assertions.assertNotNull(temp.getRoutingMetaData());
         compositeMetadata.getMetadata(RSocketMimeType.Application);
     }

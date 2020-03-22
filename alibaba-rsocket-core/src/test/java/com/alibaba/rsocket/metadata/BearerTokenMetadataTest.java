@@ -24,7 +24,7 @@ public class BearerTokenMetadataTest {
         BearerTokenMetadata tokenMetadata = BearerTokenMetadata.jwt(token.toCharArray());
         Assertions.assertEquals(token.length() + 1, tokenMetadata.getContent().readableBytes());
         BearerTokenMetadata tokenMetadata1 = BearerTokenMetadata.from(tokenMetadata.getContent());
-        Assertions.assertEquals(tokenMetadata1.getBearerToken(), token);
+        Assertions.assertEquals(String.valueOf(tokenMetadata1.getBearerToken()), token);
         ByteBuf byteBuf = AuthMetadataFlyweight.encodeBearerMetadata(PooledByteBufAllocator.DEFAULT, token.toCharArray());
         assertThat(toArrayString(tokenMetadata.getContent())).isEqualTo(toArrayString(byteBuf));
     }
