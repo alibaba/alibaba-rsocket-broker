@@ -5,6 +5,7 @@ import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import io.netty.buffer.ByteBuf;
 import io.rsocket.RSocket;
@@ -50,7 +51,7 @@ public class MainController {
             authenticated = authAuthorizationValue(authorizationValue);
         }
         if (!authenticated) {
-            return Mono.error(new Exception("RST-500403: Failed to validate JWT token, please supply correct token!"));
+            return Mono.error(new Exception(RsocketErrorCode.message("RST-500403")));
         }
         try {
             GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, serviceName, method, version);
