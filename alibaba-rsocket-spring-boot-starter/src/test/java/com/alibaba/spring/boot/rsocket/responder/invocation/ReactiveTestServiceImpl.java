@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.invocation;
+package com.alibaba.spring.boot.rsocket.responder.invocation;
 
 import com.alibaba.rsocket.RSocketService;
 import org.junit.jupiter.api.Assertions;

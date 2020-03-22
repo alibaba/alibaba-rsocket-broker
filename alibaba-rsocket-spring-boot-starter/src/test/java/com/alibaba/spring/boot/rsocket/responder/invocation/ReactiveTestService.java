@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.invocation;
+package com.alibaba.spring.boot.rsocket.responder.invocation;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
