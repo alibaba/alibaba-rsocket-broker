@@ -24,7 +24,7 @@ import java.util.List;
  * @author leijuan
  */
 public class RequesterCloudEventProcessor {
-    private Logger log = LoggerFactory.getLogger(RequesterCloudEventProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(RequesterCloudEventProcessor.class);
     @Autowired
     private UpstreamManager upstreamManager;
     @Autowired(required = false)
@@ -67,19 +67,18 @@ public class RequesterCloudEventProcessor {
     }
 
     private void invalidateSpringCache(List<String> keys) {
-        if (cacheManager != null) {
-            keys.forEach(key -> {
-                String[] parts = key.split(":", 2);
-                try {
-                    Cache cache = cacheManager.getCache(parts[0]);
-                    if (cache != null) {
-                        cache.evict(parts[1]);
-                    }
-                } catch (Exception ignore) {
-
+        if (cacheManager == null) return;
+        keys.forEach(key -> {
+            String[] parts = key.split(":", 2);
+            try {
+                Cache cache = cacheManager.getCache(parts[0]);
+                if (cache != null) {
+                    cache.evict(parts[1]);
                 }
-            });
-        }
+            } catch (Exception ignore) {
+
+            }
+        });
     }
 
 }
