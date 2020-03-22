@@ -3,6 +3,7 @@ package com.alibaba.spring.boot.rsocket.broker.responder;
 import com.alibaba.rsocket.RSocketExchange;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
+import com.alibaba.rsocket.cloudevents.EventReply;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
 import com.alibaba.rsocket.metadata.*;
@@ -41,6 +42,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.TopicProcessor;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -289,6 +291,11 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             return Mono.fromRunnable(() -> eventProcessor.onNext(cloudEvent));
         }
         return Mono.empty();
+    }
+
+    @Override
+    public Mono<Void> fireEventReply(URI replayTo, EventReply eventReply) {
+        return peerRsocket.fireAndForget(constructEventReplyPayload(replayTo, eventReply));
     }
 
     @Override

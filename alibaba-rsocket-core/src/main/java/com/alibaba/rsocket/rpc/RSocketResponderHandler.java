@@ -2,6 +2,7 @@ package com.alibaba.rsocket.rpc;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
+import com.alibaba.rsocket.cloudevents.EventReply;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -104,6 +106,11 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent) {
         return Mono.fromRunnable(() -> eventProcessor.onNext(cloudEvent));
+    }
+
+    @Override
+    public Mono<Void> fireEventReply(URI replayTo, EventReply eventReply) {
+        return requester.fireAndForget(constructEventReplyPayload(replayTo, eventReply));
     }
 
     @Override

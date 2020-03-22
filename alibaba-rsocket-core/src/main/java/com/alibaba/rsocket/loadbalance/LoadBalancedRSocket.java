@@ -2,6 +2,7 @@ package com.alibaba.rsocket.loadbalance;
 
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
+import com.alibaba.rsocket.cloudevents.EventReply;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
@@ -32,6 +33,7 @@ import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 import java.net.ConnectException;
+import java.net.URI;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.*;
@@ -216,6 +218,11 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         } catch (Exception e) {
             return Mono.error(e);
         }
+    }
+
+    @Override
+    public Mono<Void> fireEventReply(URI replayTo, EventReply eventReply) {
+        return fireAndForget(constructEventReplyPayload(replayTo, eventReply));
     }
 
     /**
