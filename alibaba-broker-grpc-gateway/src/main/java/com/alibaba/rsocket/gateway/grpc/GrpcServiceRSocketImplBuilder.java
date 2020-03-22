@@ -71,7 +71,7 @@ public class GrpcServiceRSocketImplBuilder<T extends BindableService> {
     public T build() throws Exception {
         Class<T> dynamicType = (Class<T>) new ByteBuddy()
                 .subclass(serviceStub)
-                .name(serviceStub.getSimpleName() + "Impl")
+                .name(serviceStub.getSimpleName() + "RSocketImpl")
                 .annotateType(AnnotationDescription.Builder.ofType(GRpcService.class).build())
                 .method(ElementMatchers.returns(target -> target.isAssignableFrom(Mono.class) || target.isAssignableFrom(Flux.class)))
                 .intercept(MethodDelegation.to(interceptor))
