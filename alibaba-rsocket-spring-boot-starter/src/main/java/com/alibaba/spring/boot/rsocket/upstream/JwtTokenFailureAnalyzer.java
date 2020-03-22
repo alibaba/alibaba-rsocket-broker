@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.upstream;
 
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
@@ -15,10 +16,10 @@ public class JwtTokenFailureAnalyzer extends AbstractFailureAnalyzer<JwtTokenNot
     }
 
     private String getDescription(JwtTokenNotFoundException ex) {
-        return "rsocket.jwt-token not found in the application.properties";
+        return RsocketErrorCode.message("RST-202202");
     }
 
     private String getAction(JwtTokenNotFoundException ex) {
-        return "Please contact the Ops or open RSocket Broker http://localhost:9998/ to generate one";
+        return "Please contact the Ops or open RSocket Broker console http://localhost:9998/ to generate a JWT token.";
     }
 }
