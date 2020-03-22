@@ -44,6 +44,8 @@ public class ReactorServiceTest {
  }
 ```
 
+如果你要实现客户端的Load balance，可以结合RSocket Service Broker提供的服务发现客户端。
+
 ### Testing Tools
 你可以使用以下工具进行gRPC服务测试，.evans.toml已经提供提供，同时justfile中包括grpccurl的调用方法。
 
