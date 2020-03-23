@@ -1,9 +1,9 @@
 package com.alibaba.rsocket.reactive;
 
 import com.alibaba.rsocket.MutableContext;
-import com.alibaba.rsocket.reactive.rxjava3.RxJava3Adapter;
 import io.reactivex.rxjava3.core.*;
 import org.jetbrains.annotations.Nullable;
+import reactor.adapter.rxjava.RxJava3Adapter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
