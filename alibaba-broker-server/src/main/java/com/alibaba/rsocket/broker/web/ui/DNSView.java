@@ -2,13 +2,14 @@ package com.alibaba.rsocket.broker.web.ui;
 
 import com.alibaba.rsocket.broker.dns.Answer;
 import com.alibaba.rsocket.broker.dns.DnsResolveService;
-import com.alibaba.rsocket.broker.web.model.Pair;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import io.netty.handler.codec.dns.DnsRecordType;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.List;
 
@@ -24,13 +25,13 @@ import static com.alibaba.rsocket.broker.web.ui.DNSView.NAV;
 public class DNSView extends VerticalLayout {
     public static final String NAV = "dnsView";
     private DnsResolveService resolveService;
-    private Grid<Pair> domainNameGrid = new Grid<>();
+    private Grid<Tuple2<String, String>> domainNameGrid = new Grid<>();
 
     public DNSView(DnsResolveService resolveService) {
         this.resolveService = resolveService;
         add(new H1("Domain List"));
-        domainNameGrid.addColumn(Pair::getName).setHeader("Name");
-        domainNameGrid.addColumn(Pair::getValue).setHeader("A");
+        domainNameGrid.addColumn(Tuple2::getT1).setHeader("Name");
+        domainNameGrid.addColumn(Tuple2::getT2).setHeader("A");
         add(domainNameGrid);
     }
 
@@ -40,9 +41,9 @@ public class DNSView extends VerticalLayout {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public List<Pair> domains() {
+    public List<Tuple2<String, String>> domains() {
         return resolveService.allDomains()
-                .map(name -> new Pair(name, String.join(", ", resolveService.resolve(name, DnsRecordType.A.name()).map(Answer::getData).collectList().block())))
+                .map(name -> Tuples.of(name, String.join(", ", resolveService.resolve(name, DnsRecordType.A.name()).map(Answer::getData).collectList().block())))
                 .collectList().block();
     }
 
