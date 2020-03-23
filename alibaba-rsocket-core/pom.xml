@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.alibaba.rsocket</groupId>
             <artifactId>alibaba-rsocket-service-common</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.cloudevents</groupId>
