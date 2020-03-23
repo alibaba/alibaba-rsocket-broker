@@ -5,6 +5,7 @@ import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import io.micrometer.core.instrument.Metrics;
 import io.netty.buffer.ByteBuf;
@@ -187,7 +188,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else {
                 ReferenceCountUtil.safeRelease(bodyBuffer);
-                return Mono.error(new Exception("Unknown RSocket Frame type"));
+                return Mono.error(new Exception(RsocketErrorCode.message("RST-200405", methodMetadata.getRsocketFrameType())));
             }
         }
     }
@@ -204,6 +205,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         return defaultEncodingType;
     }
 
+    @Deprecated
     public MethodHandle getMethodHandle(Method method, Class<?> serviceInterface) throws Exception {
         MethodHandle methodHandle = this.defaultMethodHandles.get(method);
         if (methodHandle == null) {
