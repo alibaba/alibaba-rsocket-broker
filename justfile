@@ -12,7 +12,7 @@ build:
 
 # install artifact into local repository
 artifacts_install: build
-  mvn -pl .,alibaba-rsocket-core,alibaba-rsocket-spring-boot-starter,alibaba-broker-spring-boot-starter -DskipTests install
+  mvn -pl .,alibaba-rsocket-service-common,alibaba-rsocket-core,alibaba-rsocket-spring-boot-starter,alibaba-broker-spring-boot-starter -DskipTests install
 
 # build rsocket broker as Docker image
 docker_build: artifacts_install
