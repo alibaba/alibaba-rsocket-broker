@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <reactor.version>3.3.3.RELEASE</reactor.version>
-        <netty-buffer.version>4.1.47.Final</netty-buffer.version>
+        <netty-buffer.version>4.1.48.Final</netty-buffer.version>
     </properties>
 
     <name>alibaba-rsocket-service-common</name>
