@@ -2,12 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>3.5.0</maven>
-    </prerequisites>
-    <groupId>com.alibaba.rsocket</groupId>
+    <parent>
+        <groupId>com.alibaba.rsocket</groupId>
+        <artifactId>alibaba-rsocket-broker-parent</artifactId>
+        <version>1.0.0.M1</version>
+    </parent>
+
     <artifactId>alibaba-rsocket-service-common</artifactId>
-    <version>1.0.0.M1</version>
+
+    <name>alibaba-rsocket-service-common</name>
+    <description>RSocket service common to help Reactive Service API definition</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,52 +20,6 @@
         <netty-buffer.version>4.1.48.Final</netty-buffer.version>
     </properties>
 
-    <name>alibaba-rsocket-service-common</name>
-    <description>RSocket service common to help Reactive Service API definition</description>
-    <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
-    <inceptionYear>2020</inceptionYear>
-
-    <licenses>
-        <license>
-            <name>Apache License</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>leijuan</id>
-            <name>雷卷</name>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <organization>Alibaba</organization>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</connection>
-        <developerConnection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</developerConnection>
-        <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
-        <tag>HEAD</tag>
-    </scm>
-
-    <issueManagement>
-        <system>Github</system>
-        <url>https://github.com/alibaba/alibaba-rsocket-broker/issues</url>
-    </issueManagement>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
