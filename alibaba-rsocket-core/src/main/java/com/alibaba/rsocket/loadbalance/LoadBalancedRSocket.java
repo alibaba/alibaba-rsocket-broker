@@ -45,28 +45,28 @@ import java.util.function.Predicate;
  * @author leijuan
  */
 public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRSocket {
+    private static final Logger log = LoggerFactory.getLogger(LoadBalancedRSocket.class);
     private RandomSelector<RSocket> randomSelector;
-    private Logger log = LoggerFactory.getLogger(LoadBalancedRSocket.class);
-    private String serviceId;
-    private Flux<Collection<String>> urisFactory;
+    private final String serviceId;
+    private final Flux<Collection<String>> urisFactory;
     private Collection<String> lastRSocketUris = new ArrayList<>();
     private Map<String, RSocket> activeSockets;
     /**
      * unhealthy uris
      */
-    private Set<String> unHealthyUriSet = new HashSet<>();
+    private final Set<String> unHealthyUriSet = new HashSet<>();
     private long lastHealthCheckTimeStamp = System.currentTimeMillis();
     private long lastRefreshTimeStamp = System.currentTimeMillis();
     /**
      * health check interval seconds
      */
-    private static int HEALTH_CHECK_INTERVAL_SECONDS = 15;
+    private static final int HEALTH_CHECK_INTERVAL_SECONDS = 15;
     /**
      * retry count because of connection error and interval is 5 seconds
      */
-    private int retryCount = 12;
-    private RSocketRequesterSupport requesterSupport;
-    private ByteBuf healthCheckCompositeByteBuf;
+    private final int retryCount = 12;
+    private final RSocketRequesterSupport requesterSupport;
+    private final ByteBuf healthCheckCompositeByteBuf;
     private boolean isServiceProvider = false;
 
     public Set<String> getUnHealthyUriSet() {
@@ -235,7 +235,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         try {
             return Flux.fromIterable(this.getActiveSockets().values())
                     .flatMap(rsocket -> rsocket.metadataPush(cloudEventToMetadataPushPayload(cloudEvent)))
-                    .doOnError(throwable -> log.error("Failed to fire event to upstream", throwable))
+                    .doOnError(throwable -> log.error(RsocketErrorCode.message("RST-610502"), throwable))
                     .then();
         } catch (Exception e) {
             return Mono.error(e);
