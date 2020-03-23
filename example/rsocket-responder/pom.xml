@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.alibaba.rsocket</groupId>
             <artifactId>alibaba-rsocket-spring-boot-starter</artifactId>
-            <version>${alibaba-cloud-broker.version}</version>
+            <version>${alibaba-rsocket.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba.broker.example</groupId>
