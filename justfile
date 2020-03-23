@@ -32,6 +32,18 @@ updates:
 dependency_tree:
    mvn clean compile com.github.ferstl:depgraph-maven-plugin:3.3.0:aggregate -DgraphFormat=text -Dscope=compile -DshowVersions=true
 
+staging_service_common:
+   mvn -P release -pl alibaba-rsocket-service-common -DskipTests clean package deploy
+
+staging:
+   mvn -P release -DskipTests clean package deploy
+
+deploy_service_common:
+   mvn -DskipLocalStaging=true -P release -pl alibaba-rsocket-service-common -DskipTests clean package deploy
+
+deploy:
+   mvn -DskipLocalStaging=true -P release -DskipTests clean package deploy
+
 clean:
    mvn clean
    rm -rf alibaba-broker-server/node_modules
