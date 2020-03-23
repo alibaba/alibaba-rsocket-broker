@@ -23,7 +23,7 @@ public class RsocketErrorCode {
     /**
      * resource bundle
      */
-    private static ResourceBundle ourBundle = ResourceBundle.getBundle(BUNDLE_FQN, new Locale("en", "US"));
+    private static final ResourceBundle ourBundle = ResourceBundle.getBundle(BUNDLE_FQN, new Locale("en", "US"));
 
     private RsocketErrorCode() {
     }
