@@ -50,7 +50,7 @@ public class ReactiveMethodSupport {
     }
 
     /**
-     * get inferred class for generic type, such as Flux<T> like, please refer http://tutorials.jenkov.com/java-reflection/generics.html
+     * get inferred class for generic type, such as Flux like, please refer http://tutorials.jenkov.com/java-reflection/generics.html
      *
      * @param genericType generic type
      * @return inferred class

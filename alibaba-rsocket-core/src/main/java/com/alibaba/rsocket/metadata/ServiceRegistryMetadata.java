@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * service registry metadata: subscribed & published services from requester
+ * service registry metadata: subscribed and published services from requester
  *
  * @author leijuan
  */

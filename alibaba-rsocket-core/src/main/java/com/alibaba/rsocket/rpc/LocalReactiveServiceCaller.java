@@ -47,6 +47,7 @@ public interface LocalReactiveServiceCaller {
     /**
      * add service provider
      *
+     * @param group group
      * @param serviceName      service name
      * @param version          version
      * @param serviceInterface interface

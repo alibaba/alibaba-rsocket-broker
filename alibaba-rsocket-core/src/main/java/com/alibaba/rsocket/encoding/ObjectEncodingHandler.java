@@ -28,7 +28,7 @@ public interface ObjectEncodingHandler {
      *
      * @param args arguments
      * @return byte buffer
-     * @throws Exception exception
+     * @throws EncodingException encoding exception
      */
     ByteBuf encodingParams(@Nullable Object[] args) throws EncodingException;
 

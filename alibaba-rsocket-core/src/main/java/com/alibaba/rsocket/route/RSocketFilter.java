@@ -31,6 +31,7 @@ public abstract class RSocketFilter {
      * run filter logic, no block code
      *
      * @param exchange request exchange
+     * @return Mono void
      */
     public abstract Mono<Void> run(RSocketExchange exchange);
 
