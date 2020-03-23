@@ -6,7 +6,7 @@ RSocket Broker的gRPC Gateway，你可以通过gRPC接口访问RSocket服务。
 
 工作原理非常简单，就是将gRPC请求转换为RSocket请求，中间的桥梁就是Reactive gRPC。具体的步骤如下：
 
-* 编写gRPC的proto文件，gateway支持各种RPC，包括Unary, Server Streaming, Client Streaming和Bidirectional streaming
+* 编写gRPC的proto文件(src/main/proto目录下)。Gateway支持各种gRPC的RPC通讯模型，包括Unary, Server Streaming, Client Streaming和Bidirectional streaming
 * 执行"mvn compile"调用protobuf-maven-plugin生成reactor-grpc对应的Reactive服务接口
 * 调用GrpcServiceRSocketImplBuilder动态构建gRPC到后端RSocket服务的Spring Bean
 
