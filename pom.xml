@@ -41,7 +41,7 @@
         <protobuf-java.version>3.11.4</protobuf-java.version>
         <hessian.version>4.0.63</hessian.version>
         <jackson.version>2.10.3</jackson.version>
-        <protostuff.version>1.6.2</protostuff.version>
+        <protostuff.version>1.7.0</protostuff.version>
         <avro.version>1.9.2</avro.version>
         <eclipse-collections.version>10.2.0</eclipse-collections.version>
         <spring-cloud-release.version>Hoxton.SR3</spring-cloud-release.version>
