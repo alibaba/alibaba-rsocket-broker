@@ -11,3 +11,5 @@ services:
       - "9090:9090"
     volumes:
       - ./src/main/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./src/main/config/alibaba-rsocket-brokers.json:/etc/prometheus/alibaba-rsocket-brokers.json
+      - ./src/main/config/alibaba-rsocket-apps.json:/etc/prometheus/alibaba-rsocket-apps.json
