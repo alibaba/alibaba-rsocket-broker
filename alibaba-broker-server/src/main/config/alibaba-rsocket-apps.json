@@ -1,0 +1,18 @@
+[
+  {
+    "labels": {
+      "__metrics_path__": "/metrics/68c7d4a9-bcd4-46b7-8a73-75e1ef04b902"
+    },
+    "targets": [
+      "192.168.1.64:9998"
+    ]
+  },
+  {
+    "labels": {
+      "__metrics_path__": "/metrics/5943c4c9-0c95-4cdf-8392-bed2d9aa2dab"
+    },
+    "targets": [
+      "192.168.1.64:9998"
+    ]
+  }
+]

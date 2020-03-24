@@ -1,0 +1,10 @@
+[
+  {
+    "labels": {
+      "__metrics_path__": "/actuator/prometheus"
+    },
+    "targets": [
+      "192.168.1.64:9997"
+    ]
+  }
+]
