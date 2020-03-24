@@ -54,15 +54,25 @@ public class MetricsScrapeController {
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
     }
 
-    @GetMapping("/prometheus/targets")
-    public Mono<List<PrometheusAppInstanceConfig>> targets() {
+    @GetMapping("/prometheus/app/targets")
+    public Mono<List<PrometheusAppInstanceConfig>> appTargets() {
         String port = env.getProperty("server.port");
         List<String> hosts = brokerManager.currentBrokers().stream().map(RSocketBroker::getIp).collect(Collectors.toList());
         int hostSize = hosts.size();
-        return Mono.just(handlerRegistry.findAll().stream().map(handler -> {
-            String host = hosts.get(handler.getId() % hostSize);
-            return new PrometheusAppInstanceConfig(host, port, handler.getUuid());
-        }).collect(Collectors.toList()));
+        return Mono.just(handlerRegistry.findAll().stream()
+                .map(handler -> {
+                    String host = hosts.get(handler.getId() % hostSize);
+                    return new PrometheusAppInstanceConfig(host, port, handler.getUuid());
+                })
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/prometheus/broker/targets")
+    public Mono<List<PrometheusAppInstanceConfig>> brokerTargets() {
+        String port = env.getProperty("management.server.port");
+        return Mono.just(brokerManager.currentBrokers().stream()
+                .map(broker -> new PrometheusAppInstanceConfig(broker.getIp(), port, "/actuator/prometheus"))
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{uuid}")
