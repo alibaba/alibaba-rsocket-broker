@@ -1,9 +1,9 @@
 Alibaba RSocket Broker
 ======================
-[![Gitter](https://badges.gitter.im/alibaba-rsocket-broker/community.svg)](https://gitter.im/alibaba-rsocket-broker/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Maven](https://img.shields.io/maven-central/v/com.alibaba.rsocket/alibaba-rsocket-spring-boot-starter?label=Maven)](https://img.shields.io/maven-central/v/com.alibaba.rsocket/alibaba-rsocket-spring-boot-starter)
 [!["Open Issues"](https://img.shields.io/github/issues-raw/alibaba/alibaba-rsocket-broker.svg)](https://github.com/alibaba/alibaba-rsocket-broker/issues)
 [![Build Status](https://api.travis-ci.com/alibaba/alibaba-rsocket-broker.svg?branch=master)](https://travis-ci.com/alibaba/alibaba-rsocket-broker)
+[![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 &nbsp;&nbsp;&nbsp;&nbsp;
 [![Chinese README](https://img.shields.io/badge/CN-README-brightgreen)](https://github.com/alibaba/alibaba-rsocket-broker/blob/master/README.md)
 
