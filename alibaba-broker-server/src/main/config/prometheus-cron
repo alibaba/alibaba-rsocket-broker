@@ -1,0 +1,1 @@
+*/5 * * * * root curl -o /etc/prometheus/alibaba-rsocket-apps.json http://localhost:9998/metrics/prometheus/app/targets
