@@ -1,9 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.services;
 
-import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
-import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
-import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
-import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.MetricsService;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
@@ -17,6 +14,7 @@ import io.rsocket.Payload;
 import io.rsocket.util.ByteBufPayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +46,8 @@ public class MetricsScrapeController {
     public MetricsScrapeController() {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(
                 new GSVRoutingMetadata(null, MetricsService.class.getCanonicalName(), "scrape", null),
-                new MessageMimeTypeMetadata(RSocketMimeType.Hessian));
+                new MessageMimeTypeMetadata(RSocketMimeType.Text),
+                new MessageAcceptMimeTypesMetadata(RSocketMimeType.Text));
         ByteBuf compositeMetadataContent = compositeMetadata.getContent();
         this.metricsScrapeCompositeByteBuf = Unpooled.copiedBuffer(compositeMetadataContent);
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
@@ -62,7 +61,7 @@ public class MetricsScrapeController {
         return Mono.just(handlerRegistry.findAll().stream()
                 .map(handler -> {
                     String host = hosts.get(handler.getId() % hostSize);
-                    return new PrometheusAppInstanceConfig(host, port, handler.getUuid());
+                    return new PrometheusAppInstanceConfig(host, port, "/metrics/" + handler.getUuid());
                 })
                 .collect(Collectors.toList()));
     }
@@ -75,7 +74,7 @@ public class MetricsScrapeController {
                 .collect(Collectors.toList()));
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping(value = "/{uuid}", produces = MimeTypeUtils.TEXT_PLAIN_VALUE)
     public Mono<String> scrape(@PathVariable(name = "uuid") String uuid) {
         RSocketBrokerResponderHandler rsocket = handlerRegistry.findByUUID(uuid);
         if (rsocket == null) {
@@ -93,9 +92,9 @@ public class MetricsScrapeController {
 
         }
 
-        public PrometheusAppInstanceConfig(String host, String port, String uuid) {
+        public PrometheusAppInstanceConfig(String host, String port, String metricsPath) {
             targets.add(host + ":" + port);
-            this.setUuid(uuid);
+            this.labels.put("__metrics_path__", metricsPath);
         }
 
         public Map<String, String> getLabels() {
@@ -112,10 +111,6 @@ public class MetricsScrapeController {
 
         public void setTargets(List<String> targets) {
             this.targets = targets;
-        }
-
-        public void setUuid(String uuid) {
-            this.labels.put("__metrics_path__", "/metrics/" + uuid);
         }
     }
 }
