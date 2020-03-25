@@ -278,7 +278,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         synchronized (this) {
             super.dispose();
             Flux.fromIterable(activeSockets.values())
-                    .doOnTerminate(() -> activeSockets.clear())
+                    .doFinally((signalType) -> activeSockets.clear())
                     .subscribe(Disposable::dispose);
         }
     }
