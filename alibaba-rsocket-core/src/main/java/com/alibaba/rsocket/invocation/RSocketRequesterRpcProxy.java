@@ -19,6 +19,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,52 +42,52 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author leijuan
  */
 public class RSocketRequesterRpcProxy implements InvocationHandler {
-    private RSocket rsocket;
+    protected RSocket rsocket;
     /**
      * service interface
      */
-    private Class<?> serviceInterface;
+    protected Class<?> serviceInterface;
     /**
-     * group, such as datacenter name, region name
+     * group, such as data center name, region name or virtual cluster name
      */
-    private String group;
+    protected String group;
     /**
      * service name
      */
-    private String service;
+    protected String service;
     /**
      * service version
      */
-    private String version;
+    protected String version;
     /**
      * endpoint of service
      */
-    private String endpoint;
+    protected String endpoint;
     /**
      * encoding type
      */
-    private RSocketMimeType encodingType;
+    protected RSocketMimeType encodingType;
     /**
      * accept encoding types
      */
-    private RSocketMimeType[] acceptEncodingTypes;
+    protected RSocketMimeType[] acceptEncodingTypes;
     /**
      * '
      * timeout for request/response
      */
-    private Duration timeout;
+    protected Duration timeout;
     /**
      * encoding facade
      */
-    private RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
+    protected RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
     /**
      * java method metadata map cache for performance
      */
-    private Map<Method, ReactiveMethodMetadata> methodMetadataMap = new ConcurrentHashMap<>();
+    protected Map<Method, ReactiveMethodMetadata> methodMetadataMap = new ConcurrentHashMap<>();
     /**
      * interface default method handlers
      */
-    private Map<Method, MethodHandle> defaultMethodHandles = new HashMap<>();
+    protected Map<Method, MethodHandle> defaultMethodHandles = new HashMap<>();
 
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, @Nullable String service, String version,
@@ -157,7 +158,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             Class<?> returnType = method.getReturnType();
             if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_RESPONSE) {
                 metrics(methodMetadata);
-                Mono<Payload> payloadMono = rsocket.requestResponse(ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate())).timeout(timeout);
+                Mono<Payload> payloadMono = remoteRequestResponse(methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate(), bodyBuffer);
                 Mono<Object> result = payloadMono.handle((payload, sink) -> {
                     try {
                         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
@@ -173,10 +174,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 return methodMetadata.getReactiveAdapter().fromPublisher(result, returnType, mutableContext);
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_FNF) {
                 metrics(methodMetadata);
-                return rsocket.fireAndForget(ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()));
+                return remoteFireAndForget(methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate(), bodyBuffer);
             } else if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_STREAM) {
                 metrics(methodMetadata);
-                Flux<Payload> flux = rsocket.requestStream(ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()));
+                Flux<Payload> flux = remoteRequestStream(methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate(), bodyBuffer);
                 Flux<Object> result = flux.concatMap((payload) -> {
                     try {
                         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
@@ -191,6 +192,19 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 return Mono.error(new Exception(RsocketErrorCode.message("RST-200405", methodMetadata.getRsocketFrameType())));
             }
         }
+    }
+
+    protected Flux<Payload> remoteRequestStream(ByteBuf compositeMetadata, ByteBuf bodyBuffer) {
+        return rsocket.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadata));
+    }
+
+    protected Mono<Void> remoteFireAndForget(ByteBuf compositeMetadata, ByteBuf bodyBuffer) {
+        return rsocket.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadata));
+    }
+
+    @NotNull
+    protected Mono<Payload> remoteRequestResponse(ByteBuf compositeMetadata, ByteBuf bodyBuffer) {
+        return rsocket.requestResponse(ByteBufPayload.create(bodyBuffer, compositeMetadata)).timeout(timeout);
     }
 
     protected void metrics(ReactiveMethodMetadata methodMetadata) {
