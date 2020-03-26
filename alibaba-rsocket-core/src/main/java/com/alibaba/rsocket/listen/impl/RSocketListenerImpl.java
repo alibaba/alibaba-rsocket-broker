@@ -137,7 +137,7 @@ public class RSocketListenerImpl implements RSocketListener {
                 //payload decoder
                 if (payloadDecoder != null) {
                     serverRSocketFactory = serverRSocketFactory.frameDecoder(payloadDecoder);
-                } 
+                }
                 //acceptor interceptor
                 for (SocketAcceptorInterceptor acceptorInterceptor : acceptorInterceptors) {
                     serverRSocketFactory = serverRSocketFactory.addSocketAcceptorPlugin(acceptorInterceptor);
@@ -155,9 +155,7 @@ public class RSocketListenerImpl implements RSocketListener {
                     serverRSocketFactory = serverRSocketFactory.errorConsumer(errorConsumer);
                 } else {
                     serverRSocketFactory = serverRSocketFactory.errorConsumer(error -> {
-                        if(error.getMessage()!=null) {
-                            log.error(error.getMessage(), error);
-                        }
+                        log.error(RsocketErrorCode.message("RST-100500", error.getMessage()), error);
                     });
                 }
                 Disposable disposable = serverRSocketFactory
