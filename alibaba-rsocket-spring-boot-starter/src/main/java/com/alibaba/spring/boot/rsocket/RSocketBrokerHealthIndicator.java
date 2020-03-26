@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket;
 
+import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.upstream.UpstreamManager;
@@ -14,10 +15,12 @@ import reactor.core.publisher.Mono;
  */
 public class RSocketBrokerHealthIndicator implements ReactiveHealthIndicator {
     private RSocketServiceHealth rsocketServiceHealth;
+    private RSocketEndpoint rsocketEndpoint;
     private String brokers;
 
 
-    public RSocketBrokerHealthIndicator(UpstreamManager upstreamManager, String brokers) {
+    public RSocketBrokerHealthIndicator(RSocketEndpoint rsocketEndpoint, UpstreamManager upstreamManager, String brokers) {
+        this.rsocketEndpoint = rsocketEndpoint;
         this.rsocketServiceHealth = RSocketRemoteServiceBuilder
                 .client(RSocketServiceHealth.class)
                 .upstreamManager(upstreamManager)
@@ -25,13 +28,18 @@ public class RSocketBrokerHealthIndicator implements ReactiveHealthIndicator {
         this.brokers = brokers;
     }
 
-
     @Override
     public Mono<Health> health() {
         return rsocketServiceHealth.check(null)
-                .map(result -> result != null && result == 1 ?
-                        Health.up().withDetail("brokers", brokers).build()
-                        : Health.outOfService().withDetail("brokers", brokers).build())
+                .map(result -> {
+                            boolean brokerAlive = result != null && result == 1;
+                            boolean localServicesAlive = !rsocketEndpoint.getRsocketServiceStatus().equals(AppStatusEvent.STATUS_STOPPED);
+                            Health.Builder builder = brokerAlive && localServicesAlive ? Health.up() : Health.outOfService();
+                            builder.withDetail("brokers", brokers);
+                            builder.withDetail("localServiceStatus", AppStatusEvent.statusText(rsocketEndpoint.getRsocketServiceStatus()));
+                            return builder.build();
+                        }
+                )
                 .onErrorReturn(Health.down().withDetail("brokers", brokers).build());
     }
 
