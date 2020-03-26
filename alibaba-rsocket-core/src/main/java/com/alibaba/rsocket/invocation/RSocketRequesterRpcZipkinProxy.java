@@ -1,5 +1,8 @@
 package com.alibaba.rsocket.invocation;
 
+import brave.Span;
+import brave.Tracer;
+import brave.Tracing;
 import brave.propagation.TraceContext;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.metadata.TracingMetadata;
@@ -22,12 +25,14 @@ import java.time.Duration;
  * @author leijuan
  */
 public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
+    private Tracer tracer;
 
-    public RSocketRequesterRpcZipkinProxy(UpstreamCluster upstream,
+    public RSocketRequesterRpcZipkinProxy(@NotNull Tracing tracing, UpstreamCluster upstream,
                                           String group, Class<?> serviceInterface, @Nullable String service, String version,
                                           RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
                                           Duration timeout, @Nullable String endpoint) {
         super(upstream, group, serviceInterface, service, version, encodingType, acceptEncodingType, timeout, endpoint);
+        tracer = tracing.tracer();
     }
 
     @NotNull
@@ -36,7 +41,10 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
-                return super.remoteRequestResponse(newCompositeMetadata, bodyBuf);
+                Span span = tracer.newChild(traceContext);
+                return super.remoteRequestResponse(newCompositeMetadata, bodyBuf)
+                        .doOnError(span::error)
+                        .doOnSuccess(payload -> span.finish());
             }
             return super.remoteRequestResponse(compositeMetadata, bodyBuf);
         });
@@ -48,7 +56,10 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
-                return super.remoteFireAndForget(newCompositeMetadata, bodyBuf);
+                Span span = tracer.newChild(traceContext);
+                return super.remoteFireAndForget(newCompositeMetadata, bodyBuf)
+                        .doOnError(span::error)
+                        .doOnSuccess(payload -> span.finish());
             }
             return super.remoteFireAndForget(compositeMetadata, bodyBuf);
         });
@@ -60,7 +71,10 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
-                return super.remoteRequestStream(newCompositeMetadata, bodyBuf);
+                Span span = tracer.newChild(traceContext);
+                return super.remoteRequestStream(newCompositeMetadata, bodyBuf)
+                        .doOnError(span::error)
+                        .doOnComplete(span::finish);
             }
             return super.remoteRequestStream(compositeMetadata, bodyBuf);
         });
