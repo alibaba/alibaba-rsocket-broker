@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.invocation;
 
+import brave.Tracing;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
@@ -36,6 +37,7 @@ public class RSocketRemoteServiceBuilder<T> {
      * zipkin brave tracing client
      */
     private boolean braveTracing = true;
+    private Tracing tracing;
 
     public static <T> RSocketRemoteServiceBuilder<T> client(Class<T> serviceInterface) {
         RSocketRemoteServiceBuilder<T> builder = new RSocketRemoteServiceBuilder<T>();
@@ -108,6 +110,11 @@ public class RSocketRemoteServiceBuilder<T> {
         return this;
     }
 
+    public RSocketRemoteServiceBuilder<T> tracing(Tracing tracing) {
+        this.tracing = tracing;
+        return this;
+    }
+
     public RSocketRemoteServiceBuilder<T> encodingType(RSocketMimeType encodingType) {
         this.encodingType = encodingType;
         return this;
@@ -149,8 +156,8 @@ public class RSocketRemoteServiceBuilder<T> {
 
     @NotNull
     private RSocketRequesterRpcProxy getRequesterProxy() {
-        if (this.braveTracing) {
-            return new RSocketRequesterRpcZipkinProxy(upstreamCluster, group, serviceInterface, service, version,
+        if (this.braveTracing && this.tracing != null) {
+            return new RSocketRequesterRpcZipkinProxy(tracing, upstreamCluster, group, serviceInterface, service, version,
                     encodingType, acceptEncodingType, timeout, endpoint);
         } else {
             return new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
