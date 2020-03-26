@@ -9,6 +9,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.ClassFileVersion;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
 import java.time.Duration;
@@ -31,6 +32,10 @@ public class RSocketRemoteServiceBuilder<T> {
     private RSocketMimeType encodingType = RSocketMimeType.Hessian;
     private RSocketMimeType acceptEncodingType;
     private UpstreamCluster upstreamCluster;
+    /**
+     * zipkin brave tracing client
+     */
+    private boolean braveTracing = true;
 
     public static <T> RSocketRemoteServiceBuilder<T> client(Class<T> serviceInterface) {
         RSocketRemoteServiceBuilder<T> builder = new RSocketRemoteServiceBuilder<T>();
@@ -56,6 +61,11 @@ public class RSocketRemoteServiceBuilder<T> {
             if (!serviceMapping.resultEncoding().isEmpty()) {
                 builder.acceptEncodingType = RSocketMimeType.valueOfType(serviceMapping.resultEncoding());
             }
+        }
+        try {
+            Class.forName("brave.propagation.TraceContext");
+        } catch (ClassNotFoundException e) {
+            builder.braveTracing = false;
         }
         return builder;
     }
@@ -121,8 +131,7 @@ public class RSocketRemoteServiceBuilder<T> {
     @SuppressWarnings("unchecked")
     public T build() {
         CONSUMED_SERVICES.add(new ServiceLocator(group, service, version));
-        RSocketRequesterRpcProxy proxy = new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
-                encodingType, acceptEncodingType, timeout, endpoint);
+        RSocketRequesterRpcProxy proxy = getRequesterProxy();
         Class<T> dynamicType = (Class<T>) new ByteBuddy(ClassFileVersion.JAVA_V8)
                 .subclass(serviceInterface)
                 .name(serviceInterface.getSimpleName() + "RSocketStub")
@@ -138,11 +147,21 @@ public class RSocketRemoteServiceBuilder<T> {
         }
     }
 
+    @NotNull
+    private RSocketRequesterRpcProxy getRequesterProxy() {
+        if (this.braveTracing) {
+            return new RSocketRequesterRpcZipkinProxy(upstreamCluster, group, serviceInterface, service, version,
+                    encodingType, acceptEncodingType, timeout, endpoint);
+        } else {
+            return new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
+                    encodingType, acceptEncodingType, timeout, endpoint);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public T buildJdkProxy() {
         CONSUMED_SERVICES.add(new ServiceLocator(group, service, version));
-        RSocketRequesterRpcProxy proxy = new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
-                encodingType, acceptEncodingType, timeout, endpoint);
+        RSocketRequesterRpcProxy proxy = getRequesterProxy();
         return (T) Proxy.newProxyInstance(
                 serviceInterface.getClassLoader(),
                 new Class[]{serviceInterface},
