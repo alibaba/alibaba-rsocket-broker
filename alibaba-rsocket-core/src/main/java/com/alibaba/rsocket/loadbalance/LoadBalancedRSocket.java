@@ -386,9 +386,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
-                    .errorConsumer(error -> {
-                        log.error(error.getMessage(), error);
-                    })
+                    .errorConsumer(error -> log.error(RsocketErrorCode.message("RST-200502", uri), error))
                     //.frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .transport(UriTransportRegistry.clientForUri(uri))
