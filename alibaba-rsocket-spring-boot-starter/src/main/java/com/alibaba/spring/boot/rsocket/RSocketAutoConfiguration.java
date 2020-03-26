@@ -109,8 +109,8 @@ public class RSocketAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty("rsocket.brokers")
-    public RSocketBrokerHealthIndicator rsocketBrokerHealth(UpstreamManager upstreamManager, @Value("${rsocket.brokers}") String brokers) {
-        return new RSocketBrokerHealthIndicator(upstreamManager, brokers);
+    public RSocketBrokerHealthIndicator rsocketBrokerHealth(RSocketEndpoint rsocketEndpoint, UpstreamManager upstreamManager, @Value("${rsocket.brokers}") String brokers) {
+        return new RSocketBrokerHealthIndicator(rsocketEndpoint, upstreamManager, brokers);
     }
 
     @Bean
