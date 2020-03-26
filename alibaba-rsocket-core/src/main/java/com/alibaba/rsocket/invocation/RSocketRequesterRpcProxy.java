@@ -194,17 +194,17 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         }
     }
 
-    protected Flux<Payload> remoteRequestStream(ByteBuf compositeMetadata, ByteBuf bodyBuffer) {
-        return rsocket.requestStream(ByteBufPayload.create(bodyBuffer, compositeMetadata));
+    protected Flux<Payload> remoteRequestStream(ByteBuf compositeMetadata, ByteBuf bodyBuf) {
+        return rsocket.requestStream(ByteBufPayload.create(bodyBuf, compositeMetadata));
     }
 
-    protected Mono<Void> remoteFireAndForget(ByteBuf compositeMetadata, ByteBuf bodyBuffer) {
-        return rsocket.fireAndForget(ByteBufPayload.create(bodyBuffer, compositeMetadata));
+    protected Mono<Void> remoteFireAndForget(ByteBuf compositeMetadata, ByteBuf bodyBuf) {
+        return rsocket.fireAndForget(ByteBufPayload.create(bodyBuf, compositeMetadata));
     }
 
     @NotNull
-    protected Mono<Payload> remoteRequestResponse(ByteBuf compositeMetadata, ByteBuf bodyBuffer) {
-        return rsocket.requestResponse(ByteBufPayload.create(bodyBuffer, compositeMetadata)).timeout(timeout);
+    protected Mono<Payload> remoteRequestResponse(ByteBuf compositeMetadata, ByteBuf bodyBuf) {
+        return rsocket.requestResponse(ByteBufPayload.create(bodyBuf, compositeMetadata)).timeout(timeout);
     }
 
     protected void metrics(ReactiveMethodMetadata methodMetadata) {
