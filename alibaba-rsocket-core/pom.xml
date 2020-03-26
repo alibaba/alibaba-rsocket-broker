@@ -125,6 +125,11 @@
             <artifactId>byte-buddy</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
