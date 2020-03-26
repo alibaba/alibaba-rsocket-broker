@@ -37,6 +37,8 @@ public class RSocketCompositeMetadata implements MetadataAware {
      */
     private MessageAcceptMimeTypesMetadata acceptMimeTypesMetadata;
 
+    private TracingMetadata tracingMetadata;
+
     public static RSocketCompositeMetadata from(ByteBuf content) {
         RSocketCompositeMetadata temp = new RSocketCompositeMetadata();
         if (content.isReadable()) {
@@ -139,6 +141,16 @@ public class RSocketCompositeMetadata implements MetadataAware {
             this.acceptMimeTypesMetadata.load(byteBuf);
         }
         return acceptMimeTypesMetadata;
+    }
+
+    @Nullable
+    public TracingMetadata getTracingMetadata() {
+        if (this.tracingMetadata == null && metadataStore.containsKey(RSocketMimeType.Tracing.getType())) {
+            this.tracingMetadata = new TracingMetadata();
+            ByteBuf byteBuf = metadataStore.get(RSocketMimeType.Tracing.getType());
+            this.tracingMetadata.load(byteBuf);
+        }
+        return tracingMetadata;
     }
 
 }
