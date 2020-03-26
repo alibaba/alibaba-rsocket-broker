@@ -34,11 +34,16 @@ public class RSocketEndpoint {
     private RSocketRequesterSupport rsocketRequesterSupport;
     private UpstreamManager upstreamManager;
     private Integer rsocketServiceStatus = AppStatusEvent.STATUS_SERVING;
+    private boolean serviceProvider = false;
 
     public RSocketEndpoint(RSocketProperties properties, UpstreamManager upstreamManager, RSocketRequesterSupport rsocketRequesterSupport) {
         this.properties = properties;
         this.upstreamManager = upstreamManager;
         this.rsocketRequesterSupport = rsocketRequesterSupport;
+        Set<ServiceLocator> exposedServices = rsocketRequesterSupport.exposedServices().get();
+        if (!exposedServices.isEmpty()) {
+            this.serviceProvider = true;
+        }
     }
 
     @ReadOperation
@@ -46,9 +51,8 @@ public class RSocketEndpoint {
         Map<String, Object> info = new HashMap<>();
         info.put("id", RSocketAppContext.ID);
         info.put("serviceStatus", AppStatusEvent.statusText(this.rsocketServiceStatus));
-        Set<ServiceLocator> exposedServices = rsocketRequesterSupport.exposedServices().get();
-        if (!exposedServices.isEmpty()) {
-            info.put("published", exposedServices);
+        if (this.serviceProvider) {
+            info.put("published", rsocketRequesterSupport.exposedServices().get());
         }
         if (!RSocketRemoteServiceBuilder.CONSUMED_SERVICES.isEmpty()) {
             info.put("subscribed", RSocketRemoteServiceBuilder.CONSUMED_SERVICES.stream()
@@ -104,7 +108,6 @@ public class RSocketEndpoint {
         }
     }
 
-
     public Mono<Void> sendAppStatus(Integer status) {
         final CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = CloudEventBuilder.<AppStatusEvent>builder()
                 .withId(UUID.randomUUID().toString())
@@ -117,5 +120,11 @@ public class RSocketEndpoint {
         return Flux.fromIterable(upstreamManager.findAllClusters()).flatMap(upstreamCluster -> upstreamCluster.getLoadBalancedRSocket().fireCloudEventToUpstreamAll(appStatusEventCloudEvent)).then();
     }
 
+    public Integer getRsocketServiceStatus() {
+        return rsocketServiceStatus;
+    }
 
+    public boolean isServiceProvider() {
+        return serviceProvider;
+    }
 }
