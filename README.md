@@ -9,30 +9,30 @@ Alibaba RSocket Broker
 
 Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换系统，为通讯双方构建一个透明稳健的通讯桥梁。
 
-* 反应式: 编程模型、线程模型、异步化、无网络要求等
-* 程控：程序控制，可定制，如扩展支持等
+* 反应式: 编程模型、线程模型、异步化、独特的对等通讯模式可适应各种内部网络环境和跨云需求。
+* 程控：程序控制，可定制和方便的功能扩展，如支持反向的Prometheus Metrics采集、ZipKin RSocket Collector等。
 * 消息：面向消息通讯，路由、过滤、observability都非常简单
-* 交换系统：分布式、异构系统支持
+* 交换系统：完全分布式、异构系统整合简单，无论什么语言开发，部署在哪里。
 * 更多RSocket架构方案，请访问 http://rsocketbyexample.info
 
 ### RSocket Broker工作原理
 RSocket Broker是桥接应用间通讯的双方，相当于一个中间人的角色。
-应用在启动后，和Broker创建一个长连接，在连接创建的时候需要标明自己的身份，如果是服务提供者，需要提交发布的服务信息。
+应用在启动后，和Broker创建一个长连接，在连接创建的时候需要标明自己的身份，如果是服务提供者，会注册自己能提供的服务信息。
 Broker会针对所有的连接和服务列表建立对应的映射关系。
 当一个应用需要调用其他服务时，应用会将请求以消息的方式发给Broker，然后Broker会解析消息的元信息，然后根据路由表将请求转发给服务提供者，然后将处理结果后的消息再转发给调用方。
-Broker完全是异步化的，没有线程池这些概念，而且消息转发都是基于Zero Copy，所以性能非常高，这也是不用担心中心化Broker成为性能瓶颈的主要原因。
+Broker完全是异步化的，你不需要关心线程池这些概念，而且消息转发都是基于Zero Copy，所以性能非常高，这也是为何不用担心中心化Broker成为性能瓶颈的主要原因。
 
 ![RSocket Broker Structure](https://github.com/alibaba/alibaba-rsocket-broker/raw/master/alibaba-rsocket-broker-structure.png)
 
-通过上述的架构图，RSocket Broker解决了传统设计中众多的问题：
+通过上述的架构图，RSocket Broker彻底解决了传统设计中众多的问题：
 
-* 配置推送: 通过RSocket的metadataPush可以完成配置推送
+* 配置推送: 连接已经建立，只需要通过RSocket的metadataPush可以完成配置推送
 * 服务注册和发现：应用和Broker建立连接后，这个长连接就是服务注册和发现，你不需要额外的服务注册中心
 * 透明路由: 应用在调用服务时，不需要知道服务对应的应用信息， Broker会完成路由
-* Service-to-service调用: 就是RSocket的服务之间通讯的4个模型
-* Load balancing: 应用和Broker建立长连接后，负载均衡就非常简单啦。
-* Circuit Breakers: 断路保护，现在调整为Back Pressure支持
-* Distributed messaging: RSocket就是基于消息推送的
+* Service-to-service调用: RSocket提供的4个模型可以很好地解决服务到服务调用的各种复杂需求
+* Load balancing: 所有的应用和Broker建立长连接后，负载均衡在broker中心路由表完成，对应用完全透明。
+* Circuit Breakers: 断路保护，现在调整为Back Pressure支持，更贴近实际业务场景
+* Distributed messaging: RSocket本身就是基于消息推送的，而且是分布式的。
 * 多语言支持: RSocket是一套标准协议，主流语言的SDK都有支持，详情请访问 [RSocket SDK Stack](https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-SDK-Stack)
 
 ### 项目模块
@@ -45,6 +45,7 @@ Broker完全是异步化的，没有线程池这些概念，而且消息转发�
 * alibaba-broker-registry-client-spring-boot-starter: 通过RSocket Broker对外提供服务发现服务
 * alibaba-broker-config-client-spring-boot-starter: 通过RSocket Broker对外提供配置推送服务
 * rsocket-broker-gateway-http: RSocket Broker HTTP网关，将HTTP转换为RSocket协议
+* rsocket-broker-gateway-grpc: RSocket Broker gRPC网关，将gRPC转换为RSocket协议
 
 ### 开发环境要求
 
@@ -80,7 +81,7 @@ $ curl http://localhost:8181/user/2
 样例的详细介绍请访问 [Example](example)
 
 ### RSocket服务编写流程
-包含如何创建一个Reactive服务接口，在Responder端实现该接口，在Requester完成Reactive服务调用。
+包括如何创建一个Reactive服务接口，在Responder端实现该接口，在Requester完成Reactive服务调用，以及通讯双方是如何和Broker交互的。
 
 * 创建一个RSocket服务接口，你可以创建一个单独的Maven Module存放这些接口，如user-service-api，样例代码如下：
 
