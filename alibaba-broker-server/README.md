@@ -1,6 +1,23 @@
 Alibaba RSocket Broker Server
 =============================
-RSocket Broker Server，包含图形化控制台
+RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控制台。
+
+### 日常开发和测试
+
+如果用于日常开发和测试，如果你已经使用Docker的话，你只需要创建一个对应的docker-compose.yml然后启动即可。
+
+```yaml
+version: "3"
+services:
+  alibaba-rsocket-broker:
+    image: linuxchina/alibaba-rsocket-broker:1.0.0.M1
+    ports:
+      - "9997:9997"
+      - "9998:9998"
+      - "9999:9999"
+```
+
+RSocket Broker的控制台地址为 http://localhost:9998/
 
 ### UI
 RSocket Broker控制台默认采用Vaadin 14编写，主要是基于以下考虑：
@@ -28,7 +45,7 @@ RSocket Broker控制台默认采用Vaadin 14编写，主要是基于以下考虑
 
 ### 配置推送
 
-RSocket Broker内置支持配置推送功能，基于KV存储
+RSocket Broker内置支持配置推送功能，配置主要保存在内存中，我们强烈建议你使用适配如Consul, etc等，接下来我们会进行基于git仓库的配置对接。
 
 ### 产品环境下的JWT验证
 
