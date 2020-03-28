@@ -58,7 +58,7 @@ public class ServiceTestingView extends VerticalLayout {
         serviceNameFiled.setWidth("300px");
         this.methodNameField = new TextField("Method Name");
         methodNameField.setWidth("300px");
-        TextArea jsonDataTextArea = new TextArea("Value");
+        TextArea jsonDataTextArea = new TextArea("JSON Data");
         jsonDataTextArea.setWidth("600px");
         jsonDataTextArea.setHeight("200px");
         Pre responsePre = new Pre();
@@ -73,9 +73,9 @@ public class ServiceTestingView extends VerticalLayout {
             if (methodName == null || methodName.isEmpty()) {
                 methodNameField.setErrorMessage("Please input service name");
             }
-            if (jsonData != null && !jsonData.isEmpty()) {
+            if (jsonData != null) {
                 jsonData = jsonData.trim();
-                if (!jsonData.startsWith("[") || !jsonData.startsWith("{")) {
+                if (!jsonData.isEmpty() && !jsonData.startsWith("[")) {
                     jsonData = "[" + jsonData + "]";
                 }
             }
