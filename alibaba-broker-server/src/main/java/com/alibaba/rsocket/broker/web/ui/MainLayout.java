@@ -79,7 +79,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
         logo.setAlt("RSocket Cluster");
         addToNavbar(new DrawerToggle(), logo);
 
-        final Tabs tabs = new Tabs(dashBoard(), apps(), dns(), appConfig(), services(), serviceMesh(), brokers(), filters(), jwt(), system(), faq());
+        final Tabs tabs = new Tabs(dashBoard(), apps(), dns(), appConfig(), services(), serviceTesting(), serviceMesh(), brokers(), filters(), jwt(), system(), faq());
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addSelectedChangeListener(event -> {
             final Tab selectedTab = event.getSelectedTab();
@@ -152,6 +152,14 @@ public class MainLayout extends AppLayout implements DisposableBean {
         final Icon icon = SERVER.create();
         final Tab tab = new Tab(new HorizontalLayout(icon, label));
         tab2Workspace.put(tab, new SystemView());
+        return tab;
+    }
+
+    private Tab serviceTesting() {
+        final Span label = new Span("Service Testing");
+        final Icon icon = TOOLS.create();
+        final Tab tab = new Tab(new HorizontalLayout(icon, label));
+        tab2Workspace.put(tab, new ServiceTestingView(this.handlerRegistry, this.serviceRoutingSelector));
         return tab;
     }
 
