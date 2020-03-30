@@ -221,7 +221,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     }
 
     protected void timeOutMetrics(ReactiveMethodMetadata methodMetadata) {
-        Metrics.counter("timeout.error", methodMetadata.getMetricsTags());
+        Metrics.counter("rsocket.timeout.error", methodMetadata.getMetricsTags());
     }
 
     private RSocketMimeType extractPayloadDataMimeType(RSocketCompositeMetadata compositeMetadata, RSocketMimeType defaultEncodingType) {
