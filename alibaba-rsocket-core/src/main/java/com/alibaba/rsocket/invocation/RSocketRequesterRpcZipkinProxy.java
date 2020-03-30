@@ -36,47 +36,47 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
     }
 
     @NotNull
-    protected Mono<Payload> remoteRequestResponse(ByteBuf compositeMetadata, ByteBuf bodyBuf) {
+    protected Mono<Payload> remoteRequestResponse(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
         return Mono.deferWithContext(context -> {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
                 Span span = tracer.newChild(traceContext);
-                return super.remoteRequestResponse(newCompositeMetadata, bodyBuf)
+                return super.remoteRequestResponse(methodMetadata, newCompositeMetadata, bodyBuf)
                         .doOnError(span::error)
                         .doOnSuccess(payload -> span.finish());
             }
-            return super.remoteRequestResponse(compositeMetadata, bodyBuf);
+            return super.remoteRequestResponse(methodMetadata, compositeMetadata, bodyBuf);
         });
     }
 
     @Override
-    protected Mono<Void> remoteFireAndForget(ByteBuf compositeMetadata, ByteBuf bodyBuf) {
+    protected Mono<Void> remoteFireAndForget(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
         return Mono.deferWithContext(context -> {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
                 Span span = tracer.newChild(traceContext);
-                return super.remoteFireAndForget(newCompositeMetadata, bodyBuf)
+                return super.remoteFireAndForget(methodMetadata, newCompositeMetadata, bodyBuf)
                         .doOnError(span::error)
                         .doOnSuccess(payload -> span.finish());
             }
-            return super.remoteFireAndForget(compositeMetadata, bodyBuf);
+            return super.remoteFireAndForget(methodMetadata, compositeMetadata, bodyBuf);
         });
     }
 
     @Override
-    protected Flux<Payload> remoteRequestStream(ByteBuf compositeMetadata, ByteBuf bodyBuf) {
+    protected Flux<Payload> remoteRequestStream(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
         return Flux.deferWithContext(context -> {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
                 Span span = tracer.newChild(traceContext);
-                return super.remoteRequestStream(newCompositeMetadata, bodyBuf)
+                return super.remoteRequestStream(methodMetadata, newCompositeMetadata, bodyBuf)
                         .doOnError(span::error)
                         .doOnComplete(span::finish);
             }
-            return super.remoteRequestStream(compositeMetadata, bodyBuf);
+            return super.remoteRequestStream(methodMetadata, compositeMetadata, bodyBuf);
         });
     }
 
