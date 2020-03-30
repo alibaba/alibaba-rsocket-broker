@@ -209,10 +209,12 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     @NotNull
     protected Mono<Payload> remoteRequestResponse(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
         return rsocket.requestResponse(ByteBufPayload.create(bodyBuf, compositeMetadata))
+                .name(methodMetadata.getFullName())
+                .metrics()
                 .timeout(timeout)
                 .doOnError(TimeoutException.class, e -> {
                     timeOutMetrics(methodMetadata);
-                    log.error(RsocketErrorCode.message("RST-200503", methodMetadata.getService() + "." + methodMetadata.getName(), timeout));
+                    log.error(RsocketErrorCode.message("RST-200503", methodMetadata.getFullName(), timeout));
                 });
     }
 
