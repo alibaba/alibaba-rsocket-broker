@@ -382,6 +382,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
             }
             Payload payload = requesterSupport.setupPayload().get();
             return clientRSocketFactory
+                    .singleSubscriberRequester()
                     .keepAliveMissedAcks(12)
                     .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
