@@ -40,6 +40,10 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
      */
     private String name;
     /**
+     * full name, service and name
+     */
+    private String fullName;
+    /**
      * service group
      */
     private String group;
@@ -96,6 +100,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         super(method);
         this.service = service;
         this.name = method.getName();
+        this.fullName = this.service + "." + this.name;
         this.group = group;
         this.version = version;
         this.endpoint = endpoint;
@@ -201,6 +206,10 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         // convert composite bytebuf to bytebuf for performance
         this.compositeMetadataByteBuf = Unpooled.copiedBuffer(compositeMetadataContent);
         ReferenceCountUtil.safeRelease(compositeMetadataContent);
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     public String getService() {
