@@ -43,6 +43,9 @@ GET http://localhost:8181/channel1
 ### Channel2 with param & Flux
 GET http://localhost:8181/channel2
 
+### channel with Mono return
+GET http://localhost:8181/monoChannel
+
 ### save user
 POST http://localhost:8181/user/save
 Content-Type: application/json
