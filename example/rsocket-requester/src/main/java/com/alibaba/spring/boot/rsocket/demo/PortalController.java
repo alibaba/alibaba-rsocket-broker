@@ -51,6 +51,11 @@ public class PortalController {
         return userService.recentWithType("VIP", userIdFlux);
     }
 
+    @RequestMapping("/monoChannel")
+    public Mono<Integer> monoChannel() {
+        return userService.postFeeds(Flux.just("one", "two", "three"));
+    }
+
     @RequestMapping("/")
     public String index() {
         return "This is RSocket Requester App!";
