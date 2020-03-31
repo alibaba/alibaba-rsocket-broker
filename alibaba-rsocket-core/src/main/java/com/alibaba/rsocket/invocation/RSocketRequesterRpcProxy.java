@@ -148,7 +148,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                         methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate());
             });
             Flux<Payload> payloads = rsocket.requestChannel(payloadFlux);
-            return payloads.concatMap(payload -> {
+            Flux<Object> fluxReturn = payloads.concatMap(payload -> {
                 try {
                     RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
                     return Mono.justOrEmpty(encodingFacade.decodeResult(extractPayloadDataMimeType(compositeMetadata, encodingType), payload.data(), methodMetadata.getInferredClassForReturn()));
@@ -156,6 +156,11 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                     return Flux.error(e);
                 }
             }).subscriberContext(mutableContext::putAll);
+            if (methodMetadata.isMonoChannel()) {
+                return fluxReturn.last();
+            } else {
+                return fluxReturn;
+            }
         } else {
             //body content
             ByteBuf bodyBuffer = encodingFacade.encodingParams(args, methodMetadata.getParamEncoding());

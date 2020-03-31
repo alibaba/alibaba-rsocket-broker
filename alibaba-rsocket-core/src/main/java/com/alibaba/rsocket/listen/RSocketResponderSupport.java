@@ -85,7 +85,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                     } catch (Exception e) {
                         log.error(RsocketErrorCode.message("RST-200500"), e);
                         sink.error(e);
-                    } 
+                    }
                 });
             }
         } else {
@@ -130,6 +130,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
         return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
     }
 
+    @SuppressWarnings("ReactiveStreamsNullableInLambdaInTransform")
     public Flux<Payload> localRequestChannel(GSVRoutingMetadata routing,
                                              MessageMimeTypeMetadata dataEncodingMetadata,
                                              @Nullable MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata,
@@ -152,10 +153,13 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                             });
                     result = methodHandler.invoke(paramFirst, paramFlux);
                 }
+                if (result instanceof Mono) {
+                    result = Flux.from((Mono<?>) result);
+                }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
                 //result return
-                return ((Flux<Object>) result)
+                return ((Flux<?>) result)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
                         .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()));
             } else {
