@@ -124,12 +124,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
             return Flux.error(new InvalidException(RsocketErrorCode.message("RST-900500", e.getMessage())));
         }
     }
-
-    @Override
-    public final Flux<Payload> requestChannel(Publisher<Payload> payloads) {
-        return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
-    }
-
+    
     @SuppressWarnings("ReactiveStreamsNullableInLambdaInTransform")
     public Flux<Payload> localRequestChannel(GSVRoutingMetadata routing,
                                              MessageMimeTypeMetadata dataEncodingMetadata,
