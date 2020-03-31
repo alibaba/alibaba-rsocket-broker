@@ -153,7 +153,21 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             ReferenceCountUtil.safeRelease(signal);
             return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
         }
-        return localRequestChannel(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), signal, Flux.from(payloads).skip(1));
+        if (payloads instanceof Flux) {
+            return localRequestChannel(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), signal, ((Flux<Payload>) payloads).skip(1));
+        } else {
+            return localRequestChannel(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), signal, Flux.from(payloads).skip(1));
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public final Flux<Payload> requestChannel(Publisher<Payload> payloads) {
+        if (payloads instanceof Flux) {
+            Flux<Payload> payloadsWithSignalRouting = (Flux<Payload>) payloads;
+            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux.skip(1)));
+        }
+        return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
     }
 
     /**
