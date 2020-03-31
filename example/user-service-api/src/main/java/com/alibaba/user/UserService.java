@@ -7,7 +7,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.cache.annotation.CacheResult;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -98,6 +97,14 @@ public interface UserService {
      * @return user
      */
     Flux<User> recent(Flux<Integer> userIdFlux);
+
+    /**
+     * channel but with Mono return
+     *
+     * @param feeds feeds
+     * @return feeds count
+     */
+    Mono<Integer> postFeeds(Flux<String> feeds);
 
     Flux<User> recentWithType(String type, Flux<Integer> userIdFlux);
 
