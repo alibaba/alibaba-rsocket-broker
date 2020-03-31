@@ -91,6 +91,10 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
      * reactive adapter for RxJava2 & RxJava3 etc
      */
     private ReactiveAdapter reactiveAdapter;
+    /**
+     * channel with Mono return type
+     */
+    private boolean monoChannel = false;
 
     public ReactiveMethodMetadata(String group, String service, String version,
                                   Method method,
@@ -128,6 +132,11 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
         } else if (paramCount == 2 && method.getParameterTypes()[1].equals(Flux.class)) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
+        }
+        if (rsocketFrameType != null && rsocketFrameType == FrameType.REQUEST_CHANNEL) {
+            if (method.getReturnType().isAssignableFrom(Mono.class)) {
+                this.monoChannel = true;
+            }
         }
         if (this.rsocketFrameType == null) {
             assert inferredClassForReturn != null;
@@ -234,6 +243,10 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
 
     public FrameType getRsocketFrameType() {
         return rsocketFrameType;
+    }
+
+    public boolean isMonoChannel() {
+        return monoChannel;
     }
 
     public Class<?> getInferredClassForReturn() {
