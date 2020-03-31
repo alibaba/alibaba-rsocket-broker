@@ -95,6 +95,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Mono<Integer> postFeeds(Flux<String> feeds) {
+        return feeds
+                .doOnNext(feed -> System.out.println("Received: " + feed))
+                .reduce(0, (counter, feed) -> counter + 1);
+    }
+
+    @Override
     public Flux<User> recentWithType(String type, Flux<Integer> userIdFlux) {
         return userIdFlux
                 .map(id -> new User(id, type + ":" + id));
