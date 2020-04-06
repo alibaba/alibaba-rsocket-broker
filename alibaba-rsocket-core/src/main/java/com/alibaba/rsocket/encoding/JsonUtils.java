@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Json utils
+ * Json utils with CloudEvents support
  *
  * @author leijuan
  */
