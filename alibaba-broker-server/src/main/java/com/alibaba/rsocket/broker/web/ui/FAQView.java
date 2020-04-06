@@ -24,10 +24,9 @@ public class FAQView extends VerticalLayout {
         add(new H1("FAQ"));
         Accordion accordion = new Accordion();
         accordion.add("RSocket Broker是如何控制服务调用的？", new Paragraph("RSocket Broker采用org和Service Account来控制服务调用，只有相同org和service account才能相互访问，如果不是则需要进行ACL访问授权！"));
-        accordion.add("RSocket Broker的集群是如何管理？", new Paragraph("目前使用VIPServer进行集群管理"));
+        accordion.add("RSocket Broker的集群是如何管理？", new Paragraph("目前主要是基于Gossip进行集群管理"));
         accordion.add("RSocket Broker支持DNS吗？", new Paragraph("RSocket支持DNS-over-HTTP和DNS-over-RSocket，OkHttp3默认支持！"));
-        accordion.add("RSocket Broker出问题怎么办？", new Paragraph("内网找雷卷！"));
-        accordion.add("RSocket的文章有哪些？", new Div(new Paragraph("ATA上搜索RSocket!"), new Anchor("https://www.atatech.org/search?type=ALL&q=RSocket", "https://www.atatech.org/search?type=ALL&q=RSocket")));
+        accordion.add("RSocket的相关资料有吗？", new Paragraph("请访问 http://rsocketbyexample.info 和 https://github.com/alibaba/alibaba-rsocket-broker/wiki"));
         add(accordion);
     }
 
