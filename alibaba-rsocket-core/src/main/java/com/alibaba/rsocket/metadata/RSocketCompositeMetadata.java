@@ -99,6 +99,7 @@ public class RSocketCompositeMetadata implements MetadataAware {
         return metadataStore.containsKey(mimeType.getType());
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public RSocketCompositeMetadata addMetadata(MetadataAware metadataSupport) {
         metadataStore.put(metadataSupport.getMimeType(), metadataSupport.getContent());
         return this;
