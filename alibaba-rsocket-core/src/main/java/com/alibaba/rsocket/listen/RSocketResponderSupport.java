@@ -14,7 +14,6 @@ import io.rsocket.Payload;
 import io.rsocket.exceptions.InvalidException;
 import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.Nullable;
-import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -41,7 +40,18 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 if (methodHandler.isAsyncReturn()) {
                     result = invokeLocalService(methodHandler, dataEncodingMetadata, payload);
                 } else {
-                    result = Mono.fromCallable(() -> invokeLocalService(methodHandler, dataEncodingMetadata, payload));
+                    result = Mono.create((sink) -> {
+                        try {
+                            Object resultObj = invokeLocalService(methodHandler, dataEncodingMetadata, payload);
+                            if (resultObj == null) {
+                                sink.success();
+                            } else {
+                                sink.success(resultObj);
+                            }
+                        } catch (Exception e) {
+                            sink.error(e);
+                        }
+                    });
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
@@ -124,7 +134,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
             return Flux.error(new InvalidException(RsocketErrorCode.message("RST-900500", e.getMessage())));
         }
     }
-    
+
     @SuppressWarnings("ReactiveStreamsNullableInLambdaInTransform")
     public Flux<Payload> localRequestChannel(GSVRoutingMetadata routing,
                                              MessageMimeTypeMetadata dataEncodingMetadata,
