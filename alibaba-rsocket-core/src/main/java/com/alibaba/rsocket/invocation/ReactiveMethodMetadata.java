@@ -253,21 +253,12 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         return inferredClassForReturn;
     }
 
-
     public RSocketMimeType getParamEncoding() {
         return paramEncoding;
     }
 
-    public void setParamEncoding(RSocketMimeType paramEncoding) {
-        this.paramEncoding = paramEncoding;
-    }
-
     public RSocketMimeType[] getAcceptEncodingTypes() {
         return acceptEncodingTypes;
-    }
-
-    public void setAcceptEncodingTypes(RSocketMimeType[] acceptEncodingTypes) {
-        this.acceptEncodingTypes = acceptEncodingTypes;
     }
 
     public RSocketCompositeMetadata getCompositeMetadata() {
