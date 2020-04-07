@@ -28,7 +28,6 @@ public class ObjectEncodingHandlerTextImpl implements ObjectEncodingHandler {
         if (isArrayEmpty(args)) {
             return EMPTY_BUFFER;
         }
-        //noinspection ConstantConditions
         return Unpooled.wrappedBuffer(stringToBytes(args[0]));
     }
 

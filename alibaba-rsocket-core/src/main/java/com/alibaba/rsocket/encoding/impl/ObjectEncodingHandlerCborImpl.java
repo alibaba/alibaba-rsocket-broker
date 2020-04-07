@@ -40,7 +40,6 @@ public class ObjectEncodingHandlerCborImpl implements ObjectEncodingHandler {
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         try {
             ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
-            //noinspection ConstantConditions
             objectMapper.writeValue((OutputStream) bos, args[0]);
             return byteBuf;
         } catch (Exception e) {

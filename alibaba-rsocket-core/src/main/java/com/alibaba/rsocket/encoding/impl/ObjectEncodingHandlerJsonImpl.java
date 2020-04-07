@@ -48,7 +48,6 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
         if (data.readableBytes() > 0 && !isArrayEmpty(targetClasses)) {
             try {
-                //noinspection ConstantConditions
                 return JsonUtils.readJsonArray(data, targetClasses);
             } catch (Exception e) {
                 throw new EncodingException(RsocketErrorCode.message("RST-700501", "bytebuf", Arrays.toString(targetClasses)), e);
