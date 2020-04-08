@@ -30,7 +30,8 @@ import java.util.List;
  */
 public class ReactiveMethodMetadata extends ReactiveMethodSupport {
     public static final List<String> STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
-            "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux");
+            "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux",
+            "kotlinx.coroutines.flow.Flow");
     /**
      * service full name, format as com.alibaba.user.UserService
      */
