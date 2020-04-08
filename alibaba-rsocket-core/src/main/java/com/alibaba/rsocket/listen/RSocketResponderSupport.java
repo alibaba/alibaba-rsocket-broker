@@ -13,6 +13,8 @@ import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.exceptions.InvalidException;
 import io.rsocket.util.ByteBufPayload;
+import kotlin.coroutines.EmptyCoroutineContext;
+import kotlinx.coroutines.reactor.MonoKt;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,9 +194,37 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
         if (methodHandler.getParamCount() > 0) {
             Object args = encodingFacade.decodeParams(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getParameterTypes());
             if (args instanceof Object[]) {
-                result = methodHandler.invoke((Object[]) args);
+                Object[] fullArguments = (Object[]) args;
+                //kotlin suspend method
+                if (methodHandler.isKotlinSuspend()) {
+                    result = MonoKt.mono(EmptyCoroutineContext.INSTANCE,
+                            (coroutineScope, continuation) -> {
+                                Object[] argsWithContinuation = new Object[fullArguments.length];
+                                System.arraycopy(fullArguments, 0, argsWithContinuation, 0, fullArguments.length);
+                                argsWithContinuation[argsWithContinuation.length - 1] = continuation;
+                                try {
+                                    return methodHandler.invoke(argsWithContinuation);
+                                } catch (Exception e) {
+                                    return 0;
+                                }
+                            });
+                } else {
+                    result = methodHandler.invoke(fullArguments);
+                }
             } else {
-                result = methodHandler.invoke(args);
+                //kotlin suspend method
+                if (methodHandler.isKotlinSuspend()) {
+                    result = MonoKt.mono(EmptyCoroutineContext.INSTANCE,
+                            (coroutineScope, continuation) -> {
+                                try {
+                                    return methodHandler.invoke(args, continuation);
+                                } catch (Exception e) {
+                                    return 0;
+                                }
+                            });
+                } else {
+                    result = methodHandler.invoke(args);
+                }
             }
         } else {
             result = methodHandler.invoke();
