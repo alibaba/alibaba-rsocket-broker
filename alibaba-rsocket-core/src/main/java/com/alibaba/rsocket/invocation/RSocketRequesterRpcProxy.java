@@ -15,6 +15,7 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.frame.FrameType;
 import io.rsocket.util.ByteBufPayload;
+import kotlin.coroutines.Continuation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
@@ -33,6 +34,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -117,17 +119,18 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     @Override
     @RuntimeType
-    public Object invoke(@This Object proxy, @Origin Method method, @AllArguments Object[] args) throws Throwable {
-        //interface default method validation for JDK Proxy only, not necessary for ByteBuddy
-        /*if (method.isDefault()) {
-            return getMethodHandle(method, serviceInterface).bindTo(proxy).invokeWithArguments(args);
-        }*/
+    public Object invoke(@This Object proxy, @Origin Method method, @AllArguments Object[] allArguments) throws Throwable {
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
                     method, encodingType, this.acceptEncodingTypes, endpoint));
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
+        Object[] args = allArguments;
+        if (methodMetadata.isKotlinSuspend()) {
+            args = Arrays.copyOfRange(args, 0, args.length - 1);
+            mutableContext.put(Continuation.class, allArguments[allArguments.length - 1]);
+        }
         //----- return type deal------
         if (methodMetadata.getRsocketFrameType() == FrameType.REQUEST_CHANNEL) {
             metrics(methodMetadata);
