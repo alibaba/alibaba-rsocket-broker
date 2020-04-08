@@ -29,15 +29,24 @@ public class ReactiveMethodSupport {
      * inferred class for return type
      */
     protected Class<?> inferredClassForReturn;
+    /**
+     * kotlin suspend method(coroutines)
+     */
+    private boolean kotlinSuspend = false;
 
     public ReactiveMethodSupport(Method method) {
         this.method = method;
         this.paramCount = method.getParameterCount();
         //result type with generic type
         this.returnType = method.getReturnType();
-        Type genericReturnType = method.getGenericReturnType();
-        if (genericReturnType != null) {
-            this.inferredClassForReturn = parseInferredClass(genericReturnType);
+        this.inferredClassForReturn = parseInferredClass(method.getGenericReturnType());
+        //kotlin validation
+        if (paramCount > 0) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            Class<?> lastParamType = parameterTypes[paramCount - 1];
+            if (lastParamType.getName().equals("kotlin.coroutines.Continuation")) {
+                this.kotlinSuspend = true;
+            }
         }
     }
 
@@ -47,6 +56,10 @@ public class ReactiveMethodSupport {
 
     public Class<?> getReturnType() {
         return returnType;
+    }
+
+    public boolean isKotlinSuspend() {
+        return kotlinSuspend;
     }
 
     /**
