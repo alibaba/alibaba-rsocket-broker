@@ -29,6 +29,8 @@ public interface ReactiveAdapter {
             return ReactiveAdapterRxJava3.getInstance();
         } else if (returnTypeName.startsWith("io.reactivex.")) {
             return ReactiveAdapterRxJava2.getInstance();
+        } else if (returnTypeName.startsWith("kotlinx.coroutines")) {
+            return ReactiveAdapterKotlin.getInstance();
         } else {
             return ReactiveAdapterDefault.getInstance();
         }
