@@ -33,6 +33,11 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave</artifactId>
+            <optional>true</optional>
+        </dependency>
         <!--unit test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
