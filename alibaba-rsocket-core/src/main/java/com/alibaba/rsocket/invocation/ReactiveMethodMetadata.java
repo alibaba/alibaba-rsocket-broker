@@ -4,6 +4,7 @@ import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.reactive.ReactiveAdapter;
+import com.alibaba.rsocket.reactive.ReactiveAdapterKotlin;
 import com.alibaba.rsocket.reactive.ReactiveMethodSupport;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import io.micrometer.core.instrument.Tag;
@@ -88,13 +89,6 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
      * metrics tags
      */
     private List<Tag> metricsTags = new ArrayList<>();
-    /**
-     * reactive adapter for RxJava2 & RxJava3 etc
-     */
-    private ReactiveAdapter reactiveAdapter;
-    /**
-     * channel with Mono return type
-     */
     private boolean monoChannel = false;
 
     public ReactiveMethodMetadata(String group, String service, String version,
@@ -150,8 +144,6 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
                 this.rsocketFrameType = FrameType.REQUEST_RESPONSE;
             }
         }
-        //reactive adapter for return type
-        this.reactiveAdapter = ReactiveAdapter.findAdapter(returnType.getCanonicalName());
         //metrics tags for micrometer
         if (this.group != null && !this.group.isEmpty()) {
             metricsTags.add(Tag.of("group", this.group));
@@ -228,10 +220,6 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
 
     public void setService(String service) {
         this.service = service;
-    }
-
-    public ReactiveAdapter getReactiveAdapter() {
-        return reactiveAdapter;
     }
 
     public String getName() {

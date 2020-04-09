@@ -32,7 +32,11 @@ public class ReactiveMethodSupport {
     /**
      * kotlin suspend method(coroutines)
      */
-    private boolean kotlinSuspend = false;
+    protected boolean kotlinSuspend = false;
+    /**
+     * reactive adapter for RxJava2 & RxJava3 etc
+     */
+    protected ReactiveAdapter reactiveAdapter;
 
     public ReactiveMethodSupport(Method method) {
         this.method = method;
@@ -48,6 +52,12 @@ public class ReactiveMethodSupport {
                 this.kotlinSuspend = true;
             }
         }
+        //reactive adapter for return type
+        if (this.isKotlinSuspend()) {
+            this.reactiveAdapter = ReactiveAdapterKotlin.getInstance();
+        } else {
+            this.reactiveAdapter = ReactiveAdapter.findAdapter(returnType.getCanonicalName());
+        }
     }
 
     public int getParamCount() {
@@ -60,6 +70,10 @@ public class ReactiveMethodSupport {
 
     public boolean isKotlinSuspend() {
         return kotlinSuspend;
+    }
+
+    public ReactiveAdapter getReactiveAdapter() {
+        return reactiveAdapter;
     }
 
     /**
