@@ -25,14 +25,18 @@ public class ReactiveMethodHandler extends ReactiveMethodSupport {
         this.handler = handler;
         this.method = method;
         this.method.setAccessible(true);
-        if (REACTIVE_STREAM_CLASSES.contains(this.returnType.getCanonicalName())) {
+        if (kotlinSuspend || REACTIVE_STREAM_CLASSES.contains(this.returnType.getCanonicalName())) {
             this.asyncReturn = true;
         }
         this.binaryReturn = this.inferredClassForReturn != null && BINARY_CLASS_LIST.contains(this.inferredClassForReturn);
     }
 
     public Object invoke(Object... args) throws Exception {
-        return method.invoke(this.handler, args);
+        if (kotlinSuspend) {
+            return CoroutinesKt.suspendCallToMono(handler, method, args);
+        } else {
+            return method.invoke(this.handler, args);
+        }
     }
 
     public Class<?>[] getParameterTypes() {
