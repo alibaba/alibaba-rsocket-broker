@@ -1,5 +1,7 @@
 package com.alibaba.rsocket.rpc;
 
+import brave.Span;
+import brave.Tracer;
 import brave.propagation.TraceContext;
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
@@ -45,6 +47,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     private Mono<Void> comboOnClose;
     protected TopicProcessor<CloudEventImpl> eventProcessor;
     private boolean braveTracing = true;
+    private Tracer tracer;
 
     public RSocketResponderHandler(LocalReactiveServiceCaller serviceCall,
                                    TopicProcessor<CloudEventImpl> eventProcessor,
@@ -71,6 +74,10 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         } catch (ClassNotFoundException e) {
             this.braveTracing = false;
         }
+    }
+
+    public void setTracer(Tracer tracer) {
+        this.tracer = tracer;
     }
 
     @Override
@@ -241,22 +248,30 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     }
 
     <T> Mono<T> injectTraceContext(Mono<T> payloadMono, RSocketCompositeMetadata compositeMetadata) {
-        if (this.braveTracing) {
+        if (this.braveTracing && this.tracer != null) {
             TracingMetadata tracingMetadata = compositeMetadata.getTracingMetadata();
             if (tracingMetadata != null) {
                 TraceContext traceContext = constructTraceContext(tracingMetadata);
-                return payloadMono.subscriberContext(Context.of(TraceContext.class, traceContext));
+                Span span = tracer.newChild(traceContext);
+                return payloadMono
+                        .doOnError(span::error)
+                        .doOnSuccess(payload -> span.finish())
+                        .subscriberContext(Context.of(TraceContext.class, traceContext));
             }
         }
         return payloadMono;
     }
 
     Flux<Payload> injectTraceContext(Flux<Payload> payloadFlux, RSocketCompositeMetadata compositeMetadata) {
-        if (this.braveTracing) {
+        if (this.braveTracing && this.tracer != null) {
             TracingMetadata tracingMetadata = compositeMetadata.getTracingMetadata();
             if (tracingMetadata != null) {
                 TraceContext traceContext = constructTraceContext(tracingMetadata);
-                return payloadFlux.subscriberContext(Context.of(TraceContext.class, traceContext));
+                Span span = tracer.newChild(traceContext);
+                return payloadFlux
+                        .doOnError(span::error)
+                        .doOnComplete(span::finish)
+                        .subscriberContext(Context.of(TraceContext.class, traceContext));
             }
         }
         return payloadFlux;
