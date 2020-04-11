@@ -162,7 +162,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             if (methodMetadata.isMonoChannel()) {
                 return fluxReturn.last();
             } else {
-                return fluxReturn;
+                return methodMetadata.getReactiveAdapter().fromPublisher(fluxReturn, method.getReturnType());
             }
         } else {
             //body content
