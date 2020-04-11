@@ -149,17 +149,21 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                             .map(payload -> {
                                 return encodingFacade.decodeResult(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getInferredClassForParameter(0));
                             });
-                    result = methodHandler.invoke(paramFlux);
+                    Object lastParam = methodHandler.getReactiveAdapter().fromPublisher(paramFlux, methodHandler.getLastParamType());
+                    result = methodHandler.invoke(lastParam);
                 } else {
                     Object paramFirst = encodingFacade.decodeResult(dataEncodingMetadata.getRSocketMimeType(), signal.data(), methodHandler.getParameterTypes()[0]);
                     Flux<Object> paramFlux = payloads
                             .map(payload -> {
                                 return encodingFacade.decodeResult(dataEncodingMetadata.getRSocketMimeType(), payload.data(), methodHandler.getInferredClassForParameter(1));
                             });
-                    result = methodHandler.invoke(paramFirst, paramFlux);
+                    Object lastParam = methodHandler.getReactiveAdapter().fromPublisher(paramFlux, methodHandler.getLastParamType());
+                    result = methodHandler.invoke(paramFirst, lastParam);
                 }
                 if (result instanceof Mono) {
                     result = Flux.from((Mono<?>) result);
+                }  else {
+                    result = methodHandler.getReactiveAdapter().toFlux(result);
                 }
                 //composite data for return value
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
