@@ -28,6 +28,12 @@ GET http://localhost:8181/rx/user/2
 ### get user info with rx api
 GET http://localhost:8181/rx3/user/2
 
+### get user info with rx api
+GET http://localhost:8181/rx3/allPeople
+
+### get user info with rx api
+GET http://localhost:8181/rx3/channel1
+
 ### get all user
 GET http://localhost:8181/users
 
