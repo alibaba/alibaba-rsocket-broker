@@ -236,10 +236,6 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         return monoChannel;
     }
 
-    public Class<?> getInferredClassForReturn() {
-        return inferredClassForReturn;
-    }
-
     public RSocketMimeType getParamEncoding() {
         return paramEncoding;
     }
