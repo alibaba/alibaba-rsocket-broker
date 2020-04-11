@@ -3,8 +3,6 @@ package com.alibaba.rsocket.invocation;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.*;
-import com.alibaba.rsocket.reactive.ReactiveAdapter;
-import com.alibaba.rsocket.reactive.ReactiveAdapterKotlin;
 import com.alibaba.rsocket.reactive.ReactiveMethodSupport;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import io.micrometer.core.instrument.Tag;
@@ -123,9 +121,9 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         //init composite metadata for invocation
         initCompositeMetadata();
         //bi direction check: param's type is Flux for 1st param or 2nd param
-        if (paramCount == 1 && method.getParameterTypes()[0].equals(Flux.class)) {
+        if (paramCount == 1 && STREAM_CLASSES.contains(method.getParameterTypes()[0].getCanonicalName())) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
-        } else if (paramCount == 2 && method.getParameterTypes()[1].equals(Flux.class)) {
+        } else if (paramCount == 2 && STREAM_CLASSES.contains(method.getParameterTypes()[1].getCanonicalName())) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
         }
         if (rsocketFrameType != null && rsocketFrameType == FrameType.REQUEST_CHANNEL) {
