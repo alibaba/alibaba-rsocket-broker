@@ -32,6 +32,7 @@ public class ReactiveMethodSupport {
     /**
      * kotlin suspend method(coroutines)
      */
+    protected Class<?> lastParamType;
     protected boolean kotlinSuspend = false;
     /**
      * reactive adapter for RxJava2 & RxJava3 etc
@@ -54,6 +55,7 @@ public class ReactiveMethodSupport {
                     this.inferredClassForReturn = Void.TYPE;
                 }
             }
+            this.lastParamType = method.getParameterTypes()[paramCount - 1];
         }
         //reactive adapter for return type
         if (this.isKotlinSuspend()) {
@@ -69,6 +71,14 @@ public class ReactiveMethodSupport {
 
     public Class<?> getReturnType() {
         return returnType;
+    }
+
+    public Class<?> getInferredClassForReturn() {
+        return inferredClassForReturn;
+    }
+
+    public Class<?> getLastParamType() {
+        return lastParamType;
     }
 
     public boolean isKotlinSuspend() {
