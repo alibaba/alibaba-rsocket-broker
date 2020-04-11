@@ -21,6 +21,8 @@ public interface ReactiveAdapter {
 
     Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext);
 
+    Object fromPublisher(Flux<?> flux, Class<?> returnType);
+
     @NotNull
     static ReactiveAdapter findAdapter(String returnTypeName) {
         if (returnTypeName.equals("java.util.concurrent.CompletableFuture")) {

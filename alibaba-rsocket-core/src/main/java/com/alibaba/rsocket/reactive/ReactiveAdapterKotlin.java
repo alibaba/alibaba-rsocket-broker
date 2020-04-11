@@ -43,4 +43,9 @@ public class ReactiveAdapterKotlin implements ReactiveAdapter {
     public Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext) {
         return ReactiveFlowKt.asFlow(flux);
     }
+
+    @Override
+    public Object fromPublisher(Flux<?> flux, Class<?> returnType) {
+        return ReactiveFlowKt.asFlow(flux);
+    }
 }

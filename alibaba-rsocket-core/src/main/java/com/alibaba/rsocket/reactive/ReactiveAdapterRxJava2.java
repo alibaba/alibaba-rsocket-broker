@@ -61,6 +61,11 @@ public class ReactiveAdapterRxJava2 implements ReactiveAdapter {
 
     @Override
     public Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext) {
+        return fromPublisher(flux, returnType);
+    }
+
+    @Override
+    public Object fromPublisher(Flux<?> flux, Class<?> returnType) {
         if (returnType.equals(Flowable.class)) {
             return RxJava2Adapter.fluxToFlowable(flux);
         } else if (returnType.equals(Observable.class)) {
