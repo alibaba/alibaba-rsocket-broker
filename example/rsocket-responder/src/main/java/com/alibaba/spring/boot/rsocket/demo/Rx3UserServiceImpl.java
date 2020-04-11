@@ -6,6 +6,7 @@ import com.alibaba.user.User;
 import com.github.javafaker.Faker;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,5 +35,10 @@ public class Rx3UserServiceImpl implements Rx3UserService {
     public Flowable<User> findAllPeople(String type) {
         return Flowable.range(0, 10)
                 .map(id -> new User(id, "nick:" + type));
+    }
+
+    @Override
+    public Observable<User> channel1(Observable<Integer> idFlux) {
+        return idFlux.map(id -> new User(id, "nick: " + id));
     }
 }
