@@ -3,6 +3,7 @@ package com.alibaba.user;
 
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 
 /**
  * user reactive service with RxJava3 API
@@ -26,5 +27,7 @@ public interface Rx3UserService {
      * @return user stream
      */
     Flowable<User> findAllPeople(String type);
+
+    Observable<User> channel1(Observable<Integer> idFlux);
 
 }
