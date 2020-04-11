@@ -6,6 +6,7 @@ import com.alibaba.user.User;
 import com.github.javafaker.Faker;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +81,7 @@ public class RxUserServiceImpl implements RxUserService {
     }
 
     @Override
-    public Flowable<User> recent(Flowable<Date> point) {
-        return null;
+    public Observable<User> recent(Observable<Date> point) {
+        return Observable.just(new User(1, "first"), new User(2, "second"));
     }
 }

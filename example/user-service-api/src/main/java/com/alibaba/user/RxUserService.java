@@ -2,6 +2,7 @@ package com.alibaba.user;
 
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 import java.util.Date;
@@ -81,6 +82,6 @@ public interface RxUserService {
      * @param point point
      * @return user
      */
-    Flowable<User> recent(Flowable<Date> point);
+    Observable<User> recent(Observable<Date> point);
 
 }
