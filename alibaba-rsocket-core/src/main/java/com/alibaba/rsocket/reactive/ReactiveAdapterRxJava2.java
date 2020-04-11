@@ -36,7 +36,7 @@ public class ReactiveAdapterRxJava2 implements ReactiveAdapter {
     @Override
     public <T> Flux<T> toFlux(@Nullable Object source) {
         if (source instanceof Observable) {
-            return (Flux<T>) RxJava2Adapter.observableToFlux((Observable) source, BackpressureStrategy.DROP);
+            return (Flux<T>) RxJava2Adapter.observableToFlux((Observable) source, BackpressureStrategy.BUFFER);
         } else if (source instanceof Flowable) {
             return (Flux<T>) RxJava2Adapter.flowableToFlux((Flowable) source);
         } else if (source == null) {

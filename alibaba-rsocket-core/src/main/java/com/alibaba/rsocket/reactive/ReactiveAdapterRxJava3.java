@@ -36,7 +36,7 @@ public class ReactiveAdapterRxJava3 implements ReactiveAdapter {
     @Override
     public <T> Flux<T> toFlux(@Nullable Object source) {
         if (source instanceof Observable) {
-            return (Flux<T>) RxJava3Adapter.observableToFlux((Observable) source, BackpressureStrategy.DROP);
+            return (Flux<T>) RxJava3Adapter.observableToFlux((Observable) source, BackpressureStrategy.BUFFER);
         } else if (source instanceof Flowable) {
             return (Flux<T>) RxJava3Adapter.flowableToFlux((Flowable) source);
         } else if (source == null) {
