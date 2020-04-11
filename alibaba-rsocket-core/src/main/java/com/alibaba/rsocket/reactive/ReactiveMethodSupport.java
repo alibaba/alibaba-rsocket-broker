@@ -46,10 +46,13 @@ public class ReactiveMethodSupport {
         this.inferredClassForReturn = parseInferredClass(method.getGenericReturnType());
         //kotlin validation
         if (paramCount > 0) {
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            Class<?> lastParamType = parameterTypes[paramCount - 1];
-            if (lastParamType.getName().equals("kotlin.coroutines.Continuation")) {
+            Type[] parameterTypes = method.getGenericParameterTypes();
+            Type lastParamType = parameterTypes[paramCount - 1];
+            if (lastParamType.getTypeName().startsWith("kotlin.coroutines.Continuation<")) {
                 this.kotlinSuspend = true;
+                if (lastParamType.getTypeName().contains("kotlin.Unit>")) {
+                    this.inferredClassForReturn = Void.TYPE;
+                }
             }
         }
         //reactive adapter for return type
