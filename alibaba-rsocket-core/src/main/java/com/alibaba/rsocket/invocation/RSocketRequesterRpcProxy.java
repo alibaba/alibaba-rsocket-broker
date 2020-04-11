@@ -139,11 +139,11 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             //1 param or 2 params
             if (args.length == 1) {
                 routePayload = ByteBufPayload.create(Unpooled.EMPTY_BUFFER, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate());
-                source = (Flux<Object>) args[0];
+                source = methodMetadata.getReactiveAdapter().toFlux(args[0]);
             } else {
                 ByteBuf bodyBuffer = encodingFacade.encodingResult(args[0], methodMetadata.getParamEncoding());
                 routePayload = ByteBufPayload.create(bodyBuffer, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate());
-                source = (Flux<Object>) args[1];
+                source = methodMetadata.getReactiveAdapter().toFlux(args[1]);
             }
             Flux<Payload> payloadFlux = source.startWith(routePayload).map(obj -> {
                 if (obj instanceof Payload) return (Payload) obj;
