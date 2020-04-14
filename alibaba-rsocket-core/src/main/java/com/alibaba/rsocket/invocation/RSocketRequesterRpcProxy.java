@@ -126,6 +126,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                     method, encodingType, this.acceptEncodingTypes, endpoint));
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
+        mutableContext.put(ReactiveMethodMetadata.class, methodMetadata);
         Object[] args = allArguments;
         if (methodMetadata.isKotlinSuspend()) {
             args = Arrays.copyOfRange(args, 0, args.length - 1);
