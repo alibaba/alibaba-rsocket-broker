@@ -14,18 +14,13 @@ import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
-import kotlinx.serialization.KSerializer;
-import kotlinx.serialization.Serializable;
 import kotlinx.serialization.SerializationStrategy;
 import kotlinx.serialization.protobuf.ProtoBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Object protobuf encoding
@@ -79,7 +74,7 @@ public class ObjectEncodingHandlerProtobufImpl extends KotlinSerializerSupport i
                 ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
                 if (result instanceof MessageLite) {
                     ((MessageLite) result).writeTo(bos);
-                } else if (ktProtoBuf && result.getClass().getAnnotation(Serializable.class) != null) {
+                } else if (ktProtoBuf && isKotlinSerializable(result.getClass())) {
                     byte[] bytes = ProtoBuf.Default.dump((SerializationStrategy<? super Object>) getSerializer(result.getClass()), result);
                     return Unpooled.wrappedBuffer(bytes);
                 } else {
@@ -106,7 +101,7 @@ public class ObjectEncodingHandlerProtobufImpl extends KotlinSerializerSupport i
                     if (method != null) {
                         return method.invoke(null, data.nioBuffer());
                     }
-                } else if (ktProtoBuf && targetClass.getAnnotation(Serializable.class) != null) {
+                } else if (ktProtoBuf && isKotlinSerializable(targetClass)) {
                     byte[] bytes = new byte[data.readableBytes()];
                     data.readBytes(bytes);
                     return ProtoBuf.Default.load(getSerializer(targetClass), bytes);
