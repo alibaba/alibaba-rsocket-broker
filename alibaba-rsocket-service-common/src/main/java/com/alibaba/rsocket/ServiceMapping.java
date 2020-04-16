@@ -23,14 +23,14 @@ public @interface ServiceMapping {
     String version() default "";
 
     /**
-     * params encoding
+     * params encoding with MIME Type
      *
      * @return mime type
      */
     String paramEncoding() default "";
 
     /**
-     * result value encoding
+     * result value encoding with MIME Type
      *
      * @return mime type
      */
