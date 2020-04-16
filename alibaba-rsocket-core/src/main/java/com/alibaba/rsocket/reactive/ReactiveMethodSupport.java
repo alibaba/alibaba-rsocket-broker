@@ -53,6 +53,8 @@ public class ReactiveMethodSupport {
                 this.kotlinSuspend = true;
                 if (lastParamType.getTypeName().contains("kotlin.Unit>")) {
                     this.inferredClassForReturn = Void.TYPE;
+                } else {
+                    this.inferredClassForReturn = parseInferredClass(lastParamType);
                 }
             }
             this.lastParamType = method.getParameterTypes()[paramCount - 1];
@@ -127,8 +129,21 @@ public class ReactiveMethodSupport {
                 final Type typeArgument = typeArguments[0];
                 if (typeArgument instanceof ParameterizedType) {
                     inferredClass = (Class<?>) ((ParameterizedType) typeArgument).getActualTypeArguments()[0];
-                } else {
+                } else if (typeArgument instanceof Class) {
                     inferredClass = (Class<?>) typeArgument;
+                } else {
+                    String typeName = typeArgument.getTypeName();
+                    if (typeName.contains(" ")) {
+                        typeName = typeName.substring(typeName.lastIndexOf(" ") + 1);
+                    }
+                    if (typeName.contains("<")) {
+                        typeName = typeName.substring(0, typeName.indexOf("<"));
+                    }
+                    try {
+                        inferredClass = Class.forName(typeName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
