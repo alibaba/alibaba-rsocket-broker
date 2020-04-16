@@ -33,11 +33,10 @@ import java.util.Map;
  * @author leijuan
  */
 @SuppressWarnings("unchecked")
-public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler {
+public class ObjectEncodingHandlerProtobufImpl extends KotlinSerializerSupport implements ObjectEncodingHandler {
     LoadingCache<Class<?>, Method> parseFromMethodStore = Caffeine.newBuilder()
             .maximumSize(Integer.MAX_VALUE)
             .build(targetClass -> targetClass.getMethod("parseFrom", ByteBuffer.class));
-    private Map<Class<?>, KSerializer<?>> ktSerializableClassStore = new HashMap<>();
     private boolean ktProtoBuf = true;
 
     public ObjectEncodingHandlerProtobufImpl() {
@@ -124,14 +123,4 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
         return null;
     }
 
-    private KSerializer<?> getSerializer(Class<?> clazz) throws Exception {
-        KSerializer<?> kSerializer = ktSerializableClassStore.get(clazz);
-        if (kSerializer == null) {
-            Class<?> serializerClazz = Class.forName(clazz.getCanonicalName() + "$$serializer");
-            Field instanceField = serializerClazz.getDeclaredField("INSTANCE");
-            kSerializer = (KSerializer<?>) instanceField.get(null);
-            ktSerializableClassStore.put(clazz, kSerializer);
-        }
-        return kSerializer;
-    }
 }
