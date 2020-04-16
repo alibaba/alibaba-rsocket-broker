@@ -8,20 +8,24 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.MessageLite;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.*;
 import io.netty.util.ReferenceCountUtil;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
+import kotlinx.serialization.KSerializer;
+import kotlinx.serialization.Serializable;
+import kotlinx.serialization.SerializationStrategy;
+import kotlinx.serialization.protobuf.ProtoBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Object protobuf encoding
@@ -33,6 +37,16 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     LoadingCache<Class<?>, Method> parseFromMethodStore = Caffeine.newBuilder()
             .maximumSize(Integer.MAX_VALUE)
             .build(targetClass -> targetClass.getMethod("parseFrom", ByteBuffer.class));
+    private Map<Class<?>, KSerializer<?>> ktSerializableClassStore = new HashMap<>();
+    private boolean ktProtoBuf = true;
+
+    public ObjectEncodingHandlerProtobufImpl() {
+        try {
+            Class.forName("kotlinx.serialization.protobuf.ProtoBuf");
+        } catch (Exception e) {
+            ktProtoBuf = false;
+        }
+    }
 
     @NotNull
     @Override
@@ -66,6 +80,9 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
                 ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
                 if (result instanceof MessageLite) {
                     ((MessageLite) result).writeTo(bos);
+                } else if (ktProtoBuf && result.getClass().getAnnotation(Serializable.class) != null) {
+                    byte[] bytes = ProtoBuf.Default.dump((SerializationStrategy<? super Object>) getSerializer(result.getClass()), result);
+                    return Unpooled.wrappedBuffer(bytes);
                 } else {
                     LinkedBuffer buffer = LinkedBuffer.allocate(256);
                     Schema schema = RuntimeSchema.getSchema(result.getClass());
@@ -85,11 +102,15 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
         if (data.readableBytes() > 0 && targetClass != null) {
             try {
-                if (targetClass.getSuperclass() != null && targetClass.getSuperclass().equals(GeneratedMessageV3.class)) {
+                if (GeneratedMessageV3.class.isAssignableFrom(targetClass)) {
                     Method method = parseFromMethodStore.get(targetClass);
                     if (method != null) {
                         return method.invoke(null, data.nioBuffer());
                     }
+                } else if (ktProtoBuf && targetClass.getAnnotation(Serializable.class) != null) {
+                    byte[] bytes = new byte[data.readableBytes()];
+                    data.readBytes(bytes);
+                    return ProtoBuf.Default.load(getSerializer(targetClass), bytes);
                 } else {
                     Schema schema = RuntimeSchema.getSchema(targetClass);
                     Object object = schema.newMessage();
@@ -101,5 +122,16 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
             }
         }
         return null;
+    }
+
+    private KSerializer<?> getSerializer(Class<?> clazz) throws Exception {
+        KSerializer<?> kSerializer = ktSerializableClassStore.get(clazz);
+        if (kSerializer == null) {
+            Class<?> serializerClazz = Class.forName(clazz.getCanonicalName() + "$$serializer");
+            Field instanceField = serializerClazz.getDeclaredField("INSTANCE");
+            kSerializer = (KSerializer<?>) instanceField.get(null);
+            ktSerializableClassStore.put(clazz, kSerializer);
+        }
+        return kSerializer;
     }
 }
