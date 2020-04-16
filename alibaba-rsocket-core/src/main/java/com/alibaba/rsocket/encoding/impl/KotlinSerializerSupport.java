@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.encoding.impl;
 
 import kotlinx.serialization.KSerializer;
+import kotlinx.serialization.Serializable;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -23,5 +24,9 @@ public class KotlinSerializerSupport {
             ktSerializableClassStore.put(clazz, kSerializer);
         }
         return kSerializer;
+    }
+
+    protected boolean isKotlinSerializable(Class<?> clazz) {
+        return ktSerializableClassStore.containsKey(clazz) || clazz.getAnnotation(Serializable.class) != null;
     }
 }
