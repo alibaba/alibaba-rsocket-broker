@@ -101,16 +101,16 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         this.group = group;
         this.version = version;
         this.endpoint = endpoint;
-        //deal with @ServiceMapping for method
-        ServiceMapping serviceMapping = method.getAnnotation(ServiceMapping.class);
-        if (serviceMapping != null) {
-            initServiceMapping(serviceMapping);
-        }
         this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
         this.handlerId = MurmurHash3.hash32(service + "." + name);
         //param encoding type
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
+        //deal with @ServiceMapping for method
+        ServiceMapping serviceMapping = method.getAnnotation(ServiceMapping.class);
+        if (serviceMapping != null) {
+            initServiceMapping(serviceMapping);
+        }
         //byte buffer binary encoding
         if (paramCount == 1) {
             Class<?> parameterType = method.getParameterTypes()[0];
