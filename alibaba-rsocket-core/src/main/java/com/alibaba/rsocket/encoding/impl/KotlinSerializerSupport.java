@@ -13,7 +13,7 @@ import java.util.Map;
  * @author leijuan
  */
 public class KotlinSerializerSupport {
-    protected Map<Class<?>, KSerializer<?>> ktSerializableClassStore = new HashMap<>();
+    public static final Map<Class<?>, KSerializer<?>> ktSerializableClassStore = new HashMap<>();
 
     protected KSerializer<?> getSerializer(Class<?> clazz) throws Exception {
         KSerializer<?> kSerializer = ktSerializableClassStore.get(clazz);
