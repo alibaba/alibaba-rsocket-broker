@@ -30,7 +30,7 @@ public class ObjectEncodingHandlerCborImpl extends KotlinSerializerSupport imple
 
     public ObjectEncodingHandlerCborImpl() {
         try {
-            Class.forName("kotlinx.serialization.protobuf.ProtoBuf");
+            Class.forName("kotlinx.serialization.cbor.Cbor");
         } catch (Exception e) {
             ktCbor = false;
         }
