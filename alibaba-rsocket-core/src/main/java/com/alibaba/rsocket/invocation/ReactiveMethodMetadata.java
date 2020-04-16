@@ -97,12 +97,6 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         super(method);
         this.service = service;
         this.name = method.getName();
-        this.fullName = this.service + "." + this.name;
-        this.group = group;
-        this.version = version;
-        this.endpoint = endpoint;
-        this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, service, version));
-        this.handlerId = MurmurHash3.hash32(service + "." + name);
         //param encoding type
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
@@ -111,6 +105,13 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         if (serviceMapping != null) {
             initServiceMapping(serviceMapping);
         }
+        //RSocketRemoteServiceBuilder has higher priority with group,version,endpoint than @ServiceMapping from RSocketRemoteServiceBuilder
+        this.group = group;
+        this.version = version;
+        this.endpoint = endpoint;
+        this.fullName = this.service + "." + this.name;
+        this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(this.group, this.service, this.version));
+        this.handlerId = MurmurHash3.hash32(service + "." + name);
         //byte buffer binary encoding
         if (paramCount == 1) {
             Class<?> parameterType = method.getParameterTypes()[0];
