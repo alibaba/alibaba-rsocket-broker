@@ -15,6 +15,7 @@
     <properties>
         <vaadin.version>14.1.25</vaadin.version>
         <flexmark-all.version>0.61.10</flexmark-all.version>
+        <undertow.version>2.1.0.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
@@ -42,6 +43,21 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>${undertow.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <version>${undertow.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-websockets-jsr</artifactId>
+            <version>${undertow.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
