@@ -44,7 +44,7 @@ public class RSocketServiceAnnotationProcessor extends LocalReactiveServiceCalle
         if (!rsocketServiceAnnotation.name().isEmpty()) {
             serviceName = rsocketServiceAnnotation.name();
         }
-        String group = rsocketProperties.getGroup();
+        String group = rsocketServiceAnnotation.group().isEmpty() ? rsocketProperties.getGroup() : rsocketServiceAnnotation.group();
         String version = rsocketServiceAnnotation.version().isEmpty() ? rsocketProperties.getVersion() : rsocketServiceAnnotation.version();
         addProvider(group, serviceName, version, rsocketServiceAnnotation.serviceInterface(), bean);
     }
