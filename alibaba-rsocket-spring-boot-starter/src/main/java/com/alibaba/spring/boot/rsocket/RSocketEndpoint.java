@@ -55,7 +55,7 @@ public class RSocketEndpoint {
             info.put("published", rsocketRequesterSupport.exposedServices().get());
         }
         if (!RSocketRemoteServiceBuilder.CONSUMED_SERVICES.isEmpty()) {
-            info.put("subscribed", RSocketRemoteServiceBuilder.CONSUMED_SERVICES.stream()
+            info.put("subscribed", rsocketRequesterSupport.subscribedServices().get().stream()
                     .filter(serviceLocator -> !RSocketServiceHealth.class.getCanonicalName().equals(serviceLocator.getService()))
                     .collect(Collectors.toList()));
         }
