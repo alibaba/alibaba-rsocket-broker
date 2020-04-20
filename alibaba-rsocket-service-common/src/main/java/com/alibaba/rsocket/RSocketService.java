@@ -27,6 +27,13 @@ public @interface RSocketService {
     String name() default "";
 
     /**
+     * service group
+     *
+     * @return group
+     */
+    String group() default "";
+
+    /**
      * service version
      *
      * @return version
