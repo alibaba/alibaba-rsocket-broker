@@ -1,5 +1,6 @@
 Alibaba RSocket Broker
 ======================
+[![Gitter](https://badges.gitter.im/alibaba-rsocket-broker/community.svg)](https://gitter.im/alibaba-rsocket-broker/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Maven](https://img.shields.io/maven-central/v/com.alibaba.rsocket/alibaba-rsocket-spring-boot-starter)](https://repo1.maven.org/maven2/com/alibaba/rsocket/)
 [!["Open Issues"](https://img.shields.io/github/issues-raw/alibaba/alibaba-rsocket-broker.svg)](https://github.com/alibaba/alibaba-rsocket-broker/issues)
 [![Build Status](https://api.travis-ci.com/alibaba/alibaba-rsocket-broker.svg?branch=master)](https://travis-ci.com/alibaba/alibaba-rsocket-broker)
