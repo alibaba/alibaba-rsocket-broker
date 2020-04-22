@@ -13,6 +13,7 @@ import java.util.stream.Stream;
  *
  * @author leijuan
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ReactiveAdapterDefault implements ReactiveAdapter {
     private static ReactiveAdapterDefault instance = new ReactiveAdapterDefault();
 
