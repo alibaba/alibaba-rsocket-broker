@@ -31,7 +31,7 @@
         <bytebuddy.version>1.10.9</bytebuddy.version>
         <micrometer.version>1.4.1</micrometer.version>
         <reactor-bom.version>Dysprosium-SR6</reactor-bom.version>
-        <netty.version>4.1.48.Final</netty.version>
+        <netty.version>4.1.49.Final</netty.version>
         <rsocket.version>1.0.0-RC6</rsocket.version>
         <kotlin.version>1.3.72</kotlin.version>
         <kotlinx-serialization.version>0.20.0</kotlinx-serialization.version>
