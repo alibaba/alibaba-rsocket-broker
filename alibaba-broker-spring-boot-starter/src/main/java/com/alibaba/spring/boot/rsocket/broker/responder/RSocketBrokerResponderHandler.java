@@ -462,25 +462,28 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return Mono.create(sink -> {
             String gsv = routingMetaData.gsv();
             Integer serviceId = routingMetaData.id();
-            Integer targetHandlerId;
+            RSocketBrokerResponderHandler targetHandler = null;
             RSocket rsocket = null;
             Exception error = null;
-            if (routingMetaData.getEndpoint() != null && !routingMetaData.getEndpoint().isEmpty()) {
-                targetHandlerId = findDestinationWithEndpoint(routingMetaData.getEndpoint(), serviceId);
-                if (targetHandlerId == null) {
-                    error = new InvalidException(RsocketErrorCode.message("RST-900405", gsv, routingMetaData.getEndpoint()));
+            String endpoint = routingMetaData.getEndpoint();
+            if (endpoint != null && !endpoint.isEmpty()) {
+                targetHandler = findDestinationWithEndpoint(endpoint, serviceId);
+                if (targetHandler == null) {
+                    error = new InvalidException(RsocketErrorCode.message("RST-900405", gsv, endpoint));
                 }
             } else {
-                targetHandlerId = routingSelector.findHandler(serviceId);
+                Integer targetHandlerId = routingSelector.findHandler(serviceId);
+                if (targetHandlerId != null) {
+                    targetHandler = handlerRegistry.findById(targetHandlerId);
+                } else {
+                    error = new InvalidException(RsocketErrorCode.message("RST-900404", gsv));
+                }
             }
-            if (targetHandlerId != null) {
-                RSocketBrokerResponderHandler targetHandler = handlerRegistry.findById(targetHandlerId);
-                if (targetHandler != null) {
-                    if (serviceMeshInspector.isRequestAllowed(this.principal, gsv, targetHandler.principal)) {
-                        rsocket = targetHandler.peerRsocket;
-                    } else {
-                        error = new ApplicationErrorException(RsocketErrorCode.message("RST-900401", gsv));
-                    }
+            if (targetHandler != null) {
+                if (serviceMeshInspector.isRequestAllowed(this.principal, gsv, targetHandler.principal)) {
+                    rsocket = targetHandler.peerRsocket;
+                } else {
+                    error = new ApplicationErrorException(RsocketErrorCode.message("RST-900401", gsv));
                 }
             }
             if (rsocket != null) {
@@ -494,13 +497,16 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Nullable
-    private Integer findDestinationWithEndpoint(String endpoint, Integer serviceId) {
+    private RSocketBrokerResponderHandler findDestinationWithEndpoint(String endpoint, Integer serviceId) {
+        if (endpoint.startsWith("id:")) {
+            return handlerRegistry.findByUUID(endpoint.substring(3));
+        }
         int endpointHashCode = endpoint.hashCode();
         for (Integer handlerId : routingSelector.findHandlers(serviceId)) {
             RSocketBrokerResponderHandler handler = handlerRegistry.findById(handlerId);
             if (handler != null) {
                 if (handler.appTagsHashCodeSet.contains(endpointHashCode)) {
-                    return handlerId;
+                    return handler;
                 }
             }
         }
