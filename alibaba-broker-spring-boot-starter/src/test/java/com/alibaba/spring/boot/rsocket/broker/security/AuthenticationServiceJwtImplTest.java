@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.Principal;
+import java.util.UUID;
 
 /**
  * AuthenticationServiceJwtImpl test
@@ -23,7 +24,7 @@ public class AuthenticationServiceJwtImplTest {
     @Test
     public void testAuth() throws Exception {
         String subject = "testing-only";
-        String credentials = authenticationService.generateCredentials(new String[]{"alibaba"}, new String[]{"default"}, new String[]{"internal"}, null, subject, new String[]{"leijuan"});
+        String credentials = authenticationService.generateCredentials(UUID.randomUUID().toString(), new String[]{"alibaba"}, new String[]{"default"}, new String[]{"internal"}, null, subject, new String[]{"leijuan"});
         System.out.println(credentials);
         Principal principal = authenticationService.auth("JWT", credentials);
         Assertions.assertNotNull(principal);

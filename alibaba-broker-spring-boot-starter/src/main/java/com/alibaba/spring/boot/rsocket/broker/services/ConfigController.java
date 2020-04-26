@@ -85,7 +85,7 @@ public class ConfigController {
         if (authRequired) {
             return authenticationService.auth("Bearer", jwtToken.substring(jwtToken.indexOf(" ") + 1));
         } else {
-            return new JwtPrincipal("rsocket-admin",
+            return new JwtPrincipal(UUID.randomUUID().toString(), "rsocket-admin",
                     Collections.singletonList("mock_owner"),
                     new HashSet<>(Collections.singletonList("admin")),
                     Collections.emptySet(),

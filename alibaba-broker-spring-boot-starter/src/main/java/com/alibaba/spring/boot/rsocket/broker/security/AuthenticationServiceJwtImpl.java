@@ -75,7 +75,7 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
         return principal;
     }
 
-    public String generateCredentials(String[] organizations, String[] serviceAccounts, String[] roles, String[] authorities, String sub, String[] audience) throws Exception {
+    public String generateCredentials(String id, String[] organizations, String[] serviceAccounts, String[] roles, String[] authorities, String sub, String[] audience) throws Exception {
         Algorithm algorithmRSA256Private = Algorithm.RSA256(null, readPrivateKey());
         Arrays.sort(audience);
         Arrays.sort(organizations);
@@ -84,6 +84,7 @@ public class AuthenticationServiceJwtImpl implements AuthenticationService {
                 .withSubject(sub)
                 .withAudience(audience)
                 .withIssuedAt(new Date())
+                .withClaim("id", id)
                 .withArrayClaim("sas", serviceAccounts)
                 .withArrayClaim("orgs", organizations);
         if (roles != null && roles.length > 0) {

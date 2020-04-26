@@ -10,6 +10,12 @@ import java.util.Set;
  * @author leijuan
  */
 public interface RSocketAppPrincipal extends Principal {
+    /**
+     * get token id
+     *
+     * @return token id
+     */
+    String getTokenId();
 
     String getSubject();
 

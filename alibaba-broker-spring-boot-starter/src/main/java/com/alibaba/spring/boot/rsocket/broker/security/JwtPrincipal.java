@@ -14,6 +14,10 @@ import java.util.*;
  * @author leijuan
  */
 public class JwtPrincipal implements RSocketAppPrincipal {
+    /**
+     * token id
+     */
+    private String tokenId;
     private Integer hashcode;
     private String subject;
     private List<String> audience;
@@ -41,7 +45,8 @@ public class JwtPrincipal implements RSocketAppPrincipal {
         }
     }
 
-    public JwtPrincipal(String subject, List<String> audience, Set<String> roles, Set<String> authorities, Set<String> serviceAccounts, Set<String> organizations) {
+    public JwtPrincipal(String id, String subject, List<String> audience, Set<String> roles, Set<String> authorities, Set<String> serviceAccounts, Set<String> organizations) {
+        this.tokenId = id;
         this.hashcode = MurmurHash3.hash32(subject);
         this.subject = subject;
         this.audience = audience;
@@ -49,6 +54,11 @@ public class JwtPrincipal implements RSocketAppPrincipal {
         this.authorities = authorities;
         this.serviceAccounts = serviceAccounts;
         this.organizations = organizations;
+    }
+
+    @Override
+    public String getTokenId() {
+        return this.tokenId;
     }
 
     @Override

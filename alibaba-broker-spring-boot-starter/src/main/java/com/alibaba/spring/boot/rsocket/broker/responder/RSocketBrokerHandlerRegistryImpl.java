@@ -334,7 +334,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     public JwtPrincipal appNameBasedPrincipal(String appName) {
-        return new JwtPrincipal(appName,
+        return new JwtPrincipal(UUID.randomUUID().toString(), appName,
                 Arrays.asList("mock_owner"),
                 new HashSet<>(Arrays.asList("admin")),
                 Collections.emptySet(),

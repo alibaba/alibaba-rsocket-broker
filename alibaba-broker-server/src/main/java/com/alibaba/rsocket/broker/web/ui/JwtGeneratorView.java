@@ -9,6 +9,8 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
+import java.util.UUID;
+
 import static com.alibaba.rsocket.broker.web.ui.JwtGeneratorView.NAV;
 
 
@@ -69,7 +71,7 @@ public class JwtGeneratorView extends VerticalLayout {
             String[] roles = rolesText.getValue().trim().split("[,;\\s]*");
             String[] authorities = authoritiesText.getValue().trim().split("[,;\\s]*");
             try {
-                String token = authenticationService.generateCredentials(orgIds, serviceAccounts, roles, authorities, appName, owners);
+                String token = authenticationService.generateCredentials(UUID.randomUUID().toString(), orgIds, serviceAccounts, roles, authorities, appName, owners);
                 tokenTextArea.setValue(token);
             } catch (Exception ignore) {
 
