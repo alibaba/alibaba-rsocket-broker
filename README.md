@@ -8,7 +8,7 @@ Alibaba RSocket Broker
 &nbsp;&nbsp;&nbsp;&nbsp;
 [![English README](https://img.shields.io/badge/EN-README-brightgreen)](https://github.com/alibaba/alibaba-rsocket-broker/blob/master/README-en.md)
 
-Alibaba RSocket Broker是一款基于RSocket协议的反应式程控消息交换系统，为通讯双方构建一个透明稳健的通讯桥梁。
+Alibaba RSocket Broker是一款基于RSocket协议的反应式对等通讯系统，为通讯多方构建分布式的RPC, Pub/Sub, Streaming等通讯支持。
 
 * 反应式: 编程模型、线程模型、异步化、独特的对等通讯模式可适应各种内部网络环境和跨云需求。
 * 程控：程序控制，可定制和方便的功能扩展，如支持反向的Prometheus Metrics采集、ZipKin RSocket Collector等。
@@ -133,6 +133,12 @@ public class PortalController {
     }
 }
 ```
+
+### 服务和支持
+
+* Issues: https://github.com/alibaba/alibaba-rsocket-broker/issues
+* Wiki: https://github.com/alibaba/alibaba-rsocket-broker/wiki
+* Gitter: https://gitter.im/alibaba-rsocket-broker/community
 
 
 ### References
