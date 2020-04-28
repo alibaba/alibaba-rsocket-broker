@@ -96,7 +96,7 @@ public final class TcpSslUriHandler implements UriHandler {
     }
 
     @Override
-    public Optional<ServerTransport> buildServer(URI uri) {
+    public Optional<ServerTransport<?>> buildServer(URI uri) {
         Objects.requireNonNull(uri, "uri must not be null");
         if (!SCHEME.equals(uri.getScheme())) {
             return Optional.empty();
