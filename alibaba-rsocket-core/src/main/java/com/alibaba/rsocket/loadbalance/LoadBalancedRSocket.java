@@ -17,7 +17,7 @@ import io.netty.util.ReferenceCountUtil;
 import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
-import io.rsocket.RSocketFactory;
+import io.rsocket.core.RSocketConnector;
 import io.rsocket.exceptions.ConnectionErrorException;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
@@ -373,25 +373,26 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
     Mono<RSocket> connect(String uri) {
         try {
-            RSocketFactory.ClientRSocketFactory clientRSocketFactory = RSocketFactory.connect();
+            RSocketConnector rsocketConnector = RSocketConnector.create();
             for (RSocketInterceptor requestInterceptor : requesterSupport.requestInterceptors()) {
-                clientRSocketFactory = clientRSocketFactory.addRequesterPlugin(requestInterceptor);
+                rsocketConnector.interceptors(interceptorRegistry -> {
+                    interceptorRegistry.forRequester(requestInterceptor);
+                });
             }
             for (RSocketInterceptor responderInterceptor : requesterSupport.responderInterceptors()) {
-                clientRSocketFactory = clientRSocketFactory.addResponderPlugin(responderInterceptor);
+                rsocketConnector.interceptors(interceptorRegistry -> {
+                    interceptorRegistry.forResponder(responderInterceptor);
+                });
             }
             Payload payload = requesterSupport.setupPayload().get();
-            return clientRSocketFactory
-                    .singleSubscriberRequester()
-                    .keepAliveMissedAcks(12)
+            return rsocketConnector
                     .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
                     .errorConsumer(error -> log.error(RsocketErrorCode.message("RST-200502", uri), error))
                     //.frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
-                    .transport(UriTransportRegistry.clientForUri(uri))
-                    .start()
+                    .connect(UriTransportRegistry.clientForUri(uri))
                     .doOnError(error -> ReferenceCountUtil.safeRelease(payload));
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-400500", uri), e);
