@@ -5,8 +5,8 @@ import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.handler.ssl.OpenSsl;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
-import io.rsocket.RSocketFactory;
 import io.rsocket.SocketAcceptor;
+import io.rsocket.core.RSocketServer;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.plugins.DuplexConnectionInterceptor;
 import io.rsocket.plugins.RSocketInterceptor;
@@ -132,36 +132,42 @@ public class RSocketListenerImpl implements RSocketListener {
                 } else {
                     transport = TcpServerTransport.create(host, port);
                 }
-                RSocketFactory.ServerRSocketFactory serverRSocketFactory = RSocketFactory
-                        .receive();
+                RSocketServer rsocketServer = RSocketServer.create();
                 //payload decoder
                 if (payloadDecoder != null) {
-                    serverRSocketFactory = serverRSocketFactory.frameDecoder(payloadDecoder);
+                    rsocketServer.payloadDecoder(payloadDecoder);
                 }
                 //acceptor interceptor
                 for (SocketAcceptorInterceptor acceptorInterceptor : acceptorInterceptors) {
-                    serverRSocketFactory = serverRSocketFactory.addSocketAcceptorPlugin(acceptorInterceptor);
+                    rsocketServer.interceptors(interceptorRegistry -> {
+                        interceptorRegistry.forSocketAcceptor(acceptorInterceptor);
+                    });
                 }
                 //connection interceptor
                 for (DuplexConnectionInterceptor connectionInterceptor : connectionInterceptors) {
-                    serverRSocketFactory = serverRSocketFactory.addConnectionPlugin(connectionInterceptor);
+                    rsocketServer.interceptors(interceptorRegistry -> {
+                        interceptorRegistry.forConnection(connectionInterceptor);
+                    });
+
                 }
                 //responder interceptor
                 for (RSocketInterceptor responderInterceptor : responderInterceptors) {
-                    serverRSocketFactory = serverRSocketFactory.addResponderPlugin(responderInterceptor);
+                    rsocketServer.interceptors(interceptorRegistry -> {
+                        interceptorRegistry.forResponder(responderInterceptor);
+                    });
+
                 }
                 //error consumer
                 if (this.errorConsumer != null) {
-                    serverRSocketFactory = serverRSocketFactory.errorConsumer(errorConsumer);
+                     rsocketServer.errorConsumer(errorConsumer);
                 } else {
-                    serverRSocketFactory = serverRSocketFactory.errorConsumer(error -> {
+                      rsocketServer.errorConsumer(error -> {
                         log.error(RsocketErrorCode.message("RST-100500", error.getMessage()), error);
                     });
                 }
-                Disposable disposable = serverRSocketFactory
+                Disposable disposable = rsocketServer
                         .acceptor(acceptor)
-                        .transport(transport)
-                        .start()
+                        .bind(transport)
                         .onTerminateDetach()
                         .subscribe();
                 responders.add(disposable);
