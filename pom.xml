@@ -29,7 +29,7 @@
         <java.version>1.8</java.version>
         <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
         <bytebuddy.version>1.10.9</bytebuddy.version>
-        <micrometer.version>1.4.2</micrometer.version>
+        <micrometer.version>1.5.0</micrometer.version>
         <reactor-bom.version>Dysprosium-SR7</reactor-bom.version>
         <netty.version>4.1.49.Final</netty.version>
         <rsocket.version>1.0.0-RC7</rsocket.version>
@@ -42,7 +42,7 @@
         <roaring-bitmap.version>0.8.18</roaring-bitmap.version>
         <protobuf-java.version>3.11.4</protobuf-java.version>
         <hessian.version>4.0.63</hessian.version>
-        <jackson.version>2.10.3</jackson.version>
+        <jackson.version>2.11.0</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
         <avro.version>1.9.2</avro.version>
         <eclipse-collections.version>10.2.0</eclipse-collections.version>
