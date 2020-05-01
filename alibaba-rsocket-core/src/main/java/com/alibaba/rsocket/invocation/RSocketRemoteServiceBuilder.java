@@ -13,6 +13,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
+import java.net.URI;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.Set;
  */
 public class RSocketRemoteServiceBuilder<T> {
     public static final Set<ServiceLocator> CONSUMED_SERVICES = new HashSet<>();
+    private URI sourceUri;
     private String group;
     private String service;
     private String version;
@@ -132,6 +134,7 @@ public class RSocketRemoteServiceBuilder<T> {
             upstream = upstreamManager.findBroker();
         }
         this.upstreamCluster = upstream;
+        this.sourceUri = upstreamManager.requesterSupport().originUri();
         return this;
     }
 
@@ -158,10 +161,10 @@ public class RSocketRemoteServiceBuilder<T> {
     private RSocketRequesterRpcProxy getRequesterProxy() {
         if (this.braveTracing && this.tracing != null) {
             return new RSocketRequesterRpcZipkinProxy(tracing, upstreamCluster, group, serviceInterface, service, version,
-                    encodingType, acceptEncodingType, timeout, endpoint);
+                    encodingType, acceptEncodingType, timeout, endpoint, sourceUri);
         } else {
             return new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
-                    encodingType, acceptEncodingType, timeout, endpoint);
+                    encodingType, acceptEncodingType, timeout, endpoint, sourceUri);
         }
     }
 

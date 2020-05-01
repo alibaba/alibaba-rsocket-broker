@@ -33,6 +33,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,6 +73,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     /**
      * encoding type
      */
+    private URI sourceUri;
     protected RSocketMimeType encodingType;
     /**
      * accept encoding types
@@ -98,7 +100,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, @Nullable String service, String version,
                                     RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
-                                    Duration timeout, @Nullable String endpoint) {
+                                    Duration timeout, @Nullable String endpoint, URI sourceUri) {
         this.rsocket = upstream.getLoadBalancedRSocket();
         this.serviceInterface = serviceInterface;
         this.service = serviceInterface.getCanonicalName();
@@ -108,6 +110,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         this.group = group;
         this.version = version;
         this.endpoint = endpoint;
+        this.sourceUri = sourceUri;
         this.encodingType = encodingType;
         if (acceptEncodingType == null) {
             this.acceptEncodingTypes = defaultAcceptEncodingTypes();
@@ -123,7 +126,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
-                    method, encodingType, this.acceptEncodingTypes, endpoint));
+                    method, encodingType, this.acceptEncodingTypes, endpoint,sourceUri));
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
         mutableContext.put(ReactiveMethodMetadata.class, methodMetadata);
