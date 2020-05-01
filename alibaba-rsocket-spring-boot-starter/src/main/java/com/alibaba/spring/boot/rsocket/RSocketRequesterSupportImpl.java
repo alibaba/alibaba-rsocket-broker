@@ -60,7 +60,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
 
     @Override
     public URI originUri() {
-        return URI.create("tcp://" + NetworkUtil.LOCAL_IP + ":" + properties.getPort() + "?appName=" + appName);
+        return URI.create(properties.getSchema() + "://" + NetworkUtil.LOCAL_IP + ":" + properties.getPort() + "?appName=" + appName);
     }
 
     @Override
