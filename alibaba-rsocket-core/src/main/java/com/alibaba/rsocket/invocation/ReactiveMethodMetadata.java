@@ -17,6 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,7 +94,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
                                   Method method,
                                   @NotNull RSocketMimeType dataEncodingType,
                                   @NotNull RSocketMimeType[] acceptEncodingTypes,
-                                  @Nullable String endpoint) {
+                                  @Nullable String endpoint, URI origin) {
         super(method);
         this.service = service;
         this.name = method.getName();
@@ -120,7 +121,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
             }
         }
         //init composite metadata for invocation
-        initCompositeMetadata();
+        initCompositeMetadata(origin);
         //bi direction check: param's type is Flux for 1st param or 2nd param
         if (paramCount == 1 && STREAM_CLASSES.contains(method.getParameterTypes()[0].getCanonicalName())) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
@@ -181,7 +182,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         }
     }
 
-    public void initCompositeMetadata() {
+    public void initCompositeMetadata(URI origin) {
         //payload routing metadata
         GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.service, this.name, version);
         routingMetadata.setEndpoint(this.endpoint);
@@ -192,9 +193,11 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
         //set accepted mimetype
         MessageAcceptMimeTypesMetadata messageAcceptMimeTypesMetadata = new MessageAcceptMimeTypesMetadata(this.acceptEncodingTypes);
+        //origin metadata
+        OriginMetadata originMetadata = new OriginMetadata(origin);
         //construct default composite metadata
         CompositeByteBuf compositeMetadataContent;
-        this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata);
+        this.compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, messageMimeTypeMetadata, messageAcceptMimeTypesMetadata, originMetadata);
         //add gsv routing data if endpoint not empty
         if (endpoint != null && !endpoint.isEmpty()) {
             this.compositeMetadata.addMetadata(binaryRoutingMetadata);
