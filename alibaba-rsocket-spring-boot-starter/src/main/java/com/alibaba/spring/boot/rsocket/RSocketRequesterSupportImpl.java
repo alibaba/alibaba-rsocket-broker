@@ -59,6 +59,11 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
     }
 
     @Override
+    public URI originUri() {
+        return URI.create("tcp://" + NetworkUtil.LOCAL_IP + ":" + properties.getPort() + "?appName=" + appName);
+    }
+
+    @Override
     public Supplier<Payload> setupPayload() {
         return () -> {
             //composite metadata with app metadata
