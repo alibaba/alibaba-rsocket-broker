@@ -9,6 +9,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class KetamaConsistentHash<T> {
+    /**
+     * number of virtual node replicas of the physical node
+     */
     private final int numberOfVirtualNodeReplicas;
     private final SortedMap<Long, T> circle = new TreeMap<Long, T>();
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
@@ -78,7 +81,7 @@ public class KetamaConsistentHash<T> {
     }
 
     private void addNode(T node) {
-        for (int i = 0; i < numberOfVirtualNodeReplicas / 4; i++) {
+        for (int i = 0; i < numberOfVirtualNodeReplicas; i++) {
             byte[] digest = md5(node + "-" + i);
             for (int h = 0; h < 4; h++) {
                 circle.put(getKetamaKey(digest, h), node);
@@ -87,7 +90,7 @@ public class KetamaConsistentHash<T> {
     }
 
     private void removeNode(T node) {
-        for (int i = 0; i < numberOfVirtualNodeReplicas / 4; i++) {
+        for (int i = 0; i < numberOfVirtualNodeReplicas; i++) {
             byte[] digest = md5(node.toString() + "-" + i);
             for (int h = 0; h < 4; h++) {
                 circle.remove(getKetamaKey(digest, h));
