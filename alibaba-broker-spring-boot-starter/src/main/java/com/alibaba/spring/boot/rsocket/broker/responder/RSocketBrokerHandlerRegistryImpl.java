@@ -321,7 +321,14 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         return Flux.fromIterable(findAll()).flatMap(handler -> {
             Integer roles = handler.getRoles();
             String topology = handler.getAppMetadata().getTopology();
-            Mono<Void> fireEvent = "internet".equals(topology) ? handler.fireCloudEventToPeer(brokerClusterAliasesEvent) : handler.fireCloudEventToPeer(brokerClustersEvent);
+            Mono<Void> fireEvent;
+            if ("internet".equals(topology)) {
+                // add defaultUri for internet access for IoT devices
+                // RSocketBroker defaultBroker = rsocketBrokerManager.findConsistentBroker(handler.getUuid());
+                fireEvent = handler.fireCloudEventToPeer(brokerClusterAliasesEvent);
+            } else {
+                fireEvent = handler.fireCloudEventToPeer(brokerClustersEvent);
+            }
             if (roles == 2) { // publish services only
                 return fireEvent;
             } else if (roles == 3) { //consume and publish services
