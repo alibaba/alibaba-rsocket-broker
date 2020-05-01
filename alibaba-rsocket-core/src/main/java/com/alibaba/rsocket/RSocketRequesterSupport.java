@@ -7,6 +7,8 @@ import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.plugins.RSocketInterceptor;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -17,6 +19,8 @@ import java.util.function.Supplier;
  * @author leijuan
  */
 public interface RSocketRequesterSupport {
+
+    URI originUri();
 
     Supplier<Payload> setupPayload();
 
