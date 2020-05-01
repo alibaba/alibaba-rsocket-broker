@@ -68,6 +68,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
      * brokers changes emitter processor
      */
     private EmitterProcessor<Collection<RSocketBroker>> brokersEmitterProcessor = EmitterProcessor.create();
+    private KetamaConsistentHash<String> consistentHash;
 
     @PostConstruct
     public void init() {
@@ -81,6 +82,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
         //subscribe and start & join the cluster
         monoCluster.subscribe();
         this.localBroker = new RSocketBroker(localIp, brokerProperties.getExternalDomain());
+        this.consistentHash = new KetamaConsistentHash<>(12, Collections.singletonList(localIp));
         brokers.put(localIp, localBroker);
         log.info(RsocketErrorCode.message("RST-300002"));
         Metrics.globalRegistry.gauge("cluster.broker.count", this, (DoubleFunction<RSocketBrokerManagerGossipImpl>) brokerManagerGossip -> brokerManagerGossip.brokers.size());
@@ -198,10 +200,11 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Override
     public void onMembershipEvent(MembershipEvent event) {
         RSocketBroker broker = memberToBroker(event.member());
-        String brokerIp = event.member().address().host();
+        String brokerIp = broker.getIp();
         if (event.isAdded()) {
             makeJsonRpcCall(event.member(), "BrokerService.getConfiguration", null).subscribe(response -> {
-                brokers.put(broker.getIp(), broker);
+                brokers.put(brokerIp, broker);
+                this.consistentHash.add(brokerIp);
                 Map<String, String> brokerConfiguration = response.getResult();
                 if (brokerConfiguration != null && !brokerConfiguration.isEmpty()) {
                     String externalDomain = brokerConfiguration.get("rsocket.broker.externalDomain");
@@ -211,9 +214,11 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             });
         } else if (event.isRemoved()) {
             brokers.remove(brokerIp);
+            this.consistentHash.add(brokerIp);
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "removed"));
         } else if (event.isLeaving()) {
-            RSocketBroker leavingBroker = brokers.remove(brokerIp);
+            brokers.remove(brokerIp);
+            this.consistentHash.add(brokerIp);
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "left"));
         }
         brokersEmitterProcessor.onNext(brokers.values());
