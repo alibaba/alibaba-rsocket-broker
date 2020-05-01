@@ -15,6 +15,7 @@ public class UpstreamClusterChangedEvent implements CloudEventSupport<UpstreamCl
     private String group;
     private String version;
     private List<String> uris;
+    private String defaultUri;
 
     public UpstreamClusterChangedEvent() {
     }
@@ -56,6 +57,14 @@ public class UpstreamClusterChangedEvent implements CloudEventSupport<UpstreamCl
 
     public void setUris(List<String> uris) {
         this.uris = uris;
+    }
+
+    public String getDefaultUri() {
+        return defaultUri;
+    }
+
+    public void setDefaultUri(String defaultUri) {
+        this.defaultUri = defaultUri;
     }
 
     @JsonIgnore
