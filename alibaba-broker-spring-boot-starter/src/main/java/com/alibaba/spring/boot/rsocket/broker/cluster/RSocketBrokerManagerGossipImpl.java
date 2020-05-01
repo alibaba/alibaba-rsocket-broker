@@ -239,4 +239,10 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     public void destroy() throws Exception {
         this.stopLocalBroker();
     }
+
+    @Override
+    public RSocketBroker findConsistentBroker(String clientId) {
+        String brokerIp = this.consistentHash.get(clientId);
+        return this.brokers.get(brokerIp);
+    }
 }

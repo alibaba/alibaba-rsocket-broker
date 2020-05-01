@@ -87,5 +87,8 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
         }).collect(Collectors.toList());
     }
 
-
+    @Override
+    public RSocketBroker findConsistentBroker(String clientId) {
+        return this.localBroker;
+    }
 }

@@ -30,4 +30,5 @@ public interface RSocketBrokerManager {
 
     Mono<String> broadcast(CloudEventImpl<?> cloudEvent);
 
+    RSocketBroker findConsistentBroker(String clientId);
 }
