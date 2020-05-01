@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.upstream;
 
 import com.alibaba.rsocket.Initializable;
+import com.alibaba.rsocket.RSocketRequesterSupport;
 import io.rsocket.RSocket;
 
 import java.io.Closeable;
@@ -30,6 +31,7 @@ public interface UpstreamManager extends Initializable, Closeable {
      */
     RSocket getRSocket(String serviceId);
 
+    RSocketRequesterSupport requesterSupport();
     /**
      * refresh service  with new uri list
      *

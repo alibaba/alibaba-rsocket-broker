@@ -55,6 +55,11 @@ public class UpstreamManagerImpl implements UpstreamManager {
     }
 
     @Override
+    public RSocketRequesterSupport requesterSupport() {
+        return this.rsocketRequesterSupport;
+    }
+
+    @Override
     public void refresh(String serviceId, List<String> uris) {
         clusters.get(serviceId).setUris(uris);
     }
