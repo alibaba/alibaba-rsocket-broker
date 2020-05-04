@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -14,7 +15,7 @@ import java.util.function.Supplier;
  */
 public class RandomSelector<T> implements Supplier<Mono<T>> {
     // round robin index
-    private int index;
+    private final AtomicInteger position = new AtomicInteger(0);
     private List<T> elements;
     private int size;
     private String name;
@@ -23,22 +24,21 @@ public class RandomSelector<T> implements Supplier<Mono<T>> {
         this.elements = elements;
         this.size = elements.size();
         this.name = name;
-        this.index = 0;
     }
 
     @Nullable
     public T next() {
-        if (size == 0) {
-            return null;
-        } else if (size == 1) {
-            return elements.get(0);
-        } else {
-            T t = elements.get(index);
-            index = (index + 1) % size;
+        if (size > 1) {
+            int pos = Math.abs(this.position.incrementAndGet());
+            T t = elements.get(pos % size);
             if (t == null) {
                 t = elements.get(0);
             }
             return t;
+        } else if (size == 1) {
+            return elements.get(0);
+        } else {
+            return null;
         }
     }
 
