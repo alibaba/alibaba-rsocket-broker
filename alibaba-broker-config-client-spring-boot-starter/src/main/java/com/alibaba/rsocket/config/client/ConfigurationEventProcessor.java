@@ -48,7 +48,7 @@ public class ConfigurationEventProcessor {
         // cloudEvent.getExtensions().get("replyto"); rsocket:///REQUEST_FNF/com.xxxx.XxxService#method
         ConfigEvent configEvent = CloudEventSupport.unwrapData(cloudEvent, ConfigEvent.class);
         // validate config content
-        if (configEvent.getAppName().equalsIgnoreCase(applicationName)
+        if (configEvent!=null && applicationName.equalsIgnoreCase(configEvent.getAppName())
                 && !RSocketConfigPropertySourceLocator.getLastConfigText().equals(configEvent.getContent())) {
             Properties configProperties = RSocketConfigPropertySourceLocator.CONFIG_PROPERTIES.get(applicationName);
             if (configProperties != null) {

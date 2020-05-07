@@ -134,13 +134,13 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             JsonRpcRequest request = message.data();
             Message replyMessage = Message.builder()
                     .correlationId(message.correlationId())
-                    .data(OnJsonRpcCall(request))
+                    .data(onJsonRpcCall(request))
                     .build();
             this.monoCluster.flatMap(cluster -> cluster.send(message.sender(), replyMessage)).subscribe();
         }
     }
 
-    public JsonRpcResponse OnJsonRpcCall(JsonRpcRequest request) {
+    public JsonRpcResponse onJsonRpcCall(JsonRpcRequest request) {
         Object result;
         if (request.getMethod().equals("BrokerService.getConfiguration")) {
             Map<String, String> config = new HashMap<>();

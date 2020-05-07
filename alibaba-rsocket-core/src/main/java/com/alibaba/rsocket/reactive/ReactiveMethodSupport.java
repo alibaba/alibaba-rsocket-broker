@@ -7,6 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author leijuan
  */
 public class ReactiveMethodSupport {
-    public static final List<Class<?>> BINARY_CLASS_LIST = Arrays.asList(ByteBuf.class, ByteBuffer.class, byte[].class);
+    public static final List<Class<?>> BINARY_CLASS_LIST = Collections.unmodifiableList(Arrays.asList(ByteBuf.class, ByteBuffer.class, byte[].class));
     private static final Map<Type, Class<?>> genericTypesCache = new ConcurrentHashMap<>();
     protected Method method;
     protected int paramCount;

@@ -36,6 +36,11 @@ public class PayloadUtils {
     }
 
     public static <T> T payloadToResponseObject(Payload payload, Class<T> responseClass) throws InvocationTargetException, IllegalAccessException {
-        return (T) parseFromMethodStore.get(responseClass).invoke(null, payload.data().nioBuffer());
+        Method method = parseFromMethodStore.get(responseClass);
+        if (method != null) {
+            //noinspection unchecked
+            return (T) method.invoke(null, payload.data().nioBuffer());
+        }
+        return null;
     }
 }

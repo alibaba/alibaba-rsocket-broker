@@ -29,7 +29,12 @@ public class ReactiveAdapterKotlin implements ReactiveAdapter {
 
     @Override
     public <T> Flux<T> toFlux(@Nullable Object source) {
-        return ReactorFlowKt.asFlux((Flow) source);
+        if (source == null) {
+            return Flux.empty();
+        } else {
+            //noinspection unchecked
+            return ReactorFlowKt.asFlux((Flow<T>) source);
+        }
     }
 
     @Override

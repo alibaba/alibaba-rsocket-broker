@@ -27,7 +27,7 @@ public class RSocketConfigPropertySourceLocator implements PropertySourceLocator
      * config properties. key is app name
      */
     public static final Map<String, Properties> CONFIG_PROPERTIES = new HashMap<>();
-    public static final Map<String, PropertiesPropertySource> CONFIG_SOURCES = new HashMap<>();
+    private static final Map<String, PropertiesPropertySource> CONFIG_SOURCES = new HashMap<>();
     /**
      * last config text
      */
