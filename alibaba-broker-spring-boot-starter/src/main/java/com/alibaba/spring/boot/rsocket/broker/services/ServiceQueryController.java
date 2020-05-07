@@ -1,6 +1,5 @@
 package com.alibaba.spring.boot.rsocket.broker.services;
 
-import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +21,6 @@ import java.util.Map;
 public class ServiceQueryController {
     @Autowired
     private ServiceRoutingSelector routingSelector;
-    @Autowired
-    private RSocketBrokerHandlerRegistry handlerRegistry;
 
     @GetMapping("/{serviceName}")
     public Flux<Map<String, Object>> query(@PathVariable(name = "serviceName") String serviceName) {
