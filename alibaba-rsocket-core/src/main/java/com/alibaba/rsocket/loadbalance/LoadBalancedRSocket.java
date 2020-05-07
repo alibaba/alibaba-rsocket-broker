@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -37,6 +36,7 @@ import java.net.URI;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.function.Predicate;
 
 /**
@@ -275,12 +275,15 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void dispose() {
-        synchronized (this) {
-            super.dispose();
-            Flux.fromIterable(activeSockets.values())
-                    .doFinally((signalType) -> activeSockets.clear())
-                    .subscribe(Disposable::dispose);
+        super.dispose();
+        for (RSocket rsocket : activeSockets.values()) {
+            try {
+                rsocket.dispose();
+            } catch (Exception ignore) {
+
+            }
         }
+        activeSockets.clear();
     }
 
     public Map<String, RSocket> getActiveSockets() {
@@ -389,7 +392,13 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
-                    .errorConsumer(error -> log.error(RsocketErrorCode.message("RST-200502", uri), error))
+                    .errorConsumer(error -> {
+                        if ((error instanceof CancellationException) && error.getMessage().equals("Disposed")) {
+                            log.info(RsocketErrorCode.message("RST-400002", uri));
+                        } else {
+                            log.error(RsocketErrorCode.message("RST-200502", uri), error);
+                        }
+                    })
                     //.frameDecoder(PayloadDecoder.ZERO_COPY)
                     .acceptor(requesterSupport.socketAcceptor())
                     .connect(UriTransportRegistry.clientForUri(uri))
