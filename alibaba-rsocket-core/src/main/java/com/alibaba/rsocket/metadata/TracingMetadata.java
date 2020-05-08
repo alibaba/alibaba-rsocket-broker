@@ -13,6 +13,8 @@ public class TracingMetadata implements MetadataAware {
     private static int TRACING_BYTES_MAX_LENGTH = 33;
     private static byte TRACE_ID_128_MARK = (byte) 0x80;
     private static byte PARENT_SPAN_MARK = (byte) 0x40;
+    private static byte SAMPLING_MARK = (byte) 0x10;
+    private static byte DEBUG_MARK = (byte) 0x08;
     /**
      * flag
      */
@@ -46,22 +48,22 @@ public class TracingMetadata implements MetadataAware {
 
     public void sampling(boolean reported) {
         if (reported) {
-            flag = (byte) (flag | 0x30);
+            flag = (byte) (flag | SAMPLING_MARK);
         }
     }
 
     public boolean isSamplingReported() {
-        return (flag & 0x30) == 0;
+        return (flag & SAMPLING_MARK) != 0;
     }
 
     public void debug(boolean reported) {
         if (reported) {
-            flag = (byte) (flag | 0xC0);
+            flag = (byte) (flag | DEBUG_MARK);
         }
     }
 
     public boolean isDebugReported() {
-        return (flag & 0xC0) == 0;
+        return (flag & DEBUG_MARK) != 0;
     }
 
     public long getTraceIdHigh() {
