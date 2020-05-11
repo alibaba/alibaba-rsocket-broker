@@ -1,44 +1,29 @@
 Alibaba RSocket Broker变更记录
 ==========================
 
-## 0.1.0-Alpha2
+## 1.0.0-M2
 
 ### 新特性
 
-* Load Balance & Health Check
-* Filter Chain
-* Binary Routing
-* Docker image & tgz
-* Spring Boot Actuator
-* Performance enhancement
+* Zipkin Tracing支持
+* Prometheus Metrics集群化采集
+* Kotlin Coroutines支持，你可以使用suspend method和Flow接口
+* Kotlin serialization支持
+* RSocket Cluster: 支持Internet和Intranet接入，同时支持Cluster节点之间的jsonrpc调用
+* IoT接入优化: 支持基于一致性Hash算法的单连接接入
+* gRPC优化： 支持全类型gRPC通讯方式
 
-## 0.1.0-Alpha1: 2019/12/12
+### 内部调整
 
-### 新特性
-
-* 基于gossip集群管理
-* 基于Spring Cloud Config的配置配送
-* 基于Spring Cloud Registry的服务发现
-* 基于CloudEvents的事件推送模型
-* TLS 1.3 & 1.2 for TCP
-* Broker的Spring Boot Starter的支持
-* RSocket Broker控制台
-
-### bug修复
-
-* 自动创建RSA Key Pair错误
-
-### 接口调整
-
-* BearerTokenMetadata调整为官方标准格式
-* GSVRoutingMetadata结构进行调整，Method调整为tag，GSV为路由key
-* Data MIME Type per stream规范实现
+* ByteBuddy替换JDK Proxy，性能提升
+* 添加Origin Metadata，服务提供方可以知道了解调用方的信息
 
 ### 文档
 
-* 基于Hugo创建站点
+* 基于JWT的安全验证的详细文档说明
+* Circuit Break和Back Pressure区别
+* 可观测性文档完善
 
-### 三方包更新
+## 1.0.0-M1
 
-* Roaring Bitmap 0.8.12
-* Netty 4.1.44
+https://github.com/alibaba/alibaba-rsocket-broker/releases/tag/1.0.0.M1
