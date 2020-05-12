@@ -15,6 +15,7 @@ Alibaba RSocket Broker变更记录
 
 ### 内部调整
 
+* RSocket Java 1.0.0发布啦 :rose:
 * ByteBuddy替换JDK Proxy，性能提升
 * 添加Origin Metadata，服务提供方可以知道了解调用方的信息
 
