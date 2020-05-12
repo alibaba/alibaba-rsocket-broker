@@ -32,7 +32,7 @@
         <micrometer.version>1.5.1</micrometer.version>
         <reactor-bom.version>Dysprosium-SR7</reactor-bom.version>
         <netty.version>4.1.49.Final</netty.version>
-        <rsocket.version>1.0.0-RC7</rsocket.version>
+        <rsocket.version>1.0.0</rsocket.version>
         <kotlin.version>1.3.72</kotlin.version>
         <kotlinx-serialization.version>0.20.0</kotlinx-serialization.version>
         <kotlinx-coroutines.version>1.3.6</kotlinx-coroutines.version>

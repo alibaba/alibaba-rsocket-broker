@@ -38,6 +38,7 @@ public class RSocketListenerImpl implements RSocketListener {
     private Map<Integer, String> schemas = new HashMap<>();
     private String host = "0.0.0.0";
     private static final String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
+    private final Consumer<Throwable> DEFAULT_ERROR_CONSUMBER = error -> log.error(RsocketErrorCode.message("RST-100500", error.getMessage()), error);
     private Consumer<Throwable> errorConsumer;
     private Certificate certificate;
     private PrivateKey privateKey;
@@ -157,18 +158,12 @@ public class RSocketListenerImpl implements RSocketListener {
                     });
 
                 }
-                //error consumer
-                if (this.errorConsumer != null) {
-                     rsocketServer.errorConsumer(errorConsumer);
-                } else {
-                      rsocketServer.errorConsumer(error -> {
-                        log.error(RsocketErrorCode.message("RST-100500", error.getMessage()), error);
-                    });
-                }
+
                 Disposable disposable = rsocketServer
                         .acceptor(acceptor)
                         .bind(transport)
                         .onTerminateDetach()
+                        .doOnError(Optional.ofNullable(errorConsumer).orElse(DEFAULT_ERROR_CONSUMBER))
                         .subscribe();
                 responders.add(disposable);
                 log.info(RsocketErrorCode.message("RST-100001", schema + "://" + host + ":" + port));
