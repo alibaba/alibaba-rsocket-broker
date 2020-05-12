@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.metadata.CompositeMetadata;
-import io.rsocket.metadata.CompositeMetadataFlyweight;
+import io.rsocket.metadata.CompositeMetadataCodec;
 import io.rsocket.metadata.WellKnownMimeType;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,9 +74,9 @@ public class RSocketCompositeMetadata implements MetadataAware {
         for (Map.Entry<String, ByteBuf> entry : metadataStore.entrySet()) {
             WellKnownMimeType wellKnownMimeType = WellKnownMimeType.fromString(entry.getKey());
             if (wellKnownMimeType != UNPARSEABLE_MIME_TYPE) {
-                CompositeMetadataFlyweight.encodeAndAddMetadata(compositeByteBuf, PooledByteBufAllocator.DEFAULT, wellKnownMimeType, entry.getValue());
+                CompositeMetadataCodec.encodeAndAddMetadata(compositeByteBuf, PooledByteBufAllocator.DEFAULT, wellKnownMimeType, entry.getValue());
             } else {
-                CompositeMetadataFlyweight.encodeAndAddMetadata(compositeByteBuf, PooledByteBufAllocator.DEFAULT, entry.getKey(), entry.getValue());
+                CompositeMetadataCodec.encodeAndAddMetadata(compositeByteBuf, PooledByteBufAllocator.DEFAULT, entry.getKey(), entry.getValue());
             }
         }
         return compositeByteBuf;
