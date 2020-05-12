@@ -37,8 +37,6 @@ public interface RSocketListener {
 
         Builder listen(String schema, int port);
 
-        Builder errorConsumer(Consumer<Throwable> errorConsumer);
-
         Builder sslContext(Certificate certificate, PrivateKey privateKey);
 
         Builder payloadDecoder(PayloadDecoder payloadDecoder);

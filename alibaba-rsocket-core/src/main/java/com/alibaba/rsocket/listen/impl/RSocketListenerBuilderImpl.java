@@ -32,12 +32,6 @@ public class RSocketListenerBuilderImpl implements RSocketListener.Builder {
     }
 
     @Override
-    public RSocketListener.Builder errorConsumer(Consumer<Throwable> errorConsumer) {
-        rSocketListener.errorConsumer(errorConsumer);
-        return this;
-    }
-
-    @Override
     public RSocketListener.Builder sslContext(Certificate certificate, PrivateKey privateKey) {
         rSocketListener.setCertificate(certificate);
         rSocketListener.setPrivateKey(privateKey);
