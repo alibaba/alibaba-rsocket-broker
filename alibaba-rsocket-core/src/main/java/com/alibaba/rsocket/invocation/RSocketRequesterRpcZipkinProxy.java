@@ -82,6 +82,6 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
     }
 
     public TracingMetadata tracingMetadata(TraceContext traceContext) {
-        return new TracingMetadata(traceContext.traceIdHigh(), traceContext.traceId(), traceContext.spanId(), traceContext.parentId());
+        return new TracingMetadata(traceContext.traceIdHigh(), traceContext.traceId(), traceContext.spanId(), traceContext.parentId(), true, false);
     }
 }
