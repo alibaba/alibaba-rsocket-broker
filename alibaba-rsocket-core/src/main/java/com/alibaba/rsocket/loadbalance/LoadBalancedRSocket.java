@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.loadbalance;
 
+import com.alibaba.rsocket.AbstractRSocket;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.cloudevents.EventReply;
@@ -14,7 +15,6 @@ import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
-import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.core.RSocketConnector;
@@ -36,7 +36,6 @@ import java.net.URI;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CancellationException;
 import java.util.function.Predicate;
 
 /**

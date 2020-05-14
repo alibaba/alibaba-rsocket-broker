@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.listen;
 
+import com.alibaba.rsocket.AbstractRSocket;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageAcceptMimeTypesMetadata;
@@ -9,7 +10,6 @@ import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
 import io.netty.util.ReferenceCountUtil;
-import io.rsocket.AbstractRSocket;
 import io.rsocket.Payload;
 import io.rsocket.exceptions.InvalidException;
 import io.rsocket.util.ByteBufPayload;
@@ -162,7 +162,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 }
                 if (result instanceof Mono) {
                     result = Flux.from((Mono<?>) result);
-                }  else {
+                } else {
                     result = methodHandler.getReactiveAdapter().toFlux(result);
                 }
                 //composite data for return value
