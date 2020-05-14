@@ -26,7 +26,6 @@ import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
-import io.rsocket.ResponderRSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.InvalidException;
 import io.rsocket.frame.FrameType;
@@ -52,7 +51,7 @@ import java.util.*;
  * @author leijuan
  */
 @SuppressWarnings({"Duplicates", "rawtypes"})
-public class RSocketBrokerResponderHandler extends RSocketResponderSupport implements ResponderRSocket, CloudEventRSocket {
+public class RSocketBrokerResponderHandler extends RSocketResponderSupport implements CloudEventRSocket {
     private static Logger log = LoggerFactory.getLogger(RSocketBrokerResponderHandler.class);
     /**
      * binary routing mark
@@ -206,6 +205,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Override
+    @NotNull
     public Mono<Payload> requestResponse(Payload payload) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
@@ -248,6 +248,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Override
+    @NotNull
     public Mono<Void> fireAndForget(Payload payload) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
@@ -303,6 +304,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Override
+    @NotNull
     public Flux<Payload> requestStream(Payload payload) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(payload.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
@@ -341,7 +343,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         });
     }
 
-    @Override
     public Flux<Payload> requestChannel(Payload signal, Publisher<Payload> payloads) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(signal.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
@@ -363,7 +364,18 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Override
-    public Mono<Void> metadataPush(Payload payload) {
+    @NotNull
+    public Flux<Payload> requestChannel(@NotNull Publisher<Payload> payloads) {
+        if (payloads instanceof Flux) {
+            Flux<Payload> payloadsWithSignalRouting = (Flux<Payload>) payloads;
+            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux.skip(1)));
+        }
+        return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
+    }
+
+    @Override
+    @NotNull
+    public Mono<Void> metadataPush(@NotNull Payload payload) {
         try {
             if (payload.metadata().readableBytes() > 0) {
                 CloudEventImpl<ObjectNode> cloudEvent = Json.decodeValue(payload.getMetadataUtf8(), CLOUD_EVENT_TYPE_REFERENCE);
@@ -514,7 +526,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     }
 
     @Override
-    public Mono<Void> onClose() {
+    public @NotNull Mono<Void> onClose() {
         return this.comboOnClose;
     }
 

@@ -15,7 +15,6 @@ import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
-import io.rsocket.ResponderRSocket;
 import io.rsocket.exceptions.InvalidException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +33,7 @@ import java.nio.charset.StandardCharsets;
  * @author leijuan
  */
 @SuppressWarnings("Duplicates")
-public class RSocketResponderHandler extends RSocketResponderSupport implements ResponderRSocket, CloudEventRSocket {
+public class RSocketResponderHandler extends RSocketResponderSupport implements CloudEventRSocket {
     /**
      * requester from peer
      */
@@ -81,6 +80,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     }
 
     @Override
+    @NotNull
     public Mono<Payload> requestResponse(Payload payload) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
         GSVRoutingMetadata routingMetaData = getGsvRoutingMetadata(compositeMetadata);
@@ -98,6 +98,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     }
 
     @Override
+    @NotNull
     public Mono<Void> fireAndForget(Payload payload) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
         GSVRoutingMetadata routingMetaData = getGsvRoutingMetadata(compositeMetadata);
@@ -131,6 +132,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     }
 
     @Override
+    @NotNull
     public Flux<Payload> requestStream(Payload payload) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
         GSVRoutingMetadata routingMetaData = getGsvRoutingMetadata(compositeMetadata);
@@ -147,7 +149,6 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         return injectTraceContext(result, compositeMetadata);
     }
 
-    @Override
     public Flux<Payload> requestChannel(Payload signal, Publisher<Payload> payloads) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(signal.metadata());
         GSVRoutingMetadata routingMetaData = getGsvRoutingMetadata(compositeMetadata);
@@ -169,7 +170,8 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public final Flux<Payload> requestChannel(Publisher<Payload> payloads) {
+    @NotNull
+    public final Flux<Payload> requestChannel(@NotNull Publisher<Payload> payloads) {
         if (payloads instanceof Flux) {
             Flux<Payload> payloadsWithSignalRouting = (Flux<Payload>) payloads;
             return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux.skip(1)));
@@ -184,7 +186,8 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
      * @return mono empty
      */
     @Override
-    public Mono<Void> metadataPush(Payload payload) {
+    @NotNull
+    public Mono<Void> metadataPush(@NotNull Payload payload) {
         try {
             if (payload.metadata().readableBytes() > 0) {
                 return fireCloudEvent(Json.decodeValue(payload.getMetadataUtf8(), CLOUD_EVENT_TYPE_REFERENCE));
@@ -213,6 +216,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     }
 
     @Override
+    @NotNull
     public Mono<Void> onClose() {
         return this.comboOnClose;
     }
