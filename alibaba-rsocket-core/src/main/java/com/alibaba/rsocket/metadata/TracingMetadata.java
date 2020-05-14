@@ -2,6 +2,7 @@ package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.rsocket.metadata.TracingMetadataCodec;
 
 /**
  * Tracing metadata: https://github.com/rsocket/rsocket/blob/master/Extensions/Tracing-Zipkin.md
@@ -10,125 +11,97 @@ import io.netty.buffer.PooledByteBufAllocator;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class TracingMetadata implements MetadataAware {
-    private static int TRACING_BYTES_MAX_LENGTH = 33;
-    private static byte TRACE_ID_128_MARK = (byte) 0x80;
-    private static byte PARENT_SPAN_MARK = (byte) 0x40;
-    private static byte SAMPLING_MARK = (byte) 0x10;
-    private static byte DEBUG_MARK = (byte) 0x08;
-    /**
-     * flag
-     */
-    private byte flag = 0;
-    /**
-     * Upper 64bits of the trace ID
-     */
     private long traceIdHigh;
-    /**
-     * Lower 64bits of the trace ID
-     */
-    private long traceIdLow;
-    /**
-     * span id
-     */
+    private long traceId;
+    private boolean hasParentId;
+    private long parentId;
     private long spanId;
-    /**
-     * parent span id
-     */
-    private long parentSpanId;
+    private boolean isEmpty;
+    private boolean isNotSampled;
+    private boolean isSampled;
+    private boolean isDebug;
 
     public TracingMetadata() {
     }
 
-    public TracingMetadata(long traceIdHigh, long traceIdLow, long spanId, long parentSpanId) {
-        this.setTraceIdHigh(traceIdHigh);
-        this.traceIdLow = traceIdLow;
+    public TracingMetadata(long traceIdHigh, long traceId, long spanId, long parentId, boolean sampled, boolean debug) {
+        this.traceIdHigh = traceIdHigh;
+        this.traceId = traceId;
         this.spanId = spanId;
-        this.setParentSpanId(parentSpanId);
-    }
-
-    public void sampling(boolean reported) {
-        if (reported) {
-            flag = (byte) (flag | SAMPLING_MARK);
+        this.parentId = parentId;
+        if (parentId != 0) {
+            this.hasParentId = true;
+        }
+        this.isSampled = sampled;
+        this.isDebug = debug;
+        if (!(sampled || debug)) {
+            this.isNotSampled = true;
         }
     }
 
-    public boolean isSamplingReported() {
-        return (flag & SAMPLING_MARK) != 0;
-    }
 
-    public void debug(boolean reported) {
-        if (reported) {
-            flag = (byte) (flag | DEBUG_MARK);
-        }
-    }
-
-    public boolean isDebugReported() {
-        return (flag & DEBUG_MARK) != 0;
-    }
-
-    public long getTraceIdHigh() {
+    public long traceIdHigh() {
         return traceIdHigh;
     }
 
-    public void setTraceIdHigh(long traceIdHigh) {
-        this.traceIdHigh = traceIdHigh;
-        if (traceIdHigh > 0) {
-            flag = (byte) (flag | TRACE_ID_128_MARK);
-        }
+    /**
+     * Unique 8-byte identifier for a trace, set on all spans within it.
+     */
+    public long traceId() {
+        return traceId;
     }
 
-    public long getTraceIdLow() {
-        return traceIdLow;
+    /**
+     * Indicates if the parent's {@link #spanId} or if this the root span in a trace.
+     */
+    public final boolean hasParent() {
+        return hasParentId;
     }
 
-    public void setTraceIdLow(long traceIdLow) {
-        this.traceIdLow = traceIdLow;
+    /**
+     * Returns the parent's {@link #spanId} where zero implies absent.
+     */
+    public long parentId() {
+        return parentId;
     }
 
-    public void setSpanId(long spanId) {
-        this.spanId = spanId;
-    }
-
-    public void setParentSpanId(long parentSpanId) {
-        this.parentSpanId = parentSpanId;
-        if (traceIdHigh > 0) {
-            flag = (byte) (flag | TRACE_ID_128_MARK);
-        }
-    }
-
-    public Long getSpanId() {
+    /**
+     * Unique 8-byte identifier of this span within a trace.
+     *
+     * <p>A span is uniquely identified in storage by ({@linkplain #traceId}, {@linkplain #spanId}).
+     */
+    public long spanId() {
         return spanId;
     }
 
-    public void setSpanId(Long spanId) {
-        this.spanId = spanId;
+    /**
+     * Indicates that trace IDs should be accepted for tracing.
+     */
+    public boolean isSampled() {
+        return isSampled;
     }
 
-    public Long getParentSpanId() {
-        return parentSpanId;
+    /**
+     * Indicates that trace IDs should be force traced.
+     */
+    public boolean isDebug() {
+        return isDebug;
     }
 
-    public void setParentSpanId(Long parentSpanId) {
-        this.parentSpanId = parentSpanId;
+    /**
+     * Includes that there is sampling information and no trace IDs.
+     */
+    public boolean isEmpty() {
+        return isEmpty;
     }
 
-    public byte getFlag() {
-        return flag;
-    }
-
-    public void setFlag(byte flag) {
-        this.flag = flag;
-    }
-
-    private int byteBufCapacity() {
-        int len = TRACING_BYTES_MAX_LENGTH;
-        if (this.traceIdHigh == 0) {
-            len = len - 8;
-        }
-        if (this.parentSpanId == 0) {
-            len = len - 8;
-        }
-        return len;
+    /**
+     * Indicated that sampling decision is present. If {@code false} means that decision is unknown
+     * and says explicitly that {@link #isDebug()} and {@link #isSampled()} also returns {@code
+     * false}.
+     */
+    public boolean isDecided() {
+        return isNotSampled || isDebug || isSampled;
     }
 
     @Override
@@ -143,35 +116,40 @@ public class TracingMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        int bytesLength = byteBufCapacity();
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer(bytesLength, bytesLength);
-        buffer.writeByte(flag);
-        if (this.traceIdHigh > 0) {
-            buffer.writeLong(this.traceIdHigh);
+        if (this.hasParentId) {
+            return TracingMetadataCodec.encode128(PooledByteBufAllocator.DEFAULT, this.traceIdHigh, this.traceId, this.spanId, this.parentId, toFlags());
+        } else {
+            return TracingMetadataCodec.encode128(PooledByteBufAllocator.DEFAULT, this.traceIdHigh, this.traceId, this.spanId, toFlags());
         }
-        buffer.writeLong(this.traceIdLow);
-        buffer.writeLong(spanId);
-        if (this.parentSpanId > 0) {
-            buffer.writeLong(parentSpanId);
-        }
-        return buffer;
     }
 
     public void load(ByteBuf byteBuf) {
-        this.flag = byteBuf.readByte();
-        if ((flag & TRACE_ID_128_MARK) > 0) {
-            this.traceIdHigh = byteBuf.readLong();
-        }
-        this.traceIdLow = byteBuf.readLong();
-        this.spanId = byteBuf.readLong();
-        if ((flag & PARENT_SPAN_MARK) > 0) {
-            this.parentSpanId = byteBuf.readLong();
-        }
+        io.rsocket.metadata.TracingMetadata tempTracing = TracingMetadataCodec.decode(byteBuf);
+        this.traceIdHigh = tempTracing.traceIdHigh();
+        this.traceId = tempTracing.traceId();
+        this.spanId = tempTracing.spanId();
+        this.parentId = tempTracing.parentId();
+        this.hasParentId = tempTracing.hasParent();
+        this.isSampled = tempTracing.isSampled();
+        this.isDebug = tempTracing.isDebug();
+        this.isEmpty = tempTracing.isEmpty();
     }
 
     public static TracingMetadata from(ByteBuf content) {
         TracingMetadata temp = new TracingMetadata();
         temp.load(content);
         return temp;
+    }
+
+    private TracingMetadataCodec.Flags toFlags() {
+        if (this.isSampled) {
+            return TracingMetadataCodec.Flags.SAMPLE;
+        } else if (this.isDebug) {
+            return TracingMetadataCodec.Flags.DEBUG;
+        } else if (!this.isDecided()) {
+            return TracingMetadataCodec.Flags.UNDECIDED;
+        } else {
+            return TracingMetadataCodec.Flags.NOT_SAMPLE;
+        }
     }
 }
