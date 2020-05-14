@@ -240,10 +240,10 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @NotNull
     private TraceContext constructTraceContext(@NotNull TracingMetadata tracingMetadata) {
         return TraceContext.newBuilder()
-                .parentId(tracingMetadata.getParentSpanId())
-                .spanId(tracingMetadata.getSpanId())
-                .traceIdHigh(tracingMetadata.getTraceIdHigh())
-                .traceId(tracingMetadata.getTraceIdLow())
+                .parentId(tracingMetadata.parentId())
+                .spanId(tracingMetadata.spanId())
+                .traceIdHigh(tracingMetadata.traceIdHigh())
+                .traceId(tracingMetadata.traceId())
                 .build();
     }
 
