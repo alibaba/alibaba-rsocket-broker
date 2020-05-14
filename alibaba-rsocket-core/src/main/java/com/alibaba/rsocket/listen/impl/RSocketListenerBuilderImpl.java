@@ -39,12 +39,6 @@ public class RSocketListenerBuilderImpl implements RSocketListener.Builder {
     }
 
     @Override
-    public RSocketListener.Builder payloadDecoder(PayloadDecoder payloadDecoder) {
-        rSocketListener.setPayloadDecoder(payloadDecoder);
-        return this;
-    }
-
-    @Override
     public RSocketListener.Builder addResponderInterceptor(RSocketInterceptor interceptor) {
         rSocketListener.addResponderInterceptor(interceptor);
         return this;

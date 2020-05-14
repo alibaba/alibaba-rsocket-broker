@@ -7,7 +7,6 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.core.RSocketServer;
-import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.plugins.DuplexConnectionInterceptor;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.plugins.SocketAcceptorInterceptor;
@@ -25,7 +24,6 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +38,6 @@ public class RSocketListenerImpl implements RSocketListener {
     private static final String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
     private Certificate certificate;
     private PrivateKey privateKey;
-    private PayloadDecoder payloadDecoder;
     private SocketAcceptor acceptor;
     private List<RSocketInterceptor> responderInterceptors = new ArrayList<>();
     private List<SocketAcceptorInterceptor> acceptorInterceptors = new ArrayList<>();
@@ -55,16 +52,13 @@ public class RSocketListenerImpl implements RSocketListener {
     public void listen(String schema, int port) {
         this.schemas.put(port, schema);
     }
+
     public void setCertificate(Certificate certificate) {
         this.certificate = certificate;
     }
 
     public void setPrivateKey(PrivateKey privateKey) {
         this.privateKey = privateKey;
-    }
-
-    public void setPayloadDecoder(PayloadDecoder payloadDecoder) {
-        this.payloadDecoder = payloadDecoder;
     }
 
     public void setAcceptor(SocketAcceptor acceptor) {
@@ -127,10 +121,6 @@ public class RSocketListenerImpl implements RSocketListener {
                     transport = TcpServerTransport.create(host, port);
                 }
                 RSocketServer rsocketServer = RSocketServer.create();
-                //payload decoder
-                if (payloadDecoder != null) {
-                    rsocketServer.payloadDecoder(payloadDecoder);
-                }
                 //acceptor interceptor
                 for (SocketAcceptorInterceptor acceptorInterceptor : acceptorInterceptors) {
                     rsocketServer.interceptors(interceptorRegistry -> {

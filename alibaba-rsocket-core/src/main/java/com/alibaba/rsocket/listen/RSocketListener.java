@@ -39,8 +39,6 @@ public interface RSocketListener {
 
         Builder sslContext(Certificate certificate, PrivateKey privateKey);
 
-        Builder payloadDecoder(PayloadDecoder payloadDecoder);
-
         Builder addResponderInterceptor(RSocketInterceptor interceptor);
 
         Builder addSocketAcceptorInterceptor(SocketAcceptorInterceptor interceptor);
