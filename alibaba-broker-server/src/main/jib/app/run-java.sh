@@ -33,7 +33,7 @@
 #                             https://www.youtube.com/watch?v=w1rZOY5gbvk
 #                             https://vimeo.com/album/4133413/video/181900266
 # Also note that heap is only a small portion of the memory used by a JVM. There are lot
-# of other memory areas (metadata, thread, code cache, ...) which addes to the overall
+# of other memory areas (metadata, thread, code cache, ...) which adds to the overall
 # size. When your container gets killed because of an OOM, then you should tune
 # the absolute values.
 # JAVA_INIT_MEM_RATIO: Ratio use to calculate a default intial heap memory, in percent.
@@ -188,6 +188,23 @@ init_limit_env_vars() {
   fi
 }
 
+init_java_major_version() {
+    # Initialize JAVA_MAJOR_VERSION variable if missing
+    if [ -z "${JAVA_MAJOR_VERSION:-}" ]; then
+        local full_version=""
+
+        # Parse JAVA_VERSION variable available in containers
+        if [ -n "${JAVA_VERSION:-}" ]; then
+            full_version="$JAVA_VERSION"
+        elif [ -n "${JAVA_HOME:-}" ] && [ -r "${JAVA_HOME}/release" ]; then
+            full_version="$(grep -e '^JAVA_VERSION=' ${JAVA_HOME}/release | sed -e 's/.*\"\([0-9.]\{1,\}\).*/\1/')"
+        else
+            full_version=$(java -version 2>&1 | head -1 | sed -e 's/.*\"\([0-9.]\{1,\}\).*/\1/')
+        fi
+        export JAVA_MAJOR_VERSION=$(echo $full_version | sed -e 's/\(1\.\)\{0,1\}\([0-9]\{1,\}\).*/\2/')
+    fi
+}
+
 load_env() {
   local script_dir="$1"
 
@@ -237,14 +254,19 @@ run_java_options() {
 
 debug_options() {
   if [ -n "${JAVA_ENABLE_DEBUG:-}" ] || [ -n "${JAVA_DEBUG_ENABLE:-}" ] ||  [ -n "${JAVA_DEBUG:-}" ]; then
-    local debug_port="${JAVA_DEBUG_PORT:-5005}"
+	  local debug_port="${JAVA_DEBUG_PORT:-5005}"
     local suspend_mode="n"
     if [ -n "${JAVA_DEBUG_SUSPEND:-}" ]; then
       if ! echo "${JAVA_DEBUG_SUSPEND}" | grep -q -e '^\(false\|n\|no\|0\)$'; then
         suspend_mode="y"
       fi
     fi
-    echo "-agentlib:jdwp=transport=dt_socket,server=y,suspend=${suspend_mode},address=${debug_port}"
+
+    local address_prefix=""
+	  if [ "${JAVA_MAJOR_VERSION:-0}" -ge "9" ]; then
+      address_prefix="*:"
+	  fi
+	  echo "-agentlib:jdwp=transport=dt_socket,server=y,suspend=${suspend_mode},address=${address_prefix}${debug_port}"
   fi
 }
 
@@ -607,6 +629,9 @@ run() {
 
 # =============================================================================
 # Fire up
+
+# Initialize JAVA_MAJOR_VERSION variable if missing
+init_java_major_version
 
 # Set env vars reflecting limits
 init_limit_env_vars
