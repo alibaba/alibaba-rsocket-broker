@@ -18,7 +18,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <spring-boot.version>2.2.7.RELEASE</spring-boot.version>
+        <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
         <reactor-bom.version>Dysprosium-SR7</reactor-bom.version>
         <netty.version>4.1.50.Final</netty.version>
         <rsocket.version>1.0.0</rsocket.version>
