@@ -14,8 +14,6 @@ import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
-import kotlinx.serialization.SerializationStrategy;
-import kotlinx.serialization.protobuf.ProtoBuf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,15 +26,16 @@ import java.nio.ByteBuffer;
  * @author leijuan
  */
 @SuppressWarnings("unchecked")
-public class ObjectEncodingHandlerProtobufImpl extends KotlinSerializerSupport implements ObjectEncodingHandler {
+public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler {
     LoadingCache<Class<?>, Method> parseFromMethodStore = Caffeine.newBuilder()
             .maximumSize(Integer.MAX_VALUE)
             .build(targetClass -> targetClass.getMethod("parseFrom", ByteBuffer.class));
-    private boolean ktProtoBuf = true;
+    private boolean ktProtoBuf;
 
     public ObjectEncodingHandlerProtobufImpl() {
         try {
             Class.forName("kotlinx.serialization.protobuf.ProtoBuf");
+            ktProtoBuf = true;
         } catch (Exception e) {
             ktProtoBuf = false;
         }
@@ -74,9 +73,8 @@ public class ObjectEncodingHandlerProtobufImpl extends KotlinSerializerSupport i
                 ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
                 if (result instanceof MessageLite) {
                     ((MessageLite) result).writeTo(bos);
-                } else if (ktProtoBuf && isKotlinSerializable(result.getClass())) {
-                    byte[] bytes = ProtoBuf.Default.dump((SerializationStrategy<? super Object>) getSerializer(result.getClass()), result);
-                    return Unpooled.wrappedBuffer(bytes);
+                } else if (ktProtoBuf && KotlinSerializerSupport.isKotlinSerializable(result.getClass())) {
+                    return Unpooled.wrappedBuffer(KotlinSerializerSupport.encodeAsProtobuf(result));
                 } else {
                     LinkedBuffer buffer = LinkedBuffer.allocate(256);
                     Schema schema = RuntimeSchema.getSchema(result.getClass());
@@ -101,10 +99,10 @@ public class ObjectEncodingHandlerProtobufImpl extends KotlinSerializerSupport i
                     if (method != null) {
                         return method.invoke(null, data.nioBuffer());
                     }
-                } else if (ktProtoBuf && isKotlinSerializable(targetClass)) {
+                } else if (ktProtoBuf && KotlinSerializerSupport.isKotlinSerializable(targetClass)) {
                     byte[] bytes = new byte[data.readableBytes()];
                     data.readBytes(bytes);
-                    return ProtoBuf.Default.load(getSerializer(targetClass), bytes);
+                    return KotlinSerializerSupport.decodeFromProtobuf(bytes, targetClass);
                 } else {
                     Schema schema = RuntimeSchema.getSchema(targetClass);
                     Object object = schema.newMessage();

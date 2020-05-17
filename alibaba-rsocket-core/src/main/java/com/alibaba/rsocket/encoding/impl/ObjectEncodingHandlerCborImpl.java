@@ -11,7 +11,6 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.util.ReferenceCountUtil;
-import kotlinx.serialization.cbor.Cbor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +23,7 @@ import java.util.Arrays;
  *
  * @author leijuan
  */
-public class ObjectEncodingHandlerCborImpl extends KotlinSerializerSupport implements ObjectEncodingHandler {
+public class ObjectEncodingHandlerCborImpl implements ObjectEncodingHandler {
     private ObjectMapper objectMapper = new ObjectMapper(new CBORFactory());
     private boolean ktCbor = true;
 
@@ -93,10 +92,10 @@ public class ObjectEncodingHandlerCborImpl extends KotlinSerializerSupport imple
         if (data.readableBytes() > 0 && targetClass != null) {
             try {
                 //Kotlin Cbor Serializer
-                if (ktCbor && isKotlinSerializable(targetClass)) {
+                if (ktCbor && KotlinSerializerSupport.isKotlinSerializable(targetClass)) {
                     byte[] bytes = new byte[data.readableBytes()];
                     data.readBytes(bytes);
-                    return Cbor.Default.load(getSerializer(targetClass), bytes);
+                    return KotlinSerializerSupport.decodeFromCbor(bytes, targetClass);
                 }
                 return objectMapper.readValue((InputStream) new ByteBufInputStream(data), targetClass);
             } catch (Exception e) {
