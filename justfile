@@ -18,9 +18,15 @@ artifacts_install:
 docker_build: artifacts_install
   mvn -pl alibaba-broker-server jib:dockerBuild
 
+buildpack:
+  mvn -DskipTests -pl alibaba-broker-server package spring-boot:build-image
+
 # start rsocket broker
 start_broker:
   java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar
+
+debug_broker:
+  java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar
 
 start_gossip_broker:
    java -jar -Drsocket.broker.topology=gossip -Drsocket.broker.seeds=192.168.11.11,192.168.11.12,192.168.11.13 alibaba-broker-server/target/alibaba-rsocket-broker.jar
