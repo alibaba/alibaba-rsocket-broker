@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.broker;
 
+import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
@@ -18,6 +19,9 @@ public class AlibabaRSocketBrokerServer {
     public static final LocalDateTime STARTED_AT = LocalDateTime.now();
 
     public static void main(String[] args) {
+        //checking encoder first
+        //noinspection ResultOfMethodCallIgnored
+        RSocketEncodingFacade.getInstance();
         SpringApplication.run(AlibabaRSocketBrokerServer.class, args);
     }
 
