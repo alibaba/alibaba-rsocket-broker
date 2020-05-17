@@ -15,7 +15,7 @@
     <properties>
         <vaadin.version>14.1.28</vaadin.version>
         <flexmark-all.version>0.61.28</flexmark-all.version>
-        <undertow.version>2.1.0.Final</undertow.version>
+        <undertow.version>2.1.1.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
@@ -160,6 +160,7 @@
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
                     <jvmArguments>-Dvaadin.productionMode</jvmArguments>
+                    <imageName>linuxchina/alibaba-rsocket-broker:${project.version}-buildpack</imageName>
                 </configuration>
             </plugin>
             <plugin>
@@ -170,7 +171,7 @@
                         <image>openjdk:8-jdk-slim</image>
                     </from>
                     <to>
-                        <image>linuxchina/alibaba-rsocket-broker</image>
+                        <image>linuxchina/alibaba-rsocket-broker:${project.version}</image>
                     </to>
                     <container>
                         <mainClass>${mainClass}</mainClass>
