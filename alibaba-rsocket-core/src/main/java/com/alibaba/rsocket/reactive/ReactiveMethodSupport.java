@@ -36,7 +36,7 @@ public class ReactiveMethodSupport {
     protected Class<?> lastParamType;
     protected boolean kotlinSuspend = false;
     /**
-     * reactive adapter for RxJava2 & RxJava3 etc
+     * reactive adapter for RxJava2 and RxJava3 etc
      */
     protected ReactiveAdapter reactiveAdapter;
 
