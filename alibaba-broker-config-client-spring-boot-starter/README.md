@@ -14,9 +14,10 @@ RSocket Broker Config Client
 </dependency>
 ```
 
-* 在application.properties中添加
+* 在application.properties中添加以下配置，这三个配置项都是必须的
 
 ```
+spring.application.name=your-app-name
 rsocket.brokers=tcp://127.0.0.1:9999
 rsocket.jwt-token=your_token_here
 ```
