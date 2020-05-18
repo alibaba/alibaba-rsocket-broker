@@ -58,11 +58,13 @@ public class RSocketConfigPropertySourceLocator implements PropertySourceLocator
                         configProperties.load(new StringReader(LAST_CONFIG_TEXT));
                         CONFIG_PROPERTIES.put(applicationName, configProperties);
                         log.info(RsocketErrorCode.message("RST-202200", applicationName));
-                        configProperties.setProperty("rsocket.metadata.config", "true");
-                        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("rsocket-broker", configProperties);
-                        CONFIG_SOURCES.put(applicationName, propertiesPropertySource);
-                        return propertiesPropertySource;
+                    } else {
+                        log.info(RsocketErrorCode.message("RST-202404", applicationName));
                     }
+                    configProperties.setProperty("rsocket.metadata.config", "true");
+                    PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("rsocket-broker", configProperties);
+                    CONFIG_SOURCES.put(applicationName, propertiesPropertySource);
+                    return propertiesPropertySource;
                 } catch (Exception e) {
                     log.error(RsocketErrorCode.message("RST-202500", httpUri), e);
                 }
