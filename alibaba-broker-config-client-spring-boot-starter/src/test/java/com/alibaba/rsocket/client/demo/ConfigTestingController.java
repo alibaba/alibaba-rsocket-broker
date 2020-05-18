@@ -17,7 +17,7 @@ import static org.springframework.context.annotation.ScopedProxyMode.DEFAULT;
 @RestController
 @RefreshScope(proxyMode = DEFAULT)
 public class ConfigTestingController {
-    @Value("${developer}")
+    @Value("${developer:unknown}")
     private String developer;
 
     @RequestMapping("/config/display")
