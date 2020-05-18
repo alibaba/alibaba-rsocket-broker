@@ -14,6 +14,11 @@
     <dependencies>
         <dependency>
             <groupId>com.alibaba.rsocket</groupId>
+            <artifactId>alibaba-rsocket-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.rsocket</groupId>
             <artifactId>alibaba-rsocket-spring-boot-starter</artifactId>
             <version>${alibaba-rsocket.version}</version>
         </dependency>
