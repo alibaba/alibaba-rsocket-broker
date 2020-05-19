@@ -73,6 +73,7 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ConfigurationService configurationService() {
         return new KVStorageServiceImpl();
     }
