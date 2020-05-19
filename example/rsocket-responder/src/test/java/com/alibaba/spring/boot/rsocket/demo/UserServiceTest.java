@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.RSocket;
-import io.rsocket.RSocketFactory;
+import io.rsocket.core.RSocketConnector;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.DefaultPayload;
@@ -25,10 +25,9 @@ public class UserServiceTest {
     RSocket rsocket;
 
     @BeforeAll
-    public void setUp() throws Exception {
-        rsocket = RSocketFactory.connect()
-                .transport(UriTransportRegistry.clientForUri("tcp://127.0.0.1:42252"))
-                .start()
+    public void setUp() {
+        rsocket = RSocketConnector.create()
+                .connect(UriTransportRegistry.clientForUri("tcp://127.0.0.1:42252"))
                 .block();
     }
 
