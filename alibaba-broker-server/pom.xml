@@ -32,6 +32,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
@@ -136,12 +140,6 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
-        <!-- block hound-->
-        <!-- <dependency>
-             <groupId>io.projectreactor.tools</groupId>
-             <artifactId>blockhound</artifactId>
-             <version>1.0.1.RELEASE</version>
-         </dependency>-->
     </dependencies>
 
     <dependencyManagement>
