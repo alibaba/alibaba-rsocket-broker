@@ -68,7 +68,7 @@ public class AppConfigView extends VerticalLayout {
         content.add(configName);
         content.add(configValue);
         buttons.add(saveButton);
-        buttons.add(new Button("Clear", buttonClickEvent -> {
+        buttons.add(new Button("New Configuration", buttonClickEvent -> {
             clearForm();
         }));
         content.add(buttons);
