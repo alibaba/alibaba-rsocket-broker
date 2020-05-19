@@ -1,6 +1,9 @@
 package com.alibaba.spring.boot.rsocket.broker.services;
 
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.ReplayProcessor;
@@ -17,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @RSocketLocalService(serviceInterface = ConfigurationService.class)
 public class KVStorageServiceImpl implements ConfigurationService {
+    private static Logger log = LoggerFactory.getLogger(KVStorageServiceImpl.class);
     private Set<String> appNames = new HashSet<>();
     private Map<String, String> snapshotStore = new ConcurrentHashMap<>();
     private Map<String, ReplayProcessor<String>> watchNotification = new ConcurrentHashMap<>();
@@ -27,6 +31,7 @@ public class KVStorageServiceImpl implements ConfigurationService {
         appNames.add("rsocket-user-client");
         appNames.add("rsocket-user-service");
         snapshotStore.put("rsocket-config-client:application.properties", "developer=leijuan");
+        log.info(RsocketErrorCode.message("RST-302200", "Memory"));
     }
 
     @Override
