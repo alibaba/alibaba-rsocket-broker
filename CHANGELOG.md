@@ -5,6 +5,8 @@ Alibaba RSocket Broker变更记录
 
 ### 新特
 
+* Configuration调至为基于H2 MVStore，支持配置持久化到磁盘
+* 升级到Vaadin 14.2.0，方便后续Modeless, resizable and draggable对话框
 
 ### Bug修复
 
