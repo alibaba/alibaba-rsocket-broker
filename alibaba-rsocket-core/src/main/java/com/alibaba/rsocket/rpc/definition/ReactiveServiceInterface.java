@@ -15,6 +15,7 @@ public class ReactiveServiceInterface {
     private String version;
     private String description;
     private List<ReactiveOperation> operations = new ArrayList<>();
+    private boolean deprecated;
 
     public String getNamespace() {
         return namespace;
@@ -56,7 +57,25 @@ public class ReactiveServiceInterface {
         this.description = description;
     }
 
+    public boolean isDeprecated() {
+        return deprecated;
+    }
+
+    public void setDeprecated(boolean deprecated) {
+        this.deprecated = deprecated;
+    }
+
+    public List<ReactiveOperation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(List<ReactiveOperation> operations) {
+        this.operations = operations;
+    }
+
     public void addOperation(ReactiveOperation operation) {
         this.operations.add(operation);
     }
+
+
 }
