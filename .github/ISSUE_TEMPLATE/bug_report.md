@@ -1,38 +1,37 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
 
 ---
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+### Environment
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+* Alibaba RSocket Broker version: 1.0.0.M2
+* Operating System version: Linux/Windows 10/Mac
+* Java version: 1.8.0/11.0.7/14.0.1
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+### Steps to reproduce this issue
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+1. xxx
+2. xxx
+3. xxx
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+Pls. provide [GitHub address] to reproduce this issue.
 
-**Additional context**
-Add any other context about the problem here.
+### Expected Result
+
+What do you expected from the above steps？
+
+### Actual Result
+
+What actually happens?
+
+If there is an exception, please attach the exception trace:
+
+```
+Please post your stack trace here!
+```
+
