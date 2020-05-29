@@ -1,11 +1,11 @@
 package com.alibaba.rsocket.rpc.definition;
 
 /**
- * Operation parameter
+ * Reactive Operation parameter
  *
  * @author leijuan
  */
-public class Parameter {
+public class OperationParameter {
     private String name;
     private String type;
     private String inferredType;
