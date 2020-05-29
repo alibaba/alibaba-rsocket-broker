@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.rpc.definition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public class ReactiveOperation {
     private boolean deprecated;
     private String returnType;
     private String inferredType;
-    private List<String> parameters;
+    private List<Parameter> parameters = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -55,11 +56,15 @@ public class ReactiveOperation {
         this.inferredType = inferredType;
     }
 
-    public List<String> getParameters() {
+    public List<Parameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<String> parameters) {
+    public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
+    }
+
+    public void addParameter(Parameter param) {
+        this.parameters.add(param);
     }
 }

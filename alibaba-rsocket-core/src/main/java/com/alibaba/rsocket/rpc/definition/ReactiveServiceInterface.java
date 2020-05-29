@@ -1,5 +1,8 @@
 package com.alibaba.rsocket.rpc.definition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Reactive Service interface
  *
@@ -11,6 +14,7 @@ public class ReactiveServiceInterface {
     private String group;
     private String version;
     private String description;
+    private List<ReactiveOperation> operations = new ArrayList<>();
 
     public String getNamespace() {
         return namespace;
@@ -50,5 +54,9 @@ public class ReactiveServiceInterface {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void addOperation(ReactiveOperation operation) {
+        this.operations.add(operation);
     }
 }
