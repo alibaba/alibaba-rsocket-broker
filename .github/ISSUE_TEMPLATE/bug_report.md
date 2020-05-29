@@ -19,7 +19,7 @@ A clear and concise description of what the bug is.
 2. xxx
 3. xxx
 
-Pls. provide [GitHub address] to reproduce this issue.
+Pls. provide GitHub address to reproduce this issue.
 
 ### Expected Result
 
