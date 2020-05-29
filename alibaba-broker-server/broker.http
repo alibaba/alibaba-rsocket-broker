@@ -1,6 +1,9 @@
 ### broker services
 GET http://localhost:9998/ops/services
 
+### query service definition
+GET http://localhost:9998/service/definition/com.alibaba.user.UserService
+
 ### broker connections
 GET http://localhost:9998/ops/connections
 
