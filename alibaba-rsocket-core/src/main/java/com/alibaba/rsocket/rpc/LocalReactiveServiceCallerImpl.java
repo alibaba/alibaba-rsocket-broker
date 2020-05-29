@@ -27,6 +27,11 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
     private Map<String, ReactiveMethodHandler> methodInvokeEntrances = new HashMap<>();
     private Map<Integer, ReactiveMethodHandler> methodHashCodeInvokeEntrances = new HashMap<>();
 
+    public LocalReactiveServiceCallerImpl() {
+        //add ReactiveServiceDiscovery
+        addProvider("", ReactiveServiceDiscovery.class.getCanonicalName(), "", ReactiveServiceDiscovery.class, this);
+    }
+
     @Override
     public boolean contains(String serviceName, String rpc) {
         return methodInvokeEntrances.containsKey(serviceName + "." + rpc);
