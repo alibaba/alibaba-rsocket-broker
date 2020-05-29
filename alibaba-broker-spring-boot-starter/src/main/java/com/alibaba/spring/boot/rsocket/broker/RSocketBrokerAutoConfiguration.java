@@ -89,6 +89,11 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
+    public ServiceQueryController serviceQueryController() {
+        return new ServiceQueryController();
+    }
+
+    @Bean
     public MetricsScrapeController metricsScrapeController() {
         return new MetricsScrapeController();
     }
