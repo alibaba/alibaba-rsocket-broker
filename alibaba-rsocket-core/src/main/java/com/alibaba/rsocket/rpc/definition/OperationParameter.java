@@ -1,11 +1,13 @@
 package com.alibaba.rsocket.rpc.definition;
 
+import java.io.Serializable;
+
 /**
  * Reactive Operation parameter
  *
  * @author leijuan
  */
-public class OperationParameter {
+public class OperationParameter implements Serializable {
     private String name;
     private String type;
     private String inferredType;

@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.rpc.definition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  *
  * @author leijuan
  */
-public class ReactiveServiceInterface {
+public class ReactiveServiceInterface implements Serializable {
     private String namespace;
     private String name;
     private String group;

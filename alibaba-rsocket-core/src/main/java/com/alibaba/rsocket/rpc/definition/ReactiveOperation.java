@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.rpc.definition;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  *
  * @author leijuan
  */
-public class ReactiveOperation {
+public class ReactiveOperation implements Serializable {
     private String name;
     private String description;
     private boolean deprecated;
