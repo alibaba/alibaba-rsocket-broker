@@ -13,8 +13,8 @@ public class ReactiveOperation {
     private String description;
     private boolean deprecated;
     private String returnType;
-    private String inferredType;
-    private List<Parameter> parameters = new ArrayList<>();
+    private String returnInferredType;
+    private List<OperationParameter> parameters = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -48,23 +48,23 @@ public class ReactiveOperation {
         this.returnType = returnType;
     }
 
-    public String getInferredType() {
-        return inferredType;
+    public String getReturnInferredType() {
+        return returnInferredType;
     }
 
-    public void setInferredType(String inferredType) {
-        this.inferredType = inferredType;
+    public void setReturnInferredType(String returnInferredType) {
+        this.returnInferredType = returnInferredType;
     }
 
-    public List<Parameter> getParameters() {
+    public List<OperationParameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<Parameter> parameters) {
+    public void setParameters(List<OperationParameter> parameters) {
         this.parameters = parameters;
     }
 
-    public void addParameter(Parameter param) {
+    public void addParameter(OperationParameter param) {
         this.parameters.add(param);
     }
 }
