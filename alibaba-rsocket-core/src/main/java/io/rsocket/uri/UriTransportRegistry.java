@@ -35,9 +35,9 @@ import static io.rsocket.uri.UriHandler.loadServices;
  */
 public class UriTransportRegistry {
   private static final ClientTransport FAILED_CLIENT_LOOKUP =
-      (mtu) -> Mono.error(new UnsupportedOperationException());
+      () -> Mono.error(new UnsupportedOperationException());
   private static final ServerTransport<?> FAILED_SERVER_LOOKUP =
-      (acceptor, mtu) -> Mono.error(new UnsupportedOperationException());
+      (acceptor) -> Mono.error(new UnsupportedOperationException());
 
   private List<UriHandler> handlers;
 

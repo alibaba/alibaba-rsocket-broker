@@ -16,8 +16,6 @@
 
 package io.rsocket.transport.netty;
 
-import static io.rsocket.transport.netty.UriUtils.getPort;
-import static io.rsocket.transport.netty.UriUtils.isSecure;
 
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.ServerTransport;
@@ -57,7 +55,8 @@ public final class WebsocketUriHandler implements UriHandler {
       return Optional.empty();
     }
 
-    int port = isSecure(uri) ? getPort(uri, 443) : getPort(uri, 80);
+    boolean isSecure = uri.getScheme().equals("wss") || uri.getScheme().equals("https");
+    int port = uri.getPort() == -1 ? (isSecure ? 443 : 80) : uri.getPort();
 
     return Optional.of(WebsocketServerTransport.create(uri.getHost(), port));
   }
