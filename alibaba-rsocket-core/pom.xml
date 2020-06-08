@@ -160,6 +160,11 @@
             <version>${roaring-bitmap.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.roaringbitmap</groupId>
+            <artifactId>shims</artifactId>
+            <version>0.8.18</version>
+        </dependency>
+        <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
         </dependency>
