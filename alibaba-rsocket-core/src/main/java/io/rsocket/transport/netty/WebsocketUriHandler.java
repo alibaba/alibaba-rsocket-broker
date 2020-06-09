@@ -16,14 +16,12 @@
 
 package io.rsocket.transport.netty;
 
-import static io.rsocket.transport.netty.UriUtils.getPort;
-import static io.rsocket.transport.netty.UriUtils.isSecure;
-
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.ServerTransport;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.transport.netty.server.WebsocketServerTransport;
 import io.rsocket.uri.UriHandler;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -36,29 +34,56 @@ import java.util.Optional;
  */
 public final class WebsocketUriHandler implements UriHandler {
 
-  private static final List<String> SCHEME = Arrays.asList("ws", "wss", "http", "https");
+    private static final List<String> SCHEME = Arrays.asList("ws", "wss", "http", "https");
 
-  @Override
-  public Optional<ClientTransport> buildClient(URI uri) {
-    Objects.requireNonNull(uri, "uri must not be null");
+    @Override
+    public Optional<ClientTransport> buildClient(URI uri) {
+        Objects.requireNonNull(uri, "uri must not be null");
 
-    if (SCHEME.stream().noneMatch(scheme -> scheme.equals(uri.getScheme()))) {
-      return Optional.empty();
+        if (SCHEME.stream().noneMatch(scheme -> scheme.equals(uri.getScheme()))) {
+            return Optional.empty();
+        }
+
+        return Optional.of(WebsocketClientTransport.create(uri));
     }
 
-    return Optional.of(WebsocketClientTransport.create(uri));
-  }
+    @Override
+    public Optional<ServerTransport<?>> buildServer(URI uri) {
+        Objects.requireNonNull(uri, "uri must not be null");
 
-  @Override
-  public Optional<ServerTransport<?>> buildServer(URI uri) {
-    Objects.requireNonNull(uri, "uri must not be null");
+        if (SCHEME.stream().noneMatch(scheme -> scheme.equals(uri.getScheme()))) {
+            return Optional.empty();
+        }
 
-    if (SCHEME.stream().noneMatch(scheme -> scheme.equals(uri.getScheme()))) {
-      return Optional.empty();
+        int port = isSecure(uri) ? getPort(uri, 443) : getPort(uri, 80);
+
+        return Optional.of(WebsocketServerTransport.create(uri.getHost(), port));
     }
 
-    int port = isSecure(uri) ? getPort(uri, 443) : getPort(uri, 80);
+    /**
+     * Returns the port of a URI. If the port is unset (i.e. {@code -1}) then returns the {@code
+     * defaultPort}.
+     *
+     * @param uri         the URI to extract the port from
+     * @param defaultPort the default to use if the port is unset
+     * @return the port of a URI or {@code defaultPort} if unset
+     * @throws NullPointerException if {@code uri} is {@code null}
+     */
+    public static int getPort(URI uri, int defaultPort) {
+        Objects.requireNonNull(uri, "uri must not be null");
+        return uri.getPort() == -1 ? defaultPort : uri.getPort();
+    }
 
-    return Optional.of(WebsocketServerTransport.create(uri.getHost(), port));
-  }
+    /**
+     * Returns whether the URI has a secure schema. Secure is defined as being either {@code wss} or
+     * {@code https}.
+     *
+     * @param uri the URI to examine
+     * @return whether the URI has a secure schema
+     * @throws NullPointerException if {@code uri} is {@code null}
+     */
+    public static boolean isSecure(URI uri) {
+        Objects.requireNonNull(uri, "uri must not be null");
+        return uri.getScheme().equals("wss") || uri.getScheme().equals("https");
+    }
 }
