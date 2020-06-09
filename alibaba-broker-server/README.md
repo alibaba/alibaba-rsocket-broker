@@ -10,7 +10,7 @@ RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控
 version: "3"
 services:
   alibaba-rsocket-broker:
-    image: linuxchina/alibaba-rsocket-broker:1.0.0.M1
+    image: linuxchina/alibaba-rsocket-broker:1.0.0.M2
     ports:
       - "9997:9997"
       - "9998:9998"
@@ -138,6 +138,17 @@ rsocket.broker.external-domain=broker1.rsocket.foobar.com
 rsocket.brokers=tcp://broker1.rsocket.foobar.com:9999,tcp://broker2.rsocket.foobar.com:9999
 rsocket.topology=internet
 ```
+
+# 监听端口号
+对于一个集群来说，通常都会涉及到两个端口号，一个是接受请求端口号，在RSocket
+Broker集群中为9999，另外一个是集群管理端口号，也就是集群内部服务器节点之间相互通讯的端口号,
+RSocket的Gossip管理方式中，该端口号为42254，确保各个节点之间的gossip通讯。整体如下：
+
+* tcp request port: 9999，负责接收RSocket请求
+* cluster gossip port: 42254，完成集群内部服务器间的Gossip通讯
+* Spring Boot management server port: 9997, Spring Boot的actuator端口号
+* http web request port: 9998，通过该Web监听端口号，可以以REST API方式访问RSocket服务，同时是Broker集群的Web管理控制台。
+
 
 ### Vaadin Flow
 Alibaba RSocket Broker的Web控制台使用Vaadin 14开发，为了方便你扩展界面，将Vaadin的开发资源列一下，方便二次开发。
