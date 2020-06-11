@@ -48,7 +48,7 @@
         <eclipse-collections.version>10.2.0</eclipse-collections.version>
         <spring-cloud-release.version>Hoxton.SR4</spring-cloud-release.version>
         <cloudevents.version>1.3.0</cloudevents.version>
-        <zipkin-brave.version>5.12.0</zipkin-brave.version>
+        <zipkin-brave.version>5.12.3</zipkin-brave.version>
         <junit5.version>5.6.2</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
@@ -133,7 +133,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-tcnative-boringssl-static</artifactId>
-                <version>2.0.30.Final</version>
+                <version>2.0.31.Final</version>
             </dependency>
             <dependency>
                 <groupId>io.projectreactor</groupId>
