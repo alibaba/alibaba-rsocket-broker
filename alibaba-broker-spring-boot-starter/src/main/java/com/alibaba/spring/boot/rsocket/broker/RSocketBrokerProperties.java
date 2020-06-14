@@ -1,6 +1,5 @@
 package com.alibaba.spring.boot.rsocket.broker;
 
-import com.alibaba.spring.boot.rsocket.broker.upstream.UpstreamCluster;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
