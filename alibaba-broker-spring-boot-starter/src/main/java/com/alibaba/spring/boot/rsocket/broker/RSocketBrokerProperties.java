@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker;
 
+import com.alibaba.spring.boot.rsocket.broker.upstream.UpstreamCluster;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -30,6 +31,7 @@ public class RSocketBrokerProperties {
     private boolean authRequired = true;
     @NestedConfigurationProperty
     private RSocketSSL ssl;
+    private UpstreamCluster upstream;
 
     public int getPort() {
         return port;
@@ -108,5 +110,13 @@ public class RSocketBrokerProperties {
         public void setKeyStorePassword(String keyStorePassword) {
             this.keyStorePassword = keyStorePassword;
         }
+    }
+
+    public UpstreamCluster getUpstream() {
+        return upstream;
+    }
+
+    public void setUpstream(UpstreamCluster upstream) {
+        this.upstream = upstream;
     }
 }
