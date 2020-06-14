@@ -4,6 +4,8 @@ import com.alibaba.spring.boot.rsocket.broker.upstream.UpstreamCluster;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import java.util.List;
+
 /**
  * broker configuration
  *
@@ -31,7 +33,8 @@ public class RSocketBrokerProperties {
     private boolean authRequired = true;
     @NestedConfigurationProperty
     private RSocketSSL ssl;
-    private UpstreamCluster upstream;
+    private List<String> upstreamBrokers;
+    private String upstreamToken;
 
     public int getPort() {
         return port;
@@ -112,11 +115,19 @@ public class RSocketBrokerProperties {
         }
     }
 
-    public UpstreamCluster getUpstream() {
-        return upstream;
+    public List<String> getUpstreamBrokers() {
+        return upstreamBrokers;
     }
 
-    public void setUpstream(UpstreamCluster upstream) {
-        this.upstream = upstream;
+    public void setUpstreamBrokers(List<String> upstreamBrokers) {
+        this.upstreamBrokers = upstreamBrokers;
+    }
+
+    public String getUpstreamToken() {
+        return upstreamToken;
+    }
+
+    public void setUpstreamToken(String upstreamToken) {
+        this.upstreamToken = upstreamToken;
     }
 }
