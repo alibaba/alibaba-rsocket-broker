@@ -42,6 +42,7 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
         if (instanceServices.containsKey(instanceId)) {
             return;
         }
+        //todo notification for global service
         for (ServiceLocator serviceLocator : services) {
             int serviceId = serviceLocator.getId();
             instanceServices.put(instanceId, serviceId);

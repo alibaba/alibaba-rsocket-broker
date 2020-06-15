@@ -48,9 +48,9 @@ public @interface RSocketService {
     String[] encoding() default {"hessian", "json", "protobuf"};
 
     /**
-     * service labels
+     * service tags
      *
      * @return labels
      */
-    String[] labels() default {};
+    String[] tags() default {};
 }
