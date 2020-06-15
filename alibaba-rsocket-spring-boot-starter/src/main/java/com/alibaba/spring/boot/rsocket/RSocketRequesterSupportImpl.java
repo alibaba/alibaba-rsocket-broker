@@ -100,7 +100,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
                                 properties.getGroup(),
                                 rSocketService.serviceInterface().getCanonicalName(),
                                 properties.getVersion(),
-                                rSocketService.labels()
+                                rSocketService.tags()
                         );
                     }).collect(Collectors.toSet());
         };
