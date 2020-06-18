@@ -61,6 +61,17 @@ public class ServiceLocator {
         return tags;
     }
 
+    public boolean hasTag(String tag) {
+        if (this.tags != null && this.tags.length > 0) {
+            for (String s : tags) {
+                if (s.equalsIgnoreCase(tag)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void setTags(String[] tags) {
         this.tags = tags;
     }
