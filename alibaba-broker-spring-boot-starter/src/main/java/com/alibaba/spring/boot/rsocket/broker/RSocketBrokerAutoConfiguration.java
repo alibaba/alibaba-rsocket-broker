@@ -27,7 +27,10 @@ import com.alibaba.spring.boot.rsocket.broker.smi.TrafficSplit;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficAccessControlImpl;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficSplitImpl;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalServiceAnnotationProcessor;
+import com.alibaba.spring.boot.rsocket.broker.upstream.RSocketRequesterByBrokerAgent;
+import com.alibaba.spring.boot.rsocket.broker.upstream.UpstreamBrokerCluster;
 import io.cloudevents.v1.CloudEventImpl;
+import io.rsocket.RSocket;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,10 +38,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import reactor.extra.processor.TopicProcessor;
 
@@ -107,9 +112,11 @@ public class RSocketBrokerAutoConfiguration {
                                                                         @Autowired AuthenticationService authenticationService,
                                                                         @Autowired RSocketBrokerManager rSocketBrokerManager,
                                                                         @Autowired ServiceMeshInspector serviceMeshInspector,
-                                                                        @Autowired RSocketBrokerProperties properties) {
+                                                                        @Autowired RSocketBrokerProperties properties,
+                                                                        @Autowired ApplicationContext applicationContext) {
         return new RSocketBrokerHandlerRegistryImpl(localReactiveServiceCaller, rsocketFilterChain, routingSelector,
-                eventProcessor, notificationProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector, properties.isAuthRequired());
+                eventProcessor, notificationProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector,
+                properties.isAuthRequired(), applicationContext);
     }
 
     @Bean
@@ -210,4 +217,23 @@ public class RSocketBrokerAutoConfiguration {
     public TrafficSplit trafficSplit() {
         return new TrafficSplitImpl();
     }
+
+    @Bean(initMethod = "init", destroyMethod = "close")
+    @ConditionalOnProperty(name = "rsocket.broker.upstream-brokers")
+    public UpstreamBrokerCluster upstreamBrokerCluster(@Autowired RSocketBrokerProperties properties,
+                                                       @Autowired Environment env,
+                                                       @Autowired RSocketFilterChain filterChain,
+                                                       @Autowired ServiceRoutingSelector serviceRoutingSelector,
+                                                       @Autowired RSocketBrokerHandlerRegistry rsocketResponderHandlerRegistry) {
+        RSocketRequesterByBrokerAgent brokerAgent = new RSocketRequesterByBrokerAgent(properties, env, rsocketResponderHandlerRegistry, filterChain, serviceRoutingSelector);
+        return new UpstreamBrokerCluster(brokerAgent);
+    }
+
+    @Bean
+    @Qualifier("upstreamBrokerRSocket")
+    @ConditionalOnProperty(name = "rsocket.broker.upstream-brokers")
+    public RSocket upstreamBrokerRSocket(UpstreamBrokerCluster upstreamBrokerCluster) {
+        return upstreamBrokerCluster.getLoadBalancedRSocket();
+    }
+
 }
