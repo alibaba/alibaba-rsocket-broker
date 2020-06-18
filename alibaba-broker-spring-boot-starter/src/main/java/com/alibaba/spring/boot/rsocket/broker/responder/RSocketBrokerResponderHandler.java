@@ -509,13 +509,13 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             if (rsocket != null) {
                 sink.success(rsocket);
             } else if (error != null) {
-                sink.error(error);
-            } else {
-                if (upstreamRSocket != null) {
+                if (error instanceof InvalidException) {
                     sink.success(upstreamRSocket);
                 } else {
-                    sink.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", gsv)));
+                    sink.error(error);
                 }
+            } else {
+                sink.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", gsv)));
             }
         });
     }
