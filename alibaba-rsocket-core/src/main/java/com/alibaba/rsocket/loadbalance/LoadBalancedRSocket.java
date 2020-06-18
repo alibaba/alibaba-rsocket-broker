@@ -22,6 +22,7 @@ import io.rsocket.exceptions.ConnectionErrorException;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.uri.UriTransportRegistry;
 import io.rsocket.util.ByteBufPayload;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -181,7 +182,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     @Override
-    public Mono<Payload> requestResponse(Payload payload) {
+    public @NotNull Mono<Payload> requestResponse(@NotNull Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
             ReferenceCountUtil.safeRelease(payload);
@@ -196,7 +197,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
 
     @Override
-    public Mono<Void> fireAndForget(Payload payload) {
+    public @NotNull Mono<Void> fireAndForget(@NotNull Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
             ReferenceCountUtil.safeRelease(payload);
@@ -242,7 +243,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     @Override
-    public Flux<Payload> requestStream(Payload payload) {
+    public @NotNull Flux<Payload> requestStream(@NotNull Payload payload) {
         RSocket next = randomSelector.next();
         if (next == null) {
             ReferenceCountUtil.safeRelease(payload);
@@ -256,7 +257,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     @Override
-    public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
+    public @NotNull Flux<Payload> requestChannel(@NotNull Publisher<Payload> payloads) {
         RSocket next = randomSelector.next();
         if (next == null) {
             return Flux.error(new NoAvailableConnectionException(RsocketErrorCode.message("RST-200404", serviceId)));
@@ -269,7 +270,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     @Override
-    public Mono<Void> metadataPush(final Payload payload) {
+    public @NotNull Mono<Void> metadataPush(final @NotNull Payload payload) {
         return Flux.fromIterable(activeSockets.values()).flatMap(rSocket -> rSocket.metadataPush(payload)).then();
     }
 
