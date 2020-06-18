@@ -509,7 +509,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             if (rsocket != null) {
                 sink.success(rsocket);
             } else if (error != null) {
-                if (error instanceof InvalidException) {
+                if (upstreamRSocket != null && error instanceof InvalidException) {
                     sink.success(upstreamRSocket);
                 } else {
                     sink.error(error);
