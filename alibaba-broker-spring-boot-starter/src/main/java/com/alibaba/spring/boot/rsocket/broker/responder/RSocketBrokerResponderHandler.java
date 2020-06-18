@@ -542,7 +542,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return this.comboOnClose;
     }
 
-    private static void metrics(GSVRoutingMetadata routingMetadata, String frameType) {
+    public static void metrics(GSVRoutingMetadata routingMetadata, String frameType) {
         List<Tag> tags = new ArrayList<>();
         if (routingMetadata.getGroup() != null && !routingMetadata.getGroup().isEmpty()) {
             tags.add(Tag.of("group", routingMetadata.getGroup()));
