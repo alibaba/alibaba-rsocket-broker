@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -74,6 +75,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     private RSocketBrokerManager rsocketBrokerManager;
     private ServiceMeshInspector serviceMeshInspector;
     private boolean authRequired;
+    private ApplicationContext applicationContext;
 
     public RSocketBrokerHandlerRegistryImpl(LocalReactiveServiceCaller localReactiveServiceCaller, RSocketFilterChain rsocketFilterChain,
                                             ServiceRoutingSelector routingSelector,
@@ -82,7 +84,8 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                                             AuthenticationService authenticationService,
                                             RSocketBrokerManager rsocketBrokerManager,
                                             ServiceMeshInspector serviceMeshInspector,
-                                            boolean authRequired) {
+                                            boolean authRequired,
+                                            ApplicationContext applicationContext) {
         this.localReactiveServiceCaller = localReactiveServiceCaller;
         this.rsocketFilterChain = rsocketFilterChain;
         this.routingSelector = routingSelector;
@@ -92,6 +95,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         this.rsocketBrokerManager = rsocketBrokerManager;
         this.serviceMeshInspector = serviceMeshInspector;
         this.authRequired = authRequired;
+        this.applicationContext = applicationContext;
         if (!rsocketBrokerManager.isStandAlone()) {
             this.rsocketBrokerManager.requestAll().flatMap(this::broadcastClusterTopology).subscribe();
         }
@@ -166,7 +170,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         //create handler
         try {
             RSocketBrokerResponderHandler brokerResponderHandler = new RSocketBrokerResponderHandler(setupPayload, compositeMetadata, appMetadata, principal,
-                    requesterSocket, routingSelector, eventProcessor, this, serviceMeshInspector);
+                    requesterSocket, routingSelector, eventProcessor, this, serviceMeshInspector, getUpstreamRSocket());
             brokerResponderHandler.setFilterChain(rsocketFilterChain);
             brokerResponderHandler.setLocalReactiveServiceCaller(localReactiveServiceCaller);
             brokerResponderHandler.onClose()
@@ -363,5 +367,16 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 requesterSocket.dispose();
             }
         }));
+    }
+
+    @Nullable
+    private RSocket getUpstreamRSocket() {
+        if (applicationContext.containsBean("upstreamBrokerRSocket")) {
+            try {
+                return (RSocket) applicationContext.getBean("upstreamBrokerRSocket");
+            } catch (Exception ignore) {
+            }
+        }
+        return null;
     }
 }
