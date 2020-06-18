@@ -27,7 +27,7 @@ import com.alibaba.spring.boot.rsocket.broker.smi.TrafficSplit;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficAccessControlImpl;
 import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficSplitImpl;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalServiceAnnotationProcessor;
-import com.alibaba.spring.boot.rsocket.broker.upstream.RSocketRequesterByBrokerAgent;
+import com.alibaba.spring.boot.rsocket.broker.upstream.RSocketRequesterBySubBroker;
 import com.alibaba.spring.boot.rsocket.broker.upstream.UpstreamBrokerCluster;
 import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.RSocket;
@@ -225,8 +225,8 @@ public class RSocketBrokerAutoConfiguration {
                                                        @Autowired RSocketFilterChain filterChain,
                                                        @Autowired ServiceRoutingSelector serviceRoutingSelector,
                                                        @Autowired RSocketBrokerHandlerRegistry rsocketResponderHandlerRegistry) {
-        RSocketRequesterByBrokerAgent brokerAgent = new RSocketRequesterByBrokerAgent(properties, env, rsocketResponderHandlerRegistry, filterChain, serviceRoutingSelector);
-        return new UpstreamBrokerCluster(brokerAgent);
+        RSocketRequesterBySubBroker subBroker = new RSocketRequesterBySubBroker(properties, env, rsocketResponderHandlerRegistry, filterChain, serviceRoutingSelector);
+        return new UpstreamBrokerCluster(subBroker);
     }
 
     @Bean

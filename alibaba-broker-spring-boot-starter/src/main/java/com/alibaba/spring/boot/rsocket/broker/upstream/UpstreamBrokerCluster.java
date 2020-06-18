@@ -26,10 +26,10 @@ public class UpstreamBrokerCluster {
      * load balanced RSocket to connect service provider or broker instances
      */
     private LoadBalancedRSocket loadBalancedRSocket;
-    private RSocketRequesterByBrokerAgent rsocketRequesterSupport;
+    private RSocketRequesterBySubBroker rsocketRequesterSupport;
     private Integer status = 0;
 
-    public UpstreamBrokerCluster(RSocketRequesterByBrokerAgent rsocketRequesterSupport) {
+    public UpstreamBrokerCluster(RSocketRequesterBySubBroker rsocketRequesterSupport) {
         this.rsocketRequesterSupport = rsocketRequesterSupport;
         this.rsocketRequesterSupport.setUpstreamBrokerCluster(this);
     }
