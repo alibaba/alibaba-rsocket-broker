@@ -188,6 +188,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return consumedServices;
     }
 
+    public Set<Integer> getAppTagsHashCodeSet() {
+        return appTagsHashCodeSet;
+    }
+
     public Integer getAppStatus() {
         return appStatus;
     }
