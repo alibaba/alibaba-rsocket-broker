@@ -41,6 +41,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.TopicProcessor;
 
+import javax.validation.constraints.Null;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -97,6 +98,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      * peer RSocket: sending or requester RSocket
      */
     private RSocket peerRsocket;
+    private RSocket upstreamRSocket;
     /**
      * app status: 0:connect, 1: serving, 2: not serving  -1: stopped
      */
@@ -129,8 +131,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                                          ServiceRoutingSelector routingSelector,
                                          TopicProcessor<CloudEventImpl> eventProcessor,
                                          RSocketBrokerHandlerRegistry handlerRegistry,
-                                         ServiceMeshInspector serviceMeshInspector) {
+                                         ServiceMeshInspector serviceMeshInspector,
+                                         @Null RSocket upstreamRSocket) {
         try {
+            this.upstreamRSocket = upstreamRSocket;
             RSocketMimeType dataType = RSocketMimeType.valueOfType(setupPayload.dataMimeType());
             if (dataType != null) {
                 this.defaultMessageMimeType = new MessageMimeTypeMetadata(dataType);
@@ -507,7 +511,11 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             } else if (error != null) {
                 sink.error(error);
             } else {
-                sink.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", gsv)));
+                if (upstreamRSocket != null) {
+                    sink.success(upstreamRSocket);
+                } else {
+                    sink.error(new ApplicationErrorException(RsocketErrorCode.message("RST-900404", gsv)));
+                }
             }
         });
     }
