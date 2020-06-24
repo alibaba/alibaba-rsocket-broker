@@ -246,7 +246,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.0.5</version>
+                        <version>4.0.6</version>
                     </dependency>
                 </dependencies>
                 <configuration>
