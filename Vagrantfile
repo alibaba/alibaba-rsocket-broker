@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
     vb.cpus = "1"
   end
-  #config.vbguest.iso_path = "https://download.virtualbox.org/virtualbox/6.0.14/VBoxGuestAdditions_6.0.14.iso"
+  #config.vbguest.iso_path = "https://download.virtualbox.org/virtualbox/6.1.10/VBoxGuestAdditions_6.1.10.iso"
   config.vm.synced_folder "#{Dir.home}/.rsocket", "/home/vagrant/.rsocket"
 
   config.vm.provision "shell", inline: <<-SHELL
