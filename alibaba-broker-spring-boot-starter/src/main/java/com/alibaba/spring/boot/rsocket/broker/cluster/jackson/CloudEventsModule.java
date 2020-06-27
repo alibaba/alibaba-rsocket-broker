@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.broker.cluster.scalecube.codec.jackson;
+package com.alibaba.spring.boot.rsocket.broker.cluster.jackson;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.cloudevents.json.ZonedDateTimeDeserializer;
