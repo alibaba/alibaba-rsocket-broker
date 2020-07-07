@@ -46,7 +46,7 @@ import java.util.*;
  * @author leijuan
  */
 public final class TcpSslUriHandler implements UriHandler {
-    private static final String SCHEME = "tcps";
+    private static final List<String> SCHEMES = Arrays.asList("tcps", "tcp+tls");
     private static final String DEFAULT_PASSWORD = "changeit";
     private TrustManagerFactory trustManagerFactory = InsecureTrustManagerFactory.INSTANCE;
     private static final String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
@@ -76,7 +76,7 @@ public final class TcpSslUriHandler implements UriHandler {
     public Optional<ClientTransport> buildClient(URI uri) {
         Objects.requireNonNull(uri, "uri must not be null");
 
-        if (!SCHEME.equals(uri.getScheme())) {
+        if (!SCHEMES.contains(uri.getScheme())) {
             return Optional.empty();
         }
         try {
@@ -98,7 +98,7 @@ public final class TcpSslUriHandler implements UriHandler {
     @Override
     public Optional<ServerTransport<?>> buildServer(URI uri) {
         Objects.requireNonNull(uri, "uri must not be null");
-        if (!SCHEME.equals(uri.getScheme())) {
+        if (!SCHEMES.contains(uri.getScheme())) {
             return Optional.empty();
         }
         try {
