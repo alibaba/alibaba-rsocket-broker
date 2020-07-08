@@ -182,7 +182,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
 
     private Tab filters() {
         final Span label = new Span("RSocket Filters");
-        final Icon icon = FILTER.create();
+        final Icon icon = FORWARD.create();
         final Tab tab = new Tab(new HorizontalLayout(icon, label));
         tab2Workspace.put(tab, new RSocketFiltersView(this.filterChain, this.rSocketBrokerManager));
         return tab;
