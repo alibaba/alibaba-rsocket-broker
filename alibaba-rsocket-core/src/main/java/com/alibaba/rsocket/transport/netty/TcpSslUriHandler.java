@@ -46,7 +46,7 @@ import java.util.*;
  * @author leijuan
  */
 public final class TcpSslUriHandler implements UriHandler {
-    private static final List<String> SCHEMES = Arrays.asList("tcps", "tcp+tls");
+    private static final List<String> SCHEMES = Arrays.asList("tcps", "tcp+tls","tls");
     private static final String DEFAULT_PASSWORD = "changeit";
     private TrustManagerFactory trustManagerFactory = InsecureTrustManagerFactory.INSTANCE;
     private static final String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
