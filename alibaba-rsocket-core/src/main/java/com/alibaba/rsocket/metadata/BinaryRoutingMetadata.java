@@ -13,7 +13,7 @@ import io.rsocket.util.NumberUtils;
 public class BinaryRoutingMetadata implements MetadataAware {
     private Integer serviceId;
     private Integer handlerId;
-    private Integer flags = 0;
+    private int flags = 0;
     private byte[] routingText;
 
     public BinaryRoutingMetadata() {
@@ -50,12 +50,20 @@ public class BinaryRoutingMetadata implements MetadataAware {
         return handlerId;
     }
 
-    public Integer getFlags() {
+    public int getFlags() {
         return flags;
     }
 
-    public void setFlags(Integer flags) {
+    public void setFlags(int flags) {
         this.flags = flags;
+    }
+
+    public boolean isSticky() {
+        return (this.flags & 0x01) == 0;
+    }
+
+    public void setSticky() {
+        this.flags = this.flags | 0x01;
     }
 
     public byte[] getRoutingText() {
