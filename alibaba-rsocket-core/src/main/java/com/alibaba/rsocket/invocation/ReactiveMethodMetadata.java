@@ -111,7 +111,8 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         this.group = group;
         this.version = version;
         this.endpoint = endpoint;
-        this.sticky = sticky;
+        // sticky from service builder or @ServiceMapping
+        this.sticky = sticky | this.sticky;
         this.fullName = this.service + "." + this.name;
         this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(this.group, this.service, this.version));
         this.handlerId = MurmurHash3.hash32(service + "." + name);
@@ -182,6 +183,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         if (!serviceMapping.resultEncoding().isEmpty()) {
             this.acceptEncodingTypes = new RSocketMimeType[]{RSocketMimeType.valueOfType(serviceMapping.resultEncoding())};
         }
+        this.sticky = serviceMapping.sticky();
     }
 
     public void initCompositeMetadata(URI origin) {
