@@ -31,8 +31,8 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
     public RSocketRequesterRpcZipkinProxy(@NotNull Tracing tracing, UpstreamCluster upstream,
                                           String group, Class<?> serviceInterface, @Nullable String service, String version,
                                           RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
-                                          Duration timeout, @Nullable String endpoint, URI sourceUri) {
-        super(upstream, group, serviceInterface, service, version, encodingType, acceptEncodingType, timeout, endpoint, sourceUri);
+                                          Duration timeout, @Nullable String endpoint, boolean sticky, URI sourceUri) {
+        super(upstream, group, serviceInterface, service, version, encodingType, acceptEncodingType, timeout, endpoint,sticky, sourceUri);
         tracer = tracing.tracer();
     }
 
