@@ -64,6 +64,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
      * endpoint
      */
     private String endpoint;
+    private boolean sticky;
     /**
      * rsocket frame type
      */
@@ -94,7 +95,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
                                   Method method,
                                   @NotNull RSocketMimeType dataEncodingType,
                                   @NotNull RSocketMimeType[] acceptEncodingTypes,
-                                  @Nullable String endpoint, URI origin) {
+                                  @Nullable String endpoint, boolean sticky, URI origin) {
         super(method);
         this.service = service;
         this.name = method.getName();
@@ -110,6 +111,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         this.group = group;
         this.version = version;
         this.endpoint = endpoint;
+        this.sticky = sticky;
         this.fullName = this.service + "." + this.name;
         this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(this.group, this.service, this.version));
         this.handlerId = MurmurHash3.hash32(service + "." + name);
@@ -186,9 +188,13 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         //payload routing metadata
         GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata(group, this.service, this.name, version);
         routingMetadata.setEndpoint(this.endpoint);
+        routingMetadata.setSticky(this.sticky);
         //payload binary routing metadata
         BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId,
                 routingMetadata.assembleRoutingKey().getBytes(StandardCharsets.UTF_8));
+        if(this.sticky) {
+            binaryRoutingMetadata.setSticky(true);
+        }
         //add param encoding
         MessageMimeTypeMetadata messageMimeTypeMetadata = new MessageMimeTypeMetadata(this.paramEncoding);
         //set accepted mimetype
