@@ -59,7 +59,7 @@ public class BinaryRoutingMetadata implements MetadataAware {
     }
 
     public boolean isSticky() {
-        return (this.flags & 0x01) == 0;
+        return (this.flags & 0x01) == 0x01;
     }
 
     public void setSticky(boolean sticky) {
