@@ -168,10 +168,10 @@ public class RSocketRemoteServiceBuilder<T> {
     private RSocketRequesterRpcProxy getRequesterProxy() {
         if (this.braveTracing && this.tracing != null) {
             return new RSocketRequesterRpcZipkinProxy(tracing, upstreamCluster, group, serviceInterface, service, version,
-                    encodingType, acceptEncodingType, timeout, endpoint, sourceUri);
+                    encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri);
         } else {
             return new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
-                    encodingType, acceptEncodingType, timeout, endpoint, sourceUri);
+                    encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri);
         }
     }
 
