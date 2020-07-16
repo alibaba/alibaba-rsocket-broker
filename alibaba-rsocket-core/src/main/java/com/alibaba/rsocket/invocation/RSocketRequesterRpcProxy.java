@@ -71,6 +71,10 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      */
     protected String endpoint;
     /**
+     * sticky session
+     */
+    protected boolean sticky;
+    /**
      * encoding type
      */
     private URI sourceUri;
@@ -100,7 +104,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, @Nullable String service, String version,
                                     RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
-                                    Duration timeout, @Nullable String endpoint, URI sourceUri) {
+                                    Duration timeout, @Nullable String endpoint, boolean sticky, URI sourceUri) {
         this.rsocket = upstream.getLoadBalancedRSocket();
         this.serviceInterface = serviceInterface;
         this.service = serviceInterface.getCanonicalName();
@@ -110,6 +114,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         this.group = group;
         this.version = version;
         this.endpoint = endpoint;
+        this.sticky = sticky;
         this.sourceUri = sourceUri;
         this.encodingType = encodingType;
         if (acceptEncodingType == null) {
@@ -126,7 +131,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
-                    method, encodingType, this.acceptEncodingTypes, endpoint,sourceUri));
+                    method, encodingType, this.acceptEncodingTypes, endpoint, sticky, sourceUri));
         }
         ReactiveMethodMetadata methodMetadata = methodMetadataMap.get(method);
         mutableContext.put(ReactiveMethodMetadata.class, methodMetadata);
