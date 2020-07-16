@@ -68,13 +68,14 @@ public class BinaryRoutingMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        int capacity = 8;
+        int capacity = 12;
         if (this.routingText != null) {
-            capacity = 8 + this.routingText.length;
+            capacity = 12 + this.routingText.length;
         }
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(capacity, capacity);
         byteBuf.writeInt(this.serviceId);
         byteBuf.writeInt(this.handlerId);
+        byteBuf.writeInt(this.flags);
         if (this.routingText != null) {
             byteBuf.writeBytes(this.routingText);
         }
@@ -83,15 +84,16 @@ public class BinaryRoutingMetadata implements MetadataAware {
 
 
     public ByteBuf getHeaderAndContent() {
-        int capacity = 12;
+        int capacity = 16;
         if (this.routingText != null) {
-            capacity = 12 + this.routingText.length;
+            capacity = 16 + this.routingText.length;
         }
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer(capacity, capacity);
         byteBuf.writeByte(WellKnownMimeType.MESSAGE_RSOCKET_BINARY_ROUTING.getIdentifier() | 0x80);
         NumberUtils.encodeUnsignedMedium(byteBuf, capacity - 4);
         byteBuf.writeInt(this.serviceId);
         byteBuf.writeInt(this.handlerId);
+        byteBuf.writeInt(this.flags);
         if (this.routingText != null) {
             byteBuf.writeBytes(this.routingText);
         }
@@ -106,6 +108,7 @@ public class BinaryRoutingMetadata implements MetadataAware {
     public void load(ByteBuf byteBuf) {
         this.serviceId = byteBuf.readInt();
         this.handlerId = byteBuf.readInt();
+        this.flags = byteBuf.readInt();
         int readableBytesLen = byteBuf.readableBytes();
         if (readableBytesLen > 0) {
             this.routingText = new byte[readableBytesLen];
