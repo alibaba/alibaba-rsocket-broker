@@ -225,7 +225,7 @@ public class GSVRoutingMetadata implements MetadataAware {
         } else if (tag.startsWith("e=")) {
             this.endpoint = tag.substring(2);
         } else if (tag.equalsIgnoreCase("sticky=1")) {
-            this.sticky = Boolean.parseBoolean(tag.substring(7));
+            this.sticky = true;
         }
     }
 
