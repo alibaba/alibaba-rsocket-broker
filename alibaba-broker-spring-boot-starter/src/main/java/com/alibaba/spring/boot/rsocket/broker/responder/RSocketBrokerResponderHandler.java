@@ -148,14 +148,14 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             this.id = appMetadata.getId();
             this.uuid = appMetadata.getUuid();
             //app tags hashcode set
-            this.appTagsHashCodeSet.add(("id=" + this.id).hashCode());
-            this.appTagsHashCodeSet.add(("uuid=" + this.uuid).hashCode());
+            this.appTagsHashCodeSet.add(("id:" + this.id).hashCode());
+            this.appTagsHashCodeSet.add(("uuid:" + this.uuid).hashCode());
             if (appMetadata.getIp() != null && !appMetadata.getIp().isEmpty()) {
-                this.appTagsHashCodeSet.add(("ip=" + this.appMetadata.getIp()).hashCode());
+                this.appTagsHashCodeSet.add(("ip:" + this.appMetadata.getIp()).hashCode());
             }
             if (appMetadata.getMetadata() != null) {
                 for (Map.Entry<String, String> entry : appMetadata.getMetadata().entrySet()) {
-                    this.appTagsHashCodeSet.add((entry.getKey() + "=" + entry.getValue()).hashCode());
+                    this.appTagsHashCodeSet.add((entry.getKey() + ":" + entry.getValue()).hashCode());
                 }
             }
             this.principal = principal;
