@@ -180,19 +180,17 @@ public class GSVRoutingMetadata implements MetadataAware {
             parseRoutingKey(iterator.next());
         }
         while (iterator.hasNext()) {
-            String tag = iterator.next();
-            if (tag.startsWith("m=")) {
-                this.method = tag.substring(2);
-            } else if (tag.startsWith("e=")) {
-                this.endpoint = tag.substring(2);
-            } else if (tag.equalsIgnoreCase("sticky=1")) {
-                this.sticky = Boolean.parseBoolean(tag.substring(7));
-            }
+            parseTag(iterator.next());
         }
     }
 
     private void parseRoutingKey(String routingKey) {
         String temp = routingKey;
+        String tags = null;
+        if (routingKey.contains("?")) {
+            temp = routingKey.substring(0, routingKey.indexOf("?"));
+            tags = routingKey.substring(routingKey.indexOf("?") + 1);
+        }
         //group parse
         int groupSymbolPosition = temp.indexOf('!');
         if (groupSymbolPosition > 0) {
@@ -213,6 +211,22 @@ public class GSVRoutingMetadata implements MetadataAware {
         } else {
             this.service = temp;
         }
+        if (tags != null) {
+            String[] tagParts = tags.split("&");
+            for (String tagPart : tagParts) {
+                parseTag(tagPart);
+            }
+        }
+    }
+
+    private void parseTag(String tag) {
+        if (tag.startsWith("m=")) {
+            this.method = tag.substring(2);
+        } else if (tag.startsWith("e=")) {
+            this.endpoint = tag.substring(2);
+        } else if (tag.equalsIgnoreCase("sticky=1")) {
+            this.sticky = Boolean.parseBoolean(tag.substring(7));
+        }
     }
 
     public String assembleRoutingKey() {
@@ -230,6 +244,15 @@ public class GSVRoutingMetadata implements MetadataAware {
         //version
         if (version != null && !version.isEmpty()) {
             routingBuilder.append(':').append(version);
+        }
+        if (this.sticky || this.endpoint != null) {
+            routingBuilder.append("?");
+            if (this.sticky) {
+                routingBuilder.append("sticky=1&");
+            }
+            if (this.endpoint != null) {
+                routingBuilder.append("e=").append(endpoint).append("&");
+            }
         }
         return routingBuilder.toString();
     }
