@@ -62,8 +62,12 @@ public class BinaryRoutingMetadata implements MetadataAware {
         return (this.flags & 0x01) == 0;
     }
 
-    public void setSticky() {
-        this.flags = this.flags | 0x01;
+    public void setSticky(boolean sticky) {
+        if (sticky) {
+            this.flags = this.flags | 0x01;
+        } else {
+            this.flags = this.flags & (Integer.MAX_VALUE - 1);
+        }
     }
 
     public byte[] getRoutingText() {
