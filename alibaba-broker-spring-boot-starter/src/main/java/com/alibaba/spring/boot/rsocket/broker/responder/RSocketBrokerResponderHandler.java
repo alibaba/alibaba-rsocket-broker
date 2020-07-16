@@ -91,6 +91,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      */
     private Set<ServiceLocator> peerServices;
     /**
+     * sticky services, value is rsocket handler id
+     */
+    private Map<Integer, Integer> stickyServices = new HashMap<>();
+    /**
      * consumed service
      */
     private Set<String> consumedServices = new HashSet<>();
@@ -237,7 +241,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             return localRequestResponse(gsvRoutingMetadata, defaultMessageMimeType, null, payload);
         }
         //request filters
-        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
+        Mono<RSocket> destination = findDestination(binaryRoutingMetadata, gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
             RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_RESPONSE, gsvRoutingMetadata, payload, this.appMetadata);
             destination = filterChain.filter(exchange).then(destination);
@@ -279,7 +283,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             return localFireAndForget(gsvRoutingMetadata, defaultMessageMimeType, payload);
         }
         //request filters
-        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
+        Mono<RSocket> destination = findDestination(binaryRoutingMetadata, gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
             RSocketExchange exchange = new RSocketExchange(FrameType.REQUEST_FNF, gsvRoutingMetadata, payload, this.appMetadata);
             destination = filterChain.filter(exchange).then(destination);
@@ -335,7 +339,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         if (localServiceCaller.contains(serviceId)) {
             return localRequestStream(gsvRoutingMetadata, defaultMessageMimeType, null, payload);
         }
-        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
+        Mono<RSocket> destination = findDestination(binaryRoutingMetadata, gsvRoutingMetadata);
         if (this.filterChain.isFiltersPresent()) {
             RSocketExchange requestContext = new RSocketExchange(FrameType.REQUEST_STREAM, gsvRoutingMetadata, payload, this.appMetadata);
             destination = filterChain.filter(requestContext).then(destination);
@@ -363,7 +367,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-600404")));
             }
         }
-        Mono<RSocket> destination = findDestination(gsvRoutingMetadata);
+        Mono<RSocket> destination = findDestination(binaryRoutingMetadata, gsvRoutingMetadata);
         return destination.flatMapMany(rsocket -> {
             recordServiceInvoke(principal.getName(), gsvRoutingMetadata.gsv());
             metrics(gsvRoutingMetadata, "0x07");
@@ -478,32 +482,43 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return buf;
     }
 
-    private Mono<RSocket> findDestination(GSVRoutingMetadata routingMetaData) {
+    private Mono<RSocket> findDestination(@Nullable BinaryRoutingMetadata binaryRoutingMetadata, GSVRoutingMetadata routingMetaData) {
         return Mono.create(sink -> {
             String gsv = routingMetaData.gsv();
             Integer serviceId = routingMetaData.id();
-            RSocketBrokerResponderHandler targetHandler = null;
             RSocket rsocket = null;
             Exception error = null;
-            String endpoint = routingMetaData.getEndpoint();
-            if (endpoint != null && !endpoint.isEmpty()) {
-                targetHandler = findDestinationWithEndpoint(endpoint, serviceId);
-                if (targetHandler == null) {
-                    error = new InvalidException(RsocketErrorCode.message("RST-900405", gsv, endpoint));
-                }
-            } else {
-                Integer targetHandlerId = routingSelector.findHandler(serviceId);
-                if (targetHandlerId != null) {
-                    targetHandler = handlerRegistry.findById(targetHandlerId);
-                } else {
-                    error = new InvalidException(RsocketErrorCode.message("RST-900404", gsv));
-                }
-            }
+            //sticky session handler
+            boolean sticky = binaryRoutingMetadata != null ? binaryRoutingMetadata.isSticky() : routingMetaData.isSticky();
+            RSocketBrokerResponderHandler targetHandler = findStickyHandler(sticky, serviceId);
+            // handler from sticky services
             if (targetHandler != null) {
-                if (serviceMeshInspector.isRequestAllowed(this.principal, gsv, targetHandler.principal)) {
-                    rsocket = targetHandler.peerRsocket;
+                rsocket = targetHandler.peerRsocket;
+            } else {
+                String endpoint = routingMetaData.getEndpoint();
+                if (endpoint != null && !endpoint.isEmpty()) {
+                    targetHandler = findDestinationWithEndpoint(endpoint, serviceId);
+                    if (targetHandler == null) {
+                        error = new InvalidException(RsocketErrorCode.message("RST-900405", gsv, endpoint));
+                    }
                 } else {
-                    error = new ApplicationErrorException(RsocketErrorCode.message("RST-900401", gsv));
+                    Integer targetHandlerId = routingSelector.findHandler(serviceId);
+                    if (targetHandlerId != null) {
+                        targetHandler = handlerRegistry.findById(targetHandlerId);
+                    } else {
+                        error = new InvalidException(RsocketErrorCode.message("RST-900404", gsv));
+                    }
+                }
+                if (targetHandler != null) {
+                    if (serviceMeshInspector.isRequestAllowed(this.principal, gsv, targetHandler.principal)) {
+                        rsocket = targetHandler.peerRsocket;
+                        //save handler id if sticky
+                        if (sticky) {
+                            this.stickyServices.put(serviceId, targetHandler.getId());
+                        }
+                    } else {
+                        error = new ApplicationErrorException(RsocketErrorCode.message("RST-900401", gsv));
+                    }
                 }
             }
             if (rsocket != null) {
@@ -563,6 +578,14 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         if ((typeAndService >> 56) == BINARY_ROUTING_MARK) {
             int metadataContentLen = (int) (typeAndService >> 32) & 0x00FFFFFF;
             return BinaryRoutingMetadata.from(compositeByteBuf.slice(4, metadataContentLen));
+        }
+        return null;
+    }
+
+    @Nullable
+    protected RSocketBrokerResponderHandler findStickyHandler(boolean sticky, Integer serviceId) {
+        if (sticky && stickyServices.containsKey(serviceId)) {
+            return handlerRegistry.findById(stickyServices.get(serviceId));
         }
         return null;
     }
