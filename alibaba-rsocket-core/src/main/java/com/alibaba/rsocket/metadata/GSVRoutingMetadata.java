@@ -38,6 +38,10 @@ public class GSVRoutingMetadata implements MetadataAware {
      */
     private String endpoint;
     /**
+     * sticky session
+     */
+    private boolean sticky;
+    /**
      * target instance ID
      */
     private transient Integer targetId;
@@ -127,6 +131,14 @@ public class GSVRoutingMetadata implements MetadataAware {
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public boolean isSticky() {
+        return sticky;
+    }
+
+    public void setSticky(boolean sticky) {
+        this.sticky = sticky;
     }
 
     @Override
