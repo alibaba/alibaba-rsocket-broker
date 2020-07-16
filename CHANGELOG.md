@@ -6,12 +6,15 @@ Alibaba RSocket Broker变更记录
 ### 新特
 
 * Configuration调至为基于H2 MVStore，支持配置持久化到磁盘
-* 升级到Vaadin 14.2.0，方便后续Modeless, resizable and draggable对话框
+* 升级到Vaadin 14.3.0，方便后续Modeless, resizable and draggable对话框，Spring Boot devtools支持
+* ScaleCube Gossip更新至2.6.0，支持Jackson 2.11
+* Sticky Session: 一个service的请求始终由某一服务提供者处理，不会做在多个服务提供者随机分发 https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-Routing
 
 ### Bug修复
 
 * 修复Windows下WellKnownMimeType类重名bug
 * 修改config推送应用名在broker上未设定的bug
+* Spring Boot Devtools兼容测试
 
 ### 为何有WellKnownMimeType类重名问题
 
