@@ -31,6 +31,7 @@ public class RSocketRemoteServiceBuilder<T> {
     private String version;
     private Duration timeout = Duration.ofMillis(3000);
     private String endpoint;
+    private boolean sticky;
     private Class<T> serviceInterface;
     private RSocketMimeType encodingType = RSocketMimeType.Hessian;
     private RSocketMimeType acceptEncodingType;
@@ -65,6 +66,7 @@ public class RSocketRemoteServiceBuilder<T> {
             if (!serviceMapping.resultEncoding().isEmpty()) {
                 builder.acceptEncodingType = RSocketMimeType.valueOfType(serviceMapping.resultEncoding());
             }
+            builder.sticky = serviceMapping.sticky();
         }
         try {
             Class.forName("brave.propagation.TraceContext");
