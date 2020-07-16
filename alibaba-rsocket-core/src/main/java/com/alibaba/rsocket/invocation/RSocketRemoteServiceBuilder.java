@@ -109,6 +109,11 @@ public class RSocketRemoteServiceBuilder<T> {
         return this;
     }
 
+    public RSocketRemoteServiceBuilder<T> sticky(boolean sticky) {
+        this.sticky = sticky;
+        return this;
+    }
+
     public RSocketRemoteServiceBuilder<T> upstream(UpstreamCluster upstreamCluster) {
         this.upstreamCluster = upstreamCluster;
         return this;
