@@ -42,4 +42,11 @@ public @interface ServiceMapping {
      * @return endpoint
      */
     String endpoint() default "";
+
+    /**
+     * sticky session
+     *
+     * @return sticky or not
+     */
+    boolean sticky() default false;
 }
