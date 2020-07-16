@@ -20,7 +20,7 @@ public class ReactiveMethodMetadataTest {
     public void testByteBufferReturn() throws Exception {
         Method rawContentMethod = this.getClass().getMethod("findById", Integer.class);
         ReactiveMethodMetadata methodMetadata = new ReactiveMethodMetadata(null, "com.alibaba.user.UserService", "",
-                rawContentMethod, RSocketMimeType.Hessian, new RSocketMimeType[]{}, null, URI.create("tcp://127.0.0.1:0?appName=demo"));
+                rawContentMethod, RSocketMimeType.Hessian, new RSocketMimeType[]{}, null, false, URI.create("tcp://127.0.0.1:0?appName=demo"));
         Assertions.assertThat(methodMetadata.getInferredClassForReturn()).isEqualTo(ByteBuffer.class);
     }
 
