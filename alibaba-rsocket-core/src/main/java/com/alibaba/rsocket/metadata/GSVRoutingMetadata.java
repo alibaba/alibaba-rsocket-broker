@@ -5,7 +5,7 @@ import com.alibaba.rsocket.utils.MurmurHash3;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.rsocket.metadata.RoutingMetadata;
-import io.rsocket.metadata.TaggingMetadataFlyweight;
+import io.rsocket.metadata.TaggingMetadataCodec;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -162,7 +162,10 @@ public class GSVRoutingMetadata implements MetadataAware {
         if (endpoint != null && !endpoint.isEmpty()) {
             tags.add("e=" + endpoint);
         }
-        return TaggingMetadataFlyweight.createTaggingContent(PooledByteBufAllocator.DEFAULT, tags);
+        if (sticky) {
+            tags.add("sticky=1");
+        }
+        return TaggingMetadataCodec.createTaggingContent(PooledByteBufAllocator.DEFAULT, tags);
     }
 
     /**
