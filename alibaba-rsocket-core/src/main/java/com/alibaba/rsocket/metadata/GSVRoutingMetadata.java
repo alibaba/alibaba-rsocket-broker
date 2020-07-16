@@ -163,7 +163,7 @@ public class GSVRoutingMetadata implements MetadataAware {
             tags.add("e=" + endpoint);
         }
         if (sticky) {
-            tags.add("sticky=true");
+            tags.add("sticky=1");
         }
         return TaggingMetadataCodec.createTaggingContent(PooledByteBufAllocator.DEFAULT, tags);
     }
@@ -185,7 +185,7 @@ public class GSVRoutingMetadata implements MetadataAware {
                 this.method = tag.substring(2);
             } else if (tag.startsWith("e=")) {
                 this.endpoint = tag.substring(2);
-            } else if (tag.startsWith("sticky=")) {
+            } else if (tag.equalsIgnoreCase("sticky=1")) {
                 this.sticky = Boolean.parseBoolean(tag.substring(7));
             }
         }
