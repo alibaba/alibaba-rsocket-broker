@@ -419,7 +419,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     public void checkUnhealthyUris() {
-        Flux.interval(Duration.ofMinutes(3))
+        Flux.interval(Duration.ofMinutes(5))
                 .filter(sequence -> !unHealthyUriSet.isEmpty())
                 .subscribe(entry -> {
                     for (String unhealthyUri : unHealthyUriSet) {
@@ -436,7 +436,8 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     }
 
     private Mono<Payload> healthCheck(RSocket rsocket) {
-        return rsocket.requestResponse(ByteBufPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.retainedDuplicate()));
+        return rsocket.requestResponse(ByteBufPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.retainedDuplicate()))
+                .timeout(Duration.ofSeconds(15));
     }
 
     public boolean isSameWithLastUris(Collection<String> newRSocketUris) {
