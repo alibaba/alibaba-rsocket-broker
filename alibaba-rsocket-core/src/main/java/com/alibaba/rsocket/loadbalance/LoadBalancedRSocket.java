@@ -129,7 +129,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     } else {
                         return connect(rsocketUri)
                                 //health check after connection
-                                .flatMap(rsocket -> healthCheck(rsocket).map(payload -> Tuples.of(rsocketUri, rsocket)))
+                                .flatMap(rsocket -> healthCheck(rsocket, rsocketUri).map(payload -> Tuples.of(rsocketUri, rsocket)))
                                 .doOnError(error -> {
                                     log.error(RsocketErrorCode.message("RST-400500", rsocketUri), error);
                                     this.unHealthyUriSet.add(rsocketUri);
@@ -361,7 +361,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .filter(id -> activeSockets.isEmpty() || !activeSockets.containsKey(rsocketUri))
                     .subscribe(number -> {
                         connect(rsocketUri)
-                                .flatMap(rsocket -> healthCheck(rsocket).map(payload -> rsocket))
+                                .flatMap(rsocket -> healthCheck(rsocket, rsocketUri).map(payload -> rsocket))
                                 .doOnError(e -> {
                                     this.getUnHealthyUriSet().add(rsocketUri);
                                     log.error(RsocketErrorCode.message("RST-500408", number, rsocketUri), e);
@@ -410,7 +410,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         Flux.interval(Duration.ofSeconds(HEALTH_CHECK_INTERVAL_SECONDS))
                 .flatMap(timestamp -> Flux.fromIterable(activeSockets.entrySet()))
                 .subscribe(entry -> {
-                    healthCheck(entry.getValue()).doOnError(error -> {
+                    healthCheck(entry.getValue(), entry.getKey()).doOnError(error -> {
                         if (CONNECTION_ERROR_PREDICATE.test(error)) { //connection closed
                             onRSocketClosed(entry.getKey(), entry.getValue(), error);
                         }
@@ -425,7 +425,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     for (String unhealthyUri : unHealthyUriSet) {
                         if (!activeSockets.containsKey(unhealthyUri)) {
                             connect(unhealthyUri)
-                                    .flatMap(rsocket -> healthCheck(rsocket).map(payload -> rsocket))
+                                    .flatMap(rsocket -> healthCheck(rsocket, unhealthyUri).map(payload -> rsocket))
                                     .subscribe(rsocket -> {
                                         onRSocketReconnected(unhealthyUri, rsocket);
                                         log.info(RsocketErrorCode.message("RST-500203", unhealthyUri));
@@ -435,9 +435,17 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                 });
     }
 
-    private Mono<Payload> healthCheck(RSocket rsocket) {
+    private Mono<Boolean> healthCheck(RSocket rsocket, String url) {
         return rsocket.requestResponse(ByteBufPayload.create(Unpooled.EMPTY_BUFFER, this.healthCheckCompositeByteBuf.retainedDuplicate()))
-                .timeout(Duration.ofSeconds(15));
+                .timeout(Duration.ofSeconds(15)).handle((payload, sink) -> {
+                    byte indicator = payload.data().readByte();
+                    // check error code: hessian decode: 1: -111,  0-> -112, -1 -> -113
+                    if (indicator == -111) {
+                        sink.next(true);
+                    } else {
+                        sink.error(new Exception("Health check failed :" + url));
+                    }
+                });
     }
 
     public boolean isSameWithLastUris(Collection<String> newRSocketUris) {
