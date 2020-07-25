@@ -3,12 +3,14 @@ Alibaba RSocket Broker变更记录
 
 ## 1.0.0-M3
 
-### 新特
+### 特性调整
 
 * Configuration调至为基于H2 MVStore，支持配置持久化到磁盘
 * 升级到Vaadin 14.3.0，方便后续Modeless, resizable and draggable对话框，Spring Boot devtools支持
-* ScaleCube Gossip更新至2.6.0，支持Jackson 2.11
+* ScaleCube Gossip更新至2.6.0-RC7，支持Jackson 2.11
 * Sticky Session: 一个service的请求始终由某一服务提供者处理，不会做在多个服务提供者随机分发 https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-Routing
+* 负载均衡： 添加了健康度检查超时，添加返回状态码判断
+* 升级到Spring Boot 2.3.2
 
 ### Bug修复
 
