@@ -11,10 +11,10 @@ Alibaba RSocket Broker
 
 Alibaba RSocket Broker是一款基于RSocket协议的反应式对等通讯系统，为通讯多方构建分布式的RPC, Pub/Sub, Streaming等通讯支持。
 
-* 反应式: 编程模型、线程模型、异步化、独特的对等通讯模式可适应各种内部网络环境和跨云需求。
-* 程控：程序控制，可定制和方便的功能扩展，如支持反向的Prometheus Metrics采集、ZipKin RSocket Collector等。
-* 消息：面向消息通讯，路由、过滤、observability都非常简单
-* 交换系统：完全分布式、异构系统整合简单，无论什么语言开发，部署在哪里。
+* 反应式: 无需担心线程模型、全异步化、流式背压支持、独特的对等通讯模式可适应各种内部网络环境和跨云混云的需求。
+* 程控：完善的控制面(Control Plane)支持，可定制和方便的功能扩展，如支持反向的Prometheus Metrics采集、ZipKin RSocket Collector、Chaos等。
+* 消息：面向消息通讯，服务路由、过滤、observability都非常简单。
+* 交换系统：完全分布式、异构系统整合简单，无论应用什么语言开发、部署在哪里，都可以相互通讯。
 * 更多RSocket Broker介绍，请访问产品Wiki https://github.com/alibaba/alibaba-rsocket-broker/wiki 或者 RSocket by Example http://rsocketbyexample.info
 
 ### RSocket Broker工作原理
