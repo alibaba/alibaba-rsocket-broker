@@ -18,7 +18,7 @@ Alibaba RSocket Broker是一款基于RSocket协议的反应式对等通讯系统
 * 更多RSocket Broker介绍，请访问产品Wiki https://github.com/alibaba/alibaba-rsocket-broker/wiki 或者 RSocket by Example http://rsocketbyexample.info
 
 ### RSocket Broker工作原理
-RSocket Broker是桥接应用间通讯的双方，相当于一个中间人的角色。
+RSocket Broker桥接应用间通讯的双方，相当于一个中间人的角色。
 应用在启动后，和Broker创建一个长连接，在连接创建的时候需要标明自己的身份，如果是服务提供者，会注册自己能提供的服务信息。
 Broker会针对所有的连接和服务列表建立对应的映射关系。
 当一个应用需要调用其他服务时，应用会将请求以消息的方式发给Broker，然后Broker会解析消息的元信息，然后根据路由表将请求转发给服务提供者，然后将处理结果后的消息再转发给调用方。
@@ -140,7 +140,7 @@ public class PortalController {
 * Issues: https://github.com/alibaba/alibaba-rsocket-broker/issues
 * Wiki: https://github.com/alibaba/alibaba-rsocket-broker/wiki
 * Gitter: https://gitter.im/alibaba-rsocket-broker/community
-
+* RSocket by Example: http://rsocketbyexample.info/
 
 ### References
 
