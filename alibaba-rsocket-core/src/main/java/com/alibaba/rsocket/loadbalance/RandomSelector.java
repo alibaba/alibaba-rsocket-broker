@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 /**
@@ -14,8 +14,6 @@ import java.util.function.Supplier;
  * @author leijuan
  */
 public class RandomSelector<T> implements Supplier<Mono<T>> {
-    // round robin index
-    private final AtomicInteger position = new AtomicInteger(0);
     private List<T> elements;
     private int size;
     private String name;
@@ -29,8 +27,7 @@ public class RandomSelector<T> implements Supplier<Mono<T>> {
     @Nullable
     public T next() {
         if (size > 1) {
-            int pos = Math.abs(this.position.incrementAndGet());
-            T t = elements.get(pos % size);
+            T t = elements.get(ThreadLocalRandom.current().nextInt(size));
             if (t == null) {
                 t = elements.get(0);
             }
