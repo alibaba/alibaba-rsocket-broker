@@ -54,6 +54,7 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.handlerRegistry = handlerRegistry;
         this.filterChain = filterChain;
+        this.properties = properties;
     }
 
     public void setUpstreamBrokerCluster(UpstreamBrokerCluster upstreamBrokerCluster) {
