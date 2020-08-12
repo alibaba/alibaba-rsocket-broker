@@ -49,7 +49,7 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
                                        RSocketFilterChain filterChain,
                                        ServiceRoutingSelector serviceRoutingSelector) {
         this.env = env;
-        this.appName = env.getProperty("spring.application.name", env.getProperty("application.name","unknown-app"));
+        this.appName = env.getProperty("spring.application.name", env.getProperty("application.name", "unknown-app"));
         this.jwtToken = env.getProperty("rsocket.jwt-token", "").toCharArray();
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.handlerRegistry = handlerRegistry;
@@ -131,7 +131,6 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("ConstantConditions")
     private AppMetadata getAppMetadata() {
         //app metadata
         AppMetadata appMetadata = new AppMetadata();
@@ -147,11 +146,8 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
         appMetadata.setBrokers(properties.getUpstreamBrokers());
         appMetadata.setTopology(properties.getTopology());
         //management port
-        if (env.getProperty("management.server.port") != null) {
-            appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port")));
-        } else if (env.getProperty("server.port") != null) {
-            appMetadata.setManagementPort(Integer.parseInt(env.getProperty("server.port")));
-        }
+        appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port",
+                env.getProperty("server.port", "8080"))));
         appMetadata.addMetadata("broker", "true");
         return appMetadata;
     }
