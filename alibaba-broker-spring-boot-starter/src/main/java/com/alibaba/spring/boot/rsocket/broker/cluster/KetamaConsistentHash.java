@@ -123,7 +123,7 @@ public class KetamaConsistentHash<T> {
             MessageDigest md = MessageDigest.getInstance("MD5");
             return md.digest(text.getBytes(StandardCharsets.UTF_8));
         } catch (Exception ignore) {
-            return text.getBytes();
+            return text.getBytes(StandardCharsets.UTF_8);
         }
     }
 

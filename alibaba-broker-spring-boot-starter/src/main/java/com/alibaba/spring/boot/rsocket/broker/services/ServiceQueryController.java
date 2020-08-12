@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class ServiceQueryController {
             if (brokerResponderHandler != null) {
                 GSVRoutingMetadata routingMetadata = new GSVRoutingMetadata("", ReactiveServiceDiscovery.class.getCanonicalName() + ".findServiceByFullName", "");
                 RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding);
-                ByteBuf bodyBuf = Unpooled.wrappedBuffer(("[\"" + serviceName + "\"]").getBytes());
+                ByteBuf bodyBuf = Unpooled.wrappedBuffer(("[\"" + serviceName + "\"]").getBytes(StandardCharsets.UTF_8));
                 return brokerResponderHandler.getPeerRsocket()
                         .requestResponse(ByteBufPayload.create(bodyBuf, compositeMetadata.getContent()))
                         .map(Payload::getDataUtf8);
