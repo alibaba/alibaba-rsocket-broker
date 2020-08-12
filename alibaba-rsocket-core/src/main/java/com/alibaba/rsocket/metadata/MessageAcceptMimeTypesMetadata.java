@@ -2,12 +2,13 @@ package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.Unpooled;
 import io.rsocket.metadata.WellKnownMimeType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.rsocket.metadata.WellKnownMimeType.UNPARSEABLE_MIME_TYPE;
 
 /**
  * RSocket Message accept mimetypes metadata
@@ -24,7 +25,7 @@ public class MessageAcceptMimeTypesMetadata implements MetadataAware {
     public MessageAcceptMimeTypesMetadata(String... acceptedMimeTypes) {
         for (String acceptedMimeType : acceptedMimeTypes) {
             WellKnownMimeType wellKnownMimeType = WellKnownMimeType.fromString(acceptedMimeType);
-            if (wellKnownMimeType == null) {
+            if (wellKnownMimeType == UNPARSEABLE_MIME_TYPE) {
                 this.mimeTypes.add(acceptedMimeType);
                 this.byteBufLength += (acceptedMimeTypes.length + 1);
             } else {
