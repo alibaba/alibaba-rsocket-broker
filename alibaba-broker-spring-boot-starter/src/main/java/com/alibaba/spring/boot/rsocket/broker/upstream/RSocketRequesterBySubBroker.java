@@ -49,7 +49,7 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
                                        RSocketFilterChain filterChain,
                                        ServiceRoutingSelector serviceRoutingSelector) {
         this.env = env;
-        this.appName = env.getProperty("spring.application.name", env.getProperty("application.name"));
+        this.appName = env.getProperty("spring.application.name", env.getProperty("application.name","unknown-app"));
         this.jwtToken = env.getProperty("rsocket.jwt-token", "").toCharArray();
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.handlerRegistry = handlerRegistry;
