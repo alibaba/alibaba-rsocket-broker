@@ -149,7 +149,7 @@ public class UpstreamForwardRSocket extends AbstractRSocket {
         if (payloads instanceof Flux) {
             Flux<Payload> payloadsWithSignalRouting = (Flux<Payload>) payloads;
             //noinspection ConstantConditions
-            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux.skip(1)));
+            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux));
         }
         return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
     }

@@ -355,7 +355,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         });
     }
 
-    public Flux<Payload> requestChannel(Payload signal, Publisher<Payload> payloads) {
+    public Flux<Payload> requestChannel(Payload signal, Flux<Payload> payloads) {
         BinaryRoutingMetadata binaryRoutingMetadata = binaryRoutingMetadata(signal.metadata());
         GSVRoutingMetadata gsvRoutingMetadata;
         if (binaryRoutingMetadata != null) {
@@ -380,7 +380,8 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     public Flux<Payload> requestChannel(@NotNull Publisher<Payload> payloads) {
         if (payloads instanceof Flux) {
             Flux<Payload> payloadsWithSignalRouting = (Flux<Payload>) payloads;
-            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux.skip(1)));
+            //noinspection ConstantConditions
+            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux));
         }
         return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
     }

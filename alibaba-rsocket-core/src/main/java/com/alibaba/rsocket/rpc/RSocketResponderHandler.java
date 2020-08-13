@@ -174,7 +174,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     public final Flux<Payload> requestChannel(@NotNull Publisher<Payload> payloads) {
         if (payloads instanceof Flux) {
             Flux<Payload> payloadsWithSignalRouting = (Flux<Payload>) payloads;
-            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux.skip(1)));
+            return payloadsWithSignalRouting.switchOnFirst((signal, flux) -> requestChannel(signal.get(), flux));
         }
         return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201400")));
     }
