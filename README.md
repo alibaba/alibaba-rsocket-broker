@@ -57,7 +57,7 @@ Broker完全是异步化的，你不需要关心线程池这些概念，而且�
 
 ### 如何运行Example?
 
-**注意:** 样例代码中的AccountService接口采用了Protobuf进行序列化，使用了protobuf-maven-plugin生成对应的Protobuf，  
+**注意:** 样例代码中的AccountService接口采用了Protobuf进行序列化，使用了protobuf-maven-plugin生成对应的Protobuf,
 建议使用IDE导入项目之前，首先在项目的根目录下执行一下"mvn -DskipTests package"完成Protobuf对应的代码生成，不然直接在IDE中编译可能出现编译不通过的情况。
 
 项目提供了完成的样例，你可以在[example模块](/example/)下找到，包括服务接口定义、服务实现和服务调用三个部分。
@@ -87,7 +87,7 @@ $ curl http://localhost:8181/user/2
 
 * 创建一个RSocket服务接口，你可以创建一个单独的Maven Module存放这些接口，如user-service-api，样例代码如下：
 
-```
+```java
 public interface UserService {
     Mono<User> findById(Integer id);
 }
@@ -95,7 +95,7 @@ public interface UserService {
 
 * 在RSocket Responder端实现该接口，同时给实现类添加 @RSocketService annotation，如下：
 
-```
+```java
 @RSocketService(serviceInterface = UserService.class)
 @Service
 public class UserServiceImpl implements UserService {
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
 
 * 在RSocket Requester端，进行代码调用，如HTTP REST API提供给:
 
-```
+```java
 @RestController
 public class PortalController {
     @Autowired
