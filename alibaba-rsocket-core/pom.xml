@@ -82,7 +82,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-serialization-runtime</artifactId>
+            <artifactId>kotlinx-serialization-core</artifactId>
             <version>${kotlinx-serialization.version}</version>
             <optional>true</optional>
         </dependency>

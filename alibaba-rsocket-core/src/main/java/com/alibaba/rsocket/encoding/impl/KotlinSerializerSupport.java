@@ -35,19 +35,19 @@ public class KotlinSerializerSupport {
     }
 
     public static byte[] encodeAsProtobuf(Object result) throws Exception {
-        return ProtoBuf.Default.dump((SerializationStrategy<? super Object>) KotlinSerializerSupport.getSerializer(result.getClass()), result);
+        return ProtoBuf.Default.encodeToByteArray((SerializationStrategy<? super Object>) KotlinSerializerSupport.getSerializer(result.getClass()), result);
     }
 
     public static Object decodeFromProtobuf(byte[] bytes, Class<?> targetClass) throws Exception {
-        return ProtoBuf.Default.load(KotlinSerializerSupport.getSerializer(targetClass), bytes);
+        return ProtoBuf.Default.decodeFromByteArray(KotlinSerializerSupport.getSerializer(targetClass), bytes);
     }
 
     public static byte[] encodeAsCbor(Object result) throws Exception {
-        return Cbor.Default.dump((SerializationStrategy<? super Object>) KotlinSerializerSupport.getSerializer(result.getClass()), result);
+        return Cbor.Default.encodeToByteArray((SerializationStrategy<? super Object>) KotlinSerializerSupport.getSerializer(result.getClass()), result);
     }
 
     public static Object decodeFromCbor(byte[] bytes, Class<?> targetClass) throws Exception {
-        return Cbor.Default.load(KotlinSerializerSupport.getSerializer(targetClass), bytes);
+        return Cbor.Default.decodeFromByteArray(KotlinSerializerSupport.getSerializer(targetClass), bytes);
     }
 
 }
