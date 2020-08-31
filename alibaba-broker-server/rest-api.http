@@ -1,4 +1,5 @@
 ### REST API Gateway
+### curl -d '[1]' -H 'Content-Type: application/json' http://127.0.0.1:9998/api/com.alibaba.user.UserService/findById
 POST http://127.0.0.1:9998/api/com.alibaba.user.UserService/findById
 Authorization: Bearer jwt_token
 Content-Type: application/json
