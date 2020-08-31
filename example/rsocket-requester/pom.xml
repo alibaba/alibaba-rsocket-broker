@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.alibaba.rsocket</groupId>
             <artifactId>alibaba-rsocket-core</artifactId>
-            <version>${project.version}</version>
+            <version>${alibaba-rsocket.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba.rsocket</groupId>
