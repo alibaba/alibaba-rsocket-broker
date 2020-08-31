@@ -37,7 +37,7 @@ public class MainController {
         rsocket = upstreamManager.findBroker().getLoadBalancedRSocket();
     }
 
-    @RequestMapping(value = "/{serviceName}/{method}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(value = "/api/{serviceName}/{method}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<ResponseEntity<ByteBuf>> handle(@PathVariable("serviceName") String serviceName,
                                                 @PathVariable("method") String method,
                                                 @RequestParam(name = "group", required = false, defaultValue = "") String group,
