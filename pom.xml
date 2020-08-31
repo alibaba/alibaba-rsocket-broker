@@ -9,7 +9,7 @@
     <groupId>com.alibaba.rsocket</groupId>
     <artifactId>alibaba-rsocket-broker-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.RC1</version>
 
     <modules>
         <module>alibaba-rsocket-core</module>
