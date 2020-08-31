@@ -4,7 +4,7 @@ RSocket Broker HTTP Gateway
 ### 调用规范
 
 ```
-POST /com.alibaba.user.UserService/findById
+POST /api/com.alibaba.user.UserService/findById
 Authorization: Bearer jwt_token
 Content-Type: application/json
 rsocket-timeout: 3S
@@ -14,6 +14,12 @@ rsocket-frame: 0x04
   1
 ]
 
+```
+
+对应的curl测试命令如下：
+
+```
+$ curl -d '[1]' -H 'Content-Type: application/json' http://127.0.0.1:9998/api/com.alibaba.user.UserService/findById
 ```
 
 ### 约定
