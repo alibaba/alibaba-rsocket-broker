@@ -10,7 +10,7 @@
 
     <properties>
         <protobuf-java.version>3.12.2</protobuf-java.version>
-        <grpc.version>1.31.1</grpc.version>
+        <grpc.version>1.32.1</grpc.version>
         <reactive-grpc.version>1.0.1</reactive-grpc.version>
         <grpc-spring-boot-starter.version>3.5.7</grpc-spring-boot-starter.version>
     </properties>
