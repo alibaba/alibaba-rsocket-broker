@@ -26,7 +26,7 @@ public class GrpcReactiveCallInterceptor implements RSocketGrpcSupport {
     private String group;
     private String service;
     private String version;
-    private Duration timeout = Duration.ofMillis(3000);
+    private Duration timeout = Duration.ofMillis(6000);
     private RSocket rsocket;
     private final Map<Method, ReactiveGrpcMethodMetadata> methodMetadataMap = new ConcurrentHashMap<>();
 
@@ -89,7 +89,7 @@ public class GrpcReactiveCallInterceptor implements RSocketGrpcSupport {
             Mono<GeneratedMessageV3> monoParam = (Mono<GeneratedMessageV3>) params[0];
             return monoParam
                     .map(param -> ByteBufPayload.create(Unpooled.wrappedBuffer(param.toByteArray()), methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()))
-                    .flatMapMany(requestPayload -> rsocketStream(rsocket, requestPayload, methodMetadata.getInferredClassForReturn())).timeout(this.timeout);
+                    .flatMapMany(requestPayload -> rsocketStream(rsocket, requestPayload, methodMetadata.getInferredClassForReturn()));
         } else if (methodMetadata.getRpcType().equals(ReactiveGrpcMethodMetadata.CLIENT_STREAMING)) {
             Payload routePayload = ByteBufPayload.create(Unpooled.EMPTY_BUFFER, methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate());
             Flux<Payload> paramsPayloadFlux = ((Flux<GeneratedMessageV3>) params[0]).map(param -> ByteBufPayload.create(Unpooled.wrappedBuffer(param.toByteArray()),
