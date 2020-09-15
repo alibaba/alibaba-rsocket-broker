@@ -59,7 +59,7 @@ public class ReactorServiceTest {
 
 ### Todo
 
-* 根据proto文件生成Reactive服务接口
+* 根据proto文件生成Reactive服务接口: 可以参考 https://github.com/linux-china/proto-rsocket-plugin
 
 ### References
 
