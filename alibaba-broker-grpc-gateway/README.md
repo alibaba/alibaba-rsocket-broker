@@ -52,6 +52,11 @@ public class ReactorServiceTest {
 * evans: https://github.com/ktr0731/evans  Finish streaming inputting with CTRL-D
 * grpcurl: https://github.com/fullstorydev/grpcurl
 
+### 注意事项
+
+* gRPC的Unary RPC，也就是客户端发送一个请求得到一个回复，这种情况下，超时时间默认为3秒，但是可以通过application.properties文件中的`rsocket.timeout=3000`进行调整。
+* 对于提供gRPC的服务方，需要支持Protobuf序列化支持，目前不支持JSON和Protobuf之间的相互转换。
+
 ### Todo
 
 * 根据proto文件生成Reactive服务接口
