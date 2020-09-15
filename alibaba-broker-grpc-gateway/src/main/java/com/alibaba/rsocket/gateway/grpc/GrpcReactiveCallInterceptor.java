@@ -26,7 +26,7 @@ public class GrpcReactiveCallInterceptor implements RSocketGrpcSupport {
     private String group;
     private String service;
     private String version;
-    private Duration timeout = Duration.ofMillis(6000);
+    private Duration timeout = Duration.ofSeconds(3000);
     private RSocket rsocket;
     private final Map<Method, ReactiveGrpcMethodMetadata> methodMetadataMap = new ConcurrentHashMap<>();
 
