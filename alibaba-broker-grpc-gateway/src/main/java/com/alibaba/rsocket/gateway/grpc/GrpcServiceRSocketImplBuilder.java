@@ -55,11 +55,6 @@ public class GrpcServiceRSocketImplBuilder<T extends BindableService> {
         return this;
     }
 
-    public GrpcServiceRSocketImplBuilder<T> timeout(Duration timeout) {
-        interceptor.setTimeout(timeout);
-        return this;
-    }
-
     /**
      * timeout configuration, and default timeout is 3000 millis
      * if the call is long time task, please set it to big value
