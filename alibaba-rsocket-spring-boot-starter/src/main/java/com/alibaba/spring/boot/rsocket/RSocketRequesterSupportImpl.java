@@ -19,6 +19,7 @@ import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -93,7 +94,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
                     .stream()
                     .filter(bean -> !(bean instanceof RSocketServiceHealth || bean instanceof MetricsService))
                     .map(o -> {
-                        Class<?> managedBeanClass = o.getClass();
+                        Class<?> managedBeanClass = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
                         RSocketService rSocketService = AnnotationUtils.findAnnotation(managedBeanClass, RSocketService.class);
                         //noinspection ConstantConditions
                         return new ServiceLocator(
