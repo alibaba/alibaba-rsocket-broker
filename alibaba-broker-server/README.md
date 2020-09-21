@@ -81,6 +81,8 @@ $ openssl rsa -in jwt_private_key.pem -pubout -outform DER -out jwt_rsa.pub
 
 如果你想自行控制JWT Token的生成，请参考 AuthenticationServiceJwtImpl 为应用生成token。
 
+**注意:** 如果你使用Docker制作RSocket Broker镜像，如果是内部使用的话，你可以将jwt_rsa.pub合并到镜像也是可以的。
+
 ### TLS通讯加密
 RSocket Broker 默认是不开启TLS的，如果你需要启动TLS，则需要为RSocket Broker生成一个key store文件，如下：
 
