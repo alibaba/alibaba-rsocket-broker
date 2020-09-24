@@ -8,6 +8,7 @@ Alibaba RSocket Broker变更记录
 * Upgrade to Reactor BOM Dysprosium-SR12
 * Upgrade to JUnit 5.7.0
 * Upgrade to Undertow 2.2.0
+* jbang script support
 
 #### Bug修复
 
