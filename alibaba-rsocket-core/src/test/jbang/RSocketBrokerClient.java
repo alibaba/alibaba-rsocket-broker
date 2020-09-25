@@ -1,7 +1,7 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
-//DEPS com.alibaba.rsocket:alibaba-rsocket-core:1.0.0-SNAPSHOT
 //DEPS org.slf4j:slf4j-simple:1.7.30
 //DEPS org.projectlombok:lombok:1.18.12
+//DEPS com.alibaba.rsocket:alibaba-rsocket-core:1.0.0-SNAPSHOT
 
 import com.alibaba.rsocket.encoding.JsonUtils;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
