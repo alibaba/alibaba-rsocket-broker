@@ -1,18 +1,19 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS com.alibaba.rsocket:alibaba-rsocket-core:1.0.0-SNAPSHOT
 //DEPS org.slf4j:slf4j-simple:1.7.30
-//SOURCES com/alibaba/user/User.java
-//SOURCES com/alibaba/user/UserService.java
+//DEPS org.projectlombok:lombok:1.18.12
 
 import com.alibaba.rsocket.encoding.JsonUtils;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
+import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
 import com.alibaba.rsocket.utils.RSocketRequesterSupportMock;
-import com.alibaba.user.User;
-import com.alibaba.user.UserService;
+import lombok.Data;
+import reactor.core.publisher.Mono;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,6 +43,8 @@ public class RSocketBrokerClient {
         return RSocketRemoteServiceBuilder
                 .client(UserService.class)
                 .service("com.alibaba.user.UserService")
+                .encodingType(RSocketMimeType.Json)
+                .acceptEncodingType(RSocketMimeType.Json)
                 .upstreamManager(this.upstreamManager)
                 .build();
     }
@@ -54,5 +57,19 @@ public class RSocketBrokerClient {
         this.upstreamManager = new UpstreamManagerImpl(new RSocketRequesterSupportMock(this.jwtToken, this.brokers));
         upstreamManager.add(new UpstreamCluster(null, "*", null, this.brokers));
         upstreamManager.init();
+    }
+
+    public interface UserService {
+        Mono<User> findById(Integer id);
+
+        Mono<String> getAppName();
+    }
+
+    @Data
+    public static class User implements Serializable {
+        private Integer id;
+        private String nick;
+        private String email;
+        private String phone;
     }
 }
