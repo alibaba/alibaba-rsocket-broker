@@ -82,19 +82,19 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-serialization-core</artifactId>
+            <artifactId>kotlinx-serialization-core-jvm</artifactId>
             <version>${kotlinx-serialization.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-serialization-protobuf</artifactId>
+            <artifactId>kotlinx-serialization-protobuf-jvm</artifactId>
             <version>${kotlinx-serialization.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-serialization-cbor</artifactId>
+            <artifactId>kotlinx-serialization-cbor-jvm</artifactId>
             <version>${kotlinx-serialization.version}</version>
             <optional>true</optional>
         </dependency>
