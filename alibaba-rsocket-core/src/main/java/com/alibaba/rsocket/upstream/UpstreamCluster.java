@@ -51,6 +51,11 @@ public class UpstreamCluster implements Initializable, Closeable {
         this.version = version;
     }
 
+    public UpstreamCluster(String group, String serviceName, String version, List<String> uris) {
+        this(group, serviceName, version);
+        this.setUris(uris);
+    }
+
     public String getServiceName() {
         return serviceName;
     }
