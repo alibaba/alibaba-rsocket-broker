@@ -43,7 +43,7 @@ import reactor.extra.processor.TopicProcessor;
  *
  * @author leijuan
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings("rawtypes")
 @Configuration
 @EnableConfigurationProperties(RSocketProperties.class)
 public class RSocketAutoConfiguration {
