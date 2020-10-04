@@ -8,11 +8,12 @@ Alibaba RSocket Broker变更记录
 * Upgrade to Reactor BOM Dysprosium-SR12
 * Upgrade to JUnit 5.7.0
 * Upgrade to Undertow 2.2.0
-* jbang script support
+* jbang script support: https://github.com/alibaba/alibaba-rsocket-broker/blob/master/alibaba-rsocket-core/src/test/jbang/RSocketBrokerClient.java
 
 #### Bug修复
 
 * 取消gRPC的stream操作超时
+* 修复自定义服务名的bug #83
 
 #### 文档
 
