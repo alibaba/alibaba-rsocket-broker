@@ -97,9 +97,13 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
                         Class<?> managedBeanClass = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
                         RSocketService rSocketService = AnnotationUtils.findAnnotation(managedBeanClass, RSocketService.class);
                         //noinspection ConstantConditions
+                        String serviceName = rSocketService.serviceInterface().getCanonicalName();
+                        if (!rSocketService.name().isEmpty()) {
+                            serviceName = rSocketService.name();
+                        }
                         return new ServiceLocator(
                                 properties.getGroup(),
-                                rSocketService.serviceInterface().getCanonicalName(),
+                                serviceName,
                                 properties.getVersion(),
                                 rSocketService.tags()
                         );
