@@ -225,6 +225,7 @@
                 <configuration>
                     <finalName>alibaba-rsocket-broker-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <tarLongFileMode>posix</tarLongFileMode>
                     <descriptors>
                         <descriptor>${basedir}/src/main/build/assembly.xml</descriptor>
                     </descriptors>
