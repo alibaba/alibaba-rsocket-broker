@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>rsocket-cloud-function</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
 
     <name>rsocket-cloud-function</name>
     <description>Spring Cloud function with RSocket exposed</description>
