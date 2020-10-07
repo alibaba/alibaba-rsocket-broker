@@ -45,6 +45,12 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                             Object resultObj = invokeLocalService(methodHandler, dataEncodingMetadata, payload);
                             if (resultObj == null) {
                                 sink.success();
+                            } else if (resultObj instanceof Mono) {
+                                Mono<Object> monoObj = (Mono<Object>) resultObj;
+                                monoObj.doOnError(sink::error)
+                                        .doOnNext(sink::success)
+                                        .thenEmpty(Mono.fromRunnable(sink::success))
+                                        .subscribe();
                             } else {
                                 sink.success(resultObj);
                             }
