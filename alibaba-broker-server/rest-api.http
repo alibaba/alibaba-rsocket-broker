@@ -9,7 +9,7 @@ Content-Type: application/json
 ]
 
 ### user save
-POST http://127.0.0.1:8282/com.alibaba.user.UserService/save
+POST http://127.0.0.1:9998/api/com.alibaba.user.UserService/save
 Authorization: Bearer jwt_token
 Content-Type: application/json
 
@@ -21,4 +21,11 @@ Content-Type: application/json
   }
 ]
 
-###
+### function service uppercase
+POST http://127.0.0.1:9998/api/com.alibaba.WordService/uppercase
+Authorization: Bearer jwt_token
+Content-Type: application/json
+
+[
+  "first"
+]
