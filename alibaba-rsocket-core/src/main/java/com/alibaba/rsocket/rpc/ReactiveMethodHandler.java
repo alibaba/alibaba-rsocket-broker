@@ -17,12 +17,14 @@ public class ReactiveMethodHandler extends ReactiveMethodSupport {
             "reactor.core.publisher.Mono", "io.reactivex.Maybe", "io.reactivex.Single", "io.reactivex.Completable", "java.util.concurrent.CompletableFuture",
             "io.reactivex.rxjava3.core.Maybe", "io.reactivex.rxjava3.core.Single", "io.reactivex.rxjava3.core.Completable", "org.reactivestreams.Publisher");
     private Object handler;
+    private String serviceName;
     private boolean asyncReturn = false;
     private boolean binaryReturn;
 
-    public ReactiveMethodHandler(Class<?> serviceInterface, Method method, Object handler) {
+    public ReactiveMethodHandler(String serviceName, Method method, Object handler) {
         super(method);
         this.handler = handler;
+        this.serviceName = serviceName;
         this.method = method;
         this.method.setAccessible(true);
         if (kotlinSuspend || REACTIVE_STREAM_CLASSES.contains(this.returnType.getCanonicalName())) {
@@ -53,5 +55,9 @@ public class ReactiveMethodHandler extends ReactiveMethodSupport {
 
     public boolean isBinaryReturn() {
         return this.binaryReturn;
+    }
+
+    public String getServiceName() {
+        return serviceName;
     }
 }
