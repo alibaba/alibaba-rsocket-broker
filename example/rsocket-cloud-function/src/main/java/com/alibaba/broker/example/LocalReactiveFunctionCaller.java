@@ -7,12 +7,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.cloud.function.context.FunctionRegistry;
 import org.springframework.cloud.function.context.catalog.SimpleFunctionRegistry;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +46,14 @@ public class LocalReactiveFunctionCaller implements LocalReactiveServiceCaller {
                 Method method = function.getClass().getMethod("apply", Object.class);
                 String serviceName = functionName.substring(0, functionName.lastIndexOf("."));
                 ReactiveMethodHandler reactiveMethodHandler = new ReactiveMethodHandler(serviceName, method, function);
+                String functionTypeName = function.getFunctionType().getTypeName();
+                if (functionTypeName.contains(Mono.class.getCanonicalName()) || functionTypeName.contains(Flux.class.getCanonicalName())) {
+                    reactiveMethodHandler.setAsyncReturn(true);
+                }
+                if (functionTypeName.startsWith(Function.class.getCanonicalName())) {
+                    String paramTypeName = functionTypeName.substring(functionTypeName.indexOf("<") + 1, functionTypeName.indexOf(","));
+                    reactiveMethodHandler.setParametersType(new Class[]{Class.forName(paramTypeName)});
+                }
                 methodInvokeEntrances.put(functionName, reactiveMethodHandler);
                 methodHashCodeInvokeEntrances.put(MurmurHash3.hash32(functionName), reactiveMethodHandler);
             } catch (Exception e) {
