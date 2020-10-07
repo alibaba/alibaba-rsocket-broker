@@ -20,6 +20,7 @@ public class ReactiveMethodHandler extends ReactiveMethodSupport {
     private String serviceName;
     private boolean asyncReturn = false;
     private boolean binaryReturn;
+    private Class<?>[] parametersType;
 
     public ReactiveMethodHandler(String serviceName, Method method, Object handler) {
         super(method);
@@ -27,6 +28,7 @@ public class ReactiveMethodHandler extends ReactiveMethodSupport {
         this.serviceName = serviceName;
         this.method = method;
         this.method.setAccessible(true);
+        this.parametersType = this.method.getParameterTypes();
         if (kotlinSuspend || REACTIVE_STREAM_CLASSES.contains(this.returnType.getCanonicalName())) {
             this.asyncReturn = true;
         }
@@ -42,7 +44,11 @@ public class ReactiveMethodHandler extends ReactiveMethodSupport {
     }
 
     public Class<?>[] getParameterTypes() {
-        return method.getParameterTypes();
+        return this.parametersType;
+    }
+
+    public void setParametersType(Class<?>[] parametersType) {
+        this.parametersType = parametersType;
     }
 
     public Class<?> getInferredClassForParameter(int paramIndex) {
@@ -51,6 +57,10 @@ public class ReactiveMethodHandler extends ReactiveMethodSupport {
 
     public boolean isAsyncReturn() {
         return asyncReturn;
+    }
+
+    public void setAsyncReturn(boolean asyncReturn) {
+        this.asyncReturn = asyncReturn;
     }
 
     public boolean isBinaryReturn() {
