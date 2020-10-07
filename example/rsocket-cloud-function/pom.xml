@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>alibaba-broker-example-parent</artifactId>
+        <groupId>com.alibaba.broker.example</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>rsocket-cloud-function</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>rsocket-cloud-function</name>
+    <description>Spring Cloud function with RSocket exposed</description>
+
+    <properties>
+        <spring-cloud-function.version>3.0.10.RELEASE</spring-cloud-function.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.alibaba.rsocket</groupId>
+            <artifactId>alibaba-rsocket-core</artifactId>
+            <version>${alibaba-rsocket.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.rsocket</groupId>
+            <artifactId>alibaba-rsocket-spring-boot-starter</artifactId>
+            <version>${alibaba-rsocket.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-function-webflux</artifactId>
+            <version>${spring-cloud-function.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
