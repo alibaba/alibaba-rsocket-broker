@@ -64,8 +64,8 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
                     handlerName = serviceMapping.value();
                 }
                 String key = serviceName + "." + handlerName;
-                methodInvokeEntrances.put(key, new ReactiveMethodHandler(serviceInterface, method, handler));
-                methodHashCodeInvokeEntrances.put(MurmurHash3.hash32(key), new ReactiveMethodHandler(serviceInterface, method, handler));
+                methodInvokeEntrances.put(key, new ReactiveMethodHandler(serviceName, method, handler));
+                methodHashCodeInvokeEntrances.put(MurmurHash3.hash32(key), new ReactiveMethodHandler(serviceName, method, handler));
             }
         }
     }
