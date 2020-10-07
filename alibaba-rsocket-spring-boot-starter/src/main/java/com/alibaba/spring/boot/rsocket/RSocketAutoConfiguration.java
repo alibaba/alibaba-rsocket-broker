@@ -91,6 +91,7 @@ public class RSocketAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(RSocketRequesterSupport.class)
     public RSocketRequesterSupport rsocketRequesterSupport(@Autowired RSocketProperties properties,
                                                            @Autowired Environment environment,
                                                            @Autowired SocketAcceptor socketAcceptor,
@@ -101,6 +102,7 @@ public class RSocketAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(LocalReactiveServiceCaller.class)
     public RSocketServiceAnnotationProcessor rSocketServiceAnnotationProcessor(RSocketProperties rsocketProperties) {
         return new RSocketServiceAnnotationProcessor(rsocketProperties);
     }
