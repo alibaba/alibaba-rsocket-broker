@@ -13,6 +13,7 @@
         <module>user-service-api</module>
         <module>rsocket-requester</module>
         <module>rsocket-responder</module>
+        <module>rsocket-cloud-function</module>
     </modules>
 
     <properties>
