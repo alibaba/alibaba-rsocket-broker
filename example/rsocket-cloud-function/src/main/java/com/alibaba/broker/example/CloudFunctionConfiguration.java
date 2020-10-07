@@ -12,6 +12,7 @@ import org.springframework.cloud.function.context.FunctionRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
@@ -26,6 +27,11 @@ public class CloudFunctionConfiguration {
     @Bean("com.alibaba.WordService.uppercase")
     public Function<String, String> uppercase() {
         return String::toUpperCase;
+    }
+
+    @Bean("com.alibaba.WordService.lowercase")
+    public Function<String, Mono<String>> lowercase() {
+        return input -> Mono.just(input.toLowerCase());
     }
 
     @Bean
