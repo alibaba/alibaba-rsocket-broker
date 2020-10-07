@@ -32,6 +32,8 @@ public class RSocketBrokerClient {
         UserService userService = client.userService();
         User user = userService.findById(1).block();
         System.out.println(JsonUtils.toJsonText(user));
+        //WordService wordService = client.wordService();
+        //System.out.println(wordService.lowercase("Hello").block());
         client.dispose();
     }
 
@@ -49,6 +51,16 @@ public class RSocketBrokerClient {
                 .build();
     }
 
+    public WordService wordService() {
+        return RSocketRemoteServiceBuilder
+                .client(WordService.class)
+                .service("com.alibaba.WordService")
+                .encodingType(RSocketMimeType.Json)
+                .acceptEncodingType(RSocketMimeType.Json)
+                .upstreamManager(this.upstreamManager)
+                .build();
+    }
+
     public void dispose() {
         this.upstreamManager.close();
     }
@@ -57,6 +69,12 @@ public class RSocketBrokerClient {
         this.upstreamManager = new UpstreamManagerImpl(new RSocketRequesterSupportMock(this.jwtToken, this.brokers));
         upstreamManager.add(new UpstreamCluster(null, "*", null, this.brokers));
         upstreamManager.init();
+    }
+
+    public interface WordService {
+        Mono<String> uppercase(String text);
+
+        Mono<String> lowercase(String text);
     }
 
     public interface UserService {
