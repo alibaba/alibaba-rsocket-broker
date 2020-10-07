@@ -1,0 +1,5 @@
+### Invoke uppercase function
+POST http://localhost:8182/com.alibaba.WordService.uppercase
+Content-Type: application/json
+
+"hello"
