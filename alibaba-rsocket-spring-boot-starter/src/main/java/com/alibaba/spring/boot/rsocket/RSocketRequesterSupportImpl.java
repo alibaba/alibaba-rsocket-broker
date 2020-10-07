@@ -41,14 +41,14 @@ import java.util.stream.Collectors;
  * @author leijuan
  */
 public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, ApplicationContextAware {
-    private Properties env;
-    private RSocketProperties properties;
-    private String appName;
-    private char[] jwtToken;
-    private ApplicationContext applicationContext;
-    private SocketAcceptor socketAcceptor;
-    private List<RSocketInterceptor> responderInterceptors = new ArrayList<>();
-    private List<RSocketInterceptor> requestInterceptors = new ArrayList<>();
+    protected Properties env;
+    protected RSocketProperties properties;
+    protected String appName;
+    protected char[] jwtToken;
+    protected ApplicationContext applicationContext;
+    protected SocketAcceptor socketAcceptor;
+    protected List<RSocketInterceptor> responderInterceptors = new ArrayList<>();
+    protected List<RSocketInterceptor> requestInterceptors = new ArrayList<>();
 
     public RSocketRequesterSupportImpl(RSocketProperties properties, Properties env,
                                        SocketAcceptor socketAcceptor) {
