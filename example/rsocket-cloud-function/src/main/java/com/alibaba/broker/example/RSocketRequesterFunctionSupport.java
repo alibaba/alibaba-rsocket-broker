@@ -32,7 +32,14 @@ public class RSocketRequesterFunctionSupport extends RSocketRequesterSupportImpl
                 .map(functionName -> functionName.substring(0, functionName.lastIndexOf(".")))
                 .collect(Collectors.toSet())
                 .stream()
-                .map(serviceName -> new ServiceLocator(properties.getGroup(), serviceName, properties.getVersion(), null))
+                .map(serviceName -> {
+                            String members = functionRegistry.getNames(null).stream().filter(f -> f.startsWith(serviceName + "."))
+                                    .map(f -> f.substring(f.lastIndexOf(".") + 1))
+                                    .collect(Collectors.joining(","));
+                            return new ServiceLocator(properties.getGroup(), serviceName, properties.getVersion(),
+                                    new String[]{"type: function", "members:" + members});
+                        }
+                )
                 .collect(Collectors.toSet());
     }
 }
