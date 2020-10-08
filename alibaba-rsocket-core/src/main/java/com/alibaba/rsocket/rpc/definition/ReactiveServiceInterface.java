@@ -11,7 +11,14 @@ import java.util.List;
  */
 public class ReactiveServiceInterface implements Serializable {
     private String namespace;
+    /**
+     * interface name
+     */
     private String name;
+    /**
+     * service name
+     */
+    private String serviceName;
     private String group;
     private String version;
     private String description;
@@ -32,6 +39,14 @@ public class ReactiveServiceInterface implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public String getGroup() {
