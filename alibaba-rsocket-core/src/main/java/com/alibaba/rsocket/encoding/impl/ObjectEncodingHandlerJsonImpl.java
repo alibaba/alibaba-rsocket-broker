@@ -28,7 +28,7 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
         return RSocketMimeType.Json;
     }
 
-    private boolean ktJson = false;
+    private boolean ktJson;
 
     public ObjectEncodingHandlerJsonImpl() {
         try {
