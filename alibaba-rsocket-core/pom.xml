@@ -88,6 +88,12 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-serialization-json-jvm</artifactId>
+            <version>${kotlinx-serialization.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-protobuf-jvm</artifactId>
             <version>${kotlinx-serialization.version}</version>
             <optional>true</optional>
