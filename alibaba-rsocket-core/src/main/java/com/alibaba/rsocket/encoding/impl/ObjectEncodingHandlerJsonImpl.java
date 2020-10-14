@@ -8,6 +8,7 @@ import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +26,17 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     @Override
     public RSocketMimeType mimeType() {
         return RSocketMimeType.Json;
+    }
+
+    private boolean ktJson = false;
+
+    public ObjectEncodingHandlerJsonImpl() {
+        try {
+            Class.forName("kotlinx.serialization.json.Json");
+            ktJson = true;
+        } catch (Exception e) {
+            ktJson = false;
+        }
     }
 
     @Override
@@ -64,9 +76,13 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
         }
         ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         try {
-            ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
-            JsonUtils.objectMapper.writeValue((OutputStream) bos, result);
-            return byteBuf;
+            if (ktJson && KotlinSerializerSupport.isKotlinSerializable(result.getClass())) {
+                return Unpooled.wrappedBuffer(KotlinSerializerSupport.encodeAsJson(result));
+            } else {
+                ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
+                JsonUtils.objectMapper.writeValue((OutputStream) bos, result);
+                return byteBuf;
+            }
         } catch (Exception e) {
             ReferenceCountUtil.safeRelease(byteBuf);
             throw new EncodingException(RsocketErrorCode.message("RST-700500", result.getClass().getCanonicalName(), "ByteBuf"), e);
@@ -78,7 +94,13 @@ public class ObjectEncodingHandlerJsonImpl implements ObjectEncodingHandler {
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
         if (data.readableBytes() > 0 && targetClass != null) {
             try {
-                return JsonUtils.readJsonValue(data, targetClass);
+                if (ktJson && KotlinSerializerSupport.isKotlinSerializable(targetClass)) {
+                    byte[] bytes = new byte[data.readableBytes()];
+                    data.readBytes(bytes);
+                    return KotlinSerializerSupport.decodeFromJson(bytes, targetClass);
+                } else {
+                    return JsonUtils.readJsonValue(data, targetClass);
+                }
             } catch (Exception e) {
                 throw new EncodingException(RsocketErrorCode.message("RST-700501", "bytebuf", targetClass.getName()), e);
             }
