@@ -21,9 +21,11 @@ public class MessageMimeTypeMetadata implements MetadataAware {
 
     public MessageMimeTypeMetadata(String mimeType) {
         this.mimeType = mimeType;
-        WellKnownMimeType wellKnownMimeType = WellKnownMimeType.fromString(mimeType);
-        if (wellKnownMimeType != null) {
+        try {
+            WellKnownMimeType wellKnownMimeType = WellKnownMimeType.fromString(mimeType);
             this.mimeTypeId = wellKnownMimeType.getIdentifier();
+        } catch (Exception ignore) {
+
         }
     }
 
