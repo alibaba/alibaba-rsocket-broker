@@ -1,5 +1,8 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
+import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.encoding.JsonUtils;
+import com.alibaba.rsocket.metadata.ServiceRegistryMetadata;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -39,6 +42,14 @@ public class RawRSocketTest {
         System.out.println(objectMapper.writeValueAsString(1));
     }
 
+
+    @Test
+    public void testService() throws Exception {
+        ServiceRegistryMetadata serviceRegistryMetadata = new ServiceRegistryMetadata();
+        serviceRegistryMetadata.addPublishedService(new ServiceLocator(null, "com.alibaba.user.UserService", null));
+        System.out.println(JsonUtils.toJsonText(serviceRegistryMetadata));
+    }
+
     public static RSocket createBrokerClient() {
         return RSocketConnector.create()
                 .setupPayload(setupPayload())
@@ -57,7 +68,14 @@ public class RawRSocketTest {
                 "    \"name\" : \"app-1\",\n" +
                 "    \"ip\": \"192.168.1.2\"\n" +
                 "}";
-        CompositeMetadataCodec.encodeAndAddMetadata(buf, ByteBufAllocator.DEFAULT, "message/x.rsocket.application+json", Unpooled.wrappedBuffer(appInfo.getBytes()));
+        CompositeMetadataCodec.encodeAndAddMetadata(buf, ByteBufAllocator.DEFAULT,
+                "message/x.rsocket.application+json",
+                Unpooled.wrappedBuffer(appInfo.getBytes()));
+       /* // language=json
+        String exposedServices = "{\"published\":[{\"group\":null,\"service\":\"com.alibaba.YourService\",\"version\":null}]}\n";
+        CompositeMetadataCodec.encodeAndAddMetadata(buf, ByteBufAllocator.DEFAULT,
+                "message/x.rsocket.service.registry.v0+json",
+                Unpooled.wrappedBuffer(exposedServices.getBytes()));*/
         return DefaultPayload.create(Unpooled.EMPTY_BUFFER, buf);
     }
 
