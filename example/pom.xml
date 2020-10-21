@@ -14,6 +14,7 @@
         <module>rsocket-requester</module>
         <module>rsocket-responder</module>
         <module>rsocket-cloud-function</module>
+        <module>demo-service-api</module>
     </modules>
 
     <properties>
