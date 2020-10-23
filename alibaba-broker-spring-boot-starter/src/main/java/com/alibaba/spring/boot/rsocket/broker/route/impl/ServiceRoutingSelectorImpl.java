@@ -39,16 +39,19 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
 
     @Override
     public void register(Integer instanceId, int powerUnit, Set<ServiceLocator> services) {
-        if (instanceServices.containsKey(instanceId)) {
-            return;
-        }
         //todo notification for global service
         for (ServiceLocator serviceLocator : services) {
             int serviceId = serviceLocator.getId();
-            instanceServices.put(instanceId, serviceId);
-            serviceHandlers.putMultiCopies(serviceId, instanceId, powerUnit);
-            distinctServices.put(serviceId, serviceLocator);
+            if (!instanceServices.get(instanceId).contains(serviceId)) {
+                instanceServices.put(instanceId, serviceId);
+                serviceHandlers.putMultiCopies(serviceId, instanceId, powerUnit);
+                distinctServices.put(serviceId, serviceLocator);
+            }
         }
+    }
+
+    public Set<Integer> findServicesByInstance(Integer instanceId) {
+        return instanceServices.get(instanceId);
     }
 
     @Override
@@ -61,6 +64,19 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
                 }
             }
             instanceServices.removeAll(instanceId);
+        }
+    }
+
+    public void deregister(Integer instanceId, Integer serviceId) {
+        if (instanceServices.containsKey(instanceId)) {
+            serviceHandlers.removeAllSameValue(serviceId, instanceId);
+            if (!serviceHandlers.containsKey(serviceId)) {
+                distinctServices.remove(serviceId);
+            }
+            instanceServices.remove(instanceId, serviceId);
+            if (!instanceServices.containsKey(instanceId)) {
+                instanceServices.removeAll(instanceId);
+            }
         }
     }
 

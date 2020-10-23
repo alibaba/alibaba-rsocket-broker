@@ -17,7 +17,11 @@ public interface ServiceRoutingSelector {
 
     void register(Integer instanceId, int powerUnit, Set<ServiceLocator> services);
 
+    Set<Integer> findServicesByInstance(Integer instanceId);
+
     void deregister(Integer instanceId);
+
+    void deregister(Integer instanceId, Integer serviceId);
 
     boolean containInstance(Integer instanceId);
 
