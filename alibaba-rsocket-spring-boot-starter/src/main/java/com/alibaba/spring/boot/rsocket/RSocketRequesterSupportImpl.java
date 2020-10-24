@@ -10,12 +10,10 @@ import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.MetricsService;
 import com.alibaba.rsocket.transport.NetworkUtil;
-import io.cloudevents.v1.CloudEventBuilder;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.Unpooled;
 import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
-import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.util.ByteBufPayload;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +27,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -121,19 +118,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         return () -> {
             Collection<ServiceLocator> serviceLocators = exposedServices().get();
             if (serviceLocators.isEmpty()) return null;
-            ServicesExposedEvent servicesExposedEvent = new ServicesExposedEvent();
-            for (ServiceLocator serviceLocator : serviceLocators) {
-                servicesExposedEvent.addService(serviceLocator);
-            }
-            servicesExposedEvent.setAppId(RSocketAppContext.ID);
-            return CloudEventBuilder.<ServicesExposedEvent>builder()
-                    .withId(UUID.randomUUID().toString())
-                    .withTime(ZonedDateTime.now())
-                    .withSource(URI.create("app://" + RSocketAppContext.ID))
-                    .withType(ServicesExposedEvent.class.getCanonicalName())
-                    .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                    .withData(servicesExposedEvent)
-                    .build();
+            return ServicesExposedEvent.convertServicesToCloudEvent(serviceLocators);
         };
     }
 
