@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker.responder;
 
 import com.alibaba.rsocket.RSocketAppContext;
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.events.CloudEventSupport;
 import com.alibaba.rsocket.events.ConfigEvent;
@@ -20,6 +21,7 @@ import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -92,8 +94,9 @@ public class AppStatusCloudEventProcessor {
         if (servicesExposedEvent != null && servicesExposedEvent.getAppId().equals(cloudEvent.getAttributes().getSource().getHost())) {
             RSocketBrokerResponderHandler responderHandler = rsocketBrokerHandlerRegistry.findByUUID(servicesExposedEvent.getAppId());
             if (responderHandler != null) {
-                responderHandler.setPeerServices(servicesExposedEvent.getServices());
-                responderHandler.registerPublishedServices();
+                Set<ServiceLocator> services = servicesExposedEvent.getServices();
+                responderHandler.setAppStatus(AppStatusEvent.STATUS_SERVING);
+                responderHandler.registerServices(services);
             }
         }
     }
