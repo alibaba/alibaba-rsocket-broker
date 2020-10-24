@@ -2,10 +2,7 @@ package com.alibaba.spring.boot.rsocket.broker.responder;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.ServiceLocator;
-import com.alibaba.rsocket.events.AppStatusEvent;
-import com.alibaba.rsocket.events.CloudEventSupport;
-import com.alibaba.rsocket.events.ConfigEvent;
-import com.alibaba.rsocket.events.ServicesExposedEvent;
+import com.alibaba.rsocket.events.*;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import io.cloudevents.v1.CloudEventBuilder;
@@ -47,6 +44,8 @@ public class AppStatusCloudEventProcessor {
                 handleAppStatusEvent(cloudEvent);
             } else if (ServicesExposedEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleServicesExposedEvent(cloudEvent);
+            } else if (ServicesHiddenEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
+                handleServicesHiddenEvent(cloudEvent);
             }
         });
     }
@@ -97,6 +96,17 @@ public class AppStatusCloudEventProcessor {
                 Set<ServiceLocator> services = servicesExposedEvent.getServices();
                 responderHandler.setAppStatus(AppStatusEvent.STATUS_SERVING);
                 responderHandler.registerServices(services);
+            }
+        }
+    }
+
+    public void handleServicesHiddenEvent(CloudEventImpl<?> cloudEvent) {
+        ServicesHiddenEvent servicesHiddenEvent = CloudEventSupport.unwrapData(cloudEvent, ServicesHiddenEvent.class);
+        if (servicesHiddenEvent != null && servicesHiddenEvent.getAppId().equals(cloudEvent.getAttributes().getSource().getHost())) {
+            RSocketBrokerResponderHandler responderHandler = rsocketBrokerHandlerRegistry.findByUUID(servicesHiddenEvent.getAppId());
+            if (responderHandler != null) {
+                Set<ServiceLocator> services = servicesHiddenEvent.getServices();
+                responderHandler.unRegisterServices(services);
             }
         }
     }
