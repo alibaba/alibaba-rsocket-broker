@@ -286,6 +286,9 @@
         <repository>
             <id>jcenter</id>
             <url>https://jcenter.bintray.com/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
