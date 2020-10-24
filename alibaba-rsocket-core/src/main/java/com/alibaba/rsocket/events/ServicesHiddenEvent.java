@@ -61,7 +61,7 @@ public class ServicesHiddenEvent implements CloudEventSupport<ServicesHiddenEven
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
                 .withSource(URI.create("app://" + RSocketAppContext.ID))
-                .withType(ServicesExposedEvent.class.getCanonicalName())
+                .withType(ServicesHiddenEvent.class.getCanonicalName())
                 .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
                 .withData(servicesHiddenEvent)
                 .build();
