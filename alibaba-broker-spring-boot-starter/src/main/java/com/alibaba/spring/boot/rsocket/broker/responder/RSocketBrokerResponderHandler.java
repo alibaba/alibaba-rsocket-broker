@@ -416,9 +416,27 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
     }
 
+    public void registerServices(Set<ServiceLocator> services) {
+        if (this.peerServices == null || this.peerServices.isEmpty()) {
+            this.peerServices = services;
+        } else {
+            this.peerServices.addAll(services);
+        }
+        this.routingSelector.register(appMetadata.getId(), appMetadata.getPowerRating(), services);
+    }
+
     public void unRegisterPublishedServices() {
         routingSelector.deregister(appMetadata.getId());
         this.appStatus = AppStatusEvent.STATUS_OUT_OF_SERVICE;
+    }
+
+    public void unRegisterServices(Set<ServiceLocator> services) {
+        if (this.peerServices != null && !this.peerServices.isEmpty()) {
+            this.peerServices.removeAll(services);
+        }
+        for (ServiceLocator service : services) {
+            this.routingSelector.deregister(service.getId());
+        }
     }
 
     public Set<ServiceLocator> getPeerServices() {
