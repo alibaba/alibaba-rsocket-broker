@@ -435,7 +435,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
             this.peerServices.removeAll(services);
         }
         for (ServiceLocator service : services) {
-            this.routingSelector.deregister(service.getId());
+            this.routingSelector.deregister(appMetadata.getId(), service.getId());
         }
     }
 
