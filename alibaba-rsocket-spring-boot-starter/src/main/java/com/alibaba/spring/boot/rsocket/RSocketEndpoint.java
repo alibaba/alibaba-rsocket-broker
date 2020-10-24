@@ -107,6 +107,7 @@ public class RSocketEndpoint {
                 return sendRegisterService(targetService).thenReturn("Succeed to register " + serviceName + " on brokers!");
             }
         } else if ("offline".equalsIgnoreCase(action)) {
+            this.rsocketServiceStatus = AppStatusEvent.STATUS_OUT_OF_SERVICE;
             return sendAppStatus(this.rsocketServiceStatus).thenReturn("Succeed to unregister RSocket services on brokers!");
         } else if (action.startsWith("offline-")) {
             String serviceName = action.substring("offline-".length());
