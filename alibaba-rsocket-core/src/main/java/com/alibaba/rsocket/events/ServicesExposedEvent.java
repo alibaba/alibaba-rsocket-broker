@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * services exposed event
+ * services exposed event: register service on routing table
  *
  * @author leijuan
  */
