@@ -30,7 +30,7 @@
         <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
         <bytebuddy.version>1.10.17</bytebuddy.version>
         <micrometer.version>1.5.5</micrometer.version>
-        <reactor-bom.version>Dysprosium-SR12</reactor-bom.version>
+        <reactor-bom.version>Dysprosium-SR13</reactor-bom.version>
         <netty.version>4.1.53.Final</netty.version>
         <rsocket.version>1.0.2</rsocket.version>
         <kotlin.version>1.4.10</kotlin.version>
