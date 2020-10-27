@@ -13,8 +13,6 @@ import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tag;
@@ -391,8 +389,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     public Mono<Void> metadataPush(@NotNull Payload payload) {
         try {
             if (payload.metadata().readableBytes() > 0) {
-                CloudEventImpl<ObjectNode> cloudEvent = Json.decodeValue(payload.getMetadataUtf8(), CLOUD_EVENT_TYPE_REFERENCE);
-                return fireCloudEvent(cloudEvent);
+                CloudEventImpl<?> cloudEvent = extractCloudEventsFromMetadataPush(payload);
+                if (cloudEvent != null) {
+                    return fireCloudEvent(cloudEvent);
+                }
             }
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-610500", e.getMessage()), e);
