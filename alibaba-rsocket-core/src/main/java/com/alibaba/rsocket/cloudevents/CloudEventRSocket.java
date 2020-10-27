@@ -5,9 +5,11 @@ import com.alibaba.rsocket.encoding.JsonUtils;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
@@ -18,10 +20,13 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.util.ByteBufPayload;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 /**
  * RSocket with CloudEvents support
@@ -55,4 +60,24 @@ public interface CloudEventRSocket extends RSocket {
             throw new EncodingException(RsocketErrorCode.message("RST-700500", "CloudEventImpl", "ByteBuf"), e);
         }
     }
+
+    @Nullable
+    default CloudEventImpl<?> extractCloudEventsFromMetadataPush(@NotNull Payload payload) {
+        String jsonText = null;
+        byte firstByte = payload.metadata().getByte(0);
+        // json text: well known type > 127, and normal mime type's length < 127
+        if (firstByte == '{') {
+            jsonText = payload.getMetadataUtf8();
+        } else {  //composite metadata
+            RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
+            if (compositeMetadata.contains(RSocketMimeType.CloudEventsJson)) {
+                jsonText = compositeMetadata.getMetadata(RSocketMimeType.CloudEventsJson).toString(StandardCharsets.UTF_8);
+            }
+        }
+        if (jsonText != null) {
+            return Json.decodeValue(jsonText, CLOUD_EVENT_TYPE_REFERENCE);
+        }
+        return null;
+    }
+
 }
