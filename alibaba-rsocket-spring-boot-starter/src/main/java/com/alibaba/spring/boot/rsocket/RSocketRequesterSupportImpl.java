@@ -145,6 +145,12 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         } else if (env.containsKey("server.port")) {
             appMetadata.setManagementPort(Integer.parseInt(env.getProperty("server.port")));
         }
+        if (appMetadata.getWebPort() <= 0) {
+            appMetadata.setPort(RSocketAppContext.webPort);
+        }
+        if (appMetadata.getManagementPort() <= 0) {
+            appMetadata.setPort(RSocketAppContext.managementPort);
+        }
         //labels
         appMetadata.setMetadata(new HashMap<>());
         env.stringPropertyNames().forEach(key -> {
