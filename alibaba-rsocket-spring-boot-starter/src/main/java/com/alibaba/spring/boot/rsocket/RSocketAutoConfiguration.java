@@ -174,6 +174,10 @@ public class RSocketAutoConfiguration {
             } else {
                 this.serverPort = listenPort;
                 RSocketAppContext.webPort = listenPort;
+                if (this.managementServerPort == 0) {
+                    this.managementServerPort = listenPort;
+                    RSocketAppContext.managementPort = listenPort;
+                }
             }
         };
     }
