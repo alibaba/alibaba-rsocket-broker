@@ -73,6 +73,10 @@ public class AppMetadata implements MetadataAware {
      */
     private String uri;
     /**
+     * web port
+     */
+    private String webPort;
+    /**
      * management port for Spring Boot actuator
      */
     private Integer managementPort;
@@ -215,6 +219,14 @@ public class AppMetadata implements MetadataAware {
 
     public void setSecure(boolean secure) {
         this.secure = secure;
+    }
+
+    public String getWebPort() {
+        return webPort;
+    }
+
+    public void setWebPort(String webPort) {
+        this.webPort = webPort;
     }
 
     public Integer getManagementPort() {
