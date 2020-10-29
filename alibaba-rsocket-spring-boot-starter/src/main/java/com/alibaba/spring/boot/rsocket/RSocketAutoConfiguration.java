@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket;
 
 import brave.Tracing;
+import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
@@ -35,7 +36,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
@@ -170,8 +170,10 @@ public class RSocketAutoConfiguration {
             int listenPort = webServerInitializedEvent.getWebServer().getPort();
             if ("management".equals(namespace)) {
                 this.managementServerPort = listenPort;
+                RSocketAppContext.managementPort = listenPort;
             } else {
                 this.serverPort = listenPort;
+                RSocketAppContext.webPort = listenPort;
             }
         };
     }
