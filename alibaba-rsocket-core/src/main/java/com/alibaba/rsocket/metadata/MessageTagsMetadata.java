@@ -3,7 +3,7 @@ package com.alibaba.rsocket.metadata;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.rsocket.metadata.TaggingMetadata;
-import io.rsocket.metadata.TaggingMetadataFlyweight;
+import io.rsocket.metadata.TaggingMetadataCodec;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class MessageTagsMetadata implements MetadataAware {
         for (Map.Entry<String, String> entry : tags.entrySet()) {
             temp.add(entry.getKey() + "=" + entry.getValue());
         }
-        return TaggingMetadataFlyweight.createTaggingContent(ByteBufAllocator.DEFAULT, temp);
+        return TaggingMetadataCodec.createTaggingContent(ByteBufAllocator.DEFAULT, temp);
     }
 
     /**
