@@ -47,15 +47,11 @@ public class AppMetadata implements MetadataAware {
     /**
      * rsocket schema
      */
-    private String schema = "tcp";
+    private Map<Integer, String> rsocketPorts;
     /**
      * ip
      */
     private String ip;
-    /**
-     * rsocket listen port
-     */
-    private int port;
     /**
      * connected brokers
      */
@@ -68,10 +64,6 @@ public class AppMetadata implements MetadataAware {
      * secure or not
      */
     private boolean secure = false;
-    /**
-     * connection uri, websocket uri maybe different, ws://127.0.0.1:42252/rsocket
-     */
-    private String uri;
     /**
      * web port
      */
@@ -181,20 +173,12 @@ public class AppMetadata implements MetadataAware {
         this.ip = ip;
     }
 
-    public int getPort() {
-        return port;
+    public Map<Integer, String> getRsocketPorts() {
+        return rsocketPorts;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
+    public void setRsocketPorts(Map<Integer, String> rsocketPorts) {
+        this.rsocketPorts = rsocketPorts;
     }
 
     public List<String> getBrokers() {
@@ -273,17 +257,6 @@ public class AppMetadata implements MetadataAware {
 
     public void setSdk(String sdk) {
         this.sdk = sdk;
-    }
-
-    public String getUri() {
-        if (uri == null) {
-            return schema + "::" + ip + ":" + port;
-        }
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
     }
 
     public Date getConnectedAt() {
