@@ -22,6 +22,7 @@ import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
+import io.rsocket.DuplexConnection;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
@@ -34,12 +35,17 @@ import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.TopicProcessor;
 
 import javax.validation.constraints.Null;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -121,6 +127,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      */
     private String uuid;
     /**
+     * remote requester ip
+     */
+    private String remoteIp;
+    /**
      * app instance id
      */
     private Integer id;
@@ -170,6 +180,8 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                     registerPublishedServices();
                 }
             }
+            //remote ip
+            //this.remoteIp = getRemoteAddress(peerRsocket);
             //new comboOnClose
             this.comboOnClose = Mono.first(super.onClose(), peerRsocket.onClose());
             this.comboOnClose.doOnTerminate(this::unRegisterPublishedServices).subscribeOn(Schedulers.parallel()).subscribe();
@@ -184,6 +196,10 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     public Integer getId() {
         return id;
+    }
+
+    public String getRemoteIp() {
+        return remoteIp;
     }
 
     public AppMetadata getAppMetadata() {
@@ -614,4 +630,22 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         ReferenceCountUtil.release(this.defaultEncodingBytebuf);
     }
 
+    private String getRemoteAddress(RSocket requesterSocket) {
+        try {
+            Method remoteAddressMethod = ReflectionUtils.findMethod(DuplexConnection.class, "remoteAddress");
+            if (remoteAddressMethod != null) {
+                Field connectionField = ReflectionUtils.findField(requesterSocket.getClass(), "connection");
+                if (connectionField != null) {
+                    DuplexConnection connection = (DuplexConnection) ReflectionUtils.getField(connectionField, requesterSocket);
+                    SocketAddress remoteAddress = (SocketAddress) remoteAddressMethod.invoke(connection);
+                    if (remoteAddress instanceof InetSocketAddress) {
+                        return ((InetSocketAddress) remoteAddress).getHostName();
+                    }
+                }
+            }
+        } catch (Exception ignore) {
+
+        }
+        return null;
+    }
 }
