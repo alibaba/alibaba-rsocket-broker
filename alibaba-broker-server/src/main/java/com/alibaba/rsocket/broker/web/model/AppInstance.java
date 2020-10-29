@@ -5,6 +5,7 @@ import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,7 +17,9 @@ public class AppInstance {
     private String id;
     private String name;
     private String ip;
-    private String ports;
+    private int webPort;
+    private int managementPort;
+    private Map<Integer, String> rsocketPorts;
     private Date connectedAt;
     private Integer status;
     private Integer powerRating = 1;
@@ -51,12 +54,28 @@ public class AppInstance {
         this.ip = ip;
     }
 
-    public String getPorts() {
-        return ports;
+    public int getWebPort() {
+        return webPort;
     }
 
-    public void setPorts(String ports) {
-        this.ports = ports;
+    public void setWebPort(int webPort) {
+        this.webPort = webPort;
+    }
+
+    public int getManagementPort() {
+        return managementPort;
+    }
+
+    public void setManagementPort(int managementPort) {
+        this.managementPort = managementPort;
+    }
+
+    public Map<Integer, String> getRsocketPorts() {
+        return rsocketPorts;
+    }
+
+    public void setRsocketPorts(Map<Integer, String> rsocketPorts) {
+        this.rsocketPorts = rsocketPorts;
     }
 
     public Integer getStatus() {
