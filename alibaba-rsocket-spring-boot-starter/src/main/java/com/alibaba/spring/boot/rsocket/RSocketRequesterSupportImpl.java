@@ -135,14 +135,11 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         appMetadata.setBrokers(properties.getBrokers());
         appMetadata.setTopology(properties.getTopology());
         //web port
-        if (env.containsKey("server.port")) {
-            appMetadata.setWebPort(Integer.parseInt(env.getProperty("server.port")));
-        }
+        appMetadata.setWebPort(Integer.parseInt(env.getProperty("server.port", "0")));
+        appMetadata.setManagementPort(appMetadata.getWebPort());
         //management port
-        if (env.containsKey("management.server.port")) {
+        if (env.getProperty("management.server.port") != null) {
             appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port")));
-        } else {
-            appMetadata.setManagementPort(appMetadata.getWebPort());
         }
         if (appMetadata.getWebPort() <= 0) {
             appMetadata.setWebPort(RSocketAppContext.webPort);
