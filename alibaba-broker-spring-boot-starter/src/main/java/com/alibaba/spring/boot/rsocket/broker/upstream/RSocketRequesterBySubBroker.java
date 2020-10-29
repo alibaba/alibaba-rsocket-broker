@@ -148,8 +148,8 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
         appMetadata.setWebPort(Integer.parseInt(env.getProperty("server.port", "0")));
         appMetadata.setManagementPort(appMetadata.getWebPort());
         //management port
-        if (env.containsProperty("management.server.port")) {
-            appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port","0")));
+        if (env.getProperty("management.server.port") != null) {
+            appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port", "0")));
         }
         appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port", "" + appMetadata.getWebPort())));
         appMetadata.addMetadata("broker", "true");
