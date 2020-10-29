@@ -130,26 +130,25 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         appMetadata.setName(appName);
         appMetadata.setIp(NetworkUtil.LOCAL_IP);
         appMetadata.setDevice("SpringBootApp");
-        //rsocket schema
-        if (env.containsKey("rsocket.schema")) {
-            appMetadata.setSchema(env.getProperty("rsocket.schema"));
-        }
-        //rsocket port
-        appMetadata.setPort(properties.getPort());
+        appMetadata.setRsocketPorts(RSocketAppContext.rsocketPorts);
         //brokers
         appMetadata.setBrokers(properties.getBrokers());
         appMetadata.setTopology(properties.getTopology());
+        //web port
+        if (env.containsKey("server.port")) {
+            appMetadata.setWebPort(Integer.parseInt(env.getProperty("server.port")));
+        }
         //management port
         if (env.containsKey("management.server.port")) {
             appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port")));
-        } else if (env.containsKey("server.port")) {
-            appMetadata.setManagementPort(Integer.parseInt(env.getProperty("server.port")));
+        } else {
+            appMetadata.setManagementPort(appMetadata.getWebPort());
         }
         if (appMetadata.getWebPort() <= 0) {
-            appMetadata.setPort(RSocketAppContext.webPort);
+            appMetadata.setWebPort(RSocketAppContext.webPort);
         }
         if (appMetadata.getManagementPort() <= 0) {
-            appMetadata.setPort(RSocketAppContext.managementPort);
+            appMetadata.setManagementPort(RSocketAppContext.managementPort);
         }
         //labels
         appMetadata.setMetadata(new HashMap<>());
