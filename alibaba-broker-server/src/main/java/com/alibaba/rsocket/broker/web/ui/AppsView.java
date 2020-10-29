@@ -41,7 +41,6 @@ public class AppsView extends VerticalLayout {
         appMetadataGrid.addColumn(AppInstance::getName).setHeader("App Name");
         appMetadataGrid.addColumn(AppInstance::getId).setHeader("UUID").setAutoWidth(true);
         appMetadataGrid.addColumn(AppInstance::getIp).setHeader("IP");
-        appMetadataGrid.addColumn(AppInstance::getPorts).setHeader("Ports");
         appMetadataGrid.addColumn(AppInstance::getConnectedAt).setHeader("Started Time");
         appMetadataGrid.addColumn(AppInstance::getStatusText).setHeader("Status");
         appMetadataGrid.addColumn(AppInstance::getPowerRating).setHeader("PowerRating");
@@ -73,6 +72,7 @@ public class AppsView extends VerticalLayout {
             detailPanel.setSecurityInfo(appInstance.getOrgs(), appInstance.getServiceAccounts(), appInstance.getRoles());
             detailPanel.setDescription(appInstance.getAppMetadata().getDescription());
             detailPanel.setPublishedServices(appInstance.getServices());
+            detailPanel.setPorts(appInstance.getWebport(), appInstance.getManagementPort(), appInstance.getRsocketPorts(), appInstance.getIp());
             detailPanel.setConsumedServices(appInstance.getConsumedServices());
             detailPanel.setHumans(appInstance.getAppMetadata().getHumansMd());
         });
@@ -100,7 +100,9 @@ public class AppsView extends VerticalLayout {
                     appInstance.setServiceAccounts(appMetadata.getMetadata("_serviceAccounts"));
                     appInstance.setRoles(appMetadata.getMetadata("_roles"));
                     appInstance.setIp(appMetadata.getIp());
-                    appInstance.setPorts("R:" + appMetadata.getPort() + ",W:" + appMetadata.getWebPort() + ",M:" + appMetadata.getManagementPort());
+                    appInstance.setWebport(appMetadata.getWebPort());
+                    appInstance.setManagementPort(appMetadata.getManagementPort());
+                    appInstance.setRsocketPorts(appMetadata.getRsocketPorts());
                     appInstance.setStatus(handler.getAppStatus());
                     appInstance.setServices(handler.getPeerServices());
                     appInstance.setConsumedServices(handler.getConsumedServices());
