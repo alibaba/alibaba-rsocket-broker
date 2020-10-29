@@ -17,6 +17,7 @@ public class AppInstance {
     private String id;
     private String name;
     private String ip;
+    private String remoteIp;
     private int webPort;
     private int managementPort;
     private Map<Integer, String> rsocketPorts;
@@ -52,6 +53,14 @@ public class AppInstance {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getRemoteIp() {
+        return remoteIp;
+    }
+
+    public void setRemoteIp(String remoteIp) {
+        this.remoteIp = remoteIp;
     }
 
     public int getWebPort() {
