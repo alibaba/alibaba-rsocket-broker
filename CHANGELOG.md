@@ -7,9 +7,11 @@ Alibaba RSocket Broker变更记录
 
 * 添加Spring Cloud Function接入样例: https://github.com/alibaba/alibaba-rsocket-broker/blob/master/example/rsocket-cloud-function/README.md
 * 增加连接过程中单个或多个服务上下线，如一些应用中，服务比较多，一些服务不可用时，可以做单个服务下线处理
+* 调整RSocket多端口监听展现和元信息上报
 
 #### Bug修复
 
+* 修复server.port=0随机端口注册情况
 
 #### 文档
 
