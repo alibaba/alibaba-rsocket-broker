@@ -30,9 +30,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
@@ -49,6 +52,10 @@ import reactor.extra.processor.TopicProcessor;
 public class RSocketAutoConfiguration {
     @Autowired
     private RSocketProperties properties;
+    @Value("${server.port:0}")
+    private int serverPort;
+    @Value("${management.server.port:0}")
+    private int managementServerPort;
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -154,5 +161,18 @@ public class RSocketAutoConfiguration {
     @ConditionalOnMissingBean
     public RSocketServiceHealth rsocketServiceHealth() {
         return new RSocketServiceHealthImpl();
+    }
+
+    @Bean
+    public ApplicationListener<WebServerInitializedEvent> webServerInitializedEventApplicationListener() {
+        return webServerInitializedEvent -> {
+            String namespace = webServerInitializedEvent.getApplicationContext().getServerNamespace();
+            int listenPort = webServerInitializedEvent.getWebServer().getPort();
+            if ("management".equals(namespace)) {
+                this.managementServerPort = listenPort;
+            } else {
+                this.serverPort = listenPort;
+            }
+        };
     }
 }
