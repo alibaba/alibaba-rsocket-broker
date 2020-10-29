@@ -100,6 +100,7 @@ public class AppsView extends VerticalLayout {
                     appInstance.setServiceAccounts(appMetadata.getMetadata("_serviceAccounts"));
                     appInstance.setRoles(appMetadata.getMetadata("_roles"));
                     appInstance.setIp(appMetadata.getIp());
+                    appInstance.setRemoteIp(handler.getRemoteIp());
                     appInstance.setWebPort(appMetadata.getWebPort());
                     appInstance.setManagementPort(appMetadata.getManagementPort());
                     appInstance.setRsocketPorts(appMetadata.getRsocketPorts());
