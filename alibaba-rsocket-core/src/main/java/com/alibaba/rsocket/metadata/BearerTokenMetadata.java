@@ -2,8 +2,8 @@ package com.alibaba.rsocket.metadata;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.rsocket.metadata.security.AuthMetadataFlyweight;
-import io.rsocket.metadata.security.WellKnownAuthType;
+import io.rsocket.metadata.AuthMetadataCodec;
+import io.rsocket.metadata.WellKnownAuthType;
 
 /**
  * bearer token metadata, please refer https://github.com/rsocket/rsocket/blob/master/Extensions/Security/Authentication.md
@@ -43,7 +43,7 @@ public class BearerTokenMetadata implements MetadataAware {
 
     @Override
     public ByteBuf getContent() {
-        return AuthMetadataFlyweight.encodeBearerMetadata(PooledByteBufAllocator.DEFAULT, bearerToken);
+        return AuthMetadataCodec.encodeBearerMetadata(PooledByteBufAllocator.DEFAULT, bearerToken);
     }
 
     /**
@@ -67,9 +67,9 @@ public class BearerTokenMetadata implements MetadataAware {
      * @param byteBuf byte buffer
      */
     public void load(ByteBuf byteBuf) throws Exception {
-        WellKnownAuthType wellKnownAuthType = AuthMetadataFlyweight.decodeWellKnownAuthType(byteBuf);
+        WellKnownAuthType wellKnownAuthType = AuthMetadataCodec.readWellKnownAuthType(byteBuf);
         if (wellKnownAuthType == WellKnownAuthType.BEARER) {
-            this.bearerToken = AuthMetadataFlyweight.decodeBearerTokenAsCharArray(byteBuf);
+            this.bearerToken = AuthMetadataCodec.readBearerTokenAsCharArray(byteBuf);
         }
     }
 
