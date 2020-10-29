@@ -16,6 +16,7 @@ public class AppInstance {
     private String id;
     private String name;
     private String ip;
+    private String ports;
     private Date connectedAt;
     private Integer status;
     private Integer powerRating = 1;
@@ -48,6 +49,14 @@ public class AppInstance {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getPorts() {
+        return ports;
+    }
+
+    public void setPorts(String ports) {
+        this.ports = ports;
     }
 
     public Integer getStatus() {
