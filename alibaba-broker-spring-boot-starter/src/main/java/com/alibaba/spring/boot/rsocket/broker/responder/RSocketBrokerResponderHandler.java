@@ -181,7 +181,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                 }
             }
             //remote ip
-            //this.remoteIp = getRemoteAddress(peerRsocket);
+            this.remoteIp = getRemoteAddress(peerRsocket);
             //new comboOnClose
             this.comboOnClose = Mono.first(super.onClose(), peerRsocket.onClose());
             this.comboOnClose.doOnTerminate(this::unRegisterPublishedServices).subscribeOn(Schedulers.parallel()).subscribe();
@@ -198,6 +198,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return id;
     }
 
+    @Nullable
     public String getRemoteIp() {
         return remoteIp;
     }
