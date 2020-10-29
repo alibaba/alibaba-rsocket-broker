@@ -132,22 +132,26 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
     }
 
     private AppMetadata getAppMetadata() {
+        System.out.println("app metadata");
         //app metadata
         AppMetadata appMetadata = new AppMetadata();
         appMetadata.setUuid(RSocketAppContext.ID);
         appMetadata.setName(appName);
         appMetadata.setIp(NetworkUtil.LOCAL_IP);
         appMetadata.setDevice("SpringBootApp");
-        //rsocket schema
-        appMetadata.setSchema("tcp");
-        //rsocket port
-        appMetadata.setPort(properties.getPort());
+        appMetadata.setRsocketPorts(RSocketAppContext.rsocketPorts);
         //brokers
         appMetadata.setBrokers(properties.getUpstreamBrokers());
         appMetadata.setTopology(properties.getTopology());
+        appMetadata.setRsocketPorts(RSocketAppContext.rsocketPorts);
+        //web port
+        appMetadata.setWebPort(Integer.parseInt(env.getProperty("server.port", "0")));
+        appMetadata.setManagementPort(appMetadata.getWebPort());
         //management port
-        appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port",
-                env.getProperty("server.port", "8080"))));
+        if (env.containsProperty("management.server.port")) {
+            appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port","0")));
+        }
+        appMetadata.setManagementPort(Integer.parseInt(env.getProperty("management.server.port", "" + appMetadata.getWebPort())));
         appMetadata.addMetadata("broker", "true");
         return appMetadata;
     }
