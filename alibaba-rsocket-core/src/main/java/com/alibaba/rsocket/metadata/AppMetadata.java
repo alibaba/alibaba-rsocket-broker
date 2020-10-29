@@ -75,11 +75,11 @@ public class AppMetadata implements MetadataAware {
     /**
      * web port
      */
-    private String webPort;
+    private int webPort;
     /**
      * management port for Spring Boot actuator
      */
-    private Integer managementPort;
+    private int managementPort;
 
     /**
      * sdk and RSocket protocol version
@@ -221,19 +221,19 @@ public class AppMetadata implements MetadataAware {
         this.secure = secure;
     }
 
-    public String getWebPort() {
+    public int getWebPort() {
         return webPort;
     }
 
-    public void setWebPort(String webPort) {
+    public void setWebPort(int webPort) {
         this.webPort = webPort;
     }
 
-    public Integer getManagementPort() {
+    public int getManagementPort() {
         return managementPort;
     }
 
-    public void setManagementPort(Integer managementPort) {
+    public void setManagementPort(int managementPort) {
         this.managementPort = managementPort;
     }
 
