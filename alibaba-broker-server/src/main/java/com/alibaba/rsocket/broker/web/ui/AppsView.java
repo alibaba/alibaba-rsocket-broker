@@ -72,7 +72,7 @@ public class AppsView extends VerticalLayout {
             detailPanel.setSecurityInfo(appInstance.getOrgs(), appInstance.getServiceAccounts(), appInstance.getRoles());
             detailPanel.setDescription(appInstance.getAppMetadata().getDescription());
             detailPanel.setPublishedServices(appInstance.getServices());
-            detailPanel.setPorts(appInstance.getWebport(), appInstance.getManagementPort(), appInstance.getRsocketPorts(), appInstance.getIp());
+            detailPanel.setPorts(appInstance.getWebPort(), appInstance.getManagementPort(), appInstance.getRsocketPorts(), appInstance.getIp());
             detailPanel.setConsumedServices(appInstance.getConsumedServices());
             detailPanel.setHumans(appInstance.getAppMetadata().getHumansMd());
         });
@@ -100,7 +100,7 @@ public class AppsView extends VerticalLayout {
                     appInstance.setServiceAccounts(appMetadata.getMetadata("_serviceAccounts"));
                     appInstance.setRoles(appMetadata.getMetadata("_roles"));
                     appInstance.setIp(appMetadata.getIp());
-                    appInstance.setWebport(appMetadata.getWebPort());
+                    appInstance.setWebPort(appMetadata.getWebPort());
                     appInstance.setManagementPort(appMetadata.getManagementPort());
                     appInstance.setRsocketPorts(appMetadata.getRsocketPorts());
                     appInstance.setStatus(handler.getAppStatus());
