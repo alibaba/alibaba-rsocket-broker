@@ -55,7 +55,7 @@ public class AppMetadata implements MetadataAware {
     /**
      * rsocket listen port
      */
-    private Integer port;
+    private int port;
     /**
      * connected brokers
      */
@@ -181,11 +181,11 @@ public class AppMetadata implements MetadataAware {
         this.ip = ip;
     }
 
-    public Integer getPort() {
+    public int getPort() {
         return port;
     }
 
-    public void setPort(Integer port) {
+    public void setPort(int port) {
         this.port = port;
     }
 
