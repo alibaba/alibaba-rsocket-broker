@@ -56,8 +56,7 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
         //ports update
         ConfigurableEnvironment env = applicationReadyEvent.getApplicationContext().getEnvironment();
         int serverPort = Integer.parseInt(env.getProperty("server.port", "0"));
-        int managementPort = Integer.parseInt(env.getProperty("management.server.port", "0"));
-        if (serverPort == 0 || managementPort == 0) {
+        if (serverPort == 0) {
             PortsUpdateEvent portsUpdateEvent = new PortsUpdateEvent();
             portsUpdateEvent.setAppId(RSocketAppContext.ID);
             portsUpdateEvent.setWebPort(RSocketAppContext.webPort);
