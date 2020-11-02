@@ -214,11 +214,11 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             });
         } else if (event.isRemoved()) {
             brokers.remove(brokerIp);
-            this.consistentHash.add(brokerIp);
+            this.consistentHash.remove(brokerIp);
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "removed"));
         } else if (event.isLeaving()) {
             brokers.remove(brokerIp);
-            this.consistentHash.add(brokerIp);
+            this.consistentHash.remove(brokerIp);
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "left"));
         }
         brokersEmitterProcessor.onNext(brokers.values());
