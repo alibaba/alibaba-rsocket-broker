@@ -9,6 +9,7 @@ Alibaba RSocket Broker变更记录
 * 增加连接过程中单个或多个服务上下线，如一些应用中，服务比较多，一些服务不可用时，可以做单个服务下线处理
 * 调整RSocket多端口监听展现和元信息上报，可以同时展现RSocket监听的多端口信息
 * 请求方的Remote IP获取和展现
+* 添加flatbuffers & Cap’n Proto序列化框架类型声明
 
 #### Bug修复
 
