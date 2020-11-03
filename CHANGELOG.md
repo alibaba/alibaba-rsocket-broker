@@ -10,12 +10,15 @@ Alibaba RSocket Broker变更记录
 * 调整RSocket多端口监听展现和元信息上报，可以同时展现RSocket监听的多端口信息
 * 请求方的Remote IP获取和展现
 * 添加flatbuffers & Cap’n Proto序列化框架类型声明
+* 兼容RSocket Java 1.1.0
 
 #### Bug修复
 
 * 修复server.port=0随机端口注册情况
 
 #### 文档
+
+* 增加RSocket Spring Boot actuator文档
 
 
 ## 1.0.0.RC2
