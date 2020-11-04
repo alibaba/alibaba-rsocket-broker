@@ -15,6 +15,7 @@ Alibaba RSocket Broker变更记录
 #### Bug修复
 
 * 修复server.port=0随机端口注册情况
+* 修复Gossip广播时一致性hash的bug，感谢 @jimichan
 
 #### 文档
 
