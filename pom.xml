@@ -48,7 +48,7 @@
         <eclipse-collections.version>10.4.0</eclipse-collections.version>
         <spring-cloud-release.version>Hoxton.SR8</spring-cloud-release.version>
         <cloudevents.version>1.3.0</cloudevents.version>
-        <zipkin-brave.version>5.12.6</zipkin-brave.version>
+        <zipkin-brave.version>5.13.0</zipkin-brave.version>
         <junit5.version>5.7.0</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
