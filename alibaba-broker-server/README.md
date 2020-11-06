@@ -141,7 +141,7 @@ rsocket.brokers=tcp://broker1.rsocket.foobar.com:9999,tcp://broker2.rsocket.foob
 rsocket.topology=internet
 ```
 
-处于安全的考虑，可以使用WebSocket代理方式进行 https://github.com/babl-ws/babl, 然后转发到RSocket Broker集群。
+处于安全的考虑，可以使用WebSocket代理方式进行,如Nginx 或者 [Babl](https://github.com/babl-ws/babl), 然后转发到RSocket Broker集群。
 
 # 监听端口号
 对于一个集群来说，通常都会涉及到两个端口号，一个是接受请求端口号，在RSocket
