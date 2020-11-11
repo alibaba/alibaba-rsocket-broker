@@ -13,10 +13,7 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +25,8 @@ public class AppDetailPanel extends Div {
     private static Parser MARKDOWN_PARSER;
     private static HtmlRenderer MARKDOWN_RENDER;
     private H2 title = new H2("App Detail");
+    private H4 portsInfoHeader = new H4("Listen Ports");
+    private Pre portsInfo = new Pre();
     H4 securityInfoHeader = new H4("Security Info");
     private Pre securityInfo = new Pre();
     private Paragraph description = new Paragraph();
@@ -54,6 +53,8 @@ public class AppDetailPanel extends Div {
 
     public AppDetailPanel() {
         add(title);
+        add(portsInfoHeader);
+        add(portsInfo);
         add(securityInfoHeader);
         add(securityInfo);
         add(metadataHeader);
@@ -70,6 +71,8 @@ public class AppDetailPanel extends Div {
 
     public void clear() {
         this.title.setVisible(false);
+        this.portsInfoHeader.setVisible(false);
+        this.portsInfo.setVisible(false);
         this.securityInfoHeader.setVisible(false);
         this.securityInfo.setVisible(false);
         this.metadataHeader.setVisible(false);
@@ -107,10 +110,13 @@ public class AppDetailPanel extends Div {
         }
     }
 
-    public void setSecurityInfo(String orgs, String serviceAccounts, String roles) {
+    public void setSecurityInfo(String orgs, String serviceAccounts, String roles, String remoteIp) {
         this.securityInfo.setVisible(true);
         this.securityInfoHeader.setVisible(true);
-        this.securityInfo.setText("Orgs: " + orgs + "\r\n" + "ServiceAccounts: " + serviceAccounts + "\r\n" + "Roles: " + roles);
+        this.securityInfo.setText("Orgs: " + orgs + "\r\n"
+                + "ServiceAccounts: " + serviceAccounts + "\r\n"
+                + "Roles: " + roles + "\r\n"
+                + "Remote IP: " + remoteIp);
     }
 
     public void setPublishedServices(Set<ServiceLocator> publishedServices) {
@@ -122,6 +128,26 @@ public class AppDetailPanel extends Div {
             this.publishedServicesHeader.setVisible(false);
             this.publishedServices.setVisible(false);
             this.publishedServices.setText("");
+        }
+    }
+
+    public void setPorts(int webPort, int managementPort, Map<Integer, String> rsocketPorts, String ip) {
+        if (webPort > 0 || managementPort > 0 || (rsocketPorts != null && !rsocketPorts.isEmpty())) {
+            this.portsInfoHeader.setVisible(true);
+            this.portsInfo.setVisible(true);
+            List<String> ports = new ArrayList<>();
+            if (webPort > 0) {
+                ports.add("Web:" + webPort);
+            }
+            if (managementPort > 0) {
+                ports.add("Management:" + webPort);
+            }
+            if (rsocketPorts != null && !rsocketPorts.isEmpty()) {
+                for (Map.Entry<Integer, String> entry : rsocketPorts.entrySet()) {
+                    ports.add("RSocket: " + entry.getValue() + "://" + ip + ":" + entry.getKey());
+                }
+            }
+            this.portsInfo.setText(String.join("\r\n", ports));
         }
     }
 

@@ -69,9 +69,10 @@ public class AppsView extends VerticalLayout {
             AppInstance appInstance = clickEvent.getItem();
             detailPanel.setAppName(appInstance.getName());
             detailPanel.setMetadata(appInstance.getAppMetadata().getMetadata());
-            detailPanel.setSecurityInfo(appInstance.getOrgs(), appInstance.getServiceAccounts(), appInstance.getRoles());
+            detailPanel.setSecurityInfo(appInstance.getOrgs(), appInstance.getServiceAccounts(), appInstance.getRoles(),appInstance.getRemoteIp());
             detailPanel.setDescription(appInstance.getAppMetadata().getDescription());
             detailPanel.setPublishedServices(appInstance.getServices());
+            detailPanel.setPorts(appInstance.getWebPort(), appInstance.getManagementPort(), appInstance.getRsocketPorts(), appInstance.getIp());
             detailPanel.setConsumedServices(appInstance.getConsumedServices());
             detailPanel.setHumans(appInstance.getAppMetadata().getHumansMd());
         });
@@ -99,6 +100,10 @@ public class AppsView extends VerticalLayout {
                     appInstance.setServiceAccounts(appMetadata.getMetadata("_serviceAccounts"));
                     appInstance.setRoles(appMetadata.getMetadata("_roles"));
                     appInstance.setIp(appMetadata.getIp());
+                    appInstance.setRemoteIp(handler.getRemoteIp());
+                    appInstance.setWebPort(appMetadata.getWebPort());
+                    appInstance.setManagementPort(appMetadata.getManagementPort());
+                    appInstance.setRsocketPorts(appMetadata.getRsocketPorts());
                     appInstance.setStatus(handler.getAppStatus());
                     appInstance.setServices(handler.getPeerServices());
                     appInstance.setConsumedServices(handler.getConsumedServices());

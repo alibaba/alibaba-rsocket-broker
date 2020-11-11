@@ -9,7 +9,6 @@ import com.alibaba.rsocket.cloudevents.EventReply;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import io.cloudevents.json.Json;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.ConnectionSetupPayload;
@@ -190,7 +189,10 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     public Mono<Void> metadataPush(@NotNull Payload payload) {
         try {
             if (payload.metadata().readableBytes() > 0) {
-                return fireCloudEvent(Json.decodeValue(payload.getMetadataUtf8(), CLOUD_EVENT_TYPE_REFERENCE));
+                CloudEventImpl<?> cloudEvent = extractCloudEventsFromMetadataPush(payload);
+                if (cloudEvent != null) {
+                    return fireCloudEvent(cloudEvent);
+                }
             }
         } catch (Exception e) {
             log.error(RsocketErrorCode.message(RsocketErrorCode.message("RST-610500", e.getMessage())), e);

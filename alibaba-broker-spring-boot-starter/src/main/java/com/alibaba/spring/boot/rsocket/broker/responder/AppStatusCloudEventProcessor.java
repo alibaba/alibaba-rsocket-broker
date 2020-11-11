@@ -42,6 +42,8 @@ public class AppStatusCloudEventProcessor {
             String type = cloudEvent.getAttributes().getType();
             if (AppStatusEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleAppStatusEvent(cloudEvent);
+            } else if (PortsUpdateEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
+                handlerPortsUpdateEvent(cloudEvent);
             } else if (ServicesExposedEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleServicesExposedEvent(cloudEvent);
             } else if (ServicesHiddenEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
@@ -107,6 +109,19 @@ public class AppStatusCloudEventProcessor {
             if (responderHandler != null) {
                 Set<ServiceLocator> services = servicesHiddenEvent.getServices();
                 responderHandler.unRegisterServices(services);
+            }
+        }
+    }
+
+    public void handlerPortsUpdateEvent(CloudEventImpl<?> cloudEvent) {
+        PortsUpdateEvent portsUpdateEvent = CloudEventSupport.unwrapData(cloudEvent, PortsUpdateEvent.class);
+        if (portsUpdateEvent != null) {
+            RSocketBrokerResponderHandler responderHandler = rsocketBrokerHandlerRegistry.findByUUID(portsUpdateEvent.getAppId());
+            if (responderHandler != null) {
+                AppMetadata appMetadata = responderHandler.getAppMetadata();
+                appMetadata.setWebPort(portsUpdateEvent.getWebPort());
+                appMetadata.setManagementPort(portsUpdateEvent.getManagementPort());
+                appMetadata.setRsocketPorts(portsUpdateEvent.getRsocketPorts());
             }
         }
     }

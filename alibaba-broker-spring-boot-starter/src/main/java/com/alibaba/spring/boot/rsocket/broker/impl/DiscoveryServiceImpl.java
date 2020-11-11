@@ -71,10 +71,16 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         serviceInstance.setInstanceId(appMetadata.getUuid());
         serviceInstance.setServiceId(appMetadata.getName());
         serviceInstance.setHost(appMetadata.getIp());
-        serviceInstance.setPort(appMetadata.getPort());
-        serviceInstance.setSchema(appMetadata.getSchema());
-        serviceInstance.setSecure(appMetadata.isSecure());
-        serviceInstance.setUri(appMetadata.getUri());
+        if (appMetadata.getWebPort() > 0) {
+            serviceInstance.setPort(appMetadata.getWebPort());
+            String schema = "http";
+            serviceInstance.setSecure(appMetadata.isSecure());
+            if (appMetadata.isSecure()) {
+                schema = "https";
+            }
+            serviceInstance.setSchema(schema);
+            serviceInstance.setUri(schema + "://" + appMetadata.getIp() + ":" + appMetadata.getWebPort());
+        }
         serviceInstance.setMetadata(appMetadata.getMetadata());
         return serviceInstance;
     }

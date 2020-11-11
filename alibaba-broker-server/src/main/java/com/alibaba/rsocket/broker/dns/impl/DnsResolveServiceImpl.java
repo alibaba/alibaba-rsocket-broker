@@ -44,7 +44,7 @@ public class DnsResolveServiceImpl implements DnsResolveService {
         Collection<RSocketBrokerResponderHandler> handlers = handlerRegistry.findByAppName(name);
         if (handlers != null && !handlers.isEmpty()) {
             return Flux.fromIterable(handlers)
-                    .filter(handler -> handler.getAppStatus().equals(AppStatusEvent.STATUS_SERVING))
+                    .filter(handler -> handler.getAppStatus().equals(AppStatusEvent.STATUS_SERVING) || handler.getAppStatus().equals(AppStatusEvent.STATUS_CONNECTED))
                     .map(handler -> new Answer(handler.getAppMetadata().getName(), dnsRecordType.intValue(), 300, handler.getAppMetadata().getIp()));
         }
         return Flux.empty();

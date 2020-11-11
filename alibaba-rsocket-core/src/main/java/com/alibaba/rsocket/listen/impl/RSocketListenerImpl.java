@@ -1,5 +1,6 @@
 package com.alibaba.rsocket.listen.impl;
 
+import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.listen.RSocketListener;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.handler.ssl.OpenSsl;
@@ -139,7 +140,6 @@ public class RSocketListenerImpl implements RSocketListener {
                     rsocketServer.interceptors(interceptorRegistry -> {
                         interceptorRegistry.forResponder(responderInterceptor);
                     });
-
                 }
                 Disposable disposable = rsocketServer
                         .acceptor(acceptor)
@@ -150,6 +150,7 @@ public class RSocketListenerImpl implements RSocketListener {
                 log.info(RsocketErrorCode.message("RST-100001", schema + "://" + host + ":" + port));
             }
             status = 1;
+            RSocketAppContext.rsocketPorts = schemas;
         }
     }
 

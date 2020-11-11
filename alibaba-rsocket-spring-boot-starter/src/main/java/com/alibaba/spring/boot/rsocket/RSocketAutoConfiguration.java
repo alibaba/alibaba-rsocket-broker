@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket;
 
 import brave.Tracing;
+import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
@@ -30,7 +31,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -49,6 +52,10 @@ import reactor.extra.processor.TopicProcessor;
 public class RSocketAutoConfiguration {
     @Autowired
     private RSocketProperties properties;
+    @Value("${server.port:0}")
+    private int serverPort;
+    @Value("${management.server.port:0}")
+    private int managementServerPort;
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -154,5 +161,24 @@ public class RSocketAutoConfiguration {
     @ConditionalOnMissingBean
     public RSocketServiceHealth rsocketServiceHealth() {
         return new RSocketServiceHealthImpl();
+    }
+
+    @Bean
+    public ApplicationListener<WebServerInitializedEvent> webServerInitializedEventApplicationListener() {
+        return webServerInitializedEvent -> {
+            String namespace = webServerInitializedEvent.getApplicationContext().getServerNamespace();
+            int listenPort = webServerInitializedEvent.getWebServer().getPort();
+            if ("management".equals(namespace)) {
+                this.managementServerPort = listenPort;
+                RSocketAppContext.managementPort = listenPort;
+            } else {
+                this.serverPort = listenPort;
+                RSocketAppContext.webPort = listenPort;
+                if (this.managementServerPort == 0) {
+                    this.managementServerPort = listenPort;
+                    RSocketAppContext.managementPort = listenPort;
+                }
+            }
+        };
     }
 }

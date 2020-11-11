@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class RSocketCompositeMetadataTest {
         appMetadata.setUuid(UUID.randomUUID().toString());
         appMetadata.setName("user-service");
         appMetadata.setIp("192.168.0.1");
-        appMetadata.setPort(42252);
+        appMetadata.setRsocketPorts(Collections.singletonMap(52252, "tcp"));
         HashMap<String, String> tempMap = new HashMap<>();
         tempMap.put("first", "second");
         appMetadata.setMetadata(tempMap);

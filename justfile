@@ -10,6 +10,9 @@ setup_mac:
 build:
   mvn -DskipTests clean package
 
+build-without-server:
+  mvn -DskipTests -pl !alibaba-broker-server clean package
+
 # install artifact into local repository
 artifacts_install:
   mvn -pl .,alibaba-rsocket-service-common,alibaba-rsocket-core,alibaba-rsocket-spring-boot-starter,alibaba-broker-spring-boot-starter -DskipTests clean source:jar install

@@ -1,5 +1,6 @@
 package com.alibaba.rsocket;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -9,4 +10,7 @@ import java.util.UUID;
  */
 public class RSocketAppContext {
     public static final String ID = UUID.randomUUID().toString();
+    public static int webPort = 0;
+    public static int managementPort = 0;
+    public static Map<Integer, String> rsocketPorts;
 }

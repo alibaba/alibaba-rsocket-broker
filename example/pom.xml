@@ -19,8 +19,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
-        <reactor-bom.version>Dysprosium-SR12</reactor-bom.version>
+        <spring-boot.version>2.3.5.RELEASE</spring-boot.version>
+        <reactor-bom.version>Dysprosium-SR13</reactor-bom.version>
         <netty.version>4.1.52.Final</netty.version>
         <rsocket.version>1.0.2</rsocket.version>
         <alibaba-rsocket.version>1.0.0-SNAPSHOT</alibaba-rsocket.version>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.17.2</version>
+            <version>3.18.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
