@@ -20,7 +20,6 @@
         <module>alibaba-broker-config-client-spring-boot-starter</module>
         <module>alibaba-broker-http-gateway</module>
         <module>alibaba-broker-grpc-gateway</module>
-        <module>example</module>
         <module>alibaba-rsocket-service-common</module>
     </modules>
 
@@ -273,6 +272,11 @@
                         <from>
                             <image>openjdk:8-jdk-slim</image>
                         </from>
+                        <to>
+                            <tags>
+                                <tag>latest</tag>
+                            </tags>
+                        </to>
                         <container>
                             <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                         </container>
