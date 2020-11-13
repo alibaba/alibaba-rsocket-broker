@@ -14,9 +14,6 @@
     <img alt = "Build Status" src="https://api.travis-ci.com/alibaba/alibaba-rsocket-broker.svg?branch=master"></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0.txt">
     <img alt = "Apache License 2" src="https://img.shields.io/badge/license-ASF2-blue.svg"></a>
-  <a>
-    <img alt = "Code Lines" src="https://tokei.rs/b1/github/alibaba/alibaba-rsocket-broker?category=code"></a>
-  &nbsp;
   <a href="https://github.com/alibaba/alibaba-rsocket-broker/blob/master/README-en.md">
     <img src="https://img.shields.io/badge/EN-README-brightgreen"></a>
 </p>
