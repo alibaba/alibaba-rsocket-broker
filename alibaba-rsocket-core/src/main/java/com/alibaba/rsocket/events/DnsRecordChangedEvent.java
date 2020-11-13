@@ -12,6 +12,10 @@ public class DnsRecordChangedEvent implements CloudEventSupport<DnsRecordChanged
      * cache keys
      */
     private String host;
+    /**
+     * type for changing: -1: removed, 1: added, 0: replaced
+     */
+    private Integer type;
     private List<String> ipList;
 
     public DnsRecordChangedEvent(String host, List<String> ipList) {
@@ -25,6 +29,14 @@ public class DnsRecordChangedEvent implements CloudEventSupport<DnsRecordChanged
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public List<String> getIpList() {
