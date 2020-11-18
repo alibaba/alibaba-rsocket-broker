@@ -4,10 +4,12 @@ import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
+import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.metadata.BearerTokenMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.ServiceRegistryMetadata;
+import com.alibaba.rsocket.observability.MetricsService;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.RSocketResponderHandler;
 import com.alibaba.rsocket.rpc.ReactiveServiceDiscovery;
@@ -80,7 +82,9 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
         Set<String> allServices = this.serviceCaller.findAllServices();
         if (!allServices.isEmpty()) {
             return () -> allServices.stream()
-                    .filter(serviceName -> !serviceName.equals(ReactiveServiceDiscovery.class.getCanonicalName()))
+                    .filter(serviceName -> !serviceName.equals(ReactiveServiceDiscovery.class.getCanonicalName())
+                            && !serviceName.equals(RSocketServiceHealth.class.getCanonicalName())
+                            && !serviceName.equals(MetricsService.class.getCanonicalName()))
                     .map(serviceName -> new ServiceLocator("", serviceName, ""))
                     .collect(Collectors.toSet());
         }
