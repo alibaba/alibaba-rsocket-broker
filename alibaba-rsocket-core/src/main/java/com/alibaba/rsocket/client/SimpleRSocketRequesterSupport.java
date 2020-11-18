@@ -1,4 +1,4 @@
-package com.alibaba.rsocket.utils;
+package com.alibaba.rsocket.client;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
@@ -7,6 +7,8 @@ import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.metadata.BearerTokenMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
+import com.alibaba.rsocket.rpc.RSocketResponderHandler;
 import com.alibaba.rsocket.transport.NetworkUtil;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.Unpooled;
@@ -14,6 +16,8 @@ import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.util.ByteBufPayload;
+import reactor.core.publisher.Mono;
+import reactor.extra.processor.TopicProcessor;
 
 import java.net.URI;
 import java.util.Collections;
@@ -22,18 +26,26 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * RSocketRequesterSupport Mock for unit testing
+ * Simple RSocketRequesterSupport for App
  *
  * @author leijuan
  */
-public class RSocketRequesterSupportMock implements RSocketRequesterSupport {
+@SuppressWarnings("rawtypes")
+public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
     private char[] jwtToken;
     private List<String> brokers;
-    private String appName = "MockApp";
+    private String appName;
+    private LocalReactiveServiceCaller serviceCaller;
+    private TopicProcessor<CloudEventImpl> eventProcessor;
 
-    public RSocketRequesterSupportMock(String jwtToken, List<String> brokers) {
-        this.jwtToken = jwtToken.toCharArray();
+    public SimpleRSocketRequesterSupport(String appName, char[] jwtToken, List<String> brokers,
+                                         LocalReactiveServiceCaller serviceCaller,
+                                         TopicProcessor<CloudEventImpl> eventProcessor) {
+        this.appName = appName;
+        this.jwtToken = jwtToken;
         this.brokers = brokers;
+        this.eventProcessor = eventProcessor;
+        this.serviceCaller = serviceCaller;
     }
 
     @Override
@@ -71,7 +83,7 @@ public class RSocketRequesterSupportMock implements RSocketRequesterSupport {
 
     @Override
     public SocketAcceptor socketAcceptor() {
-        return null;
+        return (setupPayload, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload));
     }
 
     @Override
