@@ -24,8 +24,9 @@ public class RSocketBrokerClientApp {
     private static final List<String> brokers = Collections.singletonList("tcp://127.0.0.1:9999");
 
     public static void main(String[] args) throws Exception {
-        RSocketBrokerConnector connector = RSocketBrokerConnector.create();
-        RSocketBrokerClient brokerClient = connector.appName("MockApp")
+        RSocketBrokerClient brokerClient = RSocketBrokerConnector
+                .create()
+                .appName("MockApp")
                 .dataMimeType(RSocketMimeType.Json)
                 .jwtToken(jwtToken)
                 //.service("com.alibaba.service.DemoMockService", DemoMockService.class, (DemoMockService) id -> Mono.just("Hello " + id))
