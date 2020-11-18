@@ -42,8 +42,13 @@ public class RSocketBrokerConnector {
         return this;
     }
 
-    public RSocketBrokerConnector service(Class<?> serviceInterface, Object obj) {
-        serviceCaller.addProvider("", serviceInterface.getCanonicalName(), "", serviceInterface, obj);
+    public RSocketBrokerConnector service(Class<?> serviceInterface, Object handler) {
+        serviceCaller.addProvider("", serviceInterface.getCanonicalName(), "", serviceInterface, handler);
+        return this;
+    }
+
+    public RSocketBrokerConnector service(String serviceName, Class<?> serviceInterface, Object handler) {
+        serviceCaller.addProvider("", serviceName, "", serviceInterface, handler);
         return this;
     }
 
