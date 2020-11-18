@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
  *
  * @author leijuan
  */
+@FunctionalInterface
 public interface RSocketServiceHealth {
     int SERVING_STATUS = 1;
     int UNKNOWN_STATUS = 0;
