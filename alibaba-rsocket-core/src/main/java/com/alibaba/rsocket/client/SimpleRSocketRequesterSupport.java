@@ -7,6 +7,7 @@ import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.metadata.BearerTokenMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
+import com.alibaba.rsocket.metadata.ServiceRegistryMetadata;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.RSocketResponderHandler;
 import com.alibaba.rsocket.transport.NetworkUtil;
@@ -20,10 +21,12 @@ import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Simple RSocketRequesterSupport for App
@@ -55,12 +58,17 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
 
     @Override
     public Supplier<Payload> setupPayload() {
-        //noinspection DuplicatedCode
         return () -> {
             //composite metadata with app metadata
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(getAppMetadata());
             if (this.jwtToken != null && this.jwtToken.length > 0) {
                 compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
+            }
+            Set<ServiceLocator> serviceLocators = exposedServices().get();
+            if (!serviceLocators.isEmpty()) {
+                ServiceRegistryMetadata serviceRegistryMetadata = new ServiceRegistryMetadata();
+                serviceRegistryMetadata.setPublished(serviceLocators);
+                compositeMetadata.addMetadata(serviceRegistryMetadata);
             }
             return ByteBufPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent());
         };
@@ -68,6 +76,10 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
 
     @Override
     public Supplier<Set<ServiceLocator>> exposedServices() {
+        Set<String> allServices = this.serviceCaller.findAllServices();
+        if (!allServices.isEmpty()) {
+            return () -> allServices.stream().map(serviceName -> new ServiceLocator("", serviceName, "")).collect(Collectors.toSet());
+        }
         return Collections::emptySet;
     }
 
@@ -78,7 +90,11 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
 
     @Override
     public Supplier<CloudEventImpl<ServicesExposedEvent>> servicesExposedEvent() {
-        return () -> null;
+        return () -> {
+            Collection<ServiceLocator> serviceLocators = exposedServices().get();
+            if (serviceLocators.isEmpty()) return null;
+            return ServicesExposedEvent.convertServicesToCloudEvent(serviceLocators);
+        };
     }
 
     @Override
