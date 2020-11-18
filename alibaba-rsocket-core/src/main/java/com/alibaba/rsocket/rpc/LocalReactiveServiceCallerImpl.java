@@ -90,7 +90,9 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
         ReactiveServiceInterface serviceInterface = new ReactiveServiceInterface();
         serviceInterface.setGroup(group);
         serviceInterface.setVersion(version);
-        serviceInterface.setNamespace(javaInterface.getPackage().getName());
+        if (javaInterface.getPackage() != null) {
+            serviceInterface.setNamespace(javaInterface.getPackage().getName());
+        }
         serviceInterface.setName(javaInterface.getSimpleName());
         serviceInterface.setServiceName(serviceFullName);
         Deprecated interfaceDeprecated = javaInterface.getAnnotation(Deprecated.class);
