@@ -10,6 +10,7 @@ import com.alibaba.rsocket.route.RoutingEndpoint;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.RSocketResponderHandler;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
+import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventProcessor;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
 import com.alibaba.spring.boot.rsocket.health.RSocketServiceHealthImpl;
@@ -65,9 +66,16 @@ public class RSocketAutoConfiguration {
     }
 
     @Bean(initMethod = "init")
-    public RequesterCloudEventProcessor requesterCloudEventProcessor() {
-        return new RequesterCloudEventProcessor();
+    public UpstreamClusterChangedEventProcessor upstreamClusterChangedEventProcessor(
+            @Autowired UpstreamManager upstreamManager,
+            @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
+        return new UpstreamClusterChangedEventProcessor(upstreamManager, eventProcessor);
     }
+
+/*    @Bean(initMethod = "init")
+    public InvalidCacheEventProcessor invalidCacheEventProcessor() {
+        return new InvalidCacheEventProcessor();
+    }*/
 
     /**
      * socket responder handler as SocketAcceptor bean.
