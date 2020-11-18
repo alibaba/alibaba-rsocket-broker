@@ -47,13 +47,22 @@ public interface LocalReactiveServiceCaller {
     /**
      * add service provider
      *
-     * @param group group
+     * @param group            group
      * @param serviceName      service name
      * @param version          version
      * @param serviceInterface interface
      * @param handler          handler
      */
     void addProvider(@NotNull String group, String serviceName, @NotNull String version, Class<?> serviceInterface, Object handler);
+
+    /**
+     * remove provider
+     *
+     * @param group       group
+     * @param serviceName service
+     * @param version     version
+     */
+    void removeProvider(@NotNull String group, String serviceName, @NotNull String version,Class<?> serviceInterface);
 
     /**
      * get invoke method
