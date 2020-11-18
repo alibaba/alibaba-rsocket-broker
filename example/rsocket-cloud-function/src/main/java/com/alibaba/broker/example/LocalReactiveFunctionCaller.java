@@ -88,6 +88,11 @@ public class LocalReactiveFunctionCaller implements LocalReactiveServiceCaller {
     }
 
     @Override
+    public void removeProvider(@NotNull String group, String serviceName, @NotNull String version, Class<?> serviceInterface) {
+
+    }
+
+    @Override
     public @Nullable ReactiveMethodHandler getInvokeMethod(String serviceName, String method) {
         return methodInvokeEntrances.get(serviceName + "." + method);
     }

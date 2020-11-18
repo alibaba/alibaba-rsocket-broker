@@ -71,6 +71,25 @@ public class LocalReactiveServiceCallerImpl implements LocalReactiveServiceCalle
     }
 
     @Override
+    public void removeProvider(@NotNull String group, String serviceName, @NotNull String version, Class<?> serviceInterface) {
+        rsocketServices.remove(serviceName);
+        reactiveServiceInterfaces.remove(serviceName);
+        rsocketHashCodeServices.remove(MurmurHash3.hash32(serviceName));
+        for (Method method : serviceInterface.getMethods()) {
+            if (!method.isDefault()) {
+                String handlerName = method.getName();
+                ServiceMapping serviceMapping = method.getAnnotation(ServiceMapping.class);
+                if (serviceMapping != null && !serviceMapping.value().isEmpty()) {
+                    handlerName = serviceMapping.value();
+                }
+                String key = serviceName + "." + handlerName;
+                methodInvokeEntrances.remove(key);
+                methodHashCodeInvokeEntrances.remove(MurmurHash3.hash32(key));
+            }
+        }
+    }
+
+    @Override
     public @Nullable ReactiveMethodHandler getInvokeMethod(String serviceName, String method) {
         return methodInvokeEntrances.get(serviceName + "." + method);
     }
