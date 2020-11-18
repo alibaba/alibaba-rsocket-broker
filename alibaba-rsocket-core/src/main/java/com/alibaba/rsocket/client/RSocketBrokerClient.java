@@ -1,16 +1,24 @@
 package com.alibaba.rsocket.client;
 
+import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.events.ServicesExposedEvent;
+import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventProcessor;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
 import io.cloudevents.v1.CloudEventImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * RSocket Broker Client
@@ -19,29 +27,32 @@ import java.util.List;
  */
 @SuppressWarnings("rawtypes")
 public class RSocketBrokerClient {
-    private char[] jwtToken;
+    private static Logger log = LoggerFactory.getLogger(RSocketBrokerClient.class);
     private List<String> brokers;
     private String appName;
     private RSocketMimeType dataMimeType;
     private UpstreamManager upstreamManager;
     private LocalReactiveServiceCaller serviceCaller;
     private TopicProcessor<CloudEventImpl> eventProcessor;
+    private SimpleRSocketRequesterSupport rsocketRequesterSupport;
 
     public RSocketBrokerClient(String appName, List<String> brokers,
                                RSocketMimeType dataMimeType, char[] jwtToken,
                                LocalReactiveServiceCaller serviceCaller) {
-        this.jwtToken = jwtToken;
-        this.brokers = brokers;
         this.appName = appName;
+        this.brokers = brokers;
         this.dataMimeType = dataMimeType;
         this.eventProcessor = TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
         this.serviceCaller = serviceCaller;
+        // add health check
+        this.serviceCaller.addProvider("", RSocketServiceHealth.class.getCanonicalName(), "",
+                RSocketServiceHealth.class, (RSocketServiceHealth) serviceName -> Mono.just(1));
+        this.rsocketRequesterSupport = new SimpleRSocketRequesterSupport(appName, jwtToken, this.brokers,
+                this.serviceCaller, this.eventProcessor);
         initUpstreamManager();
     }
 
     private void initUpstreamManager() {
-        SimpleRSocketRequesterSupport rsocketRequesterSupport = new SimpleRSocketRequesterSupport(this.appName, this.jwtToken, this.brokers,
-                this.serviceCaller, this.eventProcessor);
         this.upstreamManager = new UpstreamManagerImpl(rsocketRequesterSupport);
         upstreamManager.add(new UpstreamCluster(null, "*", null, this.brokers));
         try {
@@ -49,6 +60,21 @@ public class RSocketBrokerClient {
             new UpstreamClusterChangedEventProcessor(upstreamManager, eventProcessor).init();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public RSocketBrokerClient addService(String serviceName, Class<?> serviceInterface, Object handler) {
+        this.serviceCaller.addProvider("", serviceName, "", serviceInterface, handler);
+        return this;
+    }
+
+    public void publishServices() {
+        CloudEventImpl<ServicesExposedEvent> servicesExposedEventCloudEvent = rsocketRequesterSupport.servicesExposedEvent().get();
+        if (servicesExposedEventCloudEvent != null) {
+            upstreamManager.findBroker().getLoadBalancedRSocket().fireCloudEventToUpstreamAll(servicesExposedEventCloudEvent).doOnSuccess(aVoid -> {
+                String exposedServices = rsocketRequesterSupport.exposedServices().get().stream().map(ServiceLocator::getGsv).collect(Collectors.joining(","));
+                log.info(RsocketErrorCode.message("RST-301201", exposedServices, brokers));
+            }).subscribe();
         }
     }
 
