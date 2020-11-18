@@ -2,6 +2,7 @@ package com.alibaba.rsocket.client;
 
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
+import com.alibaba.rsocket.events.ServicesHiddenEvent;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,6 +78,15 @@ public class RSocketBrokerClient {
                 log.info(RsocketErrorCode.message("RST-301201", exposedServices, brokers));
             }).subscribe();
         }
+    }
+
+    public void removeService(String serviceName, Class<?> serviceInterface) {
+        ServiceLocator targetService = new ServiceLocator("", serviceName, "");
+        CloudEventImpl<ServicesHiddenEvent> cloudEvent = ServicesHiddenEvent.convertServicesToCloudEvent(Collections.singletonList(targetService));
+        upstreamManager.findBroker().getLoadBalancedRSocket().fireCloudEventToUpstreamAll(cloudEvent)
+                .doOnSuccess(unused -> {
+                    this.serviceCaller.removeProvider("", serviceName, "", serviceInterface);
+                }).subscribe();
     }
 
     public void dispose() {
