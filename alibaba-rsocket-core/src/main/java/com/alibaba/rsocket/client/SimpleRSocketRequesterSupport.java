@@ -10,6 +10,7 @@ import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.ServiceRegistryMetadata;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.RSocketResponderHandler;
+import com.alibaba.rsocket.rpc.ReactiveServiceDiscovery;
 import com.alibaba.rsocket.transport.NetworkUtil;
 import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.Unpooled;
@@ -78,7 +79,10 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
     public Supplier<Set<ServiceLocator>> exposedServices() {
         Set<String> allServices = this.serviceCaller.findAllServices();
         if (!allServices.isEmpty()) {
-            return () -> allServices.stream().map(serviceName -> new ServiceLocator("", serviceName, "")).collect(Collectors.toSet());
+            return () -> allServices.stream()
+                    .filter(serviceName -> !serviceName.equals(ReactiveServiceDiscovery.class.getCanonicalName()))
+                    .map(serviceName -> new ServiceLocator("", serviceName, ""))
+                    .collect(Collectors.toSet());
         }
         return Collections::emptySet;
     }
