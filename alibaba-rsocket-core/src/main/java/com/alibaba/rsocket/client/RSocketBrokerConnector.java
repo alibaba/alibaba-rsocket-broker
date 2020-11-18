@@ -61,4 +61,9 @@ public class RSocketBrokerConnector {
         return new RSocketBrokerClient(this.appName, this.brokers, this.dataMimeType, this.jwtToken, this.serviceCaller);
     }
 
+    public RSocketBrokerClient connect(List<String> brokers) {
+        this.brokers = brokers;
+        return connect();
+    }
+
 }
