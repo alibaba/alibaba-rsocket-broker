@@ -25,7 +25,11 @@ public class RSocketBrokerClientApp {
 
     public static void main(String[] args) throws Exception {
         RSocketBrokerConnector connector = RSocketBrokerConnector.create();
-        RSocketBrokerClient brokerClient = connector.appName("MockApp").dataMimeType(RSocketMimeType.Json).jwtToken(jwtToken).brokers(brokers).connect();
+        RSocketBrokerClient brokerClient = connector.appName("MockApp")
+                .dataMimeType(RSocketMimeType.Json)
+                .jwtToken(jwtToken)
+                //.service("com.alibaba.service.DemoMockService", DemoMockService.class, (DemoMockService) id -> Mono.just("Hello " + id))
+                .brokers(brokers).connect();
         UserService userService = userService(brokerClient);
         User user = userService.findById(1).block();
         System.out.println(JsonUtils.toJsonText(user));
@@ -52,6 +56,12 @@ public class RSocketBrokerClientApp {
         Mono<User> findById(Integer id);
 
         Mono<String> getAppName();
+    }
+
+    @FunctionalInterface
+    public interface DemoMockService {
+
+        Mono<String> hello(Integer id);
     }
 
     @Data
