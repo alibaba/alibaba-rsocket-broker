@@ -2,13 +2,11 @@ package com.alibaba.spring.boot.rsocket.broker.responder;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.*;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import reactor.core.Disposable;
@@ -27,7 +25,7 @@ import java.util.UUID;
  * @author leijuan
  */
 public class AppStatusCloudEventProcessor {
-    private Logger log = LoggerFactory.getLogger(AppStatusCloudEventProcessor.class);
+    @SuppressWarnings("rawtypes")
     @Autowired
     @Qualifier("reactiveCloudEventProcessor")
     private TopicProcessor<CloudEventImpl> eventProcessor;
@@ -77,7 +75,7 @@ public class AppStatusCloudEventProcessor {
         String appName = appMetadata.getName();
         if (!listeners.containsKey(appName)) {
             listeners.put(appName, configurationService.watch(appName).subscribe(config -> {
-                CloudEventImpl<ConfigEvent> configEvent = CloudEventBuilder.<ConfigEvent>builder()
+                CloudEventImpl<ConfigEvent> configEvent = RSocketCloudEventBuilder.<ConfigEvent>builder()
                         .withId(UUID.randomUUID().toString())
                         .withTime(ZonedDateTime.now())
                         .withSource(URI.create("broker://" + RSocketAppContext.ID))
