@@ -7,10 +7,7 @@ import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.cloudevents.json.Json;
-import io.cloudevents.v1.CloudEventImpl;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -34,9 +31,6 @@ import java.nio.charset.StandardCharsets;
  * @author leijuan
  */
 public interface CloudEventRSocket extends RSocket {
-    TypeReference<CloudEventImpl<ObjectNode>> CLOUD_EVENT_TYPE_REFERENCE = new TypeReference<CloudEventImpl<ObjectNode>>() {
-    };
-
     Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent);
 
     Mono<Void> fireEventReply(URI replayTo, EventReply eventReply);
@@ -62,7 +56,7 @@ public interface CloudEventRSocket extends RSocket {
     }
 
     @Nullable
-    default CloudEventImpl<?> extractCloudEventsFromMetadataPush(@NotNull Payload payload) {
+    default CloudEventImpl<JsonNode> extractCloudEventsFromMetadataPush(@NotNull Payload payload) {
         String jsonText = null;
         byte firstByte = payload.metadata().getByte(0);
         // json text: well known type > 127, and normal mime type's length < 127
@@ -75,7 +69,7 @@ public interface CloudEventRSocket extends RSocket {
             }
         }
         if (jsonText != null) {
-            return Json.decodeValue(jsonText, CLOUD_EVENT_TYPE_REFERENCE);
+            return Json.decodeValue(jsonText);
         }
         return null;
     }
