@@ -22,7 +22,7 @@ public class RSocketCloudEventBuilder<T> {
      * @param <T> The 'data' type
      */
     public static <T> RSocketCloudEventBuilder<T> builder() {
-        return new RSocketCloudEventBuilder<T>();
+        return new RSocketCloudEventBuilder<>();
     }
 
 
