@@ -1,6 +1,8 @@
 package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.Json;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilter;
 import com.alibaba.rsocket.transport.NetworkUtil;
@@ -10,7 +12,6 @@ import com.alibaba.spring.boot.rsocket.broker.cluster.jsonrpc.JsonRpcResponse;
 import com.alibaba.spring.boot.rsocket.broker.events.AppConfigEvent;
 import com.alibaba.spring.boot.rsocket.broker.events.RSocketFilterEnableEvent;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
-import io.cloudevents.v1.CloudEventImpl;
 import io.micrometer.core.instrument.Metrics;
 import io.scalecube.cluster.Cluster;
 import io.scalecube.cluster.ClusterImpl;
@@ -165,14 +166,24 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Override
     public void onGossip(Message gossip) {
         if (gossip.header("cloudevents") != null) {
-            onCloudEvent(gossip.data());
+            String javaClass = gossip.header("javaClass");
+            if (javaClass != null) {
+                try {
+                    Class<?> resultClass = Class.forName(javaClass);
+                    String jsonText = gossip.data();
+                    onCloudEvent(Json.decodeValue(jsonText, resultClass));
+                } catch (Exception ignore) {
+
+                }
+            }
         }
     }
 
-    public void onCloudEvent(CloudEventImpl<Object> cloudEvent) {
-        Optional<Object> cloudEventData = cloudEvent.getData();
+    public void onCloudEvent(CloudEventImpl<?> cloudEvent) {
+        String type = cloudEvent.getAttributes().getType();
+        Optional<?> cloudEventData = cloudEvent.getData();
         cloudEventData.ifPresent(data -> {
-            if (data instanceof RSocketFilterEnableEvent) {
+            if (RSocketFilterEnableEvent.class.getCanonicalName().equals(type)) {
                 try {
                     RSocketFilterEnableEvent filterEnableEvent = (RSocketFilterEnableEvent) data;
                     RSocketFilter rsocketFilter = (RSocketFilter) applicationContext.getBean(Class.forName(filterEnableEvent.getFilterClassName()));
@@ -192,7 +203,8 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     public Mono<String> broadcast(CloudEventImpl<?> cloudEvent) {
         Message message = Message.builder()
                 .header("cloudevents", "true")
-                .data(cloudEvent)
+                .header("javaClass", cloudEvent.getAttributes().getType())
+                .data(Json.serializeAsText(cloudEvent))
                 .build();
         return monoCluster.flatMap(cluster -> cluster.spreadGossip(message));
     }
