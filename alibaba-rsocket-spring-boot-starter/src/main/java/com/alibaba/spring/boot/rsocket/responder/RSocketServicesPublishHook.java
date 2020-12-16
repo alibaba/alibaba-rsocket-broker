@@ -3,6 +3,8 @@ package com.alibaba.spring.boot.rsocket.responder;
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.events.PortsUpdateEvent;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
@@ -10,8 +12,6 @@ import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.metadata.WellKnownMimeType;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
         UpstreamCluster brokerCluster = upstreamManager.findBroker();
         if (brokerCluster == null) return;
         //rsocket broker cluster logic
-        CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = CloudEventBuilder.<AppStatusEvent>builder()
+        CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = RSocketCloudEventBuilder.<AppStatusEvent>builder()
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
                 .withSource(URI.create("app://" + RSocketAppContext.ID))
@@ -63,7 +63,7 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
                 portsUpdateEvent.setWebPort(RSocketAppContext.webPort);
                 portsUpdateEvent.setManagementPort(RSocketAppContext.managementPort);
                 portsUpdateEvent.setRsocketPorts(RSocketAppContext.rsocketPorts);
-                CloudEventImpl<PortsUpdateEvent> portsUpdateCloudEvent = CloudEventBuilder.<PortsUpdateEvent>builder()
+                CloudEventImpl<PortsUpdateEvent> portsUpdateCloudEvent = RSocketCloudEventBuilder.<PortsUpdateEvent>builder()
                         .withId(UUID.randomUUID().toString())
                         .withTime(ZonedDateTime.now())
                         .withSource(URI.create("app://" + RSocketAppContext.ID))
