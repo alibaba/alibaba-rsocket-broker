@@ -2,6 +2,8 @@ package com.alibaba.rsocket.broker.ops;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
@@ -10,8 +12,7 @@ import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegi
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
+import io.rsocket.metadata.WellKnownMimeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,7 +72,7 @@ public class OpsRestController {
 
     @PostMapping("/broadcast/demo")
     public Mono<Void> broadcastDemo(@RequestBody Map<String, Object> content) throws Exception {
-        CloudEventImpl<Map<String, Object>> cloudEvent = CloudEventBuilder.<Map<String, Object>>builder()
+        CloudEventImpl<Map<String, Object>> cloudEvent = RSocketCloudEventBuilder.<Map<String, Object>>builder()
                 .withId(UUID.randomUUID().toString())
                 .withSource(URI.create("broker://" + RSocketAppContext.ID))
                 .withType("com.alibaba.demo.UnknownType")
@@ -94,12 +95,12 @@ public class OpsRestController {
         UpstreamClusterChangedEvent upstreamClusterChangedEvent = new UpstreamClusterChangedEvent("", "*", "", Arrays.asList(uris.split(",")));
 
         // passing in the given attributes
-        return CloudEventBuilder.<UpstreamClusterChangedEvent>builder()
-                .withType("com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent")
+        return RSocketCloudEventBuilder.<UpstreamClusterChangedEvent>builder()
+                .withType(UpstreamClusterChangedEvent.class.getCanonicalName())
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
-                .withDataschema(URI.create("rsocket:event:com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent"))
-                .withDataContentType("application/json")
+                .withDataschema(URI.create("rsocket:event:"+UpstreamClusterChangedEvent.class.getCanonicalName()))
+                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
                 .withSource(URI.create("broker://" + RSocketAppContext.ID))
                 .withData(upstreamClusterChangedEvent)
                 .build();
