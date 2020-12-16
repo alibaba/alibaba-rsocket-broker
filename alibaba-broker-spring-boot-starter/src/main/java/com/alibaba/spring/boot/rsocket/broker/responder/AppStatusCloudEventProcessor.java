@@ -1,23 +1,20 @@
 package com.alibaba.spring.boot.rsocket.broker.responder;
 
-import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.*;
 import com.alibaba.rsocket.metadata.AppMetadata;
+import com.alibaba.spring.boot.rsocket.broker.BrokerAppContext;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import reactor.core.Disposable;
 import reactor.extra.processor.TopicProcessor;
 
-import java.net.URI;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * App status cloud event processor
@@ -75,13 +72,8 @@ public class AppStatusCloudEventProcessor {
         String appName = appMetadata.getName();
         if (!listeners.containsKey(appName)) {
             listeners.put(appName, configurationService.watch(appName).subscribe(config -> {
-                CloudEventImpl<ConfigEvent> configEvent = RSocketCloudEventBuilder.<ConfigEvent>builder()
-                        .withId(UUID.randomUUID().toString())
-                        .withTime(ZonedDateTime.now())
-                        .withSource(URI.create("broker://" + RSocketAppContext.ID))
-                        .withType(ConfigEvent.class.getCanonicalName())
-                        .withDataContentType("text/x-java-properties")
-                        .withData(new ConfigEvent(appName, "text/x-java-properties", config))
+                CloudEventImpl<ConfigEvent> configEvent = RSocketCloudEventBuilder.builder(new ConfigEvent(appName, "text/x-java-properties", config))
+                        .withSource(BrokerAppContext.identity())
                         .build();
                 rsocketBrokerHandlerRegistry.broadcast(appName, configEvent).subscribe();
             }));

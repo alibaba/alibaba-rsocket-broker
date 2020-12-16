@@ -1,6 +1,5 @@
 package com.alibaba.spring.boot.rsocket.broker.responder;
 
-import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.AppStatusEvent;
@@ -13,6 +12,7 @@ import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
 import com.alibaba.rsocket.utils.MurmurHash3;
+import com.alibaba.spring.boot.rsocket.broker.BrokerAppContext;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
@@ -25,7 +25,6 @@ import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
 import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.RejectedSetupException;
-import io.rsocket.metadata.WellKnownMimeType;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.eclipse.collections.api.multimap.Multimap;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
@@ -42,7 +41,6 @@ import reactor.extra.processor.TopicProcessor;
 
 import java.net.URI;
 import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -278,13 +276,8 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     }
 
     private CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent(AppMetadata appMetadata, Integer status) {
-        return RSocketCloudEventBuilder.<AppStatusEvent>builder()
-                .withId(UUID.randomUUID().toString())
-                .withTime(ZonedDateTime.now())
-                .withSource(URI.create("app://" + appMetadata.getUuid()))
-                .withType(AppStatusEvent.class.getCanonicalName())
-                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                .withData(new AppStatusEvent(appMetadata.getUuid(), status))
+        return RSocketCloudEventBuilder
+                .builder(new AppStatusEvent(appMetadata.getUuid(), status))
                 .build();
     }
 
@@ -308,14 +301,9 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         upstreamClusterChangedEvent.setUris(uris);
 
         // passing in the given attributes
-        return RSocketCloudEventBuilder.<UpstreamClusterChangedEvent>builder()
-                .withType("com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent")
-                .withId(UUID.randomUUID().toString())
-                .withTime(ZonedDateTime.now())
+        return RSocketCloudEventBuilder.builder(upstreamClusterChangedEvent)
                 .withDataschema(URI.create("rsocket:event:com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent"))
-                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                .withSource(URI.create("broker://" + RSocketAppContext.ID))
-                .withData(upstreamClusterChangedEvent)
+                .withSource(BrokerAppContext.identity())
                 .build();
     }
 

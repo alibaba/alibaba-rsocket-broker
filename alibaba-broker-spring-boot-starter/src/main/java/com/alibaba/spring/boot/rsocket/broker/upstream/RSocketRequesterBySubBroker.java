@@ -11,21 +11,23 @@ import com.alibaba.rsocket.metadata.BearerTokenMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.transport.NetworkUtil;
+import com.alibaba.spring.boot.rsocket.broker.BrokerAppContext;
 import com.alibaba.spring.boot.rsocket.broker.RSocketBrokerProperties;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import io.netty.buffer.Unpooled;
 import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
-import io.rsocket.metadata.WellKnownMimeType;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.util.ByteBufPayload;
 import org.springframework.core.env.Environment;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -105,13 +107,8 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
                 servicesExposedEvent.addService(serviceLocator);
             }
             servicesExposedEvent.setAppId(RSocketAppContext.ID);
-            return RSocketCloudEventBuilder.<ServicesExposedEvent>builder()
-                    .withId(UUID.randomUUID().toString())
-                    .withTime(ZonedDateTime.now())
-                    .withSource(URI.create("broker://" + RSocketAppContext.ID))
-                    .withType(ServicesExposedEvent.class.getCanonicalName())
-                    .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                    .withData(servicesExposedEvent)
+            return RSocketCloudEventBuilder.builder(servicesExposedEvent)
+                    .withSource(BrokerAppContext.identity())
                     .build();
         };
     }

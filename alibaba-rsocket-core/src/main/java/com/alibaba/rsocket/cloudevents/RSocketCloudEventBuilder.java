@@ -1,12 +1,15 @@
 package com.alibaba.rsocket.cloudevents;
 
+import com.alibaba.rsocket.RSocketAppContext;
+import com.alibaba.rsocket.transport.NetworkUtil;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.rsocket.metadata.WellKnownMimeType;
 
 import java.net.URI;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 /**
  * CloudEvent builder for RSocket broker
@@ -16,6 +19,7 @@ import java.time.ZonedDateTime;
 public class RSocketCloudEventBuilder<T> {
     private CloudEventBuilder builder = CloudEventBuilder.v1().withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString());
     private T data;
+    private static URI DEFAULT_SOURCE = URI.create("app://" + NetworkUtil.LOCAL_IP + "/" + "?id=" + RSocketAppContext.ID);
 
     /**
      * Gets a brand new builder instance
@@ -26,6 +30,24 @@ public class RSocketCloudEventBuilder<T> {
         return new RSocketCloudEventBuilder<>();
     }
 
+    /**
+     * builder with UUID, application/json, now timestamp, Class full name as type and default sources
+     *
+     * @param data data
+     * @param <T>  data type
+     * @return cloud event builder
+     */
+    public static <T> RSocketCloudEventBuilder<T> builder(T data) {
+        RSocketCloudEventBuilder<T> builder = new RSocketCloudEventBuilder<>();
+        builder.data = data;
+        builder
+                .withId(UUID.randomUUID().toString())
+                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
+                .withTime(OffsetDateTime.now())
+                .withType(data.getClass().getCanonicalName())
+                .withSource(DEFAULT_SOURCE);
+        return builder;
+    }
 
     public RSocketCloudEventBuilder<T> withId(String id) {
         this.builder.withId(id);
@@ -57,8 +79,8 @@ public class RSocketCloudEventBuilder<T> {
         return this;
     }
 
-    public RSocketCloudEventBuilder<T> withTime(ZonedDateTime time) {
-        this.builder.withTime(time.toOffsetDateTime());
+    public RSocketCloudEventBuilder<T> withTime(OffsetDateTime time) {
+        this.builder.withTime(time);
         return this;
     }
 

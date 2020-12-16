@@ -4,14 +4,10 @@ import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
-import io.rsocket.metadata.WellKnownMimeType;
 
-import java.net.URI;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * services exposed event: register service on routing table
@@ -57,13 +53,8 @@ public class ServicesExposedEvent implements CloudEventSupport<ServicesExposedEv
             servicesExposedEvent.addService(serviceLocator);
         }
         servicesExposedEvent.setAppId(RSocketAppContext.ID);
-        return RSocketCloudEventBuilder.<ServicesExposedEvent>builder()
-                .withId(UUID.randomUUID().toString())
-                .withTime(ZonedDateTime.now())
-                .withSource(URI.create("app://" + RSocketAppContext.ID))
-                .withType(ServicesExposedEvent.class.getCanonicalName())
-                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                .withData(servicesExposedEvent)
+        return RSocketCloudEventBuilder
+                .builder(servicesExposedEvent)
                 .build();
     }
 }

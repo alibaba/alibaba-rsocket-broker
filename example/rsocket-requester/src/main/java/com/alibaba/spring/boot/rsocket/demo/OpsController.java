@@ -1,20 +1,15 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
-import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
-import io.rsocket.metadata.WellKnownMimeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.extra.processor.TopicProcessor;
 
-import java.net.URI;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.UUID;
 
 /**
  * Ops Controller
@@ -35,14 +30,8 @@ public class OpsController {
         upstreamClusterChangedEvent.setUris(Arrays.asList(uris.split(",")));
 
         // passing in the given attributes
-        final CloudEventImpl<UpstreamClusterChangedEvent> cloudEvent = RSocketCloudEventBuilder.<UpstreamClusterChangedEvent>builder()
-                .withType(UpstreamClusterChangedEvent.class.getCanonicalName())
-                .withId(UUID.randomUUID().toString())
-                .withTime(ZonedDateTime.now())
-                .withDataschema(URI.create("rsocket:event"))
-                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                .withSource(new URI("app://" + RSocketAppContext.ID))
-                .withData(upstreamClusterChangedEvent)
+        final CloudEventImpl<UpstreamClusterChangedEvent> cloudEvent = RSocketCloudEventBuilder
+                .builder(upstreamClusterChangedEvent)
                 .build();
         eventProcessor.onNext(cloudEvent);
         return "success";

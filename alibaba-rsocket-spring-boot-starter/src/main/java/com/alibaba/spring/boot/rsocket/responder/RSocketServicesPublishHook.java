@@ -12,7 +12,6 @@ import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import io.rsocket.metadata.WellKnownMimeType;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +20,6 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import java.net.URI;
-import java.time.ZonedDateTime;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -43,13 +39,8 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
         UpstreamCluster brokerCluster = upstreamManager.findBroker();
         if (brokerCluster == null) return;
         //rsocket broker cluster logic
-        CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = RSocketCloudEventBuilder.<AppStatusEvent>builder()
-                .withId(UUID.randomUUID().toString())
-                .withTime(ZonedDateTime.now())
-                .withSource(URI.create("app://" + RSocketAppContext.ID))
-                .withType(AppStatusEvent.class.getCanonicalName())
-                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                .withData(new AppStatusEvent(RSocketAppContext.ID, AppStatusEvent.STATUS_SERVING))
+        CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = RSocketCloudEventBuilder
+                .builder(new AppStatusEvent(RSocketAppContext.ID, AppStatusEvent.STATUS_SERVING))
                 .build();
         LoadBalancedRSocket loadBalancedRSocket = brokerCluster.getLoadBalancedRSocket();
         String brokers = String.join(",", loadBalancedRSocket.getActiveSockets().keySet());
@@ -63,13 +54,8 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
                 portsUpdateEvent.setWebPort(RSocketAppContext.webPort);
                 portsUpdateEvent.setManagementPort(RSocketAppContext.managementPort);
                 portsUpdateEvent.setRsocketPorts(RSocketAppContext.rsocketPorts);
-                CloudEventImpl<PortsUpdateEvent> portsUpdateCloudEvent = RSocketCloudEventBuilder.<PortsUpdateEvent>builder()
-                        .withId(UUID.randomUUID().toString())
-                        .withTime(ZonedDateTime.now())
-                        .withSource(URI.create("app://" + RSocketAppContext.ID))
-                        .withType(PortsUpdateEvent.class.getCanonicalName())
-                        .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                        .withData(portsUpdateEvent)
+                CloudEventImpl<PortsUpdateEvent> portsUpdateCloudEvent = RSocketCloudEventBuilder
+                        .builder(portsUpdateEvent)
                         .build();
                 loadBalancedRSocket.fireCloudEventToUpstreamAll(portsUpdateCloudEvent)
                         .doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", brokers)))

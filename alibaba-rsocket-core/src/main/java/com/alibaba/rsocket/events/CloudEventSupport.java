@@ -3,14 +3,11 @@ package com.alibaba.rsocket.events;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.encoding.JsonUtils;
-import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
-import java.time.ZonedDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * cloud event support
@@ -37,13 +34,6 @@ public interface CloudEventSupport<T extends CloudEventSupport<?>> {
     }
 
     default CloudEventImpl<T> toCloudEvent(URI source) {
-        RSocketCloudEventBuilder<T> builder = RSocketCloudEventBuilder.builder();
-        builder.withId(UUID.randomUUID().toString());
-        builder.withType(this.getClass().getCanonicalName());
-        builder.withDataContentType(RSocketMimeType.Json.getType());
-        builder.withSource(source);
-        builder.withTime(ZonedDateTime.now());
-        builder.withData((T) this);
-        return builder.build();
+        return RSocketCloudEventBuilder.builder((T) this).withSource(source).build();
     }
 }

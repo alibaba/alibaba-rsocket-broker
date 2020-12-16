@@ -11,8 +11,6 @@ import io.rsocket.util.ByteBufPayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.net.URI;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
@@ -62,14 +60,8 @@ public class RSocketCompositeMetadataTest {
 
     @Test
     public void testCloudEvents() throws Exception {
-        final CloudEventImpl<String> cloudEvent = RSocketCloudEventBuilder.<String>builder()
-                .withType("java.lang.String")
-                .withId("xxxx")
-                .withTime(ZonedDateTime.now())
-                .withDataschema(URI.create("demo:demo"))
-                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                .withSource(URI.create("app://app1"))
-                .withData("欢迎")
+        final CloudEventImpl<String> cloudEvent = RSocketCloudEventBuilder
+                .builder("欢迎")
                 .build();
         Payload payload = cloudEventToPayload(cloudEvent);
         payload.getMetadata().rewind();

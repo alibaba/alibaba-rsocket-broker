@@ -13,7 +13,6 @@ import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import io.rsocket.metadata.WellKnownMimeType;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -22,8 +21,6 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -135,13 +132,8 @@ public class RSocketEndpoint {
     }
 
     public Mono<Void> sendAppStatus(Integer status) {
-        final CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = RSocketCloudEventBuilder.<AppStatusEvent>builder()
-                .withId(UUID.randomUUID().toString())
-                .withTime(ZonedDateTime.now())
-                .withSource(URI.create("app://" + RSocketAppContext.ID))
-                .withType(AppStatusEvent.class.getCanonicalName())
-                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
-                .withData(new AppStatusEvent(RSocketAppContext.ID, status))
+        final CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = RSocketCloudEventBuilder
+                .builder(new AppStatusEvent(RSocketAppContext.ID, status))
                 .build();
         return Flux.fromIterable(upstreamManager.findAllClusters()).flatMap(upstreamCluster -> upstreamCluster.getLoadBalancedRSocket().fireCloudEventToUpstreamAll(appStatusEventCloudEvent)).then();
     }
