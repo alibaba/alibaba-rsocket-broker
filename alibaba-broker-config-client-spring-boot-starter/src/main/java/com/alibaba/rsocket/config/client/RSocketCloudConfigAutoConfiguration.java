@@ -1,6 +1,6 @@
 package com.alibaba.rsocket.config.client;
 
-import io.cloudevents.v1.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
