@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.client;
 
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.events.ServicesHiddenEvent;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
@@ -12,7 +13,6 @@ import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventProcessor;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
-import io.cloudevents.v1.CloudEventImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
