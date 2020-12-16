@@ -1,14 +1,12 @@
 package com.alibaba.rsocket;
 
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
-import io.cloudevents.CloudEvent;
-import io.cloudevents.v1.CloudEventImpl;
 import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.plugins.RSocketInterceptor;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
