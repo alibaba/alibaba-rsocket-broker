@@ -8,6 +8,7 @@ Alibaba RSocket Broker变更记录
 * CloudEvents Java SDK 2.0升级，CloudEvents添加了Spring对接，这样更方便。
 * 添加 RSocketBrokerClient，方便普通Java应用快速接入RSocket Broker
 * AlibabaRSocketBrokerServer添加WebSocket监听，实现TCP Socket和WebSocket双端口监听，TCP对内，WebSocket对外。
+* Reactive服务草案规范: 设计一些标准的Reactive服务接口，方便和RSocket Broker对接，也方便消费端调用 https://github.com/alibaba-rsocket-broker/reactive-service-specification-proposals
 
 #### Bug修复
 
