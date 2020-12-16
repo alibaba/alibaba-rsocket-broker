@@ -2,8 +2,8 @@ package com.alibaba.rsocket.events;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.ServiceLocator;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import io.rsocket.metadata.WellKnownMimeType;
 
 import java.net.URI;
@@ -57,7 +57,7 @@ public class ServicesExposedEvent implements CloudEventSupport<ServicesExposedEv
             servicesExposedEvent.addService(serviceLocator);
         }
         servicesExposedEvent.setAppId(RSocketAppContext.ID);
-        return CloudEventBuilder.<ServicesExposedEvent>builder()
+        return RSocketCloudEventBuilder.<ServicesExposedEvent>builder()
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
                 .withSource(URI.create("app://" + RSocketAppContext.ID))
