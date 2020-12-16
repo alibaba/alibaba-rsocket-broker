@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.encoding;
 
-import com.alibaba.rsocket.encoding.json.CloudEventsModule;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -29,7 +28,6 @@ public class JsonUtils {
 
     static {
         objectMapper.findAndRegisterModules();
-        objectMapper.registerModule(new CloudEventsModule());
         objectMapper.setDefaultPrettyPrinter(new MinimalPrettyPrinter());
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
