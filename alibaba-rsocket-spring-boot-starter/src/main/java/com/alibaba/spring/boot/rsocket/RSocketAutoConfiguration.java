@@ -3,6 +3,7 @@ package com.alibaba.spring.boot.rsocket;
 import brave.Tracing;
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
 import com.alibaba.rsocket.observability.MetricsService;
@@ -20,7 +21,6 @@ import com.alibaba.spring.boot.rsocket.responder.invocation.RSocketServiceAnnota
 import com.alibaba.spring.boot.rsocket.upstream.JwtTokenNotFoundException;
 import com.alibaba.spring.boot.rsocket.upstream.RSocketRequesterSupportBuilderImpl;
 import com.alibaba.spring.boot.rsocket.upstream.RSocketRequesterSupportCustomizer;
-import io.cloudevents.v1.CloudEventImpl;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.rsocket.SocketAcceptor;
 import org.springframework.beans.factory.ObjectProvider;
