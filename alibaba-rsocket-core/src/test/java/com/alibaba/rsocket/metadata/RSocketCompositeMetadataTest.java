@@ -1,8 +1,8 @@
 package com.alibaba.rsocket.metadata;
 
-import io.cloudevents.json.Json;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.Json;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.rsocket.Payload;
@@ -62,12 +62,12 @@ public class RSocketCompositeMetadataTest {
 
     @Test
     public void testCloudEvents() throws Exception {
-        final CloudEventImpl<String> cloudEvent = CloudEventBuilder.<String>builder()
-                .withType("eventType")
+        final CloudEventImpl<String> cloudEvent = RSocketCloudEventBuilder.<String>builder()
+                .withType("java.lang.String")
                 .withId("xxxx")
                 .withTime(ZonedDateTime.now())
                 .withDataschema(URI.create("demo:demo"))
-                .withDataContentType("text/plain")
+                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
                 .withSource(URI.create("app://app1"))
                 .withData("欢迎")
                 .build();
@@ -97,6 +97,6 @@ public class RSocketCompositeMetadataTest {
 
     public static Payload cloudEventToPayload(CloudEventImpl<?> cloudEvent) {
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(RSocketMimeType.CloudEventsJson));
-        return ByteBufPayload.create(Unpooled.wrappedBuffer(Json.binaryEncode(cloudEvent)), compositeMetadata.getContent());
+        return ByteBufPayload.create(Unpooled.wrappedBuffer(Json.serialize(cloudEvent)), compositeMetadata.getContent());
     }
 }
