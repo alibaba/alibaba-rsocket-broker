@@ -2,6 +2,7 @@ package com.alibaba.spring.boot.rsocket.broker.responder;
 
 import com.alibaba.rsocket.RSocketExchange;
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.cloudevents.EventReply;
 import com.alibaba.rsocket.events.AppStatusEvent;
@@ -13,7 +14,6 @@ import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
-import io.cloudevents.v1.CloudEventImpl;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
@@ -41,7 +41,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.extra.processor.TopicProcessor;
 
-import javax.validation.constraints.Null;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
@@ -106,6 +105,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
      * peer RSocket: sending or requester RSocket
      */
     private RSocket peerRsocket;
+    @Nullable
     private RSocket upstreamRSocket;
     /**
      * app status: 0:connect, 1: serving, 2: not serving  -1: stopped
@@ -144,7 +144,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                                          TopicProcessor<CloudEventImpl> eventProcessor,
                                          RSocketBrokerHandlerRegistry handlerRegistry,
                                          ServiceMeshInspector serviceMeshInspector,
-                                         @Null RSocket upstreamRSocket) {
+                                         @Nullable RSocket upstreamRSocket) {
         try {
             this.upstreamRSocket = upstreamRSocket;
             RSocketMimeType dataType = RSocketMimeType.valueOfType(setupPayload.dataMimeType());
