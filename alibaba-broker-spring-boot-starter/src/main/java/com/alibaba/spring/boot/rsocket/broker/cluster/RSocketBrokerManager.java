@@ -1,7 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
-import io.cloudevents.v1.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
