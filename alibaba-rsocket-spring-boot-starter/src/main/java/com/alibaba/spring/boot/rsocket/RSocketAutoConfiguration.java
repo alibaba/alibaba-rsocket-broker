@@ -47,7 +47,7 @@ import reactor.extra.processor.TopicProcessor;
  *
  * @author leijuan
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "SpringJavaInjectionPointsAutowiringInspection"})
 @Configuration
 @EnableConfigurationProperties(RSocketProperties.class)
 public class RSocketAutoConfiguration {
