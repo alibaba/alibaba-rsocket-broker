@@ -52,6 +52,24 @@ public class CloudEventTest {
     }
 
     @Test
+    public void testJsonString() {
+        final CloudEventImpl<String> cloudEvent = RSocketCloudEventBuilder.<String>builder()
+                .withType("java.lang.String")
+                .withId("1111")
+                .withTime(ZonedDateTime.now())
+                .withDataschema(URI.create("demo:demo"))
+                .withDataContentType("application/json")
+                .withSource(URI.create("rsocket:source"))
+                .withData("Hello")
+                .build();
+        String text = new String(Json.serialize(cloudEvent), StandardCharsets.UTF_8);
+        System.out.println(text);
+        text = text.replace("欢迎", "leijuan");
+        CloudEventImpl<String> cloudEvent2 = Json.decodeValue(text, String.class);
+        System.out.println(cloudEvent2.getData().get());
+    }
+
+    @Test
     public void testCloudEvent() throws Exception {
         UpstreamClusterChangedEvent upstreamClusterChangedEvent = new UpstreamClusterChangedEvent();
         upstreamClusterChangedEvent.setGroup("demo");
