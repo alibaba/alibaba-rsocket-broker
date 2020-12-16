@@ -3,6 +3,8 @@ package com.alibaba.spring.boot.rsocket.broker.upstream;
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.metadata.BearerTokenMetadata;
@@ -12,8 +14,6 @@ import com.alibaba.rsocket.transport.NetworkUtil;
 import com.alibaba.spring.boot.rsocket.broker.RSocketBrokerProperties;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.Unpooled;
 import io.rsocket.Payload;
 import io.rsocket.SocketAcceptor;
@@ -105,7 +105,7 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
                 servicesExposedEvent.addService(serviceLocator);
             }
             servicesExposedEvent.setAppId(RSocketAppContext.ID);
-            return CloudEventBuilder.<ServicesExposedEvent>builder()
+            return RSocketCloudEventBuilder.<ServicesExposedEvent>builder()
                     .withId(UUID.randomUUID().toString())
                     .withTime(ZonedDateTime.now())
                     .withSource(URI.create("broker://" + RSocketAppContext.ID))
