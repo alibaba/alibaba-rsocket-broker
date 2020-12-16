@@ -1,8 +1,8 @@
 package com.alibaba.spring.boot.rsocket;
 
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.events.CloudEventSupport;
 import com.alibaba.rsocket.events.InvalidCacheEvent;
-import io.cloudevents.v1.CloudEventImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
