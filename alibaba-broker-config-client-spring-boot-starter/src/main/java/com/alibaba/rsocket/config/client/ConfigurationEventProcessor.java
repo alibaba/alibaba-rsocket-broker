@@ -1,10 +1,10 @@
 package com.alibaba.rsocket.config.client;
 
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.config.bootstrap.RSocketConfigPropertySourceLocator;
 import com.alibaba.rsocket.events.CloudEventSupport;
 import com.alibaba.rsocket.events.ConfigEvent;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import io.cloudevents.v1.CloudEventImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.context.refresh.ContextRefresher;
@@ -20,6 +20,7 @@ import java.util.Properties;
  *
  * @author leijuan
  */
+@SuppressWarnings("rawtypes")
 @Component
 public class ConfigurationEventProcessor {
     private Logger log = LoggerFactory.getLogger(ConfigurationEventProcessor.class);
