@@ -8,11 +8,7 @@ import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
-import io.netty.util.ReferenceCountUtil;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.metadata.WellKnownMimeType;
@@ -21,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
-import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
@@ -44,13 +39,9 @@ public interface CloudEventRSocket extends RSocket {
     }
 
     default Payload cloudEventToMetadataPushPayload(CloudEventImpl<?> cloudEvent) {
-        ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
         try {
-            ByteBufOutputStream bos = new ByteBufOutputStream(byteBuf);
-            JsonUtils.objectMapper.writeValue((OutputStream) bos, cloudEvent);
-            return ByteBufPayload.create(Unpooled.EMPTY_BUFFER, byteBuf);
+            return ByteBufPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(Json.serialize(cloudEvent)));
         } catch (Exception e) {
-            ReferenceCountUtil.safeRelease(byteBuf);
             throw new EncodingException(RsocketErrorCode.message("RST-700500", "CloudEventImpl", "ByteBuf"), e);
         }
     }
