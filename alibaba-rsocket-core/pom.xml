@@ -20,7 +20,12 @@
         </dependency>
         <dependency>
             <groupId>io.cloudevents</groupId>
-            <artifactId>cloudevents-api</artifactId>
+            <artifactId>cloudevents-core</artifactId>
+            <version>${cloudevents.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cloudevents</groupId>
+            <artifactId>cloudevents-json-jackson</artifactId>
             <version>${cloudevents.version}</version>
         </dependency>
         <dependency>
