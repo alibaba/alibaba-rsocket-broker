@@ -1,6 +1,8 @@
 package com.alibaba.spring.boot.rsocket.broker.responder;
 
 import com.alibaba.rsocket.RSocketAppContext;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.metadata.BearerTokenMetadata;
@@ -18,8 +20,6 @@ import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.security.JwtPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
 import io.micrometer.core.instrument.Metrics;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.RSocket;
@@ -278,12 +278,12 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     }
 
     private CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent(AppMetadata appMetadata, Integer status) {
-        return CloudEventBuilder.<AppStatusEvent>builder()
+        return RSocketCloudEventBuilder.<AppStatusEvent>builder()
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
                 .withSource(URI.create("app://" + appMetadata.getUuid()))
                 .withType(AppStatusEvent.class.getCanonicalName())
-                .withDataContentType("application/json")
+                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
                 .withData(new AppStatusEvent(appMetadata.getUuid(), status))
                 .build();
     }
@@ -308,7 +308,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         upstreamClusterChangedEvent.setUris(uris);
 
         // passing in the given attributes
-        return CloudEventBuilder.<UpstreamClusterChangedEvent>builder()
+        return RSocketCloudEventBuilder.<UpstreamClusterChangedEvent>builder()
                 .withType("com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent")
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
