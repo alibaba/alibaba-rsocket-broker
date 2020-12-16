@@ -3,6 +3,7 @@ package com.alibaba.rsocket.cloudevents;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.data.PojoCloudEventData;
+import io.rsocket.metadata.WellKnownMimeType;
 
 import java.net.URI;
 import java.time.ZonedDateTime;
@@ -13,7 +14,7 @@ import java.time.ZonedDateTime;
  * @author leijuan
  */
 public class RSocketCloudEventBuilder<T> {
-    private CloudEventBuilder builder = CloudEventBuilder.v1();
+    private CloudEventBuilder builder = CloudEventBuilder.v1().withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString());
     private T data;
 
     /**
