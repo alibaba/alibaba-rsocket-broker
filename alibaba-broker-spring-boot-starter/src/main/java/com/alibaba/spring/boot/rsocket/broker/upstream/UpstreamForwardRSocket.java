@@ -2,6 +2,8 @@ package com.alibaba.spring.boot.rsocket.broker.upstream;
 
 import com.alibaba.rsocket.AbstractRSocket;
 import com.alibaba.rsocket.RSocketExchange;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.Json;
 import com.alibaba.rsocket.events.CloudEventSupport;
 import com.alibaba.rsocket.metadata.AppMetadata;
 import com.alibaba.rsocket.metadata.BinaryRoutingMetadata;
@@ -14,9 +16,8 @@ import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegi
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.cloudevents.json.Json;
-import io.cloudevents.v1.CloudEventImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.Payload;
@@ -178,8 +179,7 @@ public class UpstreamForwardRSocket extends AbstractRSocket {
     public @NotNull Mono<Void> metadataPush(@NotNull Payload payload) {
         try {
             if (payload.metadata().readableBytes() > 0) {
-                CloudEventImpl<?> cloudEvent = Json.decodeValue(payload.getMetadataUtf8(), CLOUD_EVENT_TYPE_REFERENCE);
-                //todo
+                CloudEventImpl<JsonNode> cloudEvent = Json.decodeValue(payload.getMetadataUtf8());
                 String type = cloudEvent.getAttributes().getType();
                 if (UpstreamClusterChangedEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                     handleUpstreamClusterChangedEvent(cloudEvent);
