@@ -3,6 +3,8 @@ package com.alibaba.spring.boot.rsocket;
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.ServiceLocator;
+import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.events.ServicesHiddenEvent;
@@ -11,8 +13,7 @@ import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import io.cloudevents.v1.CloudEventBuilder;
-import io.cloudevents.v1.CloudEventImpl;
+import io.rsocket.metadata.WellKnownMimeType;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -134,12 +135,12 @@ public class RSocketEndpoint {
     }
 
     public Mono<Void> sendAppStatus(Integer status) {
-        final CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = CloudEventBuilder.<AppStatusEvent>builder()
+        final CloudEventImpl<AppStatusEvent> appStatusEventCloudEvent = RSocketCloudEventBuilder.<AppStatusEvent>builder()
                 .withId(UUID.randomUUID().toString())
                 .withTime(ZonedDateTime.now())
                 .withSource(URI.create("app://" + RSocketAppContext.ID))
                 .withType(AppStatusEvent.class.getCanonicalName())
-                .withDataContentType("application/json")
+                .withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString())
                 .withData(new AppStatusEvent(RSocketAppContext.ID, status))
                 .build();
         return Flux.fromIterable(upstreamManager.findAllClusters()).flatMap(upstreamCluster -> upstreamCluster.getLoadBalancedRSocket().fireCloudEventToUpstreamAll(appStatusEventCloudEvent)).then();
