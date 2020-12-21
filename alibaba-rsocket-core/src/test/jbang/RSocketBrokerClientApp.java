@@ -30,7 +30,8 @@ public class RSocketBrokerClientApp {
                 .dataMimeType(RSocketMimeType.Json)
                 .jwtToken(jwtToken)
                 //.service("com.alibaba.service.DemoMockService", DemoMockService.class, (DemoMockService) id -> Mono.just("Hello " + id))
-                .brokers(brokers).connect();
+                .brokers(brokers)
+                .connect();
         UserService userService = userService(brokerClient);
         User user = userService.findById(1).block();
         System.out.println(JsonUtils.toJsonText(user));
