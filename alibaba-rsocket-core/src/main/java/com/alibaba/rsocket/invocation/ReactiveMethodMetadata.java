@@ -20,8 +20,9 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static com.alibaba.rsocket.constants.RSocketBrokerConstants.ReactiveStreamConstants.REACTIVE_STREAMING_CLASSES;
 
 /**
  * reactive method metadata for service interface
@@ -29,9 +30,7 @@ import java.util.List;
  * @author leijuan
  */
 public class ReactiveMethodMetadata extends ReactiveMethodSupport {
-    public static final List<String> STREAM_CLASSES = Arrays.asList("io.reactivex.Flowable", "io.reactivex.Observable",
-            "io.reactivex.rxjava3.core.Observable", "io.reactivex.rxjava3.core.Flowable", "reactor.core.publisher.Flux",
-            "kotlinx.coroutines.flow.Flow");
+
     /**
      * service full name, format as com.alibaba.user.UserService
      */
@@ -126,9 +125,9 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         //init composite metadata for invocation
         initCompositeMetadata(origin);
         //bi direction check: param's type is Flux for 1st param or 2nd param
-        if (paramCount == 1 && STREAM_CLASSES.contains(method.getParameterTypes()[0].getCanonicalName())) {
+        if (paramCount == 1 && REACTIVE_STREAMING_CLASSES.contains(method.getParameterTypes()[0].getCanonicalName())) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
-        } else if (paramCount == 2 && STREAM_CLASSES.contains(method.getParameterTypes()[1].getCanonicalName())) {
+        } else if (paramCount == 2 && REACTIVE_STREAMING_CLASSES.contains(method.getParameterTypes()[1].getCanonicalName())) {
             rsocketFrameType = FrameType.REQUEST_CHANNEL;
         }
         if (rsocketFrameType != null && rsocketFrameType == FrameType.REQUEST_CHANNEL) {
@@ -141,7 +140,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
             // fire_and_forget
             if (returnType.equals(Void.TYPE) || (returnType.equals(Mono.class) && inferredClassForReturn.equals(Void.TYPE))) {
                 this.rsocketFrameType = FrameType.REQUEST_FNF;
-            } else if (returnType.equals(Flux.class) || STREAM_CLASSES.contains(returnType.getCanonicalName())) {  // request/stream
+            } else if (returnType.equals(Flux.class) || REACTIVE_STREAMING_CLASSES.contains(returnType.getCanonicalName())) {  // request/stream
                 this.rsocketFrameType = FrameType.REQUEST_STREAM;
             } else { //request/response
                 this.rsocketFrameType = FrameType.REQUEST_RESPONSE;
