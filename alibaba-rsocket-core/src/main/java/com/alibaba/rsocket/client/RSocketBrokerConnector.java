@@ -4,11 +4,9 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCallerImpl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static com.alibaba.rsocket.constants.RSocketBrokerConstants.BROKER_STARTUP_URL;
 
 /**
  * RSocket Broker Connector
@@ -17,7 +15,7 @@ import static com.alibaba.rsocket.constants.RSocketBrokerConstants.BROKER_STARTU
  */
 public class RSocketBrokerConnector {
     private char[] jwtToken;
-    private List<String> brokers = Collections.singletonList(BROKER_STARTUP_URL);
+    private List<String> brokers;
     private String appName = "MockApp";
     private RSocketMimeType dataMimeType = RSocketMimeType.Hessian;
     LocalReactiveServiceCaller serviceCaller = new LocalReactiveServiceCallerImpl();
