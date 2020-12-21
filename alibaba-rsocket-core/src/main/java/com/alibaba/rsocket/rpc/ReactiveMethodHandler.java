@@ -4,7 +4,7 @@ import com.alibaba.rsocket.reactive.ReactiveMethodSupport;
 
 import java.lang.reflect.Method;
 
-import static com.alibaba.rsocket.constants.RSocketBrokerConstants.ReactiveStreamConstants.REACTIVE_STREAM_CLASSES;
+import static com.alibaba.rsocket.constants.ReactiveStreamConstants.REACTIVE_STREAM_CLASSES;
 
 /**
  * reactive method handler
