@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.alibaba.rsocket.constants.RSocketBrokerConstants.ReactiveStreamConstants.REACTIVE_STREAMING_CLASSES;
+import static com.alibaba.rsocket.constants.ReactiveStreamConstants.REACTIVE_STREAMING_CLASSES;
 
 /**
  * reactive method metadata for service interface
@@ -193,7 +193,7 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         //payload binary routing metadata
         BinaryRoutingMetadata binaryRoutingMetadata = new BinaryRoutingMetadata(this.serviceId, this.handlerId,
                 routingMetadata.assembleRoutingKey().getBytes(StandardCharsets.UTF_8));
-        if(this.sticky) {
+        if (this.sticky) {
             binaryRoutingMetadata.setSticky(true);
         }
         //add param encoding
