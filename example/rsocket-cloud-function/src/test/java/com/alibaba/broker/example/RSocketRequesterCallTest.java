@@ -35,8 +35,10 @@ public class RSocketRequesterCallTest {
         rsocketRequester = RSocketRequester.builder()
                 .dataMimeType(MimeType.valueOf(WellKnownMimeType.APPLICATION_JSON.getString()))
                 .metadataMimeType(MimeType.valueOf(WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.getString()))
-                // {"ip":"192.168.1.64","name":"MockApp","sdk":"SpringBoot/2.3.7","uuid":"f482220a-4d43-438c-b56a-281ca121c700","device":"JavaApp"}
+                // setup app info, json format as {"ip":"192.168.1.64","name":"MockApp","sdk":"SpringBoot/2.3.7","uuid":"f482220a-4d43-438c-b56a-281ca121c700","device":"JavaApp"}
                 .setupMetadata(objectMapper.writeValueAsString(getAppMetadata()), MimeType.valueOf("message/x.rsocket.application+json"))
+                // set up JWT token
+                //.setupMetadata(AuthMetadataCodec.encodeBearerMetadata(ByteBufAllocator.DEFAULT, "jwt-token".toCharArray()), MimeType.valueOf(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
                 .rsocketStrategies(rSocketStrategies)
                 .connectTcp("localhost", 9999).block();
     }
