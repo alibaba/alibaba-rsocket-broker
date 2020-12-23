@@ -16,7 +16,7 @@ Alibaba RSocket Broker变更记录
 
 #### 文档
 
-* 添加了Github Disucussions: 话题讨论更方便 https://github.com/alibaba/alibaba-rsocket-broker/discussions
+* 添加了Github Discussions: 话题讨论更方便 https://github.com/alibaba/alibaba-rsocket-broker/discussions
 
 ## 1.0.0.RC3
 
