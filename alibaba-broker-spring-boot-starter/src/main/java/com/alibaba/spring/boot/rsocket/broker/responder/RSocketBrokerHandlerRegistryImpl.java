@@ -128,6 +128,9 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             if (principal != null && compositeMetadata.contains(RSocketMimeType.Application)) {
                 AppMetadata temp = AppMetadata.from(compositeMetadata.getMetadata(RSocketMimeType.Application));
                 //App registration validation: app id: UUID and unique in server
+                if (temp.getUuid() == null || temp.getUuid().isEmpty()) {
+                    temp.setUuid(UUID.randomUUID().toString());
+                }
                 String appId = temp.getUuid();
                 //validate appId data format
                 if (appId != null && appId.length() >= 32) {
