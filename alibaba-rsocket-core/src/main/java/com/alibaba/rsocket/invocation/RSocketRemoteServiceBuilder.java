@@ -41,6 +41,15 @@ public class RSocketRemoteServiceBuilder<T> {
      */
     private boolean braveTracing = true;
     private Tracing tracing;
+    public static boolean byteBuddyAvailable = true;
+
+    static {
+        try {
+            Class.forName("net.bytebuddy.ByteBuddy");
+        } catch (Exception e) {
+            byteBuddyAvailable = false;
+        }
+    }
 
     public static <T> RSocketRemoteServiceBuilder<T> client(Class<T> serviceInterface) {
         RSocketRemoteServiceBuilder<T> builder = new RSocketRemoteServiceBuilder<T>();
@@ -147,6 +156,9 @@ public class RSocketRemoteServiceBuilder<T> {
 
     @SuppressWarnings("unchecked")
     public T build() {
+        if (!byteBuddyAvailable) {
+            return buildJdkProxy();
+        }
         CONSUMED_SERVICES.add(new ServiceLocator(group, service, version));
         RSocketRequesterRpcProxy proxy = getRequesterProxy();
         Class<T> dynamicType = (Class<T>) new ByteBuddy(ClassFileVersion.JAVA_V8)
@@ -168,10 +180,10 @@ public class RSocketRemoteServiceBuilder<T> {
     private RSocketRequesterRpcProxy getRequesterProxy() {
         if (this.braveTracing && this.tracing != null) {
             return new RSocketRequesterRpcZipkinProxy(tracing, upstreamCluster, group, serviceInterface, service, version,
-                    encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri);
+                    encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, !byteBuddyAvailable);
         } else {
             return new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
-                    encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri);
+                    encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, !byteBuddyAvailable);
         }
     }
 
