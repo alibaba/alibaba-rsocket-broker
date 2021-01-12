@@ -92,10 +92,12 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      */
     protected Map<Method, ReactiveMethodMetadata> methodMetadataMap = new ConcurrentHashMap<>();
 
+    private boolean jdkProxy;
+
     public RSocketRequesterRpcProxy(UpstreamCluster upstream,
                                     String group, Class<?> serviceInterface, @Nullable String service, String version,
                                     RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
-                                    Duration timeout, @Nullable String endpoint, boolean sticky, URI sourceUri) {
+                                    Duration timeout, @Nullable String endpoint, boolean sticky, URI sourceUri, boolean jdkProxy) {
         this.rsocket = upstream.getLoadBalancedRSocket();
         this.serviceInterface = serviceInterface;
         this.service = serviceInterface.getCanonicalName();
@@ -114,15 +116,16 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
             this.acceptEncodingTypes = new RSocketMimeType[]{acceptEncodingType};
         }
         this.timeout = timeout;
+        this.jdkProxy = jdkProxy;
     }
 
     @Override
     @RuntimeType
     public Object invoke(@This Object proxy, @Origin Method method, @AllArguments Object[] allArguments) throws Throwable {
         //interface default method validation for JDK Proxy only, not necessary for ByteBuddy
-        /* if (method.isDefault()) {
+        if (jdkProxy && method.isDefault()) {
             return DefaultMethodHandler.getMethodHandle(method, serviceInterface).bindTo(proxy).invokeWithArguments(allArguments);
-        }*/
+        }
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
             methodMetadataMap.put(method, new ReactiveMethodMetadata(group, service, version,
