@@ -6,10 +6,6 @@ import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.ClassFileVersion;
-import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.matcher.ElementMatchers;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
@@ -154,25 +150,11 @@ public class RSocketRemoteServiceBuilder<T> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public T build() {
-        if (!byteBuddyAvailable) {
+        if (byteBuddyAvailable) {
+            return buildByteBuddyProxy();
+        } else {
             return buildJdkProxy();
-        }
-        CONSUMED_SERVICES.add(new ServiceLocator(group, service, version));
-        RSocketRequesterRpcProxy proxy = getRequesterProxy();
-        Class<T> dynamicType = (Class<T>) new ByteBuddy(ClassFileVersion.JAVA_V8)
-                .subclass(serviceInterface)
-                .name(serviceInterface.getSimpleName() + "RSocketStub")
-                .method(ElementMatchers.not(ElementMatchers.isDefaultMethod()))
-                .intercept(MethodDelegation.to(proxy))
-                .make()
-                .load(serviceInterface.getClassLoader())
-                .getLoaded();
-        try {
-            return dynamicType.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -195,5 +177,11 @@ public class RSocketRemoteServiceBuilder<T> {
                 serviceInterface.getClassLoader(),
                 new Class[]{serviceInterface},
                 proxy);
+    }
+
+    public T buildByteBuddyProxy() {
+        CONSUMED_SERVICES.add(new ServiceLocator(group, service, version));
+        RSocketRequesterRpcProxy proxy = getRequesterProxy();
+        return ByteBuddyUtils.build(this.serviceInterface, proxy);
     }
 }
