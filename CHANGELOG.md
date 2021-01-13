@@ -11,6 +11,7 @@ Alibaba RSocket Broker变更记录
 * Reactive服务草案规范: 设计一些标准的Reactive服务接口，方便和RSocket Broker对接，也方便消费端调用 https://github.com/alibaba-rsocket-broker/reactive-service-specification-proposals
 * Spring RSocketRequester访问兼容：无需依赖RSocket Broker Client，通过RSocketRequester直接访问RSocket服务，详细请参考：https://github.com/alibaba/alibaba-rsocket-broker/blob/master/example/rsocket-cloud-function/src/test/java/com/alibaba/broker/example/RSocketRequesterCallTest.java
 * RSocket Broker命令行工具： 基于rsc进行调整，可以通过命令行方式调用RSocket服务。
+* GraalVM Native Image支持: https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-GraalVM
 
 #### Bug修复
 
