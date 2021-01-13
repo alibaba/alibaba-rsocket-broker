@@ -15,14 +15,16 @@ Alibaba RSocket Broker变更记录
 * Scalecube Gossip升级至2.6.6，该版本也是2.6.x的稳定版
 * ByteBuddy代理调整： 依赖调整为optional，如果应用添加了bytebuddy依赖，则会使用ByteBuddy Proxy
 * RSocket Broker客户端支持Spring Boot 2.4.x和RSocket Java SDK 1.1，而RSocket Broker目前任然为Spring Boot 2.3.7
-* rsocket broker客户端命令行支持： 请参考 https://github.com/alibaba-rsocket-broker/rsc/blob/master/justfile
+* RSocket Broker客户端命令行支持： 请参考 https://github.com/alibaba-rsocket-broker/rsc/blob/master/justfile
 
 #### Bug修复
 
 * 取消控制台应用上下线提示，如果涉及大批应用上下线，会导致非常多的notification展现
+* 修复App和Broker之间ServicesExposedEvent事件错误
 
 #### 文档
 
+* 参考样例：添加Spring Cloud Function和RSocket Broker集成
 * 添加了Github Discussions: 话题讨论更方便 https://github.com/alibaba/alibaba-rsocket-broker/discussions
 
 ## 1.0.0.RC3
