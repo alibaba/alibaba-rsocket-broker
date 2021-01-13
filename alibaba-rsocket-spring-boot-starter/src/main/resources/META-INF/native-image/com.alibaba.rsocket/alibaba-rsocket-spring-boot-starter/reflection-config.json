@@ -1,0 +1,274 @@
+[
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration$$EnhancerBySpringCGLIB$$2bbd7c68",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "fields": [
+      {
+        "name": "CGLIB$FACTORY_DATA"
+      }
+    ],
+    "methods": [
+      {
+        "name": "metricsService",
+        "parameterTypes": [
+          "io.micrometer.prometheus.PrometheusMeterRegistry"
+        ]
+      },
+      {
+        "name": "rSocketServiceAnnotationProcessor",
+        "parameterTypes": [
+          "com.alibaba.spring.boot.rsocket.RSocketProperties"
+        ]
+      },
+      {
+        "name": "reactiveCloudEventProcessor",
+        "parameterTypes": []
+      },
+      {
+        "name": "rsocketBrokerHealth",
+        "parameterTypes": [
+          "com.alibaba.spring.boot.rsocket.RSocketEndpoint",
+          "com.alibaba.rsocket.upstream.UpstreamManager",
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "rsocketEndpoint",
+        "parameterTypes": [
+          "com.alibaba.rsocket.upstream.UpstreamManager",
+          "com.alibaba.rsocket.RSocketRequesterSupport"
+        ]
+      },
+      {
+        "name": "rsocketRequesterSupport",
+        "parameterTypes": [
+          "com.alibaba.spring.boot.rsocket.RSocketProperties",
+          "org.springframework.core.env.Environment",
+          "io.rsocket.SocketAcceptor",
+          "org.springframework.beans.factory.ObjectProvider"
+        ]
+      },
+      {
+        "name": "rsocketResponderHandlerFactory",
+        "parameterTypes": [
+          "com.alibaba.rsocket.rpc.LocalReactiveServiceCaller",
+          "reactor.extra.processor.TopicProcessor"
+        ]
+      },
+      {
+        "name": "rsocketResponderHandlerFactoryWithZipkin",
+        "parameterTypes": [
+          "com.alibaba.rsocket.rpc.LocalReactiveServiceCaller",
+          "reactor.extra.processor.TopicProcessor"
+        ]
+      },
+      {
+        "name": "rsocketServiceHealth",
+        "parameterTypes": []
+      },
+      {
+        "name": "rsocketServicesPublishHook",
+        "parameterTypes": []
+      },
+      {
+        "name": "rsocketUpstreamManager",
+        "parameterTypes": [
+          "com.alibaba.rsocket.RSocketRequesterSupport"
+        ]
+      },
+      {
+        "name": "upstreamClusterChangedEventProcessor",
+        "parameterTypes": [
+          "com.alibaba.rsocket.upstream.UpstreamManager",
+          "reactor.extra.processor.TopicProcessor"
+        ]
+      },
+      {
+        "name": "webServerInitializedEventApplicationListener",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration$$EnhancerBySpringCGLIB$$2bbd7c68$$FastClassBySpringCGLIB$$27d70e54",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.Class"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration$$FastClassBySpringCGLIB$$1b463f05",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.Class"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration$$Lambda$441/0x0000000840331040",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "accept",
+        "parameterTypes": [
+          "io.rsocket.ConnectionSetupPayload",
+          "io.rsocket.RSocket"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration$$Lambda$846/0x0000000840544040",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "onApplicationEvent",
+        "parameterTypes": [
+          "org.springframework.context.ApplicationEvent"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketBrokerHealthIndicator",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "health",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketEndpoint",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketProperties",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.RSocketRequesterSupportImpl",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "exposedServices",
+        "parameterTypes": []
+      },
+      {
+        "name": "originUri",
+        "parameterTypes": []
+      },
+      {
+        "name": "requestInterceptors",
+        "parameterTypes": []
+      },
+      {
+        "name": "responderInterceptors",
+        "parameterTypes": []
+      },
+      {
+        "name": "servicesExposedEvent",
+        "parameterTypes": []
+      },
+      {
+        "name": "setApplicationContext",
+        "parameterTypes": [
+          "org.springframework.context.ApplicationContext"
+        ]
+      },
+      {
+        "name": "setupPayload",
+        "parameterTypes": []
+      },
+      {
+        "name": "socketAcceptor",
+        "parameterTypes": []
+      },
+      {
+        "name": "subscribedServices",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.health.RSocketServiceHealthImpl",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "check",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.observability.MetricsServicePrometheusImpl",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "scrape",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.responder.RSocketServicesPublishHook",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "onApplicationEvent",
+        "parameterTypes": [
+          "org.springframework.context.ApplicationEvent"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.spring.boot.rsocket.responder.invocation.RSocketServiceAnnotationProcessor",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "postProcessAfterInitialization",
+        "parameterTypes": [
+          "java.lang.Object",
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "postProcessBeforeInitialization",
+        "parameterTypes": [
+          "java.lang.Object",
+          "java.lang.String"
+        ]
+      }
+    ]
+  }
+]
