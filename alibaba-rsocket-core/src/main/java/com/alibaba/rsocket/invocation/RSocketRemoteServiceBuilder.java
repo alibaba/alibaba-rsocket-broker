@@ -139,6 +139,16 @@ public class RSocketRemoteServiceBuilder<T> {
         return this;
     }
 
+    /**
+     * GraalVM nativeImage support: set encodeType & acceptEncodingType to Json
+     * @return  this
+     */
+    public RSocketRemoteServiceBuilder<T> nativeImage() {
+        this.encodingType = RSocketMimeType.Json;
+        this.acceptEncodingType = RSocketMimeType.Json;
+        return this;
+    }
+
     public RSocketRemoteServiceBuilder<T> upstreamManager(UpstreamManager upstreamManager) {
         String serviceId = ServiceLocator.serviceId(group, service, version);
         UpstreamCluster upstream = upstreamManager.findClusterByServiceId(serviceId);
