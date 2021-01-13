@@ -657,6 +657,28 @@
     ]
   },
   {
+    "name": "com.caucho.burlap.io.BurlapRemoteObject"
+  },
+  {
+    "name": "com.caucho.hessian.io.HessianRemote",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "fields": [
+      {
+        "name": "type",
+        "allowUnsafeAccess": true
+      },
+      {
+        "name": "url",
+        "allowUnsafeAccess": true
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.HessianRemoteObject"
+  },
+  {
     "name": "com.alibaba.rsocket.encoding.hessian.io.java8.DurationSerializer",
     "methods": [
       {
@@ -792,9 +814,6 @@
     ]
   },
   {
-    "name": "com.caucho.burlap.io.BurlapRemoteObject"
-  },
-  {
     "name": "com.caucho.hessian.io.BigDecimalDeserializer",
     "methods": [
       {
@@ -811,25 +830,6 @@
         "parameterTypes": []
       }
     ]
-  },
-  {
-    "name": "com.caucho.hessian.io.HessianRemote",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors": true,
-    "fields": [
-      {
-        "name": "type",
-        "allowUnsafeAccess": true
-      },
-      {
-        "name": "url",
-        "allowUnsafeAccess": true
-      }
-    ]
-  },
-  {
-    "name": "com.caucho.hessian.io.HessianRemoteObject"
   },
   {
     "name": "com.caucho.hessian.io.LocaleSerializer",
