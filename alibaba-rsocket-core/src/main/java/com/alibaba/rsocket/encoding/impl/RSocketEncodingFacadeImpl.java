@@ -41,6 +41,7 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
         String vmName = System.getProperty("java.vm.name");
         if ("Substrate VM".equals(vmName)) {  //GraalVM Native image with JSON encoding only
             addEncodingHandler(new ObjectEncodingHandlerJsonImpl());
+            addEncodingHandler(new ObjectEncodingHandlerHessianImpl());
         } else {
             ServiceLoader<ObjectEncodingHandler> serviceLoader = ServiceLoader.load(ObjectEncodingHandler.class);
             for (ObjectEncodingHandler objectEncodingHandler : serviceLoader) {
