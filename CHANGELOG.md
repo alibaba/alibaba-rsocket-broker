@@ -12,9 +12,14 @@ Alibaba RSocket Broker变更记录
 * Spring RSocketRequester访问兼容：无需依赖RSocket Broker Client，通过RSocketRequester直接访问RSocket服务，详细请参考：https://github.com/alibaba/alibaba-rsocket-broker/blob/master/example/rsocket-cloud-function/src/test/java/com/alibaba/broker/example/RSocketRequesterCallTest.java
 * RSocket Broker命令行工具： 基于rsc进行调整，可以通过命令行方式调用RSocket服务。
 * GraalVM Native Image支持: https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-GraalVM
+* Scalecube Gossip升级至2.6.6，该版本也是2.6.x的稳定版
+* ByteBuddy代理调整： 依赖调整为optional，如果应用添加了bytebuddy依赖，则会使用ByteBuddy Proxy
+* RSocket Broker客户端支持Spring Boot 2.4.x和RSocket Java SDK 1.1，而RSocket Broker目前任然为Spring Boot 2.3.7
+* rsocket broker客户端命令行支持： 请参考 https://github.com/alibaba-rsocket-broker/rsc/blob/master/justfile
 
 #### Bug修复
 
+* 取消控制台应用上下线提示，如果涉及大批应用上下线，会导致非常多的notification展现
 
 #### 文档
 
