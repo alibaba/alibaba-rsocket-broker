@@ -655,5 +655,216 @@
         ]
       }
     ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.DurationSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.InstantSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.LocalDateSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.LocalDateTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.LocalTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.MonthDaySerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.OffsetDateTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.OffsetTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.OptionalSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.PeriodSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.YearMonthSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.YearSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.ZoneIdSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.ZoneOffsetSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.ZonedDateTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.burlap.io.BurlapRemoteObject"
+  },
+  {
+    "name": "com.caucho.hessian.io.BigDecimalDeserializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.FileDeserializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.HessianRemote",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "fields": [
+      {
+        "name": "type",
+        "allowUnsafeAccess": true
+      },
+      {
+        "name": "url",
+        "allowUnsafeAccess": true
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.HessianRemoteObject"
+  },
+  {
+    "name": "com.caucho.hessian.io.LocaleSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.ObjectNameDeserializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.RemoteSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.StringValueSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
   }
 ]
