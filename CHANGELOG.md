@@ -19,7 +19,7 @@ Alibaba RSocket Broker变更记录
 
 #### Bug修复
 
-* 取消控制台应用上下线提示，如果涉及大批应用上下线，会导致非常多的notification展现
+* 调整控制台应用上下线提示最大条目数，如果涉及大批应用上下线，会导致非常多的notification展现
 * 修复App和Broker之间ServicesExposedEvent事件错误
 
 #### 文档
