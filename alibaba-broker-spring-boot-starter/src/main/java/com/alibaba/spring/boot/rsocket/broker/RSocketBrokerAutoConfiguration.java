@@ -200,7 +200,7 @@ public class RSocketBrokerAutoConfiguration {
 
     @Bean
     public TopicProcessor<String> notificationProcessor() {
-        return TopicProcessor.<String>builder().name("notifications-processor").build();
+        return TopicProcessor.<String>builder().name("notifications-processor").bufferSize(8).build();
     }
 
     @Bean(initMethod = "init")
