@@ -16,6 +16,7 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.page.Viewport;
@@ -200,11 +201,11 @@ public class MainLayout extends AppLayout implements DisposableBean {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         closeSubscribeQuietly();
-      /*  this.notificationSubscribe = this.notificationProcessor.subscribe(text -> {
+        this.notificationSubscribe = this.notificationProcessor.subscribe(text -> {
             attachEvent.getUI().access(() -> {
                 Notification.show(text);
             });
-        });*/
+        });
     }
 
     @Override
