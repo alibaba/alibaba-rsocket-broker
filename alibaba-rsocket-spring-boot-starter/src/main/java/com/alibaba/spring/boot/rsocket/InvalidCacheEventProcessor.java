@@ -9,6 +9,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import reactor.extra.processor.TopicProcessor;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ public class InvalidCacheEventProcessor {
     @Qualifier("reactiveCloudEventProcessor")
     private TopicProcessor<CloudEventImpl> eventProcessor;
 
+    @PostConstruct
     public void init() {
         eventProcessor.subscribe(cloudEvent -> {
             String type = cloudEvent.getAttributes().getType();
