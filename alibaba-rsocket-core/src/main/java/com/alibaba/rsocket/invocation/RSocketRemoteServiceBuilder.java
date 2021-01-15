@@ -140,7 +140,7 @@ public class RSocketRemoteServiceBuilder<T> {
     }
 
     /**
-     * GraalVM nativeImage support: set encodeType & acceptEncodingType to Json
+     * GraalVM nativeImage support: set encodeType and acceptEncodingType to Json
      * @return  this
      */
     public RSocketRemoteServiceBuilder<T> nativeImage() {
