@@ -99,3 +99,4 @@ alibaba-broker-server/webpack.generated.js
 
 .DS_Store
 */.DS_Store
+.envrc
