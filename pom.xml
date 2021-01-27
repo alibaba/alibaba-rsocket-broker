@@ -39,7 +39,7 @@
         <rxjava2.version>2.2.20</rxjava2.version>
         <rxjava3.version>3.0.9</rxjava3.version>
         <caffeine.version>2.8.8</caffeine.version>
-        <roaring-bitmap.version>0.9.7</roaring-bitmap.version>
+        <roaring-bitmap.version>0.9.8</roaring-bitmap.version>
         <protobuf-java.version>3.14.0</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
         <jackson.version>2.12.1</jackson.version>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.18.1</version>
+            <version>3.19.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
