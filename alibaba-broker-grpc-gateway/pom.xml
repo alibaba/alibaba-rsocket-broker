@@ -12,7 +12,7 @@
         <protobuf-java.version>3.14.0</protobuf-java.version>
         <grpc.version>1.35.0</grpc.version>
         <reactive-grpc.version>1.0.1</reactive-grpc.version>
-        <grpc-spring-boot-starter.version>4.4.1</grpc-spring-boot-starter.version>
+        <grpc-spring-boot-starter.version>4.4.3</grpc-spring-boot-starter.version>
     </properties>
 
     <artifactId>alibaba-broker-grpc-gateway</artifactId>
