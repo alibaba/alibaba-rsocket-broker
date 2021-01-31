@@ -265,7 +265,6 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         return destination.flatMap(rsocket -> {
             recordServiceInvoke(principal.getName(), gsvRoutingMetadata.gsv());
             metrics(gsvRoutingMetadata, "0x05");
-            //todo timeout process
             if (encodingMetadataIncluded) {
                 return rsocket.requestResponse(payload);
             } else {
@@ -621,6 +620,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     @Nullable
     protected RSocketBrokerResponderHandler findStickyHandler(boolean sticky, Integer serviceId) {
+        // todo 算法更新，如一致性hash算法，或者取余操作
         if (sticky && stickyServices.containsKey(serviceId)) {
             return handlerRegistry.findById(stickyServices.get(serviceId));
         }
