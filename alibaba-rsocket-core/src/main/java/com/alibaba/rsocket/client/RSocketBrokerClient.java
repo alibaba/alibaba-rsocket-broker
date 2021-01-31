@@ -2,6 +2,7 @@ package com.alibaba.rsocket.client;
 
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.events.CloudEventsProcessor;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.events.ServicesHiddenEvent;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
@@ -10,7 +11,7 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
-import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventProcessor;
+import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventConsumer;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +39,7 @@ public class RSocketBrokerClient {
     private LocalReactiveServiceCaller serviceCaller;
     private TopicProcessor<CloudEventImpl> eventProcessor;
     private SimpleRSocketRequesterSupport rsocketRequesterSupport;
+    private CloudEventsProcessor cloudEventsProcessor;
 
     public RSocketBrokerClient(String appName, List<String> brokers,
                                RSocketMimeType dataMimeType, char[] jwtToken,
@@ -51,6 +54,7 @@ public class RSocketBrokerClient {
                 RSocketServiceHealth.class, (RSocketServiceHealth) serviceName -> Mono.just(1));
         this.rsocketRequesterSupport = new SimpleRSocketRequesterSupport(appName, jwtToken, this.brokers,
                 this.serviceCaller, this.eventProcessor);
+        this.cloudEventsProcessor = new CloudEventsProcessor(eventProcessor, new ArrayList<>());
         initUpstreamManager();
     }
 
@@ -59,7 +63,7 @@ public class RSocketBrokerClient {
         upstreamManager.add(new UpstreamCluster(null, "*", null, this.brokers));
         try {
             upstreamManager.init();
-            new UpstreamClusterChangedEventProcessor(upstreamManager, eventProcessor).init();
+            this.cloudEventsProcessor.addConsumer(new UpstreamClusterChangedEventConsumer(upstreamManager));
         } catch (Exception e) {
             e.printStackTrace();
         }
