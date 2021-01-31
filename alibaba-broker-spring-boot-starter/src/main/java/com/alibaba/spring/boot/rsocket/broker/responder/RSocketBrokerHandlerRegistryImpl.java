@@ -244,7 +244,11 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
 
     @Override
     public Mono<Void> broadcast(@NotNull String appName, final CloudEventImpl cloudEvent) {
-        if (appHandlers.containsKey(appName)) {
+        if (appName.equals("*")) {
+            return Flux.fromIterable(connectionHandlers.values())
+                    .flatMap(handler -> handler.fireCloudEventToPeer(cloudEvent))
+                    .then();
+        } else if (appHandlers.containsKey(appName)) {
             return Flux.fromIterable(appHandlers.get(appName))
                     .flatMap(handler -> handler.fireCloudEventToPeer(cloudEvent))
                     .then();
