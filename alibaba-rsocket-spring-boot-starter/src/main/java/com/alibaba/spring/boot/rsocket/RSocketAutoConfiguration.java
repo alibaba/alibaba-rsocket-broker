@@ -4,6 +4,8 @@ import brave.Tracing;
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.events.CloudEventsConsumer;
+import com.alibaba.rsocket.events.CloudEventsProcessor;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
 import com.alibaba.rsocket.observability.MetricsService;
@@ -11,7 +13,7 @@ import com.alibaba.rsocket.route.RoutingEndpoint;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.RSocketResponderHandler;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
-import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventProcessor;
+import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventConsumer;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
 import com.alibaba.spring.boot.rsocket.health.RSocketServiceHealthImpl;
@@ -41,6 +43,8 @@ import org.springframework.core.env.Environment;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
+import java.util.stream.Collectors;
+
 
 /**
  * RSocket Auto configuration: listen, upstream manager, handler etc
@@ -60,21 +64,26 @@ public class RSocketAutoConfiguration {
     @Autowired
     private ApplicationContext applicationContext;
 
+    // section cloudevents processor
     @Bean
     public TopicProcessor<CloudEventImpl> reactiveCloudEventProcessor() {
         return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
     }
 
     @Bean(initMethod = "init")
-    public UpstreamClusterChangedEventProcessor upstreamClusterChangedEventProcessor(
-            @Autowired UpstreamManager upstreamManager,
-            @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
-        return new UpstreamClusterChangedEventProcessor(upstreamManager, eventProcessor);
+    public CloudEventsProcessor cloudEventsProcessor(@Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
+                                                     ObjectProvider<CloudEventsConsumer> consumers) {
+        return new CloudEventsProcessor(eventProcessor, consumers.stream().collect(Collectors.toList()));
     }
 
-/*    @Bean(initMethod = "init")
-    public InvalidCacheEventProcessor invalidCacheEventProcessor() {
-        return new InvalidCacheEventProcessor();
+    @Bean
+    public UpstreamClusterChangedEventConsumer upstreamClusterChangedEventConsumer(@Autowired UpstreamManager upstreamManager) {
+        return new UpstreamClusterChangedEventConsumer(upstreamManager);
+    }
+
+  /*  @Bean
+    public InvalidCacheEventConsumer invalidCacheEventConsumer() {
+        return new InvalidCacheEventConsumer();
     }*/
 
     /**
