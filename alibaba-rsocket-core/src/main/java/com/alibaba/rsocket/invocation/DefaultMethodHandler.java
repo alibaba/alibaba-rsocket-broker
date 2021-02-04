@@ -23,7 +23,7 @@ public class DefaultMethodHandler {
     /**
      * default method handles
      */
-    private static Map<Method, MethodHandle> methodHandles = new HashMap<>();
+    private static final Map<Method, MethodHandle> methodHandles = new HashMap<>();
 
     public static MethodHandle getMethodHandle(Method method, Class<?> serviceInterface) throws Exception {
         MethodHandle methodHandle = methodHandles.get(method);
