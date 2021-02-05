@@ -1,6 +1,6 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
-import com.alibaba.account.Account;
+import com.alibaba.user.Account;
 import com.alibaba.user.AccountService;
 import com.alibaba.rsocket.RSocketService;
 import com.github.javafaker.Faker;

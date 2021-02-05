@@ -3,7 +3,7 @@ syntax = "proto3";
 option java_multiple_files = true;
 option java_outer_classname = "AccountProto";
 
-package com.alibaba.account;
+package com.alibaba.user;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/wrappers.proto";

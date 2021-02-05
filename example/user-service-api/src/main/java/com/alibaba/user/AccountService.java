@@ -1,6 +1,6 @@
 package com.alibaba.user;
 
-import com.alibaba.account.Account;
+import com.alibaba.user.Account;
 import com.google.protobuf.Int32Value;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

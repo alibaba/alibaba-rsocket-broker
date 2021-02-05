@@ -1,6 +1,6 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
-import com.alibaba.account.Account;
+import com.alibaba.user.Account;
 import com.alibaba.user.AccountService;
 import com.google.protobuf.Int32Value;
 import org.springframework.beans.factory.annotation.Autowired;

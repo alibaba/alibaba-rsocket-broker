@@ -1,6 +1,6 @@
 package com.alibaba.rsocket.gateway.grpc;
 
-import com.alibaba.account.Account;
+import com.alibaba.user.Account;
 import com.google.protobuf.Int32Value;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ public class ReactiveGrpcMethodMetadataTest {
 
     @Test
     public void testCreate() {
-        ReactiveGrpcMethodMetadata methodMetadata = new ReactiveGrpcMethodMetadata(getMethod("findById"), "", "com.alibaba.account.AccountService", "");
+        ReactiveGrpcMethodMetadata methodMetadata = new ReactiveGrpcMethodMetadata(getMethod("findById"), "", "com.alibaba.user.AccountService", "");
         Assertions.assertEquals(ReactiveGrpcMethodMetadata.UNARY, methodMetadata.getRpcType());
         Assertions.assertEquals(methodMetadata.getInferredClassForReturn(), Account.class);
     }
