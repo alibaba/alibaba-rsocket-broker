@@ -20,7 +20,7 @@ public @interface SpringRSocketService {
      *
      * @return service interface
      */
-    Class<?> serviceInterface();
+    Class<?> serviceInterface() default Void.class;
 
     /**
      * service group
