@@ -81,6 +81,11 @@ public class RSocketAutoConfiguration {
         return new UpstreamClusterChangedEventConsumer(upstreamManager);
     }
 
+    @Bean
+    public CloudEventToListenerConsumer cloudEventToListenerConsumer() {
+        return new CloudEventToListenerConsumer();
+    }
+
   /*  @Bean
     public InvalidCacheEventConsumer invalidCacheEventConsumer() {
         return new InvalidCacheEventConsumer();
