@@ -14,4 +14,39 @@ import java.lang.annotation.*;
 public @interface SpringRSocketService {
     @AliasFor(annotation = MessageMapping.class)
     String[] value() default {};
+
+    /**
+     * service interface
+     *
+     * @return service interface
+     */
+    Class<?> serviceInterface();
+
+    /**
+     * service group
+     *
+     * @return group
+     */
+    String group() default "";
+
+    /**
+     * service version
+     *
+     * @return version
+     */
+    String version() default "";
+
+    /**
+     * encoding strategies
+     *
+     * @return encoding names
+     */
+    String[] encoding() default {"json", "cbor"};
+
+    /**
+     * service tags
+     *
+     * @return labels
+     */
+    String[] tags() default {};
 }
