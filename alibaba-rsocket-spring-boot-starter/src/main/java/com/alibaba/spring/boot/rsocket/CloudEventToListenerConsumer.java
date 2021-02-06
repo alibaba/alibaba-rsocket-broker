@@ -23,7 +23,7 @@ public class CloudEventToListenerConsumer implements CloudEventsConsumer {
     @Override
     public Mono<Void> accept(CloudEventImpl<?> cloudEvent) {
         return Mono.fromRunnable(() -> {
-            eventPublisher.publishEvent(cloudEvent.getCloudEvent());
+            eventPublisher.publishEvent(cloudEvent);
         });
     }
 }
