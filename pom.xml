@@ -46,7 +46,7 @@
         <protostuff.version>1.7.2</protostuff.version>
         <avro.version>1.10.1</avro.version>
         <eclipse-collections.version>10.4.0</eclipse-collections.version>
-        <spring-cloud-release.version>Hoxton.SR9</spring-cloud-release.version>
+        <spring-cloud-release.version>Hoxton.SR10</spring-cloud-release.version>
         <cloudevents.version>2.0.0.RC2</cloudevents.version>
         <zipkin-brave.version>5.13.2</zipkin-brave.version>
         <junit5.version>5.7.1</junit5.version>
