@@ -23,7 +23,7 @@
         <reactor-bom.version>Dysprosium-SR17</reactor-bom.version>
         <netty.version>4.1.59.Final</netty.version>
         <rsocket.version>1.0.4</rsocket.version>
-        <alibaba-rsocket.version>1.0.0-SNAPSHOT</alibaba-rsocket.version>
+        <alibaba-rsocket.version>1.0.0</alibaba-rsocket.version>
         <junit5.version>5.7.1</junit5.version>
     </properties>
 
