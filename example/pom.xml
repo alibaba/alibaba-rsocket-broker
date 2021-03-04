@@ -22,7 +22,7 @@
         <spring-boot.version>2.3.9.RELEASE</spring-boot.version>
         <reactor-bom.version>Dysprosium-SR17</reactor-bom.version>
         <netty.version>4.1.59.Final</netty.version>
-        <rsocket.version>1.0.3</rsocket.version>
+        <rsocket.version>1.0.4</rsocket.version>
         <alibaba-rsocket.version>1.0.0-SNAPSHOT</alibaba-rsocket.version>
         <junit5.version>5.7.1</junit5.version>
     </properties>
@@ -94,6 +94,7 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
@@ -103,6 +104,7 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
