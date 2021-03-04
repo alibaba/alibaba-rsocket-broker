@@ -5,6 +5,7 @@ import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import io.netty.buffer.ByteBuf;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -55,7 +56,7 @@ public class UserController {
         return userService.findAvatar(1).map(byteBuf -> byteBuf.toString(StandardCharsets.UTF_8));
     }
 
-    @GetMapping("/user/bytebuf")
+    @GetMapping(value = "/user/bytebuf", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<String> bytebuf2() {
         ByteBuf content = ByteBufBuilder.builder().value(1).value("Jackie").build();
         return userService.findUserByIdAndNick(content).map(byteBuf -> byteBuf.toString(StandardCharsets.UTF_8));
