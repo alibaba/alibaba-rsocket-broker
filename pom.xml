@@ -29,7 +29,7 @@
         <java.version>1.8</java.version>
         <spring-boot.version>2.3.9.RELEASE</spring-boot.version>
         <bytebuddy.version>1.10.21</bytebuddy.version>
-        <micrometer.version>1.5.10</micrometer.version>
+        <micrometer.version>1.5.11</micrometer.version>
         <reactor-bom.version>Dysprosium-SR17</reactor-bom.version>
         <netty.version>4.1.59.Final</netty.version>
         <rsocket.version>1.0.4</rsocket.version>
