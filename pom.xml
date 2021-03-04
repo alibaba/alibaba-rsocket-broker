@@ -39,7 +39,7 @@
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.0.10</rxjava3.version>
         <caffeine.version>2.9.0</caffeine.version>
-        <roaring-bitmap.version>0.9.8</roaring-bitmap.version>
+        <roaring-bitmap.version>0.9.3</roaring-bitmap.version>
         <protobuf-java.version>3.14.0</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
         <jackson.version>2.12.2</jackson.version>
@@ -281,16 +281,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <repositories>
-        <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <profiles>
         <profile>
