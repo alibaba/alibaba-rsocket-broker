@@ -300,6 +300,22 @@
     ]
   },
   {
+    "name": "com.alibaba.rsocket.events.CloudEventsConsumer",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.CloudEventsProcessor",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "init",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
     "name": "com.alibaba.rsocket.upstream.UpstreamManager",
     "allDeclaredMethods": true,
     "allPublicMethods": true
