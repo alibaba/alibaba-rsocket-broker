@@ -13,7 +13,7 @@
     <description>Alibaba RSocket Broker with Web Console</description>
 
     <properties>
-        <vaadin.version>14.4.7</vaadin.version>
+        <vaadin.version>14.4.8</vaadin.version>
         <flexmark-all.version>0.62.2</flexmark-all.version>
         <undertow.version>2.2.4.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
