@@ -40,7 +40,7 @@
         <rxjava3.version>3.0.10</rxjava3.version>
         <caffeine.version>2.9.0</caffeine.version>
         <roaring-bitmap.version>0.9.3</roaring-bitmap.version>
-        <protobuf-java.version>3.14.0</protobuf-java.version>
+        <protobuf-java.version>3.15.4</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
         <jackson.version>2.12.2</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
@@ -48,7 +48,7 @@
         <eclipse-collections.version>10.4.0</eclipse-collections.version>
         <spring-cloud-release.version>Hoxton.SR10</spring-cloud-release.version>
         <cloudevents.version>2.0.0</cloudevents.version>
-        <zipkin-brave.version>5.13.2</zipkin-brave.version>
+        <zipkin-brave.version>5.13.3</zipkin-brave.version>
         <junit5.version>5.7.1</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
