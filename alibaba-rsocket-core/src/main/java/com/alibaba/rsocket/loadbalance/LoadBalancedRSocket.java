@@ -40,7 +40,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /**
- * Load balanced RSocket:  how to remove failure nodes?
+ * Load balanced RSocket
  *
  * @author leijuan
  */

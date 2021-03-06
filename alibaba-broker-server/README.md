@@ -19,6 +19,8 @@ services:
 
 RSocket Broker的控制台地址为 http://localhost:9998/
 
+如果你想以`java -jar` 方式启动，请使用JDK 1.8.x版本，目前RSocket Broke还不兼容JDK 11，主要是目前Vaadin 14和JDK 11的兼容问题，我们会考虑尽快升级。
+
 ### UI
 RSocket Broker控制台默认采用Vaadin 14编写，主要是基于以下考虑：
 

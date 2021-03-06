@@ -1,6 +1,6 @@
 package com.alibaba.rsocket.gateway.grpc;
 
-import com.alibaba.account.ReactorAccountServiceGrpc;
+import com.alibaba.user.ReactorAccountServiceGrpc;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.spring.boot.rsocket.RSocketProperties;
 import io.rsocket.RSocket;

@@ -69,7 +69,7 @@ public class AppsView extends VerticalLayout {
             AppInstance appInstance = clickEvent.getItem();
             detailPanel.setAppName(appInstance.getName());
             detailPanel.setMetadata(appInstance.getAppMetadata().getMetadata());
-            detailPanel.setSecurityInfo(appInstance.getOrgs(), appInstance.getServiceAccounts(), appInstance.getRoles(),appInstance.getRemoteIp());
+            detailPanel.setSecurityInfo(appInstance.getOrgs(), appInstance.getServiceAccounts(), appInstance.getRoles(), appInstance.getRemoteIp());
             detailPanel.setDescription(appInstance.getAppMetadata().getDescription());
             detailPanel.setPublishedServices(appInstance.getServices());
             detailPanel.setPorts(appInstance.getWebPort(), appInstance.getManagementPort(), appInstance.getRsocketPorts(), appInstance.getIp());

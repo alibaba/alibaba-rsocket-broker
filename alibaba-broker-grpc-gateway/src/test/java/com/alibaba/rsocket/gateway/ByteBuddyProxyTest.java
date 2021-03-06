@@ -1,7 +1,7 @@
 package com.alibaba.rsocket.gateway;
 
-import com.alibaba.account.Account;
-import com.alibaba.account.ReactorAccountServiceGrpc;
+import com.alibaba.user.Account;
+import com.alibaba.user.ReactorAccountServiceGrpc;
 import com.google.protobuf.Int32Value;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.implementation.MethodDelegation;

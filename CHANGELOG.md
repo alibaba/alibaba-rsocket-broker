@@ -1,23 +1,27 @@
 Alibaba RSocket Broker变更记录
 ==========================
 
-## 1.0.0.RC4
+## 1.0.0
 
 #### 特性调整
 
-* CloudEvents Java SDK 2.0升级，CloudEvents添加了Spring对接，这样更方便。
-* 添加 RSocketBrokerClient，方便普通Java应用快速接入RSocket Broker
-* AlibabaRSocketBrokerServer添加WebSocket监听，实现TCP Socket和WebSocket双端口监听，TCP对内，WebSocket对外。
-* Reactive服务草案规范: 设计一些标准的Reactive服务接口，方便和RSocket Broker对接，也方便消费端调用 https://github.com/alibaba-rsocket-broker/reactive-service-specification-proposals
-* Spring RSocketRequester访问兼容：无需依赖RSocket Broker Client，通过RSocketRequester直接访问RSocket服务，详细请参考：https://github.com/alibaba/alibaba-rsocket-broker/blob/master/example/rsocket-cloud-function/src/test/java/com/alibaba/broker/example/RSocketRequesterCallTest.java
-* RSocket Broker命令行工具： 基于rsc进行调整，可以通过命令行方式调用RSocket服务。
+* CloudEvents Java SDK 2.0.0
+* 事件消费机制调整： 增加了CloudEventsConsumer接口，同时支持Spring @EventListener
+* RSocket Java 1.0.4
+* 新增@SpringRSocketService，增加对Spring RSocket的服务兼容
+* GraalVM Native Image的兼容: https://github.com/alibaba-rsocket-broker/ali-rsocket-graal-demo
 
 #### Bug修复
 
 
 #### 文档
 
-* 添加了Github Discussions: 话题讨论更方便 https://github.com/alibaba/alibaba-rsocket-broker/discussions
+* RSocket load balance with Spring Cloud Registry: https://github.com/alibaba-rsocket-broker/rsocket-load-balance
+
+
+## 1.0.0.RC4
+
+https://github.com/alibaba/alibaba-rsocket-broker/releases/tag/1.0.0.RC4
 
 ## 1.0.0.RC3
 

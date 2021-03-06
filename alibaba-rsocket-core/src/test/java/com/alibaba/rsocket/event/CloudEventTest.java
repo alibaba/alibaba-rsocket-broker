@@ -55,7 +55,7 @@ public class CloudEventTest {
     public void testCloudEvent() throws Exception {
         UpstreamClusterChangedEvent upstreamClusterChangedEvent = new UpstreamClusterChangedEvent();
         upstreamClusterChangedEvent.setGroup("demo");
-        upstreamClusterChangedEvent.setInterfaceName("com.alibaba.account.AccountService");
+        upstreamClusterChangedEvent.setInterfaceName("com.alibaba.user.AccountService");
         upstreamClusterChangedEvent.setVersion("1.0.0");
         upstreamClusterChangedEvent.setUris(Arrays.asList("demo1", "demo2"));
         // passing in the given attributes

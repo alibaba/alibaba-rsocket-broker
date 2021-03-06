@@ -9,7 +9,7 @@
     <groupId>com.alibaba.rsocket</groupId>
     <artifactId>alibaba-rsocket-broker-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <modules>
         <module>alibaba-rsocket-core</module>
@@ -20,43 +20,43 @@
         <module>alibaba-broker-config-client-spring-boot-starter</module>
         <module>alibaba-broker-http-gateway</module>
         <module>alibaba-broker-grpc-gateway</module>
-        <module>example</module>
         <module>alibaba-rsocket-service-common</module>
+        <module>example</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
-        <bytebuddy.version>1.10.19</bytebuddy.version>
-        <micrometer.version>1.5.9</micrometer.version>
-        <reactor-bom.version>Dysprosium-SR15</reactor-bom.version>
-        <netty.version>4.1.56.Final</netty.version>
-        <rsocket.version>1.0.3</rsocket.version>
-        <kotlin.version>1.4.21</kotlin.version>
-        <kotlinx-serialization.version>1.0.1</kotlinx-serialization.version>
-        <kotlinx-coroutines.version>1.4.2</kotlinx-coroutines.version>
-        <rxjava2.version>2.2.20</rxjava2.version>
-        <rxjava3.version>3.0.9</rxjava3.version>
-        <caffeine.version>2.8.8</caffeine.version>
-        <roaring-bitmap.version>0.9.5</roaring-bitmap.version>
-        <protobuf-java.version>3.12.2</protobuf-java.version>
+        <spring-boot.version>2.3.9.RELEASE</spring-boot.version>
+        <bytebuddy.version>1.10.21</bytebuddy.version>
+        <micrometer.version>1.5.11</micrometer.version>
+        <reactor-bom.version>Dysprosium-SR17</reactor-bom.version>
+        <netty.version>4.1.59.Final</netty.version>
+        <rsocket.version>1.0.4</rsocket.version>
+        <kotlin.version>1.4.30</kotlin.version>
+        <kotlinx-serialization.version>1.1.0</kotlinx-serialization.version>
+        <kotlinx-coroutines.version>1.4.3</kotlinx-coroutines.version>
+        <rxjava2.version>2.2.21</rxjava2.version>
+        <rxjava3.version>3.0.10</rxjava3.version>
+        <caffeine.version>2.9.0</caffeine.version>
+        <roaring-bitmap.version>0.9.3</roaring-bitmap.version>
+        <protobuf-java.version>3.15.4</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
-        <jackson.version>2.12.0</jackson.version>
+        <jackson.version>2.12.2</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
         <avro.version>1.10.1</avro.version>
         <eclipse-collections.version>10.4.0</eclipse-collections.version>
-        <spring-cloud-release.version>Hoxton.SR9</spring-cloud-release.version>
-        <cloudevents.version>2.0.0.RC2</cloudevents.version>
-        <zipkin-brave.version>5.13.2</zipkin-brave.version>
-        <junit5.version>5.7.0</junit5.version>
+        <spring-cloud-release.version>Hoxton.SR10</spring-cloud-release.version>
+        <cloudevents.version>2.0.0</cloudevents.version>
+        <zipkin-brave.version>5.13.3</zipkin-brave.version>
+        <junit5.version>5.7.1</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
 
     <name>Alibaba RSocket Broker Parent</name>
     <description>Alibaba RSocket Broker Maven parent module</description>
     <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
-    <inceptionYear>2020</inceptionYear>
+    <inceptionYear>2021</inceptionYear>
     <licenses>
         <license>
             <name>Apache License</name>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.18.1</version>
+            <version>3.19.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -128,7 +128,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-tcnative-boringssl-static</artifactId>
-                <version>2.0.35.Final</version>
+                <version>2.0.36.Final</version>
             </dependency>
             <dependency>
                 <groupId>io.projectreactor</groupId>
@@ -241,7 +241,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.2.0</version>
+                        <version>4.2.2</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -267,7 +267,7 @@
                 <plugin>
                     <groupId>com.google.cloud.tools</groupId>
                     <artifactId>jib-maven-plugin</artifactId>
-                    <version>2.7.0</version>
+                    <version>2.8.0</version>
                     <configuration>
                         <allowInsecureRegistries>true</allowInsecureRegistries>
                         <from>
@@ -281,16 +281,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <repositories>
-        <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <profiles>
         <profile>

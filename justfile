@@ -47,6 +47,9 @@ staging:
 deploy:
    mvn -DskipLocalStaging=true -P release -DskipTests clean package deploy
 
+rsc-test:
+   rsc --setupMetadata '{"ip":"127.0.0.1","name":"MockApp","sdk":"SpringBoot/2.3.7","device":"JavaApp"}' --setupMetadataMimeType "APP_INFO" tcp://localhost:9999 --request --route com.alibaba.user.UserService.findById -d '[1]' --debug
+
 clean:
    mvn clean
    rm -rf alibaba-broker-server/node_modules

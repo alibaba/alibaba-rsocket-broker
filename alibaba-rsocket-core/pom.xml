@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.alibaba.rsocket</groupId>
         <artifactId>alibaba-rsocket-broker-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>alibaba-rsocket-core</artifactId>
     <name>Alibaba RSocket Core</name>
@@ -166,13 +166,9 @@
             <version>${caffeine.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.roaringbitmap</groupId>
-            <artifactId>RoaringBitmap</artifactId>
-            <version>${roaring-bitmap.version}</version>
-        </dependency>
-        <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.zipkin.brave</groupId>

@@ -23,6 +23,7 @@ public class RSocketBrokerHealthIndicator implements ReactiveHealthIndicator {
         this.rsocketEndpoint = rsocketEndpoint;
         this.rsocketServiceHealth = RSocketRemoteServiceBuilder
                 .client(RSocketServiceHealth.class)
+                .nativeImage()
                 .upstreamManager(upstreamManager)
                 .build();
         this.brokers = brokers;

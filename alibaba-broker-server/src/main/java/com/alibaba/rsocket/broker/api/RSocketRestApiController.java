@@ -6,7 +6,6 @@ import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
-import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceMeshInspector;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
@@ -20,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
 
@@ -59,27 +60,26 @@ public class RSocketRestApiController {
             if (!endpoint.isEmpty() && endpoint.startsWith("id:")) {
                 targetHandlerId = Integer.valueOf(endpoint.substring(3).trim());
             }
-            if (targetHandlerId != null) {
-                RSocketBrokerResponderHandler targetHandler = handlerRegistry.findById(targetHandlerId);
-                if (targetHandler != null) {
-                    if (authRequired) {
-                        RSocketAppPrincipal principal = authAuthorizationValue(authorizationValue);
-                        if (principal == null || !serviceMeshInspector.isRequestAllowed(principal, routingMetadata.gsv(), targetHandler.getPrincipal())) {
-                            return Mono.just(error(RsocketErrorCode.message("RST-900401", routingMetadata.gsv())));
+            return Optional.ofNullable(targetHandlerId)
+                    .flatMap(handlerId -> Optional.ofNullable(handlerRegistry.findById(handlerId)))
+                    .map(targetHandler -> {
+                        if (authRequired) {
+                            RSocketAppPrincipal principal = authAuthorizationValue(authorizationValue);
+                            if (principal == null || !serviceMeshInspector.isRequestAllowed(principal, routingMetadata.gsv(), targetHandler.getPrincipal())) {
+                                return Mono.just(error(RsocketErrorCode.message("RST-900401", routingMetadata.gsv())));
+                            }
                         }
-                    }
-                    RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding);
-                    ByteBuf bodyBuf = body == null ? EMPTY_BUFFER : Unpooled.wrappedBuffer(body);
-                    return targetHandler.requestResponse(DefaultPayload.create(bodyBuf, compositeMetadata.getContent()))
-                            .map(payload -> {
-                                HttpHeaders headers = new HttpHeaders();
-                                headers.setContentType(MediaType.APPLICATION_JSON);
-                                headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-                                return new ResponseEntity<>(payload.getDataUtf8(), headers, HttpStatus.OK);
-                            });
-                }
-            }
-            return Mono.just(error(RsocketErrorCode.message("RST-900404", routingMetadata.gsv())));
+                        RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(routingMetadata, jsonMetaEncoding);
+                        ByteBuf bodyBuf = body == null ? EMPTY_BUFFER : Unpooled.wrappedBuffer(body);
+                        return targetHandler.requestResponse(DefaultPayload.create(bodyBuf, compositeMetadata.getContent()))
+                                .map(payload -> {
+                                    HttpHeaders headers = new HttpHeaders();
+                                    headers.setContentType(MediaType.APPLICATION_JSON);
+                                    headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+                                    return new ResponseEntity<>(payload.getDataUtf8(), headers, HttpStatus.OK);
+                                });
+                    })
+                    .orElseGet(() -> Mono.just(error(RsocketErrorCode.message("RST-900404", routingMetadata.gsv()))));
         } catch (Exception e) {
             return Mono.just(error(e.getMessage()));
         }

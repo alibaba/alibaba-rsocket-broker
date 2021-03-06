@@ -1,0 +1,886 @@
+[
+  {
+    "name": "com.alibaba.rsocket.Initializable",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.RSocketRequesterSupport",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.RSocketService",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerAvorImpl$$Lambda$535/0x0000000840422840"
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerAvorImpl$$Lambda$536/0x0000000840422c40"
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerProtobufImpl$$Lambda$526/0x0000000840425440"
+  },
+  {
+    "name": "com.alibaba.rsocket.discovery.RSocketServiceInstance",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.cloudevents.EventReply",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.ServiceLocator",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.AppStatusEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.ConfigEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.DnsRecordChangedEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.InvalidCacheEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.CloudEventSupport",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.ServicesExposedEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.ServicesHiddenEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.ServiceInstancesChangedEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.PortsUpdateEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.UpstreamClusterChangedEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.health.RSocketServiceHealth",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.listen.RSocketResponderHandlerFactory",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.AppMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.BearerTokenMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.BinaryRoutingMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.GSVRoutingMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.MessageAcceptMimeTypesMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.MessageMimeTypeMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.MessageTagsMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.OriginMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.ServiceRegistryMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.TracingMetadata",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.route.RoutingEndpoint",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.upstream.UpstreamCluster",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.alibaba.rsocket.metadata.MetadataAware",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.observability.MetricsService",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.rpc.LocalReactiveServiceCaller",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.rpc.LocalReactiveServiceCallerImpl",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "addProvider",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.String",
+          "java.lang.String",
+          "java.lang.Class",
+          "java.lang.Object"
+        ]
+      },
+      {
+        "name": "contains",
+        "parameterTypes": [
+          "java.lang.Integer"
+        ]
+      },
+      {
+        "name": "contains",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "contains",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "containsHandler",
+        "parameterTypes": [
+          "java.lang.Integer"
+        ]
+      },
+      {
+        "name": "createReactiveServiceInterface",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.String",
+          "java.lang.String",
+          "java.lang.Class"
+        ]
+      },
+      {
+        "name": "findAllServices",
+        "parameterTypes": []
+      },
+      {
+        "name": "findServiceByFullName",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "getInvokeMethod",
+        "parameterTypes": [
+          "java.lang.Integer"
+        ]
+      },
+      {
+        "name": "getInvokeMethod",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "removeProvider",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.String",
+          "java.lang.String",
+          "java.lang.Class"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.rpc.ReactiveServiceDiscovery",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.upstream.UpstreamClusterChangedEventProcessor",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "init",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.events.CloudEventsConsumer",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.events.CloudEventsProcessor",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "init",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.upstream.UpstreamManager",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.alibaba.rsocket.upstream.UpstreamManagerImpl",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.fasterxml.jackson.core.JsonGenerator"
+  },
+  {
+    "name": "com.fasterxml.jackson.core.ObjectCodec",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.fasterxml.jackson.core.TreeCodec",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.fasterxml.jackson.core.Versioned",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.Module",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "getDependencies",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.ObjectMapper",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "createArrayNode",
+        "parameterTypes": []
+      },
+      {
+        "name": "createObjectNode",
+        "parameterTypes": []
+      },
+      {
+        "name": "getFactory",
+        "parameterTypes": []
+      },
+      {
+        "name": "getJsonFactory",
+        "parameterTypes": []
+      },
+      {
+        "name": "missingNode",
+        "parameterTypes": []
+      },
+      {
+        "name": "nullNode",
+        "parameterTypes": []
+      },
+      {
+        "name": "readTree",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonParser"
+        ]
+      },
+      {
+        "name": "readValue",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonParser",
+          "com.fasterxml.jackson.core.type.ResolvedType"
+        ]
+      },
+      {
+        "name": "readValue",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonParser",
+          "com.fasterxml.jackson.core.type.TypeReference"
+        ]
+      },
+      {
+        "name": "readValue",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonParser",
+          "java.lang.Class"
+        ]
+      },
+      {
+        "name": "readValues",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonParser",
+          "com.fasterxml.jackson.core.type.ResolvedType"
+        ]
+      },
+      {
+        "name": "readValues",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonParser",
+          "com.fasterxml.jackson.core.type.TypeReference"
+        ]
+      },
+      {
+        "name": "readValues",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonParser",
+          "java.lang.Class"
+        ]
+      },
+      {
+        "name": "treeAsTokens",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.TreeNode"
+        ]
+      },
+      {
+        "name": "treeToValue",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.TreeNode",
+          "java.lang.Class"
+        ]
+      },
+      {
+        "name": "version",
+        "parameterTypes": []
+      },
+      {
+        "name": "writeTree",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonGenerator",
+          "com.fasterxml.jackson.core.TreeNode"
+        ]
+      },
+      {
+        "name": "writeValue",
+        "parameterTypes": [
+          "com.fasterxml.jackson.core.JsonGenerator",
+          "java.lang.Object"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.deser.Deserializers[]"
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.deser.KeyDeserializers[]"
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.deser.ValueInstantiators[]"
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.ext.Java7HandlersImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.module.SimpleModule",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "addAbstractTypeMapping",
+        "parameterTypes": [
+          "java.lang.Class",
+          "java.lang.Class"
+        ]
+      },
+      {
+        "name": "addDeserializer",
+        "parameterTypes": [
+          "java.lang.Class",
+          "com.fasterxml.jackson.databind.JsonDeserializer"
+        ]
+      },
+      {
+        "name": "addKeyDeserializer",
+        "parameterTypes": [
+          "java.lang.Class",
+          "com.fasterxml.jackson.databind.KeyDeserializer"
+        ]
+      },
+      {
+        "name": "addKeySerializer",
+        "parameterTypes": [
+          "java.lang.Class",
+          "com.fasterxml.jackson.databind.JsonSerializer"
+        ]
+      },
+      {
+        "name": "addSerializer",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.JsonSerializer"
+        ]
+      },
+      {
+        "name": "addSerializer",
+        "parameterTypes": [
+          "java.lang.Class",
+          "com.fasterxml.jackson.databind.JsonSerializer"
+        ]
+      },
+      {
+        "name": "addValueInstantiator",
+        "parameterTypes": [
+          "java.lang.Class",
+          "com.fasterxml.jackson.databind.deser.ValueInstantiator"
+        ]
+      },
+      {
+        "name": "getModuleName",
+        "parameterTypes": []
+      },
+      {
+        "name": "getTypeId",
+        "parameterTypes": []
+      },
+      {
+        "name": "registerSubtypes",
+        "parameterTypes": [
+          "java.util.Collection"
+        ]
+      },
+      {
+        "name": "registerSubtypes",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.jsontype.NamedType[]"
+        ]
+      },
+      {
+        "name": "registerSubtypes",
+        "parameterTypes": [
+          "java.lang.Class[]"
+        ]
+      },
+      {
+        "name": "setAbstractTypes",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver"
+        ]
+      },
+      {
+        "name": "setDeserializerModifier",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.deser.BeanDeserializerModifier"
+        ]
+      },
+      {
+        "name": "setDeserializers",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.module.SimpleDeserializers"
+        ]
+      },
+      {
+        "name": "setKeyDeserializers",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.module.SimpleKeyDeserializers"
+        ]
+      },
+      {
+        "name": "setKeySerializers",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.module.SimpleSerializers"
+        ]
+      },
+      {
+        "name": "setMixInAnnotation",
+        "parameterTypes": [
+          "java.lang.Class",
+          "java.lang.Class"
+        ]
+      },
+      {
+        "name": "setSerializerModifier",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.ser.BeanSerializerModifier"
+        ]
+      },
+      {
+        "name": "setSerializers",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.module.SimpleSerializers"
+        ]
+      },
+      {
+        "name": "setValueInstantiators",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.module.SimpleValueInstantiators"
+        ]
+      },
+      {
+        "name": "setupModule",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.Module$SetupContext"
+        ]
+      },
+      {
+        "name": "version",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.ser.Serializers[]"
+  },
+  {
+    "name": "com.fasterxml.jackson.datatype.jdk8.Jdk8Module",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.datatype.jsr310.JavaTimeModule",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.module.paramnames.ParameterNamesModule",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "methods": [
+      {
+        "name": "setupModule",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.Module$SetupContext"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.burlap.io.BurlapRemoteObject"
+  },
+  {
+    "name": "com.caucho.hessian.io.HessianRemote",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true,
+    "fields": [
+      {
+        "name": "type",
+        "allowUnsafeAccess": true
+      },
+      {
+        "name": "url",
+        "allowUnsafeAccess": true
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.HessianRemoteObject"
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.DurationSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.InstantSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.LocalDateSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.LocalDateTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.LocalTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.MonthDaySerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.OffsetDateTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.OffsetTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.OptionalSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.PeriodSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.YearMonthSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.YearSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.ZoneIdSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.ZoneOffsetSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.alibaba.rsocket.encoding.hessian.io.java8.ZonedDateTimeSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.BigDecimalDeserializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.FileDeserializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.LocaleSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.ObjectNameDeserializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.RemoteSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.caucho.hessian.io.StringValueSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  }
+]

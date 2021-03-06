@@ -3,32 +3,35 @@ package com.alibaba.rsocket.upstream;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.events.CloudEventSupport;
+import com.alibaba.rsocket.events.CloudEventsConsumer;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Mono;
 
 /**
- * UpstreamClusterChangedEvent Processor to respond the cluster changed
+ * UpstreamClusterChangedEvent Consumer to respond the cluster changed
  *
  * @author leijuan
  */
-public class UpstreamClusterChangedEventProcessor {
-    private static Logger log = LoggerFactory.getLogger(UpstreamClusterChangedEventProcessor.class);
+public class UpstreamClusterChangedEventConsumer implements CloudEventsConsumer {
+    private static Logger log = LoggerFactory.getLogger(UpstreamClusterChangedEventConsumer.class);
     private UpstreamManager upstreamManager;
-    private TopicProcessor<CloudEventImpl> eventProcessor;
 
-    public UpstreamClusterChangedEventProcessor(UpstreamManager upstreamManager, TopicProcessor<CloudEventImpl> eventProcessor) {
+    public UpstreamClusterChangedEventConsumer(UpstreamManager upstreamManager) {
         this.upstreamManager = upstreamManager;
-        this.eventProcessor = eventProcessor;
     }
 
-    public void init() {
-        eventProcessor.subscribe(cloudEvent -> {
-            String type = cloudEvent.getAttributes().getType();
-            if (UpstreamClusterChangedEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
-                handleUpstreamClusterChangedEvent(cloudEvent);
-            }
+    @Override
+    public boolean shouldAccept(CloudEventImpl<?> cloudEvent) {
+        String type = cloudEvent.getAttributes().getType();
+        return UpstreamClusterChangedEvent.class.getCanonicalName().equalsIgnoreCase(type);
+    }
+
+    @Override
+    public Mono<Void> accept(CloudEventImpl<?> cloudEvent) {
+        return Mono.fromRunnable(() -> {
+            handleUpstreamClusterChangedEvent(cloudEvent);
         });
     }
 

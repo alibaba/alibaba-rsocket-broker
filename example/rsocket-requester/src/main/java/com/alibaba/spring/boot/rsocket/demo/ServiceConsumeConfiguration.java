@@ -1,6 +1,6 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
-import com.alibaba.account.AccountService;
+import com.alibaba.user.AccountService;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.metadata.RSocketMimeType;

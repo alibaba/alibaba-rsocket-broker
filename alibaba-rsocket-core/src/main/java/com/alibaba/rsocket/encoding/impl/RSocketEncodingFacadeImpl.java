@@ -38,15 +38,25 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     public static final RSocketEncodingFacade instance = new RSocketEncodingFacadeImpl();
 
     public RSocketEncodingFacadeImpl() {
-        ServiceLoader<ObjectEncodingHandler> serviceLoader = ServiceLoader.load(ObjectEncodingHandler.class);
-        for (ObjectEncodingHandler objectEncodingHandler : serviceLoader) {
-            RSocketMimeType mimeType = objectEncodingHandler.mimeType();
-            handlerMap.put(mimeType, objectEncodingHandler);
-            RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(mimeType));
-            ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
-            this.compositeMetadataForMimeTypes.put(mimeType, Unpooled.copiedBuffer(compositeMetadataContent));
-            ReferenceCountUtil.safeRelease(compositeMetadataContent);
+        String vmName = System.getProperty("java.vm.name");
+        if ("Substrate VM".equals(vmName)) {  //GraalVM Native image with JSON encoding only
+            addEncodingHandler(new ObjectEncodingHandlerJsonImpl());
+            addEncodingHandler(new ObjectEncodingHandlerHessianImpl());
+        } else {
+            ServiceLoader<ObjectEncodingHandler> serviceLoader = ServiceLoader.load(ObjectEncodingHandler.class);
+            for (ObjectEncodingHandler objectEncodingHandler : serviceLoader) {
+                addEncodingHandler(objectEncodingHandler);
+            }
         }
+    }
+
+    private void addEncodingHandler(ObjectEncodingHandler objectEncodingHandler) {
+        RSocketMimeType mimeType = objectEncodingHandler.mimeType();
+        handlerMap.put(mimeType, objectEncodingHandler);
+        RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(mimeType));
+        ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
+        this.compositeMetadataForMimeTypes.put(mimeType, Unpooled.copiedBuffer(compositeMetadataContent));
+        ReferenceCountUtil.safeRelease(compositeMetadataContent);
     }
 
     @NotNull

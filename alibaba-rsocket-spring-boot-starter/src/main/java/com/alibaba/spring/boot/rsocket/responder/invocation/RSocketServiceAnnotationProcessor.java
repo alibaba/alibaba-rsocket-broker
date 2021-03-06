@@ -2,6 +2,7 @@ package com.alibaba.spring.boot.rsocket.responder.invocation;
 
 import com.alibaba.rsocket.RSocketService;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCallerImpl;
+import com.alibaba.rsocket.spring.SpringRSocketService;
 import com.alibaba.spring.boot.rsocket.RSocketProperties;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
@@ -37,6 +38,10 @@ public class RSocketServiceAnnotationProcessor extends LocalReactiveServiceCalle
         if (reactiveService != null) {
             registerRSocketService(reactiveService, bean);
         }
+        SpringRSocketService springRSocketService = AnnotationUtils.findAnnotation(managedBeanClass, SpringRSocketService.class);
+        if (springRSocketService != null) {
+            registerRSocketService(springRSocketService, bean);
+        }
     }
 
     private void registerRSocketService(RSocketService rsocketServiceAnnotation, Object bean) {
@@ -49,5 +54,17 @@ public class RSocketServiceAnnotationProcessor extends LocalReactiveServiceCalle
         addProvider(group, serviceName, version, rsocketServiceAnnotation.serviceInterface(), bean);
     }
 
+    private void registerRSocketService(SpringRSocketService rsocketServiceAnnotation, Object bean) {
+        Class<?> serviceInterface = rsocketServiceAnnotation.serviceInterface();
+        if (serviceInterface != Void.class) {
+            String serviceName = rsocketServiceAnnotation.serviceInterface().getCanonicalName();
+            if (rsocketServiceAnnotation.value().length > 0) {
+                serviceName = rsocketServiceAnnotation.value()[0];
+            }
+            String group = rsocketServiceAnnotation.group().isEmpty() ? rsocketProperties.getGroup() : rsocketServiceAnnotation.group();
+            String version = rsocketServiceAnnotation.version().isEmpty() ? rsocketProperties.getVersion() : rsocketServiceAnnotation.version();
+            addProvider(group, serviceName, version, serviceInterface, bean);
+        }
+    }
 
 }

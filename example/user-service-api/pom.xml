@@ -15,9 +15,9 @@
     <name>user-service-api</name>
     <properties>
         <protobuf-java.version>3.14.0</protobuf-java.version>
-        <rxjava2.version>2.2.20</rxjava2.version>
-        <rxjava3.version>3.0.9</rxjava3.version>
-        <junit5.version>5.7.0</junit5.version>
+        <rxjava2.version>2.2.21</rxjava2.version>
+        <rxjava3.version>3.0.10</rxjava3.version>
+        <junit5.version>5.7.1</junit5.version>
     </properties>
 
     <dependencies>
