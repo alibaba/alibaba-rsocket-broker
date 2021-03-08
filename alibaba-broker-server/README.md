@@ -2,6 +2,11 @@ Alibaba RSocket Broker Server
 =============================
 RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控制台。
 
+### 要求
+
+* Alibaba RSocket Broker目前只兼容JDK 8，主要目前图形化界面Vaadin 14和JDK 11的兼容问题，在下一个Vaadin稳定版升级后会兼容
+* Alibaba RSocket Broker客户端对JDK无要求，兼容JDK 8， 11和15。
+
 ### 日常开发和测试
 
 如果用于日常开发和测试，如果你已经使用Docker的话，你只需要创建一个对应的docker-compose.yml然后启动即可。
@@ -10,7 +15,7 @@ RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控
 version: "3"
 services:
   alibaba-rsocket-broker:
-    image: linuxchina/alibaba-rsocket-broker:1.0.0.M3
+    image: linuxchina/alibaba-rsocket-broker:1.0.0
     ports:
       - "9997:9997"
       - "9998:9998"
@@ -19,7 +24,6 @@ services:
 
 RSocket Broker的控制台地址为 http://localhost:9998/
 
-如果你想以`java -jar` 方式启动，请使用JDK 1.8.x版本，目前RSocket Broke还不兼容JDK 11，主要是目前Vaadin 14和JDK 11的兼容问题，我们会考虑尽快升级。
 
 ### UI
 RSocket Broker控制台默认采用Vaadin 14编写，主要是基于以下考虑：
