@@ -5,6 +5,8 @@ import com.alibaba.rsocket.util.ByteBufTuples;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService;
 import com.github.javafaker.Faker;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.builder.CloudEventBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.commons.lang3.RandomUtils;
@@ -14,10 +16,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * user service implementation
@@ -135,5 +139,22 @@ public class UserServiceImpl implements UserService {
         user.setPhone(faker.phoneNumber().cellPhone());
         user.setEmail(faker.internet().emailAddress());
         return user;
+    }
+
+    @Override
+    public Mono<Void> fireLoginEvent(CloudEvent loginEvent) {
+        System.out.println("CloudEvent received: " + loginEvent.getId());
+        return Mono.empty();
+    }
+
+    @Override
+    public Mono<CloudEvent> processLoginEvent(CloudEvent loginEvent) {
+        CloudEvent event = CloudEventBuilder.v1()
+                .withId(UUID.randomUUID().toString())
+                .withSource(URI.create("https://example.com/users"))
+                .withType("com.alibaba.user.User")
+                .withData("text/plain", "Hello".getBytes(StandardCharsets.UTF_8)) //
+                .build();
+        return Mono.just(event);
     }
 }
