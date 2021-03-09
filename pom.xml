@@ -31,7 +31,7 @@
         <bytebuddy.version>1.10.21</bytebuddy.version>
         <micrometer.version>1.5.11</micrometer.version>
         <reactor-bom.version>Dysprosium-SR17</reactor-bom.version>
-        <netty.version>4.1.59.Final</netty.version>
+        <netty.version>4.1.60.Final</netty.version>
         <rsocket.version>1.0.4</rsocket.version>
         <kotlin.version>1.4.30</kotlin.version>
         <kotlinx-serialization.version>1.1.0</kotlinx-serialization.version>
