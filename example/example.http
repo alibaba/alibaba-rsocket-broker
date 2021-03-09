@@ -19,6 +19,9 @@ GET http://localhost:8181/user/avatar
 ### ByteBuf as param and ByteBuf as return
 GET http://localhost:8181/user/bytebuf
 
+### cloudevents
+GET http://localhost:8181/user/cloudevents
+
 ### get account info
 GET http://localhost:8181/account/1
 
