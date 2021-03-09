@@ -2,6 +2,7 @@ package com.alibaba.user;
 
 import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.util.ByteBufBuilder;
+import io.cloudevents.CloudEvent;
 import io.netty.buffer.ByteBuf;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -116,5 +117,7 @@ public interface UserService {
     @ServiceMapping(paramEncoding = "application/octet-stream", resultEncoding = "application/octet-stream")
     Mono<ByteBuf> findUserByIdAndNick(ByteBuf byteBuf);
 
+    Mono<Void> fireLoginEvent(CloudEvent loginEvent);
 
+    Mono<CloudEvent> processLoginEvent(CloudEvent loginEvent);
 }
