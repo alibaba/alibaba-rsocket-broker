@@ -5,6 +5,7 @@ import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.reactive.ReactiveMethodSupport;
 import com.alibaba.rsocket.utils.MurmurHash3;
+import io.cloudevents.CloudEvent;
 import io.micrometer.core.instrument.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
@@ -106,6 +107,10 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         if (serviceMapping != null) {
             initServiceMapping(serviceMapping);
         }
+        //CloudEvent detection
+        if(inferredClassForReturn.equals(CloudEvent.class)) {
+            this.acceptEncodingTypes = new RSocketMimeType[] {RSocketMimeType.CloudEventsJson};
+        }
         //RSocketRemoteServiceBuilder has higher priority with group,version,endpoint than @ServiceMapping from RSocketRemoteServiceBuilder
         this.group = group;
         this.version = version;
@@ -120,6 +125,8 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
             Class<?> parameterType = method.getParameterTypes()[0];
             if (BINARY_CLASS_LIST.contains(parameterType)) {
                 this.paramEncoding = RSocketMimeType.Binary;
+            }  else if(parameterType.equals(CloudEvent.class)) {
+                this.paramEncoding = RSocketMimeType.CloudEventsJson;
             }
         }
         //init composite metadata for invocation
