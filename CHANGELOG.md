@@ -1,23 +1,21 @@
 Alibaba RSocket Broker变更记录
 ==========================
 
-## 1.0.0
+## 1.0.1
 
 #### 特性调整
 
-* CloudEvents Java SDK 2.0.0
-* 事件消费机制调整： 增加了CloudEventsConsumer接口，同时支持Spring @EventListener
-* RSocket Java 1.0.4
-* 新增@SpringRSocketService，增加对Spring RSocket的服务兼容
-* GraalVM Native Image的兼容: https://github.com/alibaba-rsocket-broker/ali-rsocket-graal-demo
+* 添加CloudEvents支持，你可以在函数结构中直接使用CloudEvent接口类型，代码如下：
 
-#### Bug修复
+```
+    Mono<Void> fireLoginEvent(CloudEvent loginEvent);
 
+    Mono<CloudEvent> processLoginEvent(CloudEvent loginEvent);
+```
 
-#### 文档
+## 1.0.0
 
-* RSocket load balance with Spring Cloud Registry: https://github.com/alibaba-rsocket-broker/rsocket-load-balance
-
+https://github.com/alibaba/alibaba-rsocket-broker/releases/tag/1.0.0
 
 ## 1.0.0.RC4
 
