@@ -40,10 +40,6 @@ import static com.vaadin.flow.component.icon.VaadinIcon.*;
  *
  * @author leijuan
  */
-@StyleSheet("styles/styles.css")
-@Theme(Lumo.class)
-@Viewport("width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes, viewport-fit=cover")
-@Push
 public class MainLayout extends AppLayout implements DisposableBean {
     private static final long serialVersionUID = -1741672705639398634L;
     private Map<Tab, Component> tab2Workspace = new HashMap<>();
