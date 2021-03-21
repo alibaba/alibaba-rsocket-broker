@@ -2,10 +2,13 @@ Alibaba RSocket Broker Server
 =============================
 RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控制台。
 
-### 要求
+### JDK 要求
 
-* Alibaba RSocket Broker目前只兼容JDK 8，主要目前图形化界面Vaadin 14和JDK 11的兼容问题，在下一个Vaadin稳定版升级后会兼容
-* Alibaba RSocket Broker客户端对JDK无要求，兼容JDK 8， 11和15。
+* Alibaba RSocket Broker兼容Java 8, 11和Java 15。 如果你使用Java 11和15，在运行时添加以下JVM参数。
+
+```
+ --illegal-access=permit -Dio.netty.tryReflectionSetAccessible=true --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+```
 
 ### 日常开发和测试
 
