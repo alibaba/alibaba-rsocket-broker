@@ -47,9 +47,6 @@ public class SystemView extends VerticalLayout {
         pairs.add(Tuples.of("VM Vendor Name", System.getProperty("java.vm.vendor")));
         pairs.add(Tuples.of("Java Version", System.getProperty("java.version")));
         pairs.add(Tuples.of("Java Home", System.getProperty("java.home")));
-        pairs.add(Tuples.of("Java Classpath", System.getProperty("java.class.path")));
-        pairs.add(Tuples.of("Java Boot Class Path", System.getProperty("sun.boot.class.path")));
-        pairs.add(Tuples.of("Java Command", System.getProperty("sun.java.command")));
         pairs.add(Tuples.of("Started Time", AlibabaRSocketBrokerServer.STARTED_AT.format(DateTimeFormatter.ISO_DATE_TIME)));
         return pairs;
     }
