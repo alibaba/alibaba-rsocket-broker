@@ -33,7 +33,7 @@
         <reactor-bom.version>Dysprosium-SR18</reactor-bom.version>
         <netty.version>4.1.60.Final</netty.version>
         <rsocket.version>1.0.4</rsocket.version>
-        <kotlin.version>1.4.31</kotlin.version>
+        <kotlin.version>1.4.32</kotlin.version>
         <kotlinx-serialization.version>1.1.0</kotlinx-serialization.version>
         <kotlinx-coroutines.version>1.4.3</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
