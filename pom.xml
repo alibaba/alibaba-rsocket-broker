@@ -40,7 +40,7 @@
         <rxjava3.version>3.0.11</rxjava3.version>
         <caffeine.version>2.9.0</caffeine.version>
         <roaring-bitmap.version>0.9.3</roaring-bitmap.version>
-        <protobuf-java.version>3.15.5</protobuf-java.version>
+        <protobuf-java.version>3.15.6</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
         <jackson.version>2.12.2</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
