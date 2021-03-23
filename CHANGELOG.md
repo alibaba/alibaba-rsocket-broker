@@ -13,7 +13,7 @@ Alibaba RSocket Broker变更记录
     Mono<CloudEvent> processLoginEvent(CloudEvent loginEvent);
 ```
 
-* 升级至Vaadin 19，完成JDK 11和15的兼容测试，RSocket Broker可以运行在JDK 11和15版本之上
+* 升级至Vaadin 19，完成JDK 11和15的兼容测试，RSocket Broker可以运行在JDK 8, 11和15版本之上
 
 ## 1.0.0
 
