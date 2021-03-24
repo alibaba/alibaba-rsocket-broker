@@ -4,11 +4,13 @@ RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控
 
 ### JDK 要求
 
-* Alibaba RSocket Broker兼容Java 8, 11和Java 15。 如果你使用Java 11和15，在运行时添加以下JVM参数。
+* Alibaba RSocket Broker兼容Java 8, 11、15和最新的16。 如果你使用Java 11、15和16，在运行时添加以下JVM参数。
 
 ```
  --illegal-access=permit -Dio.netty.tryReflectionSetAccessible=true --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
 ```
+
+如果Maven编译问题，请添加`MAVEN_OPTS=--illegal-access=permit` 和 JVM参数 `--illegal-access=permit` 然后进行编译。 
 
 ### 日常开发和测试
 
