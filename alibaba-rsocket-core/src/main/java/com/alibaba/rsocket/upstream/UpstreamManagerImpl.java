@@ -17,8 +17,8 @@ import java.util.Map;
  * @author leijuan
  */
 public class UpstreamManagerImpl implements UpstreamManager {
-    private Logger log = LoggerFactory.getLogger(UpstreamManagerImpl.class);
-    private Map<String, UpstreamCluster> clusters = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(UpstreamManagerImpl.class);
+    private final Map<String, UpstreamCluster> clusters = new HashMap<>();
     private UpstreamCluster brokerCluster;
     private RSocketRequesterSupport rsocketRequesterSupport;
 
