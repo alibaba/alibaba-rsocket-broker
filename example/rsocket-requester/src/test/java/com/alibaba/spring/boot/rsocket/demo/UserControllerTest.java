@@ -1,0 +1,15 @@
+package com.alibaba.spring.boot.rsocket.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+public class UserControllerTest extends SpringBootBaseTest {
+    @Autowired
+    private UserController userController;
+
+    @Test
+    public void testFindUserById() {
+        System.out.println(userController.getClass());
+    }
+}
