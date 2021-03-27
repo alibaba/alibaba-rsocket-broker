@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"rawtypes", "SpringJavaInjectionPointsAutowiringInspection"})
 @Configuration
-@ConditionalOnExpression("${rsocket.disabled:false}!=true")
+@ConditionalOnExpression("${rsocket.disabled:false}==false")
 @EnableConfigurationProperties(RSocketProperties.class)
 public class RSocketAutoConfiguration {
     @Autowired
