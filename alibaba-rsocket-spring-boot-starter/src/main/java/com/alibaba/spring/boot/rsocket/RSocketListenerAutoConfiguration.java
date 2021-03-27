@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @author leijuan
  */
 @Configuration
-@ConditionalOnExpression("${rsocket.port:0}!=0")
+@ConditionalOnExpression("${rsocket.port:0}!=0 && ${rsocket.disabled:false}!=true")
 public class RSocketListenerAutoConfiguration {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
