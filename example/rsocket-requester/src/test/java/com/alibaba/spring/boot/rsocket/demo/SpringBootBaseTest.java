@@ -11,15 +11,15 @@ import org.springframework.test.context.TestPropertySource;
 import reactor.extra.processor.TopicProcessor;
 
 @SpringBootTest
-@Import(SpringBootBaseTest.TestConfig.class)
+@Import(SpringBootBaseTest.RSocketTestConfig.class)
 @TestPropertySource(properties = {"rsocket.disabled=true"})
 public abstract class SpringBootBaseTest {
 
     @SuppressWarnings({"deprecation", "rawtypes"})
     @TestConfiguration
-    static class TestConfig {
+    static class RSocketTestConfig {
 
-        @Bean(initMethod = "init")
+        @Bean
         public UpstreamManager upstreamManager() {
             return new UpstreamManagerMock();
         }
