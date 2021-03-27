@@ -108,7 +108,7 @@ $ cp rsocket.p12 ~/.rsocket/
 rsocket.broker.ssl.enable=true
 ```
 
-### Gossip设置
+### Gossip广播设置和监听端口号42254
 RSocket broker默认是开发者模式，也就是单机运行模式，如果你要开启基于Gossip广播的集群模式，请进行如下配置。
 
 ```
