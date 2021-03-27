@@ -62,6 +62,12 @@ public class UpstreamManagerMock implements UpstreamManager {
             }
         };
         this.add(new UpstreamCluster("", "*", ""));
+        // Execute init method
+        try {
+            init();
+        } catch (Exception ignore) {
+            
+        }
     }
 
     @Override
