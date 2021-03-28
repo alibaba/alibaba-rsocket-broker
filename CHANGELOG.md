@@ -20,6 +20,7 @@ RSocket Broker 1.1将会基于RSocket Java 1.1.0和Spring Boot 2.4.x开发。
 
 * RSocket Broker和Protobuf/gRPC开发支持： https://github.com/alibaba-rsocket-broker/rsocket-protobuf-service
 * RSocket Broker和Kotlin开发支持： https://github.com/alibaba-rsocket-broker/alibaba-broker-kotlin-example
+* 添加创建RSocket Broker应用模板: https://github.com/tgm-templates/rsocket-broker-example
 
 ## 1.0.1
 
