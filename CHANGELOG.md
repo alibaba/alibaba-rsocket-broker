@@ -1,19 +1,25 @@
 Alibaba RSocket Broker变更记录
 ==========================
 
+## 1.1.0
+
+RSocket Broker 1.1将会基于RSocket Java 1.1.0和Spring Boot 2.4.x开发。
+
+### 特性调整
+
+* RSocket Java升级到1.1.0
+* Spring Boot 2.4.4升级支持
+* RSocket Broker Server支持Java 8，11和16
+* RSocket Broker Server添加Testcontainers支持: https://github.com/alibaba-rsocket-broker/testcontainers-rsocket-broker-module
+* RSocket Broker和Protobuf/gRPC开发支持： https://github.com/alibaba-rsocket-broker/rsocket-protobuf-service
+
+### 文档
+
+* RSocket Broker测试支持： https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-Testing
+
 ## 1.0.1
 
-#### 特性调整
-
-* 添加CloudEvents支持，你可以在函数结构中直接使用CloudEvent接口类型，代码如下：
-
-```
-    Mono<Void> fireLoginEvent(CloudEvent loginEvent);
-
-    Mono<CloudEvent> processLoginEvent(CloudEvent loginEvent);
-```
-
-* 升级至Vaadin 19，完成JDK 11和15的兼容测试，RSocket Broker可以运行在JDK 8, 11和15版本之上
+https://github.com/alibaba/alibaba-rsocket-broker/releases/tag/1.0.1
 
 ## 1.0.0
 
