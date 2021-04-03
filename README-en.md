@@ -27,7 +27,13 @@ The design highlights of the broker are:
 * Message driven
 * Zero copy: Fast routing 
 
-For more information on the use cases of Alibaba RSocket broker, please visit [here](http://rsocketbyexample.info).
+For more information on the use cases of Alibaba RSocket broker, please visit following links:
+
+* Alibaba RSocket Broker Wiki https://github.com/alibaba/alibaba-rsocket-broker/wiki
+* Alibaba RSocket Broker Examples: https://github.com/alibaba-rsocket-broker/
+* RSocket by Example: http://rsocketbyexample.info
+* Github Discussions: https://github.com/alibaba/alibaba-rsocket-broker/discussions
+
 
 
 ## Under the hood
