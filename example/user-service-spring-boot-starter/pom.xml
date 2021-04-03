@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.alibaba.broker.example</groupId>
+        <artifactId>alibaba-broker-example-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>user-service-spring-boot-starter</artifactId>
+
+    <name>user-service-spring-boot-starter</name>
+    <description>Spring Boot Starter for User Service</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.alibaba.broker.example</groupId>
+            <artifactId>user-service-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.rsocket</groupId>
+            <artifactId>alibaba-rsocket-spring-boot-starter</artifactId>
+            <version>${alibaba-rsocket.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
