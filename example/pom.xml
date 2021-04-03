@@ -11,6 +11,7 @@
 
     <modules>
         <module>user-service-api</module>
+        <module>user-service-spring-boot-starter</module>
         <module>rsocket-requester</module>
         <module>rsocket-responder</module>
         <module>rsocket-cloud-function</module>
