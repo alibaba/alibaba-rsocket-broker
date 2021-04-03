@@ -5,7 +5,8 @@ requester <-> Broker <-> responder 三者通讯模型
 
 # Maven Modules
 
-* user-service-api: Reactive服务接口定义都在该模块中，当然包括Protobuf的支持
+* user-service-api: Reactive服务接口定义都在该模块中，包括Protobuf的支持
+* user-service-spring-boot-starter: user-service-api的Spring Boot Starter封装，Spring Boot应用服务消费端只需要引用该starter即可
 * rsocket-responder: RSocket服务响应者，Reactive服务接口的实现和服务提供者
 * rsocket-requester: RSocket服务请求者，调用远程的RSocket服务
 
