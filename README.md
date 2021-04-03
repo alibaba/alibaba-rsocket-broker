@@ -152,13 +152,6 @@ public class PortalController {
 }
 ```
 
-### 服务和支持
-
-* Issues: https://github.com/alibaba/alibaba-rsocket-broker/issues
-* Wiki: https://github.com/alibaba/alibaba-rsocket-broker/wiki
-* Gitter: https://gitter.im/alibaba-rsocket-broker/community
-* RSocket by Example: http://rsocketbyexample.info/
-
 ### References
 
 * RSocket: http://rsocket.io/
