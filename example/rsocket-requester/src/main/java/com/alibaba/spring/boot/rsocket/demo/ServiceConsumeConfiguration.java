@@ -1,24 +1,20 @@
 package com.alibaba.spring.boot.rsocket.demo;
 
-import com.alibaba.user.AccountService;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.loadbalance.LoadBalancedRSocket;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import com.alibaba.spring.boot.rsocket.hessian.HessianDecoder;
 import com.alibaba.spring.boot.rsocket.hessian.HessianEncoder;
+import com.alibaba.user.AccountService;
 import com.alibaba.user.Rx3UserService;
 import com.alibaba.user.RxUserService;
 import com.alibaba.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.util.MimeType;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Service consumer configuration
@@ -27,14 +23,6 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 public class ServiceConsumeConfiguration {
-    @Autowired
-    private ReactiveAdapterRegistry reactiveAdapterRegistry;
-
-    @PostConstruct
-    public void init() {
-        new RxJava3Registrar().registerAdapters(reactiveAdapterRegistry);
-    }
-
     @Bean
     public UserService userService(UpstreamManager upstreamManager) {
         return RSocketRemoteServiceBuilder
