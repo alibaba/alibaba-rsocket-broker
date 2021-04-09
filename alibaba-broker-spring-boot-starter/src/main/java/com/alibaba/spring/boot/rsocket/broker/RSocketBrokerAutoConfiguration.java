@@ -10,6 +10,7 @@ import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.spring.boot.rsocket.broker.cluster.DefaultRSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
+import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManagerDiscoveryImpl;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManagerGossipImpl;
 import com.alibaba.spring.boot.rsocket.broker.impl.BrokerRSocketServiceHealthImpl;
 import com.alibaba.spring.boot.rsocket.broker.impl.DiscoveryServiceImpl;
@@ -38,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -191,6 +193,13 @@ public class RSocketBrokerAutoConfiguration {
     @Primary
     public RSocketBrokerManager rsocketGossipBrokerManager() {
         return new RSocketBrokerManagerGossipImpl();
+    }
+
+    @Bean
+    @ConditionalOnExpression("'${rsocket.broker.topology}'=='discovery'")
+    @Primary
+    public RSocketBrokerManager rsocketDiscoveryBrokerManager(ReactiveDiscoveryClient discoveryClient) {
+        return new RSocketBrokerManagerDiscoveryImpl(discoveryClient);
     }
 
     @Bean
