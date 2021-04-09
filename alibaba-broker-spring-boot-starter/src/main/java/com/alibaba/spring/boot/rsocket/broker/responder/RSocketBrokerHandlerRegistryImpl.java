@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
-import reactor.extra.processor.TopicProcessor;
 
 import java.net.URI;
 import java.time.Duration;
@@ -55,8 +55,8 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     private RSocketFilterChain rsocketFilterChain;
     private LocalReactiveServiceCaller localReactiveServiceCaller;
     private ServiceRoutingSelector routingSelector;
-    private TopicProcessor<CloudEventImpl> eventProcessor;
-    private TopicProcessor<String> notificationProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
+    private Sinks.Many<String> notificationProcessor;
     private AuthenticationService authenticationService;
     /**
      * connections, key is connection id
@@ -77,8 +77,8 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
 
     public RSocketBrokerHandlerRegistryImpl(LocalReactiveServiceCaller localReactiveServiceCaller, RSocketFilterChain rsocketFilterChain,
                                             ServiceRoutingSelector routingSelector,
-                                            TopicProcessor<CloudEventImpl> eventProcessor,
-                                            TopicProcessor<String> notificationProcessor,
+                                            Sinks.Many<CloudEventImpl> eventProcessor,
+                                            Sinks.Many<String> notificationProcessor,
                                             AuthenticationService authenticationService,
                                             RSocketBrokerManager rsocketBrokerManager,
                                             ServiceMeshInspector serviceMeshInspector,
@@ -218,11 +218,11 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         responderHandlers.put(appMetadata.getUuid(), responderHandler);
         connectionHandlers.put(responderHandler.getId(), responderHandler);
         appHandlers.put(appMetadata.getName(), responderHandler);
-        eventProcessor.onNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_CONNECTED));
+        eventProcessor.tryEmitNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_CONNECTED));
         if (!rsocketBrokerManager.isStandAlone()) {
             responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rsocketBrokerManager.currentBrokers(), appMetadata.getTopology())).subscribe();
         }
-        this.notificationProcessor.onNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
+        this.notificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
     }
 
     @Override
@@ -233,8 +233,8 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         appHandlers.remove(appMetadata.getName(), responderHandler);
         log.info(RsocketErrorCode.message("RST-500202"));
         responderHandler.clean();
-        eventProcessor.onNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_STOPPED));
-        this.notificationProcessor.onNext(RsocketErrorCode.message("RST-300204", appMetadata.getName(), appMetadata.getIp()));
+        eventProcessor.tryEmitNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_STOPPED));
+        this.notificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300204", appMetadata.getName(), appMetadata.getIp()));
     }
 
     @Override

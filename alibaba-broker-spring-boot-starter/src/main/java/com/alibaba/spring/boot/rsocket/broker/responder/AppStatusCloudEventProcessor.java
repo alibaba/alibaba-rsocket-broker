@@ -10,7 +10,7 @@ import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import reactor.core.Disposable;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class AppStatusCloudEventProcessor {
     @SuppressWarnings("rawtypes")
     @Autowired
     @Qualifier("reactiveCloudEventProcessor")
-    private TopicProcessor<CloudEventImpl> eventProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
     @Autowired
     private RSocketBrokerHandlerRegistry rsocketBrokerHandlerRegistry;
     @Autowired
@@ -33,7 +33,7 @@ public class AppStatusCloudEventProcessor {
     private Map<String, Disposable> listeners = new HashMap<>();
 
     public void init() {
-        eventProcessor.subscribe(cloudEvent -> {
+        eventProcessor.asFlux().subscribe(cloudEvent -> {
             String type = cloudEvent.getAttributes().getType();
             if (AppStatusEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleAppStatusEvent(cloudEvent);

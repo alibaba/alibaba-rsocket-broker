@@ -47,7 +47,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -109,8 +109,8 @@ public class RSocketBrokerAutoConfiguration {
     public RSocketBrokerHandlerRegistry rsocketResponderHandlerRegistry(@Autowired LocalReactiveServiceCaller localReactiveServiceCaller,
                                                                         @Autowired RSocketFilterChain rsocketFilterChain,
                                                                         @Autowired ServiceRoutingSelector routingSelector,
-                                                                        @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
-                                                                        @Autowired @Qualifier("notificationProcessor") TopicProcessor<String> notificationProcessor,
+                                                                        @Autowired @Qualifier("reactiveCloudEventProcessor") Sinks.Many<CloudEventImpl> eventProcessor,
+                                                                        @Autowired @Qualifier("notificationProcessor") Sinks.Many<String> notificationProcessor,
                                                                         @Autowired AuthenticationService authenticationService,
                                                                         @Autowired RSocketBrokerManager rSocketBrokerManager,
                                                                         @Autowired ServiceMeshInspector serviceMeshInspector,
@@ -203,13 +203,15 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
-    public TopicProcessor<CloudEventImpl> reactiveCloudEventProcessor() {
-        return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
+    public Sinks.Many<CloudEventImpl> reactiveCloudEventProcessor() {
+        return Sinks.many().multicast().onBackpressureBuffer();
+        //return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
     }
 
     @Bean
-    public TopicProcessor<String> notificationProcessor() {
-        return TopicProcessor.<String>builder().name("notifications-processor").bufferSize(8).build();
+    public Sinks.Many<String> notificationProcessor() {
+        return Sinks.many().multicast().onBackpressureBuffer(8);
+        //return TopicProcessor.<String>builder().name("notifications-processor").bufferSize(8).build();
     }
 
     @Bean(initMethod = "init")

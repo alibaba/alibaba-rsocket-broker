@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
-import reactor.extra.processor.TopicProcessor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -121,7 +121,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     /**
      * reactive event processor
      */
-    private TopicProcessor<CloudEventImpl> eventProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
     /**
      * UUID from requester side
      */
@@ -141,7 +141,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
                                          @NotNull RSocketAppPrincipal principal,
                                          RSocket peerRsocket,
                                          ServiceRoutingSelector routingSelector,
-                                         TopicProcessor<CloudEventImpl> eventProcessor,
+                                         Sinks.Many<CloudEventImpl> eventProcessor,
                                          RSocketBrokerHandlerRegistry handlerRegistry,
                                          ServiceMeshInspector serviceMeshInspector,
                                          @Nullable RSocket upstreamRSocket) {
@@ -319,7 +319,7 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
     public Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent) {
         //要进行event的安全验证，不合法来源的event进行消费，后续还好进行event判断
         if (uuid.equalsIgnoreCase(cloudEvent.getAttributes().getSource().getHost())) {
-            return Mono.fromRunnable(() -> eventProcessor.onNext(cloudEvent));
+            return Mono.fromRunnable(() -> eventProcessor.tryEmitNext(cloudEvent));
         }
         return Mono.empty();
     }
