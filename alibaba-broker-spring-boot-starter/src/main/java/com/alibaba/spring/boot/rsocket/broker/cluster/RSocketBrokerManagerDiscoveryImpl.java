@@ -8,9 +8,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
 import reactor.core.Disposable;
-import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -28,12 +28,12 @@ public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, 
     private ReactiveDiscoveryClient discoveryClient;
     private Map<String, RSocketBroker> currentBrokers = new HashMap<>();
     private final String SERVICE_NAME = "rsocket-broker";
-    private EmitterProcessor<Collection<RSocketBroker>> brokersEmitterProcessor = EmitterProcessor.create();
+    private Sinks.Many<Collection<RSocketBroker>> brokersEmitterProcessor = Sinks.many().multicast().onBackpressureBuffer();
     private Disposable brokersFresher;
 
     public RSocketBrokerManagerDiscoveryImpl(ReactiveDiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
-        Disposable brokersFresher = Flux.interval(Duration.ofSeconds(10)).flatMap(aLong -> {
+        this.brokersFresher = Flux.interval(Duration.ofSeconds(10)).flatMap(aLong -> {
             return this.discoveryClient.getInstances(SERVICE_NAME);
         }).collectList().subscribe(serviceInstances -> {
             boolean changed = serviceInstances.size() != currentBrokers.size();
@@ -48,14 +48,14 @@ public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, 
                     broker.setIp(serviceInstance.getHost());
                     return broker;
                 }).collect(Collectors.toMap(RSocketBroker::getIp, Function.identity()));
-                brokersEmitterProcessor.onNext(currentBrokers.values());
+                brokersEmitterProcessor.tryEmitNext(currentBrokers.values());
             }
         });
     }
 
     @Override
     public Flux<Collection<RSocketBroker>> requestAll() {
-        return brokersEmitterProcessor;
+        return brokersEmitterProcessor.asFlux();
     }
 
     @Override

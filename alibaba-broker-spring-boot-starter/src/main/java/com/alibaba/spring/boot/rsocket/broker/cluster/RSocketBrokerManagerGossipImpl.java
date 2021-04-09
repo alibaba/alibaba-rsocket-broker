@@ -29,9 +29,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -68,7 +68,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     /**
      * brokers changes emitter processor
      */
-    private EmitterProcessor<Collection<RSocketBroker>> brokersEmitterProcessor = EmitterProcessor.create();
+    private Sinks.Many<Collection<RSocketBroker>> brokersEmitterProcessor = Sinks.many().multicast().onBackpressureBuffer();
     private KetamaConsistentHash<String> consistentHash;
 
     @PostConstruct
@@ -91,7 +91,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
 
     @Override
     public Flux<Collection<RSocketBroker>> requestAll() {
-        return brokersEmitterProcessor;
+        return brokersEmitterProcessor.asFlux();
     }
 
     @Override
@@ -233,7 +233,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
             this.consistentHash.remove(brokerIp);
             log.info(RsocketErrorCode.message("RST-300001", broker.getIp(), "left"));
         }
-        brokersEmitterProcessor.onNext(brokers.values());
+        brokersEmitterProcessor.tryEmitNext(brokers.values());
     }
 
     private RSocketBroker memberToBroker(Member member) {
