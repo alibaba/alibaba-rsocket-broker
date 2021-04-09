@@ -205,13 +205,11 @@ public class RSocketBrokerAutoConfiguration {
     @Bean
     public Sinks.Many<CloudEventImpl> reactiveCloudEventProcessor() {
         return Sinks.many().multicast().onBackpressureBuffer();
-        //return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
     }
 
     @Bean
     public Sinks.Many<String> notificationProcessor() {
         return Sinks.many().multicast().onBackpressureBuffer(8);
-        //return TopicProcessor.<String>builder().name("notifications-processor").bufferSize(8).build();
     }
 
     @Bean(initMethod = "init")
