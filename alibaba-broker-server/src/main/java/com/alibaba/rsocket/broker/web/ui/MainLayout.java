@@ -12,23 +12,18 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.component.page.Viewport;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.theme.Theme;
-import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import reactor.core.Disposable;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +45,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
     private ConfigurationService configurationService;
     private AuthenticationService authenticationService;
     private RSocketFilterChain filterChain;
-    private TopicProcessor<String> notificationProcessor;
+    private Sinks.Many<String> notificationProcessor;
     private Disposable notificationSubscribe = null;
 
     public MainLayout(@Autowired RSocketBrokerHandlerRegistry handlerRegistry,
@@ -60,7 +55,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
                       @Autowired ConfigurationService configurationService,
                       @Autowired AuthenticationService authenticationService,
                       @Autowired RSocketFilterChain filterChain,
-                      @Autowired @Qualifier("notificationProcessor") TopicProcessor<String> notificationProcessor) {
+                      @Autowired @Qualifier("notificationProcessor") Sinks.Many<String> notificationProcessor) {
         this.handlerRegistry = handlerRegistry;
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.rSocketBrokerManager = rSocketBrokerManager;
@@ -209,7 +204,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         closeSubscribeQuietly();
-        this.notificationSubscribe = this.notificationProcessor.subscribe(text -> {
+        this.notificationSubscribe = this.notificationProcessor.asFlux().subscribe(text -> {
             attachEvent.getUI().access(() -> {
                 Notification.show(text);
             });
