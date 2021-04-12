@@ -19,7 +19,7 @@ import java.util.UUID;
 public class RSocketCloudEventBuilder<T> {
     private CloudEventBuilder builder = CloudEventBuilder.v1().withDataContentType(WellKnownMimeType.APPLICATION_JSON.getString());
     private T data;
-    private static URI DEFAULT_SOURCE = URI.create("app://" + NetworkUtil.LOCAL_IP + "/" + "?id=" + RSocketAppContext.ID);
+    private static URI DEFAULT_SOURCE = URI.create("app://" + RSocketAppContext.ID + "/" + "?ip=" + NetworkUtil.LOCAL_IP);
 
     /**
      * Gets a brand new builder instance
