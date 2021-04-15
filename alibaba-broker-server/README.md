@@ -175,6 +175,11 @@ RSocket的Gossip管理方式中，该端口号为42254，确保各个节点之�
     }
 ```
 
+### Kubernetes部署
+
+* K8S准备工作: 主要是创建rsocket命名空间，同时为Spring-Cloud-Kubernetes访问K8S集群设置对应的权限 `kubectl apply -f alibaba-broker-server/src/main/k8s/setup.yml`
+* 执行编译： mvn -Pk8s -DskipTests clean package
+* K8S部署rsocket broker:  `kubectl apply --namespace=rsocket -f alibaba-broker-server/src/main/k8s/deployment.yml `
 
 ### Vaadin Flow
 Alibaba RSocket Broker的Web控制台使用Vaadin 14开发，为了方便你扩展界面，将Vaadin的开发资源列一下，方便二次开发。
