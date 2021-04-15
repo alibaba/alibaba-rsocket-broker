@@ -204,4 +204,50 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>k8s</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-kubernetes-fabric8</artifactId>
+                    <version>2.0.2</version>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <configuration>
+                            <from>
+                                <image>openjdk:8-jdk-slim</image>
+                            </from>
+                            <to>
+                                <image>linuxchina/alibaba-rsocket-broker:${project.version}</image>
+                            </to>
+                            <container>
+                                <mainClass>${mainClass}</mainClass>
+                                <entrypoint>/bin/sh,/app/run-java.sh</entrypoint>
+                                <environment>
+                                    <JAVA_APP_DIR>/app</JAVA_APP_DIR>
+                                    <JAVA_CLASSPATH>
+                                        /app/libs/alibaba-rsocket-core-${project.version}.jar:/app/resources:/app/classes:/app/libs/*
+                                    </JAVA_CLASSPATH>
+                                    <JAVA_MAIN_CLASS>${mainClass}</JAVA_MAIN_CLASS>
+                                    <SPRING_PROFILES_ACTIVE>k8s</SPRING_PROFILES_ACTIVE>
+                                </environment>
+                                <ports>
+                                    <port>9997</port>
+                                    <port>9998</port>
+                                    <port>9999</port>
+                                </ports>
+                            </container>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
