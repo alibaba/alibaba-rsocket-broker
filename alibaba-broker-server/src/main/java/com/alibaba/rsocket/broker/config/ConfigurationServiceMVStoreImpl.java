@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.ReplayProcessor;
+import reactor.core.publisher.Sinks;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConfigurationServiceMVStoreImpl implements ConfigurationService {
     private static Logger log = LoggerFactory.getLogger(ConfigurationServiceMVStoreImpl.class);
     private MVStore mvStore;
-    private Map<String, ReplayProcessor<String>> watchNotification = new ConcurrentHashMap<>();
+    private Map<String, Sinks.Many<String>> watchNotification = new ConcurrentHashMap<>();
 
     public ConfigurationServiceMVStoreImpl() {
         File rsocketRootDir = new File(System.getProperty("user.home"), ".rsocket");
@@ -34,7 +34,7 @@ public class ConfigurationServiceMVStoreImpl implements ConfigurationService {
             rsocketRootDir.mkdirs();
         }
         mvStore = MVStore.open(new File(rsocketRootDir, "appsConfig.db").getAbsolutePath());
-        log.info(RsocketErrorCode.message("RST-302200","H2 MVStore"));
+        log.info(RsocketErrorCode.message("RST-302200", "H2 MVStore"));
     }
 
     @PreDestroy
@@ -66,7 +66,7 @@ public class ConfigurationServiceMVStoreImpl implements ConfigurationService {
                 if (!watchNotification.containsKey(key)) {
                     initNotification(key);
                 }
-                watchNotification.get(key).onNext(value);
+                watchNotification.get(key).tryEmitNext(value);
             }
         });
     }
@@ -79,7 +79,7 @@ public class ConfigurationServiceMVStoreImpl implements ConfigurationService {
                 mvStore.openMap(parts[0]).remove(parts[1]);
                 mvStore.commit();
                 if (watchNotification.containsKey(key)) {
-                    watchNotification.get(key).onNext("");
+                    watchNotification.get(key).tryEmitNext("");
                 }
             }
 
@@ -103,10 +103,10 @@ public class ConfigurationServiceMVStoreImpl implements ConfigurationService {
         if (!watchNotification.containsKey(key)) {
             initNotification(key);
         }
-        return Flux.create(sink -> watchNotification.get(key).subscribe(sink::next));
+        return Flux.create(sink -> watchNotification.get(key).asFlux().subscribe(sink::next));
     }
 
     private void initNotification(String appName) {
-        watchNotification.put(appName, ReplayProcessor.cacheLast());
+        watchNotification.put(appName, Sinks.many().replay().latest());
     }
 }
