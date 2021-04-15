@@ -137,7 +137,7 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
                     <from>
-                        <image>openjdk:8-jdk-slim</image>
+                        <image>adoptopenjdk:8u282-b08-jdk-hotspot</image>
                     </from>
                     <to>
                         <image>linuxchina/alibaba-rsocket-broker:${project.version}</image>
@@ -222,7 +222,7 @@
                         <artifactId>jib-maven-plugin</artifactId>
                         <configuration>
                             <from>
-                                <image>openjdk:8-jdk-slim</image>
+                                <image>adoptopenjdk:8u282-b08-jdk-hotspot</image>
                             </from>
                             <to>
                                 <image>linuxchina/alibaba-rsocket-broker-k8s:${project.version}</image>
