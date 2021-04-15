@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsocket-broker
+  namespace: rsocket
+  labels:
+    app: rsocket-broker
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: rsocket-broker
+      labels:
+        app: rsocket-broker
+    spec:
+      containers:
+        - name: rsocket-broker
+          image: linuxchina/alibaba-rsocket-broker-k8s:latest
+          ports:
+            - containerPort: 9997
+            - containerPort: 9998
+            - containerPort: 9999
+          imagePullPolicy: Always
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: rsocket-broker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsocket-broker
+spec:
+  ports:
+    - port: 9999
+      targetPort: 9999
+      protocol: TCP
+  selector:
+    app: rsocket-broker
