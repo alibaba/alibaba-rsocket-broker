@@ -225,7 +225,7 @@
                                 <image>openjdk:8-jdk-slim</image>
                             </from>
                             <to>
-                                <image>linuxchina/alibaba-rsocket-broker:${project.version}</image>
+                                <image>linuxchina/alibaba-rsocket-broker-k8s:${project.version}</image>
                             </to>
                             <container>
                                 <mainClass>${mainClass}</mainClass>
