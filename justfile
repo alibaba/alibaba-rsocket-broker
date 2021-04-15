@@ -21,6 +21,10 @@ artifacts_install:
 docker_build: artifacts_install
   mvn -pl alibaba-broker-server jib:dockerBuild
 
+# build rsocket broker as Docker image
+k8s_build: artifacts_install
+  mvn -Pk8s -pl alibaba-broker-server jib:dockerBuild
+
 buildpack:
   mvn -DskipTests -pl alibaba-broker-server package spring-boot:build-image
 
