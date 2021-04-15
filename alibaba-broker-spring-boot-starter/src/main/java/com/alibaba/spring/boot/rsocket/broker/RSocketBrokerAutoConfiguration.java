@@ -196,7 +196,7 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnExpression("'${rsocket.broker.topology}'=='discovery'")
+    @ConditionalOnExpression("'${rsocket.broker.topology}'=='discovery' || '${rsocket.broker.topology}'=='k8s'")
     @Primary
     public RSocketBrokerManager rsocketDiscoveryBrokerManager(ReactiveDiscoveryClient discoveryClient) {
         return new RSocketBrokerManagerDiscoveryImpl(discoveryClient);
