@@ -28,7 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <spring-boot.version>2.4.5</spring-boot.version>
-        <bytebuddy.version>1.10.22</bytebuddy.version>
+        <bytebuddy.version>1.11.0</bytebuddy.version>
         <micrometer.version>1.6.6</micrometer.version>
         <reactor-bom.version>2020.0.6</reactor-bom.version>
         <netty.version>4.1.63.Final</netty.version>
@@ -40,7 +40,7 @@
         <rxjava3.version>3.0.12</rxjava3.version>
         <caffeine.version>2.9.0</caffeine.version>
         <roaring-bitmap.version>0.9.10</roaring-bitmap.version>
-        <protobuf-java.version>3.15.7</protobuf-java.version>
+        <protobuf-java.version>3.15.8</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
         <jackson.version>2.12.2</jackson.version>
         <protostuff.version>1.7.2</protostuff.version>
