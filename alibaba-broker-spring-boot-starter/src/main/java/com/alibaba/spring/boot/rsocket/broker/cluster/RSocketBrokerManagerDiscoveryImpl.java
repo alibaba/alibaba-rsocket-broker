@@ -33,24 +33,24 @@ public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, 
 
     public RSocketBrokerManagerDiscoveryImpl(ReactiveDiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
-        this.brokersFresher = Flux.interval(Duration.ofSeconds(10)).flatMap(aLong -> {
-            return this.discoveryClient.getInstances(SERVICE_NAME);
-        }).collectList().subscribe(serviceInstances -> {
-            boolean changed = serviceInstances.size() != currentBrokers.size();
-            for (ServiceInstance serviceInstance : serviceInstances) {
-                if (!currentBrokers.containsKey(serviceInstance.getHost())) {
-                    changed = true;
-                }
-            }
-            if (changed) {
-                currentBrokers = serviceInstances.stream().map(serviceInstance -> {
-                    RSocketBroker broker = new RSocketBroker();
-                    broker.setIp(serviceInstance.getHost());
-                    return broker;
-                }).collect(Collectors.toMap(RSocketBroker::getIp, Function.identity()));
-                brokersEmitterProcessor.tryEmitNext(currentBrokers.values());
-            }
-        });
+        this.brokersFresher = Flux.interval(Duration.ofSeconds(10))
+                .flatMap(aLong -> this.discoveryClient.getInstances(SERVICE_NAME).collectList())
+                .subscribe(serviceInstances -> {
+                    boolean changed = serviceInstances.size() != currentBrokers.size();
+                    for (ServiceInstance serviceInstance : serviceInstances) {
+                        if (!currentBrokers.containsKey(serviceInstance.getHost())) {
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        currentBrokers = serviceInstances.stream().map(serviceInstance -> {
+                            RSocketBroker broker = new RSocketBroker();
+                            broker.setIp(serviceInstance.getHost());
+                            return broker;
+                        }).collect(Collectors.toMap(RSocketBroker::getIp, Function.identity()));
+                        brokersEmitterProcessor.tryEmitNext(currentBrokers.values());
+                    }
+                });
     }
 
     @Override
