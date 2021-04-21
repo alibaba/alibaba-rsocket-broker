@@ -83,6 +83,11 @@ public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, 
     }
 
     @Override
+    public String getName() {
+        return "discovery";
+    }
+
+    @Override
     public Boolean isStandAlone() {
         return false;
     }

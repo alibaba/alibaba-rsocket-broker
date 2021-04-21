@@ -65,6 +65,11 @@ public class DefaultRSocketBrokerManager implements RSocketBrokerManager {
     }
 
     @Override
+    public String getName() {
+        return "standalone";
+    }
+
+    @Override
     public Boolean isStandAlone() {
         return true;
     }

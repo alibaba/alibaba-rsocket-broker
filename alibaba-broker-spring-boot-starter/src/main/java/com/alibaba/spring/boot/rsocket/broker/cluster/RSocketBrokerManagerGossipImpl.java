@@ -107,6 +107,11 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     }
 
     @Override
+    public String getName() {
+        return "gossip";
+    }
+
+    @Override
     public Boolean isStandAlone() {
         return false;
     }

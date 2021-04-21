@@ -26,6 +26,8 @@ public interface RSocketBrokerManager {
 
     Boolean isStandAlone();
 
+    String getName();
+
     void stopLocalBroker();
 
     Mono<String> broadcast(CloudEventImpl<?> cloudEvent);
