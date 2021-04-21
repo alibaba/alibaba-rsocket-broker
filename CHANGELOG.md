@@ -14,6 +14,8 @@ RSocket Broker 1.1将会基于RSocket Java 1.1.0和Spring Boot 2.4.x开发。
 * Scalecube cluster升级至2.6.9：支持最新最新的Reactor Netty 1.0.x
 * Docker镜像的基础镜像调整为adoptopenjdk:8-jdk-hotspot
 * Kubernetes支持：快速部署RSocket Broker，应用接入便捷
+* Graceful shutdown支持: Broker Server和应用均支持Graceful shutdown，在application.properties文件中添加`server.shutdown=graceful`即可
+
 
 ### 文档
 
