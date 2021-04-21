@@ -15,7 +15,6 @@ import com.alibaba.rsocket.rpc.RSocketResponderHandler;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventConsumer;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
 import com.alibaba.spring.boot.rsocket.health.RSocketServiceHealthImpl;
 import com.alibaba.spring.boot.rsocket.observability.MetricsServicePrometheusImpl;
 import com.alibaba.spring.boot.rsocket.responder.RSocketServicesPublishHook;
@@ -23,6 +22,7 @@ import com.alibaba.spring.boot.rsocket.responder.invocation.RSocketServiceAnnota
 import com.alibaba.spring.boot.rsocket.upstream.JwtTokenNotFoundException;
 import com.alibaba.spring.boot.rsocket.upstream.RSocketRequesterSupportBuilderImpl;
 import com.alibaba.spring.boot.rsocket.upstream.RSocketRequesterSupportCustomizer;
+import com.alibaba.spring.boot.rsocket.upstream.SmartLifecycleUpstreamManagerImpl;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.rsocket.SocketAcceptor;
 import org.springframework.beans.factory.ObjectProvider;
@@ -134,9 +134,9 @@ public class RSocketAutoConfiguration {
         return new RSocketServiceAnnotationProcessor(rsocketProperties);
     }
 
-    @Bean(initMethod = "init", destroyMethod = "close")
+    @Bean(initMethod = "init")
     public UpstreamManager rsocketUpstreamManager(@Autowired RSocketRequesterSupport rsocketRequesterSupport) throws JwtTokenNotFoundException {
-        UpstreamManager upstreamManager = new UpstreamManagerImpl(rsocketRequesterSupport);
+        UpstreamManager upstreamManager = new SmartLifecycleUpstreamManagerImpl(rsocketRequesterSupport);
         if (properties.getBrokers() != null && !properties.getBrokers().isEmpty()) {
             if (properties.getJwtToken() == null || properties.getJwtToken().isEmpty()) {
                 throw new JwtTokenNotFoundException();
