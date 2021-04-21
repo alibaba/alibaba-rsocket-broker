@@ -277,12 +277,12 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     }
 
     void shutDownGracefully(GracefulShutdownCallback callback) {
+        this.stopLocalBroker();
         if (serverProperties.getShutdown() == Shutdown.IMMEDIATE) {
             callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
         } else {
             try {
-                this.stopLocalBroker();
-                // waiting for 15 seconds to broadcast message
+                // waiting for 15 seconds to broadcast shutdown message
                 Thread.sleep(15000);
             } catch (Exception ignore) {
 
