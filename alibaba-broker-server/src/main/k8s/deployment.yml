@@ -33,10 +33,12 @@ metadata:
   namespace: rsocket
 spec:
   ports:
-    - port: 9999
+    - name: rsocket
+      port: 9999
       targetPort: 9999
       protocol: TCP
-    - port: 9998
+    - name: http-admin
+      port: 9998
       targetPort: 9998
       protocol: TCP
   selector:
