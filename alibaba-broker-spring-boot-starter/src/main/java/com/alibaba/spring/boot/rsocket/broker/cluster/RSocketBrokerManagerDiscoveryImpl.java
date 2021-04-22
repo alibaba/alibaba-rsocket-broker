@@ -2,8 +2,11 @@ package com.alibaba.spring.boot.rsocket.broker.cluster;
 
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.transport.NetworkUtil;
 import io.scalecube.cluster.ClusterMessageHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
  * @author leijuan
  */
 public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, ClusterMessageHandler, DisposableBean {
+    private static Logger log = LoggerFactory.getLogger(RSocketBrokerManagerDiscoveryImpl.class);
     private ReactiveDiscoveryClient discoveryClient;
     private Map<String, RSocketBroker> currentBrokers = new HashMap<>();
     private final String SERVICE_NAME = "rsocket-broker";
@@ -49,6 +53,7 @@ public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, 
                             broker.setIp(serviceInstance.getHost());
                             return broker;
                         }).collect(Collectors.toMap(RSocketBroker::getIp, Function.identity()));
+                        log.info(RsocketErrorCode.message("RST-300206", String.join(",", currentBrokers.keySet())));
                         brokersEmitterProcessor.tryEmitNext(currentBrokers.values());
                     }
                 });
