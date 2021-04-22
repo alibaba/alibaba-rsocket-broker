@@ -18,6 +18,9 @@ spec:
           ports:
             - containerPort: 8180
           imagePullPolicy: IfNotPresent
+          env:
+            - name: RSOCKET_BROKERS
+              value: "tcp://rsocket-broker.rsocket.svc.cluster.local:9999"
       restartPolicy: Always
   selector:
     matchLabels:
