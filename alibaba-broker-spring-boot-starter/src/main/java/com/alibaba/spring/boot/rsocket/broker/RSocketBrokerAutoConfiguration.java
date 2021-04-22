@@ -139,7 +139,7 @@ public class RSocketBrokerAutoConfiguration {
                                                                       @Autowired RSocketBrokerProperties properties) {
         return builder -> {
             builder.acceptor(registry);
-            builder.listen("tcp", properties.getPort());
+            builder.listen("tcp", properties.getListen());
         };
     }
 
@@ -159,7 +159,7 @@ public class RSocketBrokerAutoConfiguration {
                     KeyStore.Entry entry = store.getEntry(alias, new KeyStore.PasswordProtection(rSocketSSL.getKeyStorePassword().toCharArray()));
                     PrivateKey privateKey = ((KeyStore.PrivateKeyEntry) entry).getPrivateKey();
                     builder.sslContext(certificate, privateKey);
-                    builder.listen("tcps", properties.getPort());
+                    builder.listen("tcps", properties.getListen());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
