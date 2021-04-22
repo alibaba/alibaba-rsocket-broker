@@ -11,7 +11,6 @@ import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,8 +39,6 @@ public class OpsRestController {
 
     @Autowired
     private RSocketBrokerManager brokerManager;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @RequestMapping("/services")
     public Mono<Collection<ServiceLocator>> services() {
