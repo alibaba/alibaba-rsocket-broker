@@ -70,7 +70,7 @@
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
                             <image>
-                                <name>rsocket-responder:latest</name>
+                                <name>rsocket-requester:latest</name>
                                 <builder>paketobuildpacks/builder:full</builder>
                             </image>
                         </configuration>
