@@ -21,6 +21,14 @@ spec:
             - containerPort: 9998
             - containerPort: 9999
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9997
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9997
           lifecycle:
             preStop:
               exec:
