@@ -65,7 +65,7 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
 
     @Override
     public URI originUri() {
-        return URI.create("tcp://" + NetworkUtil.LOCAL_IP + ":" + properties.getPort()
+        return URI.create("tcp://" + NetworkUtil.LOCAL_IP + ":" + properties.getListen()
                 + "?appName=" + appName
                 + "&uuid=" + RSocketAppContext.ID);
     }
