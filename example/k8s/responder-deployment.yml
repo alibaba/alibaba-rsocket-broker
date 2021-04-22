@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsocket-responder
+  labels:
+    app: rsocket-responder
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: rsocket-responder
+      labels:
+        app: rsocket-responder
+    spec:
+      containers:
+        - name: rsocket-responder
+          image: rsocket-responder:latest
+          ports:
+            - containerPort: 8180
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: rsocket-responder
