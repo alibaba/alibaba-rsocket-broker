@@ -133,20 +133,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>com.google.cloud.tools</groupId>
-                    <artifactId>jib-maven-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <configuration>
-                        <allowInsecureRegistries>true</allowInsecureRegistries>
-                        <from>
-                            <image>openjdk:8-jdk-slim</image>
-                        </from>
-                        <container>
-                            <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                        </container>
-                    </configuration>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
