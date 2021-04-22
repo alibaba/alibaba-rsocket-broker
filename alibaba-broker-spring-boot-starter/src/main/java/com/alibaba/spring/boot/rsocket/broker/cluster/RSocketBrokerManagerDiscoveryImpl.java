@@ -30,10 +30,11 @@ public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, 
     private final String SERVICE_NAME = "rsocket-broker";
     private Sinks.Many<Collection<RSocketBroker>> brokersEmitterProcessor = Sinks.many().multicast().onBackpressureBuffer();
     private Disposable brokersFresher;
+    private static final int REFRESH_INTERVAL_SECONDS = 7;
 
     public RSocketBrokerManagerDiscoveryImpl(ReactiveDiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
-        this.brokersFresher = Flux.interval(Duration.ofSeconds(10))
+        this.brokersFresher = Flux.interval(Duration.ofSeconds(REFRESH_INTERVAL_SECONDS))
                 .flatMap(aLong -> this.discoveryClient.getInstances(SERVICE_NAME).collectList())
                 .subscribe(serviceInstances -> {
                     boolean changed = serviceInstances.size() != currentBrokers.size();
