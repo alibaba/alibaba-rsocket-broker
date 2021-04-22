@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsocket-requester
+  labels:
+    app: rsocket-requester
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: rsocket-requester
+      labels:
+        app: rsocket-requester
+    spec:
+      containers:
+        - name: rsocket-requester
+          image: rsocket-requester:latest
+          ports:
+            - containerPort: 8180
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: rsocket-requester
