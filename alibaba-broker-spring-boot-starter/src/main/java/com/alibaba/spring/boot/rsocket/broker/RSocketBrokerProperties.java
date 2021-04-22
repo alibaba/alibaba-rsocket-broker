@@ -17,7 +17,7 @@ public class RSocketBrokerProperties {
     /**
      * listen port
      */
-    private int port = 9999;
+    private int listen = 9999;
     /**
      * topology: gossip, k8s, standalone
      */
@@ -35,12 +35,12 @@ public class RSocketBrokerProperties {
     private List<String> upstreamBrokers;
     private String upstreamToken;
 
-    public int getPort() {
-        return port;
+    public int getListen() {
+        return listen;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setListen(int listen) {
+        this.listen = listen;
     }
 
     public String getExternalDomain() {
