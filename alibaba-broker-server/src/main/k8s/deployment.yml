@@ -21,6 +21,10 @@ spec:
             - containerPort: 9998
             - containerPort: 9999
           imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "sh", "-c", "sleep 10" ]
       restartPolicy: Always
   selector:
     matchLabels:
