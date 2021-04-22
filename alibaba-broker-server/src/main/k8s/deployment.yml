@@ -24,7 +24,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: [ "sh", "-c", "sleep 10" ]
+                command: [ "sh", "-c", "sleep 30" ]
       restartPolicy: Always
   selector:
     matchLabels:
