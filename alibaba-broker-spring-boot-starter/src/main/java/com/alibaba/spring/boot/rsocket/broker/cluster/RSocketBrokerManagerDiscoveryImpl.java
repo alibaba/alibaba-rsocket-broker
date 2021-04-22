@@ -30,7 +30,7 @@ public class RSocketBrokerManagerDiscoveryImpl implements RSocketBrokerManager, 
     private final String SERVICE_NAME = "rsocket-broker";
     private Sinks.Many<Collection<RSocketBroker>> brokersEmitterProcessor = Sinks.many().multicast().onBackpressureBuffer();
     private Disposable brokersFresher;
-    private static final int REFRESH_INTERVAL_SECONDS = 7;
+    private static final int REFRESH_INTERVAL_SECONDS = 5;
 
     public RSocketBrokerManagerDiscoveryImpl(ReactiveDiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
