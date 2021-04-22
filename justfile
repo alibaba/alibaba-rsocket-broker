@@ -1,15 +1,8 @@
-# install rsocket-cli
-setup_mac:
-  brew tap AdoptOpenJDK/openjdk
-  brew install adoptopenjdk-openjdk8
-  brew install maven
-  brew install yschimke/tap/rsocket-cli
-  brew install docker-compose
-
-# maven project 
+# maven package without test
 build:
   mvn -DskipTests clean package
 
+# build without server: rsocket server build is some slow
 build-without-server:
   mvn -DskipTests -pl !alibaba-broker-server clean package
 
@@ -63,3 +56,11 @@ clean:
    rm -rf alibaba-broker-server/node_modules
    rm -rf alibaba-broker-server/package*.json
    rm -rf alibaba-broker-server/webpack*.js
+
+# install rsocket-cli
+setup_mac:
+  brew tap AdoptOpenJDK/openjdk
+  brew install adoptopenjdk-openjdk8
+  brew install maven
+  brew install yschimke/tap/rsocket-cli
+  brew install docker-compose
