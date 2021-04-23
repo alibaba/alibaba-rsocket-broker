@@ -21,14 +21,21 @@ spec:
             - containerPort: 9998
             - containerPort: 9999
           imagePullPolicy: IfNotPresent
+          env:
+            - name: "SPRING_PROFILES_ACTIVE"
+              value: "kubernetes"
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 9997
+            initialDelaySeconds: 60
+            periodSeconds: 60
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 9997
+            initialDelaySeconds: 60
+            periodSeconds: 60
           lifecycle:
             preStop:
               exec:
