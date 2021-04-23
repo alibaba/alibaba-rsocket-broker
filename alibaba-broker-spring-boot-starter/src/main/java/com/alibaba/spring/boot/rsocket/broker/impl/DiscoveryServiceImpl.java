@@ -5,6 +5,8 @@ import com.alibaba.rsocket.discovery.DiscoveryService;
 import com.alibaba.rsocket.discovery.RSocketServiceInstance;
 import com.alibaba.rsocket.events.AppStatusEvent;
 import com.alibaba.rsocket.metadata.AppMetadata;
+import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBroker;
+import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
@@ -28,9 +30,23 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     private RSocketBrokerHandlerRegistry handlerRegistry;
     @Autowired
     private ServiceRoutingSelector routingSelector;
+    @Autowired
+    private RSocketBrokerManager rsocketBrokerManager;
 
     @Override
     public Flux<RSocketServiceInstance> getInstances(String serviceId) {
+        if (serviceId.equals("*")) {
+            return Flux.fromIterable(rsocketBrokerManager.currentBrokers())
+                    .filter(RSocketBroker::isActive)
+                    .map(broker -> {
+                        RSocketServiceInstance instance = new RSocketServiceInstance();
+                        instance.setHost(broker.getIp());
+                        instance.setServiceId("*");
+                        instance.setPort(broker.getPort());
+                        instance.setSecure(broker.isActive());
+                        return instance;
+                    });
+        }
         return findServiceInstances(serviceId);
     }
 
