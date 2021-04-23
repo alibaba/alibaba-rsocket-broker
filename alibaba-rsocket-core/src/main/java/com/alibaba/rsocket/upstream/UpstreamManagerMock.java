@@ -3,6 +3,8 @@ package com.alibaba.rsocket.upstream;
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.client.SimpleRSocketRequesterSupport;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.discovery.DiscoveryService;
+import com.alibaba.rsocket.discovery.RSocketServiceInstance;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCallerImpl;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
@@ -66,7 +68,7 @@ public class UpstreamManagerMock implements UpstreamManager {
         try {
             init();
         } catch (Exception ignore) {
-            
+
         }
     }
 
@@ -91,6 +93,21 @@ public class UpstreamManagerMock implements UpstreamManager {
     @Override
     public UpstreamCluster findBroker() {
         return this.brokerCluster;
+    }
+
+    @Override
+    public DiscoveryService findBrokerDiscoveryService() {
+        return new DiscoveryService() {
+            @Override
+            public Flux<RSocketServiceInstance> getInstances(String serviceId) {
+                return Flux.empty();
+            }
+
+            @Override
+            public Flux<String> getAllServices() {
+                return Flux.empty();
+            }
+        };
     }
 
     @Override
