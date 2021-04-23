@@ -20,6 +20,7 @@ import io.scalecube.cluster.Member;
 import io.scalecube.cluster.membership.MembershipEvent;
 import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.net.Address;
+import io.scalecube.transport.netty.tcp.TcpTransportFactory;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -252,6 +253,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
         monoCluster = new ClusterImpl()
                 .config(clusterConfig -> clusterConfig.externalHost(localIp).externalPort(gossipListenPort))
                 .membership(membershipConfig -> membershipConfig.seedMembers(seedMembers()).syncInterval(5_000))
+                .transportFactory(TcpTransportFactory::new)
                 .transport(transportConfig -> transportConfig.port(gossipListenPort))
                 .handler(cluster1 -> this)
                 .start();
