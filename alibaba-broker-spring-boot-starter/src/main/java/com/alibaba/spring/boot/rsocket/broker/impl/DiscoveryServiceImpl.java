@@ -43,6 +43,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                         instance.setHost(broker.getIp());
                         instance.setServiceId("*");
                         instance.setPort(broker.getPort());
+                        instance.setSchema(broker.getSchema());
+                        instance.setUri(broker.getUrl());
                         instance.setSecure(broker.isActive());
                         return instance;
                     });
