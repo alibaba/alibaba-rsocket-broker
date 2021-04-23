@@ -129,6 +129,10 @@
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
                     <jvmArguments>-Dvaadin.productionMode</jvmArguments>
+                    <image>
+                        <name>linuxchina/alibaba-rsocket-broker:${project.version}</name>
+                        <builder>paketobuildpacks/builder:full</builder>
+                    </image>
                 </configuration>
             </plugin>
             <plugin>
