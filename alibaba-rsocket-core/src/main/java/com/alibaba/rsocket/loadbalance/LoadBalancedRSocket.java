@@ -50,6 +50,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
     private final String serviceId;
     private final Flux<Collection<String>> urisFactory;
     private Collection<String> lastRSocketUris = new ArrayList<>();
+    private Collection<String> firstBatchUris;
     private Map<String, RSocket> activeSockets;
     /**
      * unhealthy uris
@@ -118,6 +119,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         //no changes
         if (isSameWithLastUris(rsocketUris)) {
             return;
+        }
+        //save first batch uris
+        if (this.firstBatchUris == null) {
+            firstBatchUris = rsocketUris;
         }
         this.lastRefreshTimeStamp = System.currentTimeMillis();
         this.lastRSocketUris = rsocketUris;
@@ -334,6 +339,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
 
                 }
             }
+        }
+        // use first batch uris to refresh connections
+        if (activeSockets.isEmpty() && !lastRSocketUris.containsAll(firstBatchUris)) {
+            refreshRsockets(firstBatchUris);
         }
     }
 
