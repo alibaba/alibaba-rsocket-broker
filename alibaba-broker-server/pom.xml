@@ -129,7 +129,10 @@
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
                     <jvmArguments>-Dvaadin.productionMode</jvmArguments>
-                    <imageName>linuxchina/alibaba-rsocket-broker:${project.version}-buildpack</imageName>
+                    <image>
+                        <name>linuxchina/alibaba-rsocket-broker:${project.version}-buildpack</name>
+                        <builder>paketobuildpacks/builder:full</builder>
+                    </image>
                 </configuration>
             </plugin>
             <plugin>
@@ -236,7 +239,7 @@
                                         /app/libs/alibaba-rsocket-core-${project.version}.jar:/app/resources:/app/classes:/app/libs/*
                                     </JAVA_CLASSPATH>
                                     <JAVA_MAIN_CLASS>${mainClass}</JAVA_MAIN_CLASS>
-                                    <SPRING_PROFILES_ACTIVE>k8s</SPRING_PROFILES_ACTIVE>
+                                    <SPRING_PROFILES_ACTIVE>kubernetes</SPRING_PROFILES_ACTIVE>
                                 </environment>
                                 <ports>
                                     <port>9997</port>
