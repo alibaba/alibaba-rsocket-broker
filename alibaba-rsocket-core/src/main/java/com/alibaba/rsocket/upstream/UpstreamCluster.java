@@ -123,7 +123,7 @@ public class UpstreamCluster implements Initializable, Closeable {
     @Override
     public void init() {
         if (status != 1) {
-            if(!this.uris.isEmpty()) {
+            if (!this.uris.isEmpty()) {
                 freshUpstreams();
             }
             loadBalancedRSocket = new LoadBalancedRSocket(getServiceId(), urisProcessor, rsocketRequesterSupport);
