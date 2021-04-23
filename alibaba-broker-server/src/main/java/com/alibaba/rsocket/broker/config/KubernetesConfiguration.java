@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @EnableDiscoveryClient
-@Profile("k8s")
+@Profile("kubernetes")
 public class KubernetesConfiguration {
 
 }
