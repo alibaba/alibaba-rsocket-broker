@@ -129,10 +129,6 @@
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
                     <jvmArguments>-Dvaadin.productionMode</jvmArguments>
-                    <image>
-                        <name>linuxchina/alibaba-rsocket-broker:${project.version}-buildpack</name>
-                        <builder>paketobuildpacks/builder:full</builder>
-                    </image>
                 </configuration>
             </plugin>
             <plugin>
@@ -247,6 +243,18 @@
                                     <port>9999</port>
                                 </ports>
                             </container>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>${mainClass}</mainClass>
+                            <jvmArguments>-Dvaadin.productionMode</jvmArguments>
+                            <image>
+                                <name>linuxchina/alibaba-rsocket-broker-k8s:${project.version}</name>
+                                <builder>paketobuildpacks/builder:full</builder>
+                            </image>
                         </configuration>
                     </plugin>
                 </plugins>
