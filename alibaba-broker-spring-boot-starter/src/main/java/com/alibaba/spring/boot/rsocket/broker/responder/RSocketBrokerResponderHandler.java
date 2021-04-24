@@ -42,7 +42,6 @@ import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URI;
@@ -633,12 +632,11 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
 
     private String getRemoteAddress(RSocket requesterSocket) {
         try {
-            Method remoteAddressMethod = ReflectionUtils.findMethod(DuplexConnection.class, "remoteAddress");
-            if (remoteAddressMethod != null) {
-                Field connectionField = ReflectionUtils.findField(requesterSocket.getClass(), "connection");
-                if (connectionField != null) {
-                    DuplexConnection connection = (DuplexConnection) ReflectionUtils.getField(connectionField, requesterSocket);
-                    SocketAddress remoteAddress = (SocketAddress) remoteAddressMethod.invoke(connection);
+            Field connectionField = ReflectionUtils.findField(requesterSocket.getClass(), "connection");
+            if (connectionField != null) {
+                DuplexConnection connection = (DuplexConnection) ReflectionUtils.getField(connectionField, requesterSocket);
+                if (connection != null) {
+                    SocketAddress remoteAddress = connection.remoteAddress();
                     if (remoteAddress instanceof InetSocketAddress) {
                         return ((InetSocketAddress) remoteAddress).getHostName();
                     }
