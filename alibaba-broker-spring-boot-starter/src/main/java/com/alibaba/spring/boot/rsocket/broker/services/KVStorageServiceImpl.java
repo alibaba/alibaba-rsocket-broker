@@ -4,9 +4,10 @@ import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.ReplayProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,11 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author leijuan
  */
 @RSocketLocalService(serviceInterface = ConfigurationService.class)
+@ConditionalOnMissingBean(ConfigurationService.class)
 public class KVStorageServiceImpl implements ConfigurationService {
     private static Logger log = LoggerFactory.getLogger(KVStorageServiceImpl.class);
     private Set<String> appNames = new HashSet<>();
     private Map<String, String> snapshotStore = new ConcurrentHashMap<>();
-    private Map<String, ReplayProcessor<String>> watchNotification = new ConcurrentHashMap<>();
+    private Map<String, Sinks.Many<String>> watchNotification = new ConcurrentHashMap<>();
 
     public KVStorageServiceImpl() {
         //add test data for unit test
@@ -55,7 +57,7 @@ public class KVStorageServiceImpl implements ConfigurationService {
             if (!watchNotification.containsKey(key)) {
                 initNotification(key);
             }
-            watchNotification.get(key).onNext(value);
+            watchNotification.get(key).tryEmitNext(value);
         });
     }
 
@@ -64,7 +66,7 @@ public class KVStorageServiceImpl implements ConfigurationService {
         return Mono.fromRunnable(() -> {
             snapshotStore.remove(key);
             if (watchNotification.containsKey(key)) {
-                watchNotification.get(key).onNext("");
+                watchNotification.get(key).tryEmitNext("");
             }
         });
     }
@@ -82,10 +84,10 @@ public class KVStorageServiceImpl implements ConfigurationService {
         if (!watchNotification.containsKey(key)) {
             initNotification(key);
         }
-        return Flux.create(sink -> watchNotification.get(key).subscribe(sink::next));
+        return Flux.create(sink -> watchNotification.get(key).asFlux().subscribe(sink::next));
     }
 
     private void initNotification(String appName) {
-        watchNotification.put(appName, ReplayProcessor.cacheLast());
+        watchNotification.put(appName, Sinks.many().replay().latest());
     }
 }
