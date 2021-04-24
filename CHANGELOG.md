@@ -18,6 +18,7 @@ RSocket Broker 1.1将会基于RSocket Java 1.1.0和Spring Boot 2.4.x开发。
 * GraalVM native image兼容GraalVM 21.1.0
 * Config Server推送添加了Redis的适配
 * RSocket Broker集群变更推送添加幂等支持： 也就是应用接入端会每2分钟和Broker同步一次，拿取最新的Broker集群信息
+* RSocket Broker Server的Docker镜像编译调整到Buildpacks，Paketo Buildpacks对Spring Boot支持更好
 
 ### 文档
 
