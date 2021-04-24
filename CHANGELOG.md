@@ -23,6 +23,7 @@ RSocket Broker 1.1将会基于RSocket Java 1.1.0和Spring Boot 2.4.x开发。
 ### 文档
 
 * RSocket Broker测试支持： https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-Testing
+* RSocket Broker Kubernetes: https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-Kubernetes
 
 ### 样例
 
