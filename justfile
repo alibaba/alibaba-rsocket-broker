@@ -45,6 +45,10 @@ deploy-broker-server:
 buildpacks-build:
   mvn -pl alibaba-broker-server -DskipTests package spring-boot:build-image
 
+# build rsocket broker as Docker image
+jib-docker-build:
+  mvn -pl alibaba-broker-server jib:dockerBuild
+
 k8s-buildpacks:
   mvn -Pk8s -pl alibaba-broker-server -DskipTests package spring-boot:build-image
 
