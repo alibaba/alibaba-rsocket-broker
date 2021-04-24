@@ -40,6 +40,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                     .filter(RSocketBroker::isActive)
                     .map(broker -> {
                         RSocketServiceInstance instance = new RSocketServiceInstance();
+                        instance.setInstanceId(broker.getId());
                         instance.setHost(broker.getIp());
                         instance.setServiceId("*");
                         instance.setPort(broker.getPort());
