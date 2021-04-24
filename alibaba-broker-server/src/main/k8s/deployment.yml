@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: rsocket-broker
-          image: linuxchina/alibaba-rsocket-broker-k8s:1.1.0-SNAPSHOT
+          image: linuxchina/alibaba-rsocket-broker:1.1.0-SNAPSHOT-k8s
           ports:
             - containerPort: 9997
             - containerPort: 9998
