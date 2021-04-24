@@ -36,7 +36,9 @@ public class ConfigurationServiceMVStoreImpl implements ConfigurationService {
         try {
             mvStore = MVStore.open(new File(rsocketRootDir, "appsConfig.db").getAbsolutePath());
         } catch (Exception e) {
-            mvStore = MVStore.open(new File(System.getProperty("java.io.tmpdir", "/tmp"), "appsConfig.db").getAbsolutePath());
+            String storeFilePath = new File(System.getProperty("java.io.tmpdir", "/tmp"), "appsConfig.db").getAbsolutePath();
+            mvStore = MVStore.open(storeFilePath);
+            log.info("Configuration store file: " + storeFilePath);
         }
         log.info(RsocketErrorCode.message("RST-302200", "H2 MVStore"));
     }
