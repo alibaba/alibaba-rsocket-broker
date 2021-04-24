@@ -76,7 +76,7 @@ public class AppMetadata implements MetadataAware {
     /**
      * sdk and RSocket protocol version
      */
-    private String sdk = "Alibaba-RSocket-1.0.1/1.0.0";
+    private String sdk = "Alibaba-RSocket-1.1.0/1.0.0";
 
     /**
      * developers, format as email list: xxx <xxx@foobar.com>, yyy <yyy@foobar.com>
