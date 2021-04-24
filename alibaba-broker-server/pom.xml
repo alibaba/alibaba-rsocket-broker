@@ -232,7 +232,7 @@
                                 <image>adoptopenjdk:8-jdk-hotspot</image>
                             </from>
                             <to>
-                                <image>linuxchina/alibaba-rsocket-broker-k8s:${project.version}</image>
+                                <image>linuxchina/alibaba-rsocket-broker:${project.version}-k8s</image>
                             </to>
                             <container>
                                 <mainClass>${mainClass}</mainClass>
@@ -260,7 +260,7 @@
                             <mainClass>${mainClass}</mainClass>
                             <jvmArguments>-Dvaadin.productionMode</jvmArguments>
                             <image>
-                                <name>linuxchina/alibaba-rsocket-broker-k8s:${project.version}</name>
+                                <name>linuxchina/alibaba-rsocket-broker:${project.version}-k8s</name>
                                 <builder>paketobuildpacks/builder:full</builder>
                             </image>
                         </configuration>
