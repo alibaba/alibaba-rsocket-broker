@@ -53,7 +53,10 @@ k8s-buildpacks:
   mvn -Pk8s -pl alibaba-broker-server -DskipTests package spring-boot:build-image
 
 rsc-test:
-   rsc --setupMetadata '{"ip":"127.0.0.1","name":"MockApp","sdk":"SpringBoot/2.3.7","device":"JavaApp"}' --setupMetadataMimeType "APP_INFO" tcp://localhost:9999 --request --route com.alibaba.user.UserService.findById -d '[1]' --debug
+   rsc --setupMetadata '{"ip":"127.0.0.1","name":"MockApp","sdk":"SpringBoot/2.4.5","device":"JavaApp"}' --setupMetadataMimeType "APP_INFO" tcp://localhost:9999 --request --route com.alibaba.user.UserService.findById -d '[1]' --debug
+
+broker-test:
+   rsc --setupMetadata '{"ip":"127.0.0.1","name":"MockApp","sdk":"SpringBoot/2.4.5","device":"rsc-cli"}' --setupMetadataMimeType "APP_INFO" tcp://localhost:9999 --request --route com.alibaba.rsocket.discovery.DiscoveryService.getInstances -d '["*"]' | jq
 
 lint:
   mvn compile spotbugs:check
