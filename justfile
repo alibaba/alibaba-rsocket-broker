@@ -10,17 +10,6 @@ build-without-server:
 artifacts-install:
   mvn -pl .,alibaba-rsocket-service-common,alibaba-rsocket-core,alibaba-rsocket-spring-boot-starter,alibaba-broker-spring-boot-starter -DskipTests clean source:jar install
 
-# build rsocket broker as Docker image
-docker-build: artifacts-install
-  mvn -pl alibaba-broker-server jib:dockerBuild
-
-# build rsocket broker as Docker image
-k8s-jib-build: artifacts-install
-  mvn -Pk8s -pl alibaba-broker-server -DskipTests clean package jib:dockerBuild
-
-k8s-buildpacks: artifacts-install
-  mvn -Pk8s -pl alibaba-broker-server -DskipTests clean package spring-boot:build-image
-
 # start rsocket broker
 start-broker:
   java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar
@@ -38,11 +27,26 @@ updates:
 dependency-tree:
    mvn clean compile com.github.ferstl:depgraph-maven-plugin:3.3.0:aggregate -DgraphFormat=text -Dscope=compile -DshowVersions=true
 
-staging:
-   mvn -P release -DskipTests clean package deploy
+deploy-artifacts:
+  mvn -P release -pl .,alibaba-rsocket-service-common,alibaba-rsocket-core,alibaba-rsocket-spring-boot-starter,alibaba-broker-spring-boot-starter -DskipTests clean package deploy
 
-deploy:
-   mvn -DskipLocalStaging=true -P release -DskipTests clean package deploy
+deploy-config-registry:
+  mvn -P release -pl alibaba-broker-config-client-spring-boot-starter,alibaba-broker-registry-client-spring-boot-starter -DskipTests package deploy
+
+deploy-http-gateway:
+  mvn -P release -pl alibaba-broker-http-gateway -DskipTests package deploy
+
+deploy-grpc-gateway:
+  mvn -P release -pl alibaba-broker-grpc-gateway -DskipTests package deploy
+
+deploy-broker-server:
+  mvn -P release -pl alibaba-broker-server -DskipTests package deploy
+
+buildpacks-build:
+  mvn -pl alibaba-broker-server -DskipTests package spring-boot:build-image
+
+k8s-buildpacks:
+  mvn -Pk8s -pl alibaba-broker-server -DskipTests package spring-boot:build-image
 
 rsc-test:
    rsc --setupMetadata '{"ip":"127.0.0.1","name":"MockApp","sdk":"SpringBoot/2.3.7","device":"JavaApp"}' --setupMetadataMimeType "APP_INFO" tcp://localhost:9999 --request --route com.alibaba.user.UserService.findById -d '[1]' --debug
