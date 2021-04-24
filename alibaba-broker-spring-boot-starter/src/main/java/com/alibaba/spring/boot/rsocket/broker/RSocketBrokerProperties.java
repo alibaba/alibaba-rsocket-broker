@@ -23,6 +23,10 @@ public class RSocketBrokerProperties {
      */
     private String topology;
     /**
+     * configuration store, such as h2://appsConfig.db, redis://localhost/0
+     */
+    private String configStore = "mem://demo";
+    /**
      * external domain for requester from external: the requester can not access broker's internal ip
      */
     private String externalDomain;
@@ -65,6 +69,14 @@ public class RSocketBrokerProperties {
 
     public void setTopology(String topology) {
         this.topology = topology;
+    }
+
+    public String getConfigStore() {
+        return configStore;
+    }
+
+    public void setConfigStore(String configStore) {
+        this.configStore = configStore;
     }
 
     public RSocketSSL getSsl() {
