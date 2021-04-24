@@ -2,11 +2,12 @@ package com.alibaba.rsocket.broker.config;
 
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
+import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -21,7 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author leijuan
  */
-@Component
+@RSocketLocalService(serviceInterface = ConfigurationService.class)
+@ConditionalOnExpression("'${rsocket.broker.config-store}'.startsWith('h2://')")
 public class ConfigurationServiceMVStoreImpl implements ConfigurationService {
     private static Logger log = LoggerFactory.getLogger(ConfigurationServiceMVStoreImpl.class);
     private MVStore mvStore;
