@@ -152,6 +152,8 @@ public class PortalController {
 }
 ```
 
+样例项目请参考： https://github.com/alibaba-rsocket-broker/rsocket-broker-simple-example
+
 ### References
 
 * RSocket: http://rsocket.io/
