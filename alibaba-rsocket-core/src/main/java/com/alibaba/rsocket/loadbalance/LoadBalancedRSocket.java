@@ -124,6 +124,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         if (this.firstBatchUris == null) {
             firstBatchUris = rsocketUris;
         }
+        log.info(RsocketErrorCode.message("RST-300207", serviceId, String.join(",", rsocketUris)));
         this.lastRefreshTimeStamp = System.currentTimeMillis();
         this.lastRSocketUris = rsocketUris;
         this.unHealthyUriSet.clear();
