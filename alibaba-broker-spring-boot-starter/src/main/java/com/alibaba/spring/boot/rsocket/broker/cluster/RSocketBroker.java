@@ -91,6 +91,9 @@ public class RSocketBroker {
     }
 
     public String getAliasUrl() {
+        if(externalDomain==null) {
+            return null;
+        }
         if (externalDomain.contains("://")) {
             return this.externalDomain;
         } else {
