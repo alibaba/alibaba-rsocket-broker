@@ -49,7 +49,7 @@ public final class TcpSslUriHandler implements UriHandler {
     private static final List<String> SCHEMES = Arrays.asList("tcps", "tcp+tls","tls");
     private static final String DEFAULT_PASSWORD = "changeit";
     private TrustManagerFactory trustManagerFactory = InsecureTrustManagerFactory.INSTANCE;
-    private static final String[] protocols = new String[]{"TLSv1.3", "TLSv.1.2"};
+    private static final String[] protocols = new String[]{"TLSv1.3", "TLSv1.2"};
 
     public TcpSslUriHandler() {
         File fingerPrints = new File(System.getProperty("user.home") + "/.rsocket/known_finder_prints");
