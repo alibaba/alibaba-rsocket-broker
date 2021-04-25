@@ -99,8 +99,9 @@ public class DashboardView extends VerticalLayout {
     public List<AppMetadata> appMetadataList(RSocketBrokerHandlerRegistry handlerFactory) {
         return handlerFactory.findAll()
                 .stream()
-                .limit(10)
                 .map(RSocketBrokerResponderHandler::getAppMetadata)
+                .sorted((o1, o2) -> o2.getConnectedAt().compareTo(o1.getConnectedAt()))
+                .limit(10)
                 .collect(Collectors.toList());
     }
 
