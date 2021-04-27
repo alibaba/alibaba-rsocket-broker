@@ -1,6 +1,7 @@
 package com.alibaba.user;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -14,6 +15,7 @@ public class User implements Serializable {
     private String email;
     private String phone;
     private Date createdAt;
+    private LocalDateTime updatedAt;
 
     public User() {
     }
@@ -61,5 +63,13 @@ public class User implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
