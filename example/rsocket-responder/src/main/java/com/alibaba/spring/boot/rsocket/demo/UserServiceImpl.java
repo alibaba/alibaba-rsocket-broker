@@ -18,6 +18,7 @@ import reactor.util.function.Tuple2;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -136,6 +137,7 @@ public class UserServiceImpl implements UserService {
         user.setPhone(faker.phoneNumber().cellPhone());
         user.setEmail(faker.internet().emailAddress());
         user.setCreatedAt(new Date());
+        user.setUpdatedAt(LocalDateTime.now());
         return user;
     }
 
