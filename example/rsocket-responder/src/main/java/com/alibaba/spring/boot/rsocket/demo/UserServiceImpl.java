@@ -18,10 +18,7 @@ import reactor.util.function.Tuple2;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * user service implementation
@@ -138,6 +135,7 @@ public class UserServiceImpl implements UserService {
         user.setNick(faker.name().name());
         user.setPhone(faker.phoneNumber().cellPhone());
         user.setEmail(faker.internet().emailAddress());
+        user.setCreatedAt(new Date());
         return user;
     }
 
