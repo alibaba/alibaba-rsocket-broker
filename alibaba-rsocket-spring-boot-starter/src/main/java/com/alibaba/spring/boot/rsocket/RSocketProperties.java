@@ -1,8 +1,10 @@
 package com.alibaba.spring.boot.rsocket;
 
 import com.alibaba.rsocket.route.RoutingEndpoint;
+import com.alibaba.rsocket.transport.NetworkUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +105,16 @@ public class RSocketProperties {
 
     public void setBrokers(List<String> brokers) {
         this.brokers = brokers;
+        for (String broker : brokers) {
+            try {
+                URI uri = URI.create(broker);
+                if (!NetworkUtil.isInternalIp(uri.getHost())) {
+                    this.topology = "internet";
+                }
+            } catch (Exception ignore) {
+
+            }
+        }
     }
 
     public String getTopology() {
