@@ -173,6 +173,13 @@
                 <type>pom</type>
             </dependency>
             <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-bom</artifactId>
+                <version>${kotlinx-serialization.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
                 <groupId>io.zipkin.brave</groupId>
                 <artifactId>brave-bom</artifactId>
                 <version>${zipkin-brave.version}</version>
