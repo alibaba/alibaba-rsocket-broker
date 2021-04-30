@@ -28,6 +28,9 @@ k8s-undeploy:
 benchmarking_rpc:
   wrk -t5 -c50 -d30s --latency http://localhost:8181/user/2
 
+benchmarking_rpc_direct:
+  wrk -t5 -c50 -d30s --latency http://localhost:8181/user2/2
+
 benchmarking_fnf:
   wrk -t5 -c50 -d30s --latency http://localhost:8181/job1
 
