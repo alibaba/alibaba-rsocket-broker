@@ -15,6 +15,7 @@ import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +36,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     private RSocketBrokerManager rsocketBrokerManager;
 
     @Override
-    public Flux<RSocketServiceInstance> getInstances(String serviceId) {
+    public Mono<List<RSocketServiceInstance>> getInstances(String serviceId) {
         if (serviceId.equals("*")) {
             return Flux.fromIterable(rsocketBrokerManager.currentBrokers())
                     .filter(RSocketBroker::isActive)
@@ -49,13 +50,13 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                         instance.setUri(broker.getUrl());
                         instance.setSecure(broker.isActive());
                         return instance;
-                    });
+                    }).collectList();
         }
-        return findServiceInstances(serviceId);
+        return findServiceInstances(serviceId).collectList();
     }
 
     @Override
-    public Flux<String> findAppInstances(String orgId) {
+    public Mono<List<String>> findAppInstances(String orgId) {
         return Flux.fromIterable(handlerRegistry.findAll())
                 .filter(responderHandler -> {
                     RSocketAppPrincipal principal = responderHandler.getPrincipal();
@@ -64,12 +65,13 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                 .map(responderHandler -> {
                     AppMetadata appMetadata = responderHandler.getAppMetadata();
                     return appMetadata.getName() + "," + appMetadata.getIp() + "," + appMetadata.getConnectedAt();
-                });
+                })
+                .collectList();
     }
 
     @Override
-    public Flux<String> getAllServices() {
-        return Flux.fromIterable(routingSelector.findAllServices()).map(ServiceLocator::getGsv);
+    public Mono<List<String>> getAllServices() {
+        return Flux.fromIterable(routingSelector.findAllServices()).map(ServiceLocator::getGsv).collectList();
     }
 
     @NotNull

@@ -99,18 +99,18 @@ public class UpstreamManagerMock implements UpstreamManager {
     public DiscoveryService findBrokerDiscoveryService() {
         return new DiscoveryService() {
             @Override
-            public Flux<RSocketServiceInstance> getInstances(String serviceId) {
-                return Flux.empty();
+            public Mono<List<RSocketServiceInstance>> getInstances(String serviceId) {
+                return Mono.empty();
             }
 
             @Override
-            public Flux<String> findAppInstances(String orgId) {
-                return Flux.empty();
+            public Mono<List<String>> findAppInstances(String orgId) {
+                return Mono.empty();
             }
 
             @Override
-            public Flux<String> getAllServices() {
-                return Flux.empty();
+            public Mono<List<String>> getAllServices() {
+                return Mono.empty();
             }
         };
     }

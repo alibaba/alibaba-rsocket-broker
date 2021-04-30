@@ -1,6 +1,8 @@
 package com.alibaba.rsocket.discovery;
 
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * discovery service for registry client
@@ -9,9 +11,9 @@ import reactor.core.publisher.Flux;
  */
 public interface DiscoveryService {
 
-    Flux<RSocketServiceInstance> getInstances(String serviceId);
+    Mono<List<RSocketServiceInstance>> getInstances(String serviceId);
 
-    Flux<String> findAppInstances(String orgId);
+    Mono<List<String>> findAppInstances(String orgId);
 
-    Flux<String> getAllServices();
+    Mono<List<String>> getAllServices();
 }
