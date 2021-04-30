@@ -3,10 +3,7 @@ package com.alibaba.user.springboot;
 import com.alibaba.rsocket.invocation.RSocketRemoteServiceBuilder;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamManager;
-import com.alibaba.user.AccountService;
-import com.alibaba.user.Rx3UserService;
-import com.alibaba.user.RxUserService;
-import com.alibaba.user.UserService;
+import com.alibaba.user.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,6 +19,14 @@ public class UserServicesAutoConfiguration {
     public UserService userService(UpstreamManager upstreamManager) {
         return RSocketRemoteServiceBuilder
                 .client(UserService.class)
+                .upstreamManager(upstreamManager)
+                .build();
+    }
+
+    @Bean
+    public UserService2 userService2(UpstreamManager upstreamManager) {
+        return RSocketRemoteServiceBuilder
+                .client(UserService2.class)
                 .upstreamManager(upstreamManager)
                 .build();
     }
