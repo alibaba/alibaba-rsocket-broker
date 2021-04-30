@@ -104,6 +104,11 @@ public class UpstreamManagerMock implements UpstreamManager {
             }
 
             @Override
+            public Flux<String> findAppInstances(String orgId) {
+                return Flux.empty();
+            }
+
+            @Override
             public Flux<String> getAllServices() {
                 return Flux.empty();
             }
