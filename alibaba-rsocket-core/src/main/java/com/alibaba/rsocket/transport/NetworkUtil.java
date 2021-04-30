@@ -48,7 +48,7 @@ public class NetworkUtil {
             return isInternalIp(InetAddress.getByName(ipOrHost).getAddress());
         } catch (Exception e) {
             System.out.println("Failed to get ip:" + e.getMessage());
-            return true;
+            return false;
         }
     }
 
