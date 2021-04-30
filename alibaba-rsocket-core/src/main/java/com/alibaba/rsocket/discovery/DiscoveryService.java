@@ -11,5 +11,7 @@ public interface DiscoveryService {
 
     Flux<RSocketServiceInstance> getInstances(String serviceId);
 
+    Flux<String> findAppInstances(String orgId);
+
     Flux<String> getAllServices();
 }

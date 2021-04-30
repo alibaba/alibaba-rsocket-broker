@@ -10,6 +10,7 @@ import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
 import com.alibaba.spring.boot.rsocket.broker.route.ServiceRoutingSelector;
+import com.alibaba.spring.boot.rsocket.broker.security.RSocketAppPrincipal;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,19 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                     });
         }
         return findServiceInstances(serviceId);
+    }
+
+    @Override
+    public Flux<String> findAppInstances(String orgId) {
+        return Flux.fromIterable(handlerRegistry.findAll())
+                .filter(responderHandler -> {
+                    RSocketAppPrincipal principal = responderHandler.getPrincipal();
+                    return principal != null && principal.getOrganizations().contains(orgId);
+                })
+                .map(responderHandler -> {
+                    AppMetadata appMetadata = responderHandler.getAppMetadata();
+                    return appMetadata.getName() + "," + appMetadata.getIp() + "," + appMetadata.getConnectedAt();
+                });
     }
 
     @Override

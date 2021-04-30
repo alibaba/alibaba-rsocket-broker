@@ -100,7 +100,7 @@ public class UpstreamManagerImpl implements UpstreamManager {
                 cluster.init();
             }
         }
-        monitorClusters();
+       // monitorClusters();
         status = 1;
     }
 
