@@ -1,5 +1,6 @@
-package com.alibaba.spring.boot.rsocket.demo;
+package com.alibaba.spring.boot.rsocket.demo.controllers.user;
 
+import com.alibaba.spring.boot.rsocket.demo.SpringBootBaseTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
