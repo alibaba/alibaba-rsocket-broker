@@ -100,7 +100,7 @@ public class UpstreamManagerImpl implements UpstreamManager {
                 cluster.init();
             }
         }
-       // monitorClusters();
+        monitorClusters();
         status = 1;
     }
 
@@ -120,7 +120,7 @@ public class UpstreamManagerImpl implements UpstreamManager {
         if (status == 0 && brokerCluster != null && !brokerCluster.isLocal()) {
             //interval sync to broker to get last broker list in case of UpstreamClusterChangedEvent lost
             Flux.interval(Duration.ofSeconds(120))
-                    .flatMap(timestamp -> findBrokerDiscoveryService().getInstances("*").collectList())
+                    .flatMap(timestamp -> findBrokerDiscoveryService().getInstances("*"))
                     .map(serviceInstances -> serviceInstances.stream().map(RSocketServiceInstance::getUri).collect(Collectors.toList()))
                     .subscribe(uris -> brokerCluster.setUris(uris));
         }
