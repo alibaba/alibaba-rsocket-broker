@@ -39,7 +39,7 @@ public class BenchmarkController {
                     histogram.outputPercentileDistribution(System.out, 1000.0d);
                     double completedMillis = (System.nanoTime() - start) / 1_000_000d;
                     double tps = count / (completedMillis / 1_000d);
-                    log.info("Request by broker complete in {} ms", completedMillis);
+                    log.info("Request by broker complete {} in {} ms", count, completedMillis);
                     log.info("Request by broker tps {}", tps);
                 }).then();
     }
@@ -60,7 +60,7 @@ public class BenchmarkController {
                     histogram.outputPercentileDistribution(System.out, 1000.0d);
                     double completedMillis = (System.nanoTime() - start) / 1_000_000d;
                     double tps = count / (completedMillis / 1_000d);
-                    log.info("Request by direct complete in {} ms", completedMillis);
+                    log.info("Request by direct complete {} in {} ms", count, completedMillis);
                     log.info("Request by direct tps {}", tps);
                 }).then();
     }
