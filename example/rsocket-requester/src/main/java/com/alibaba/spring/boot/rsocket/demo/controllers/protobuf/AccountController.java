@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.demo;
+package com.alibaba.spring.boot.rsocket.demo.controllers.protobuf;
 
 import com.alibaba.user.Account;
 import com.alibaba.user.AccountService;

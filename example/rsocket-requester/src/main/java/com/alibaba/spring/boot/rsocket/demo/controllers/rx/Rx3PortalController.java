@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.demo;
+package com.alibaba.spring.boot.rsocket.demo.controllers.rx;
 
 import com.alibaba.user.Rx3UserService;
 import com.alibaba.user.User;

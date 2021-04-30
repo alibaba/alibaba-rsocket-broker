@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.demo;
+package com.alibaba.spring.boot.rsocket.demo.controllers.user;
 
 import com.alibaba.rsocket.util.ByteBufBuilder;
 import com.alibaba.user.User;

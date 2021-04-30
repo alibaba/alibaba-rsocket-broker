@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.demo;
+package com.alibaba.spring.boot.rsocket.demo.controllers.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MimeTypeUtils;

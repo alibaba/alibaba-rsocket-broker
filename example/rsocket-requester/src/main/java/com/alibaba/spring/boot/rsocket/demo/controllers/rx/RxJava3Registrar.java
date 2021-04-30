@@ -1,4 +1,4 @@
-package com.alibaba.spring.boot.rsocket.demo;
+package com.alibaba.spring.boot.rsocket.demo.controllers.rx;
 
 import io.reactivex.rxjava3.core.*;
 import org.springframework.core.ReactiveAdapterRegistry;
