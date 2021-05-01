@@ -468,6 +468,11 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
     }
 
+    public Mono<Void> fireCloudEventToPeer(String cloudEventJson) {
+        Payload payload = ByteBufPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(cloudEventJson.getBytes(StandardCharsets.UTF_8)));
+        return peerRsocket.metadataPush(payload);
+    }
+
     private void recordServiceInvoke(String name, String serviceId) {
         consumedServices.add(serviceId);
     }
