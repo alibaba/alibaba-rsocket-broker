@@ -1,6 +1,7 @@
 package com.alibaba.spring.boot.rsocket.broker;
 
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
+import com.alibaba.rsocket.cloudevents.CloudEventsNotifyService;
 import com.alibaba.rsocket.discovery.DiscoveryService;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
 import com.alibaba.rsocket.listen.RSocketListener;
@@ -8,6 +9,7 @@ import com.alibaba.rsocket.listen.RSocketListenerCustomizer;
 import com.alibaba.rsocket.route.RSocketFilter;
 import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
+import com.alibaba.spring.boot.rsocket.broker.cloudevents.CloudEventsNotifyServiceImpl;
 import com.alibaba.spring.boot.rsocket.broker.cluster.DefaultRSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManagerDiscoveryImpl;
@@ -170,6 +172,11 @@ public class RSocketBrokerAutoConfiguration {
     @Bean
     public DiscoveryService rsocketDiscoveryService() {
         return new DiscoveryServiceImpl();
+    }
+
+    @Bean
+    public CloudEventsNotifyService cloudEventsNotifyService(@Autowired RSocketBrokerHandlerRegistry handlerRegistry) {
+        return new CloudEventsNotifyServiceImpl(handlerRegistry);
     }
 
     @Bean
