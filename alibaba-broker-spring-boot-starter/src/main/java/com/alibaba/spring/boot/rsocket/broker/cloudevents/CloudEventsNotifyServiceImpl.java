@@ -3,6 +3,7 @@ package com.alibaba.spring.boot.rsocket.broker.cloudevents;
 import com.alibaba.rsocket.cloudevents.CloudEventsNotifyService;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerResponderHandler;
+import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -11,6 +12,7 @@ import reactor.core.publisher.Mono;
  *
  * @author leijuan
  */
+@RSocketLocalService(serviceInterface = CloudEventsNotifyService.class)
 public class CloudEventsNotifyServiceImpl implements CloudEventsNotifyService {
     private RSocketBrokerHandlerRegistry handlerRegistry;
 
