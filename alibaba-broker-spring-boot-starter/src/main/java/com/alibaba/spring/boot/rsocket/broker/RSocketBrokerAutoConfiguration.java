@@ -26,10 +26,6 @@ import com.alibaba.spring.boot.rsocket.broker.route.impl.ServiceRoutingSelectorI
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationServiceJwtImpl;
 import com.alibaba.spring.boot.rsocket.broker.services.*;
-import com.alibaba.spring.boot.rsocket.broker.smi.TrafficAccessControl;
-import com.alibaba.spring.boot.rsocket.broker.smi.TrafficSplit;
-import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficAccessControlImpl;
-import com.alibaba.spring.boot.rsocket.broker.smi.impl.TrafficSplitImpl;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalServiceAnnotationProcessor;
 import com.alibaba.spring.boot.rsocket.broker.upstream.RSocketRequesterBySubBroker;
 import com.alibaba.spring.boot.rsocket.broker.upstream.UpstreamBrokerCluster;
@@ -222,16 +218,6 @@ public class RSocketBrokerAutoConfiguration {
     @Bean(initMethod = "init")
     public AppStatusCloudEventProcessor appStatusCloudEventProcessor() {
         return new AppStatusCloudEventProcessor();
-    }
-
-    @Bean
-    public TrafficAccessControl trafficAccessControl() {
-        return new TrafficAccessControlImpl();
-    }
-
-    @Bean
-    public TrafficSplit trafficSplit() {
-        return new TrafficSplitImpl();
     }
 
     @Bean(initMethod = "init", destroyMethod = "close")
