@@ -8,6 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.StringReader;
@@ -45,11 +46,13 @@ public class RSocketConfigPropertySourceLocator implements PropertySourceLocator
             Properties configProperties = new Properties();
             for (String rsocketBroker : rsocketBrokers.split(",")) {
                 URI rsocketURI = URI.create(rsocketBroker);
-                String httpUri = "http://" + rsocketURI.getHost() + ":" + (rsocketURI.getPort() - 1) + "/config/last/" + applicationName;
+                String httpUri = "http://" + rsocketURI.getHost() + ":" + (rsocketURI.getPort() - 1) + "/api/com.alibaba.rsocket.config.ConfigurationService/get" + applicationName;
                 try {
-                    String configText = WebClient.create().get()
+                    String configText = WebClient.create().post()
                             .uri(httpUri)
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue("[\"" + applicationName + "\",\"application.properties\"]")
                             .retrieve()
                             .bodyToMono(String.class)
                             .block();
