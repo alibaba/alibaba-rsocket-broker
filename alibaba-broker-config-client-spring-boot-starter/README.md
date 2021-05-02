@@ -1,9 +1,14 @@
 RSocket Broker Config Client
 ============================
-使用RSocket Broker作为配置中心，然后基于此中心对外提供配置推送服务。
+使用RSocket Broker作为配置推送的通讯桥梁，然后基于RSocket Broker对接入的应用提供配置推送服务。
 
+### Config Server
 
-### 如何使用？
+RSocket Broker并不提供配置的存储服务，而是承担着配置推送通讯的桥梁角色，所以我们需要创建一个Config Server服务接入到RSocket Broker上。
+
+我们提供了一个基于Redis KV存储和Stream实现的Config Server，请参考 https://github.com/alibaba-rsocket-broker/rsocket-broker-config-server-service
+
+### 应用如何接入Config推送服务？
 
 * 在pom.xml中添加以下依赖
 ```
@@ -22,7 +27,6 @@ rsocket.brokers=tcp://127.0.0.1:9999
 rsocket.jwt-token=your_token_here
 ```
 
-### 工作原理
+* 在Config Server中添加应用对应的配置项，如application.properties
+* 启动应用进行测试
 
-* 应用启动时使用HTTP短连接获取最新的配置。为何使用HTTP：简单，短连接。
-* 应用启动后，通过metadataPush监听broker推送的cloud event(com.alibaba.rsocket.events.ConfigEvent)完成应用刷新
