@@ -42,7 +42,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
     private ServiceRoutingSelector serviceRoutingSelector;
     private RSocketBrokerManager rSocketBrokerManager;
     private DnsResolveService resolveService;
-    private ConfigurationService configurationService;
     private AuthenticationService authenticationService;
     private RSocketFilterChain filterChain;
     private Sinks.Many<String> notificationProcessor;
@@ -52,7 +51,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
                       @Autowired ServiceRoutingSelector serviceRoutingSelector,
                       @Autowired RSocketBrokerManager rSocketBrokerManager,
                       @Autowired DnsResolveService resolveService,
-                      @Autowired ConfigurationService configurationService,
                       @Autowired AuthenticationService authenticationService,
                       @Autowired RSocketFilterChain filterChain,
                       @Autowired @Qualifier("notificationProcessor") Sinks.Many<String> notificationProcessor) {
@@ -60,7 +58,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.rSocketBrokerManager = rSocketBrokerManager;
         this.resolveService = resolveService;
-        this.configurationService = configurationService;
         this.authenticationService = authenticationService;
         this.filterChain = filterChain;
         this.notificationProcessor = notificationProcessor;
@@ -73,7 +70,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
         final Tabs tabs = new Tabs(dashBoard(),
                 apps(),
                 dns(),
-                appConfig(),
                 services(),
                 serviceTesting(),
                 //serviceMesh(),
@@ -117,14 +113,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
         return tab;
     }
 
-    private Tab appConfig() {
-        final Span label = new Span("AppConfig");
-        final Icon icon = DATABASE.create();
-        final Tab tab = new Tab(new HorizontalLayout(icon, label));
-        tab2Workspace.put(tab, new AppConfigView(this.configurationService, this.rSocketBrokerManager));
-        return tab;
-    }
-
     private Tab services() {
         final Span label = new Span("Services");
         final Icon icon = BULLETS.create();
@@ -132,15 +120,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
         tab2Workspace.put(tab, new ServicesView(this.handlerRegistry, this.serviceRoutingSelector));
         return tab;
     }
-
-    private Tab serviceMesh() {
-        final Span label = new Span("ServiceMesh");
-        final Icon icon = CLUSTER.create();
-        final Tab tab = new Tab(new HorizontalLayout(icon, label));
-        tab2Workspace.put(tab, new ServiceMeshView(this.handlerRegistry));
-        return tab;
-    }
-
 
     private Tab brokers() {
         final Span label = new Span("Brokers");
