@@ -2,18 +2,12 @@ package com.alibaba.spring.boot.rsocket.broker.responder;
 
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
-import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.*;
 import com.alibaba.rsocket.metadata.AppMetadata;
-import com.alibaba.spring.boot.rsocket.broker.BrokerAppContext;
-import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import reactor.core.Disposable;
 import reactor.core.publisher.Sinks;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,9 +22,6 @@ public class AppStatusCloudEventProcessor {
     private Sinks.Many<CloudEventImpl> eventProcessor;
     @Autowired
     private RSocketBrokerHandlerRegistry rsocketBrokerHandlerRegistry;
-    @Autowired
-    private ConfigurationService configurationService;
-    private Map<String, Disposable> listeners = new HashMap<>();
 
     public void init() {
         eventProcessor.asFlux().subscribe(cloudEvent -> {
@@ -53,10 +44,7 @@ public class AppStatusCloudEventProcessor {
         if (appStatusEvent != null && appStatusEvent.getId().equals(cloudEvent.getAttributes().getSource().getHost())) {
             RSocketBrokerResponderHandler responderHandler = rsocketBrokerHandlerRegistry.findByUUID(appStatusEvent.getId());
             if (responderHandler != null) {
-                AppMetadata appMetadata = responderHandler.getAppMetadata();
-                if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_CONNECTED)) {  //app connected
-                    registerConfigPush(appMetadata);
-                } else if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_SERVING)) {  //app serving
+                if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_SERVING)) {  //app serving
                     responderHandler.registerPublishedServices();
                 } else if (appStatusEvent.getStatus().equals(AppStatusEvent.STATUS_OUT_OF_SERVICE)) { //app out of service
                     responderHandler.unRegisterPublishedServices();
@@ -65,18 +53,6 @@ public class AppStatusCloudEventProcessor {
                     responderHandler.setAppStatus(AppStatusEvent.STATUS_STOPPED);
                 }
             }
-        }
-    }
-
-    private void registerConfigPush(AppMetadata appMetadata) {
-        String appName = appMetadata.getName();
-        if (!listeners.containsKey(appName)) {
-            listeners.put(appName, configurationService.watch(appName).subscribe(config -> {
-                CloudEventImpl<ConfigEvent> configEvent = RSocketCloudEventBuilder.builder(new ConfigEvent(appName, "text/x-java-properties", config))
-                        .withSource(BrokerAppContext.identity())
-                        .build();
-                rsocketBrokerHandlerRegistry.broadcast(appName, configEvent).subscribe();
-            }));
         }
     }
 
