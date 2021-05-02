@@ -9,9 +9,7 @@ import com.alibaba.rsocket.transport.NetworkUtil;
 import com.alibaba.spring.boot.rsocket.broker.RSocketBrokerProperties;
 import com.alibaba.spring.boot.rsocket.broker.cluster.jsonrpc.JsonRpcRequest;
 import com.alibaba.spring.boot.rsocket.broker.cluster.jsonrpc.JsonRpcResponse;
-import com.alibaba.spring.boot.rsocket.broker.events.AppConfigEvent;
 import com.alibaba.spring.boot.rsocket.broker.events.RSocketFilterEnableEvent;
-import com.alibaba.spring.boot.rsocket.broker.services.ConfigurationService;
 import io.micrometer.core.instrument.Metrics;
 import io.scalecube.cluster.Cluster;
 import io.scalecube.cluster.ClusterImpl;
@@ -185,10 +183,6 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
                 } catch (Exception ignore) {
 
                 }
-            } else if (data instanceof AppConfigEvent) {
-                AppConfigEvent appConfigEvent = (AppConfigEvent) data;
-                ConfigurationService configurationService = applicationContext.getBean(ConfigurationService.class);
-                configurationService.put(appConfigEvent.getAppName() + ":" + appConfigEvent.getKey(), appConfigEvent.getVale()).subscribe();
             }
         });
     }
