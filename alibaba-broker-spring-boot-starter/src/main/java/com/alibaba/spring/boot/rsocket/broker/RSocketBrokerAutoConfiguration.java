@@ -25,7 +25,9 @@ import com.alibaba.spring.boot.rsocket.broker.route.impl.ServiceMeshInspectorImp
 import com.alibaba.spring.boot.rsocket.broker.route.impl.ServiceRoutingSelectorImpl;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationService;
 import com.alibaba.spring.boot.rsocket.broker.security.AuthenticationServiceJwtImpl;
-import com.alibaba.spring.boot.rsocket.broker.services.*;
+import com.alibaba.spring.boot.rsocket.broker.services.AppQueryController;
+import com.alibaba.spring.boot.rsocket.broker.services.MetricsScrapeController;
+import com.alibaba.spring.boot.rsocket.broker.services.ServiceQueryController;
 import com.alibaba.spring.boot.rsocket.broker.supporting.RSocketLocalServiceAnnotationProcessor;
 import com.alibaba.spring.boot.rsocket.broker.upstream.RSocketRequesterBySubBroker;
 import com.alibaba.spring.boot.rsocket.broker.upstream.UpstreamBrokerCluster;
@@ -75,17 +77,6 @@ public class RSocketBrokerAutoConfiguration {
     @Bean
     public ServiceRoutingSelector serviceRoutingSelector() {
         return new ServiceRoutingSelectorImpl();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ConfigurationService configurationService() {
-        return new KVStorageServiceImpl();
-    }
-
-    @Bean
-    public ConfigController configController() {
-        return new ConfigController();
     }
 
     @Bean
