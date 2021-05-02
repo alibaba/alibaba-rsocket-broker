@@ -46,7 +46,7 @@ public class RSocketConfigPropertySourceLocator implements PropertySourceLocator
             Properties configProperties = new Properties();
             for (String rsocketBroker : rsocketBrokers.split(",")) {
                 URI rsocketURI = URI.create(rsocketBroker);
-                String httpUri = "http://" + rsocketURI.getHost() + ":" + (rsocketURI.getPort() - 1) + "/api/com.alibaba.rsocket.config.ConfigurationService/get" + applicationName;
+                String httpUri = "http://" + rsocketURI.getHost() + ":" + (rsocketURI.getPort() - 1) + "/api/com.alibaba.rsocket.config.ConfigurationService/get";
                 try {
                     String configText = WebClient.create().post()
                             .uri(httpUri)
