@@ -10,6 +10,10 @@ build-without-server:
 artifacts-install:
   mvn -pl .,alibaba-rsocket-service-common,alibaba-rsocket-core,alibaba-rsocket-spring-boot-starter,alibaba-broker-spring-boot-starter -DskipTests clean source:jar install
 
+# install artifact into local repository
+config-and-registry-install:
+  mvn -pl alibaba-broker-config-client-spring-boot-starter,alibaba-broker-registry-client-spring-boot-starter -DskipTests clean source:jar install
+
 # start rsocket broker
 start-broker:
   java -jar alibaba-broker-server/target/alibaba-rsocket-broker.jar
