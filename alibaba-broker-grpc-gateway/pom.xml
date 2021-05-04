@@ -12,7 +12,7 @@
         <protobuf-java.version>3.15.7</protobuf-java.version>
         <grpc.version>1.37.0</grpc.version>
         <reactive-grpc.version>1.0.1</reactive-grpc.version>
-        <grpc-spring-boot-starter.version>4.4.5</grpc-spring-boot-starter.version>
+        <grpc-spring-boot-starter.version>4.4.7</grpc-spring-boot-starter.version>
     </properties>
 
     <artifactId>alibaba-broker-grpc-gateway</artifactId>
@@ -86,6 +86,12 @@
             <groupId>io.github.lognet</groupId>
             <artifactId>grpc-spring-boot-starter</artifactId>
             <version>${grpc-spring-boot-starter.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.grpc</groupId>
+                    <artifactId>grpc-netty-shaded</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
