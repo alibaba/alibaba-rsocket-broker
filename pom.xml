@@ -43,11 +43,11 @@
         <protobuf-java.version>3.15.8</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
         <jackson.version>2.12.2</jackson.version>
-        <protostuff.version>1.7.2</protostuff.version>
+        <protostuff.version>1.7.4</protostuff.version>
         <avro.version>1.10.2</avro.version>
         <eclipse-collections.version>10.4.0</eclipse-collections.version>
         <spring-cloud-release.version>2020.0.2</spring-cloud-release.version>
-        <cloudevents.version>2.0.0</cloudevents.version>
+        <cloudevents.version>2.1.0</cloudevents.version>
         <zipkin-brave.version>5.13.3</zipkin-brave.version>
         <junit5.version>5.7.1</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
