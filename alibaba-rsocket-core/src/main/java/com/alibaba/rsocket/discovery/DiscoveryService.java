@@ -13,6 +13,8 @@ public interface DiscoveryService {
 
     Mono<List<RSocketServiceInstance>> getInstances(String serviceId);
 
+    Mono<RSocketServiceInstance> getInstance(String appId);
+
     Mono<List<String>> findAppInstances(String orgId);
 
     Mono<List<String>> getAllServices();

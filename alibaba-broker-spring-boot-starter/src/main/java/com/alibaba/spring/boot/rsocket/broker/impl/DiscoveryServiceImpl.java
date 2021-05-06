@@ -91,6 +91,15 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         return Flux.fromIterable(serviceInstances);
     }
 
+    @Override
+    public Mono<RSocketServiceInstance> getInstance(String appId) {
+        RSocketBrokerResponderHandler responderHandler = handlerRegistry.findByUUID(appId);
+        if(responderHandler!=null) {
+            return Mono.just(constructServiceInstance(responderHandler));
+        }
+        return Mono.empty();
+    }
+
     @NotNull
     private Flux<RSocketServiceInstance> findServiceInstancesByAppName(String appName) {
         return Flux.fromIterable(handlerRegistry.findAll())

@@ -104,6 +104,11 @@ public class UpstreamManagerMock implements UpstreamManager {
             }
 
             @Override
+            public Mono<RSocketServiceInstance> getInstance(String appId) {
+                return Mono.empty();
+            }
+
+            @Override
             public Mono<List<String>> findAppInstances(String orgId) {
                 return Mono.empty();
             }
