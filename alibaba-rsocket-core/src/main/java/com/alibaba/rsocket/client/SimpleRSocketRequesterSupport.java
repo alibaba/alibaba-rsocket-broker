@@ -60,12 +60,15 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
     }
 
     @Override
-    public Supplier<Payload> setupPayload() {
+    public Supplier<Payload> setupPayload(String serviceId) {
         return () -> {
             //composite metadata with app metadata
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(getAppMetadata());
-            if (this.jwtToken != null && this.jwtToken.length > 0) {
-                compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
+            //authentication for broker
+            if (serviceId.equals("*")) {
+                if (this.jwtToken != null && this.jwtToken.length > 0) {
+                    compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
+                }
             }
             Set<ServiceLocator> serviceLocators = exposedServices().get();
             if (!serviceLocators.isEmpty()) {

@@ -20,7 +20,7 @@ public interface RSocketRequesterSupport {
 
     URI originUri();
 
-    Supplier<Payload> setupPayload();
+    Supplier<Payload> setupPayload(String serviceId);
 
     Supplier<Set<ServiceLocator>> exposedServices();
 

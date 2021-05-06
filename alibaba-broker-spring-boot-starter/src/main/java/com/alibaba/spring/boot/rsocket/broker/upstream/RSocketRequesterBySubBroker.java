@@ -71,13 +71,15 @@ public class RSocketRequesterBySubBroker implements RSocketRequesterSupport {
     }
 
     @Override
-    public Supplier<Payload> setupPayload() {
+    public Supplier<Payload> setupPayload(String serviceId) {
         return () -> {
             //composite metadata with app metadata
             RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(getAppMetadata());
-            // authentication
-            if (this.jwtToken != null && this.jwtToken.length > 0) {
-                compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
+            // authentication for broker
+            if (serviceId.equals("*")) {
+                if (this.jwtToken != null && this.jwtToken.length > 0) {
+                    compositeMetadata.addMetadata(new BearerTokenMetadata(this.jwtToken));
+                }
             }
             return ByteBufPayload.create(Unpooled.EMPTY_BUFFER, compositeMetadata.getContent());
         };

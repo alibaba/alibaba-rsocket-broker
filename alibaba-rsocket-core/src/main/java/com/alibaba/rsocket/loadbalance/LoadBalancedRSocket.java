@@ -397,7 +397,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     interceptorRegistry.forResponder(responderInterceptor);
                 });
             }
-            Payload payload = requesterSupport.setupPayload().get();
+            Payload payload = requesterSupport.setupPayload(serviceId).get();
             return rsocketConnector
                     .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
