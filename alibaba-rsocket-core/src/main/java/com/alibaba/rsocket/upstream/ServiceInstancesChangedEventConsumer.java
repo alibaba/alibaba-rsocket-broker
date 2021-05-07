@@ -43,7 +43,7 @@ public class ServiceInstancesChangedEventConsumer implements CloudEventsConsumer
             String serviceId = ServiceLocator.serviceId(serviceInstancesChangedEvent.getGroup(), serviceInstancesChangedEvent.getService(), serviceInstancesChangedEvent.getVersion());
             final UpstreamCluster upstreamCluster = upstreamManager.findClusterByServiceId(serviceId);
             if (upstreamCluster != null) {
-                if (serviceInstancesChangedEvent.getUris().isEmpty()) {
+                if (serviceInstancesChangedEvent.getUris().isEmpty()) { //remove upstream cluster
                     this.upstreamManager.remove(upstreamCluster);
                     Mono.delay(Duration.ofSeconds(60)).subscribe(timestamp -> {
                         try {
@@ -52,7 +52,7 @@ public class ServiceInstancesChangedEventConsumer implements CloudEventsConsumer
 
                         }
                     });
-                } else {
+                } else { // update upstream cluster's uris
                     upstreamCluster.setUris(serviceInstancesChangedEvent.getUris());
                 }
                 log.info(RsocketErrorCode.message("RST-300202", serviceId, String.join(",", serviceInstancesChangedEvent.getUris())));
