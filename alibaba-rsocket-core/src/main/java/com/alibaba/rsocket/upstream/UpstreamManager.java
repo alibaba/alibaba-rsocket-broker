@@ -18,6 +18,8 @@ public interface UpstreamManager extends Initializable, Closeable {
 
     void add(UpstreamCluster cluster);
 
+    void addP2pService(String serviceId);
+
     Collection<UpstreamCluster> findAllClusters();
 
     UpstreamCluster findClusterByServiceId(String serviceId);
@@ -35,6 +37,7 @@ public interface UpstreamManager extends Initializable, Closeable {
     RSocket getRSocket(String serviceId);
 
     RSocketRequesterSupport requesterSupport();
+
     /**
      * refresh service  with new uri list
      *
