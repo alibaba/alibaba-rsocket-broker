@@ -31,7 +31,7 @@ public class RSocketRemoteServiceBuilder<T> {
     private Class<T> serviceInterface;
     private RSocketMimeType encodingType = RSocketMimeType.Hessian;
     private RSocketMimeType acceptEncodingType;
-    private UpstreamCluster upstreamCluster;
+    private UpstreamManager upstreamManager;
     /**
      * zipkin brave tracing client
      */
@@ -120,7 +120,7 @@ public class RSocketRemoteServiceBuilder<T> {
     }
 
     public RSocketRemoteServiceBuilder<T> upstream(UpstreamCluster upstreamCluster) {
-        this.upstreamCluster = upstreamCluster;
+        this.upstreamManager = upstreamManager;
         return this;
     }
 
@@ -141,7 +141,8 @@ public class RSocketRemoteServiceBuilder<T> {
 
     /**
      * GraalVM nativeImage support: set encodeType and acceptEncodingType to Json
-     * @return  this
+     *
+     * @return this
      */
     public RSocketRemoteServiceBuilder<T> nativeImage() {
         this.encodingType = RSocketMimeType.Json;
@@ -150,12 +151,7 @@ public class RSocketRemoteServiceBuilder<T> {
     }
 
     public RSocketRemoteServiceBuilder<T> upstreamManager(UpstreamManager upstreamManager) {
-        String serviceId = ServiceLocator.serviceId(group, service, version);
-        UpstreamCluster upstream = upstreamManager.findClusterByServiceId(serviceId);
-        if (upstream == null) {
-            upstream = upstreamManager.findBroker();
-        }
-        this.upstreamCluster = upstream;
+        this.upstreamManager = upstreamManager;
         this.sourceUri = upstreamManager.requesterSupport().originUri();
         return this;
     }
@@ -171,10 +167,10 @@ public class RSocketRemoteServiceBuilder<T> {
     @NotNull
     private RSocketRequesterRpcProxy getRequesterProxy() {
         if (this.braveTracing && this.tracing != null) {
-            return new RSocketRequesterRpcZipkinProxy(tracing, upstreamCluster, group, serviceInterface, service, version,
+            return new RSocketRequesterRpcZipkinProxy(tracing, upstreamManager, group, serviceInterface, service, version,
                     encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, !byteBuddyAvailable);
         } else {
-            return new RSocketRequesterRpcProxy(upstreamCluster, group, serviceInterface, service, version,
+            return new RSocketRequesterRpcProxy(upstreamManager, group, serviceInterface, service, version,
                     encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, !byteBuddyAvailable);
         }
     }
