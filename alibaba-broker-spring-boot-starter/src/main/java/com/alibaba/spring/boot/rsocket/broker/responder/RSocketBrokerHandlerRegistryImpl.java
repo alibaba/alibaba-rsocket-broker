@@ -226,6 +226,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         //fire p2p service instances notification
         if (appMetadata.getP2pServices() != null) {
             responderHandler.fireP2pServiceInstancesChangedEvent();
+            routingSelector.registerP2pServiceConsumer(responderHandler.getId(), appMetadata.getP2pServices());
         }
     }
 
@@ -239,6 +240,9 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         responderHandler.clean();
         eventProcessor.tryEmitNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_STOPPED));
         this.appNotificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300204", appMetadata.getName(), appMetadata.getIp()));
+        if (appMetadata.getP2pServices() != null) {
+            routingSelector.unRegisterP2pServiceConsumer(responderHandler.getId(), appMetadata.getP2pServices());
+        }
     }
 
     @Override
