@@ -13,10 +13,7 @@ import reactor.core.publisher.Flux;
 
 import java.lang.reflect.Proxy;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +27,7 @@ public class UpstreamManagerImpl implements UpstreamManager {
     private UpstreamCluster brokerCluster;
     private DiscoveryService brokerDiscoveryService;
     private RSocketRequesterSupport rsocketRequesterSupport;
+    private List<String> p2pServices;
     private int status = 0;
 
     public UpstreamManagerImpl(RSocketRequesterSupport rsocketRequesterSupport) {
@@ -42,6 +40,21 @@ public class UpstreamManagerImpl implements UpstreamManager {
         if (cluster.isBroker()) {
             this.brokerCluster = cluster;
         }
+    }
+
+    public void setP2pServices(List<String> p2pServices) {
+        this.p2pServices = p2pServices;
+    }
+
+    public List<String> getP2pServices() {
+        return p2pServices;
+    }
+
+    public void addP2pService(String p2pService) {
+        if (this.p2pServices == null) {
+            this.p2pServices = new ArrayList<>();
+        }
+        this.p2pServices.add(p2pService);
     }
 
     @Override
@@ -62,7 +75,7 @@ public class UpstreamManagerImpl implements UpstreamManager {
     @Override
     public DiscoveryService findBrokerDiscoveryService() {
         if (brokerCluster != null && brokerDiscoveryService == null) {
-            RSocketRequesterRpcProxy proxy = new RSocketRequesterRpcProxy(brokerCluster, "",
+            RSocketRequesterRpcProxy proxy = new RSocketRequesterRpcProxy(this, "",
                     DiscoveryService.class,
                     DiscoveryService.class.getCanonicalName(),
                     "", RSocketMimeType.Hessian, RSocketMimeType.Hessian,
@@ -79,7 +92,7 @@ public class UpstreamManagerImpl implements UpstreamManager {
 
     @Override
     public RSocket getRSocket(String serviceId) {
-        return clusters.get(serviceId).getLoadBalancedRSocket();
+        return clusters.getOrDefault(serviceId, brokerCluster).getLoadBalancedRSocket();
     }
 
     @Override
@@ -95,9 +108,15 @@ public class UpstreamManagerImpl implements UpstreamManager {
     @Override
     public void init() throws Exception {
         if (!clusters.isEmpty()) {
+            //init broker first
+            brokerCluster.setRsocketAware(rsocketRequesterSupport);
+            brokerCluster.init();
+            //init upstream cluster
             for (UpstreamCluster cluster : clusters.values()) {
-                cluster.setRsocketAware(rsocketRequesterSupport);
-                cluster.init();
+                if (!cluster.isBroker()) {
+                    cluster.setRsocketAware(rsocketRequesterSupport);
+                    cluster.init();
+                }
             }
         }
         monitorClusters();
@@ -117,12 +136,14 @@ public class UpstreamManagerImpl implements UpstreamManager {
     }
 
     public void monitorClusters() {
-        if (status == 0 && brokerCluster != null && !brokerCluster.isLocal()) {
-            //interval sync to broker to get last broker list in case of UpstreamClusterChangedEvent lost
-            Flux.interval(Duration.ofSeconds(120))
-                    .flatMap(timestamp -> findBrokerDiscoveryService().getInstances("*"))
-                    .map(serviceInstances -> serviceInstances.stream().map(RSocketServiceInstance::getUri).collect(Collectors.toList()))
-                    .subscribe(uris -> brokerCluster.setUris(uris));
+        if (status == 0 && brokerCluster != null) {
+            if (!brokerCluster.isLocal()) {
+                //interval sync to broker to get last broker list in case of UpstreamClusterChangedEvent lost
+                Flux.interval(Duration.ofSeconds(120))
+                        .flatMap(timestamp -> findBrokerDiscoveryService().getInstances("*"))
+                        .map(serviceInstances -> serviceInstances.stream().map(RSocketServiceInstance::getUri).collect(Collectors.toList()))
+                        .subscribe(uris -> brokerCluster.setUris(uris));
+            }
         }
     }
 
