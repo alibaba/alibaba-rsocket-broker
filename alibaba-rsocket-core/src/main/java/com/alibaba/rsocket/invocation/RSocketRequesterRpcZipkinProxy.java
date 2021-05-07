@@ -7,6 +7,7 @@ import brave.propagation.TraceContext;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.metadata.TracingMetadata;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
+import com.alibaba.rsocket.upstream.UpstreamManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -28,11 +29,11 @@ import java.time.Duration;
 public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
     private Tracer tracer;
 
-    public RSocketRequesterRpcZipkinProxy(@NotNull Tracing tracing, UpstreamCluster upstream,
+    public RSocketRequesterRpcZipkinProxy(@NotNull Tracing tracing, UpstreamManager upstreamManager,
                                           String group, Class<?> serviceInterface, @Nullable String service, String version,
                                           RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
                                           Duration timeout, @Nullable String endpoint, boolean sticky, URI sourceUri, boolean jdkProxy) {
-        super(upstream, group, serviceInterface, service, version, encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, jdkProxy);
+        super(upstreamManager, group, serviceInterface, service, version, encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, jdkProxy);
         tracer = tracing.tracer();
     }
 
