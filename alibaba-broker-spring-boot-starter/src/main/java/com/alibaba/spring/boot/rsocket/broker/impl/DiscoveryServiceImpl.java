@@ -17,10 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * discovery service implementation
@@ -117,12 +117,12 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         serviceInstance.setServiceId(appMetadata.getName());
         serviceInstance.setHost(appMetadata.getIp());
         if (appMetadata.getRsocketPorts() != null && !appMetadata.getRsocketPorts().isEmpty()) {
-            String uri = (String) appMetadata.getRsocketPorts().values().toArray()[0];
+            @SuppressWarnings("unchecked")
+            Map.Entry<Integer, String> entry = (Map.Entry<Integer, String>) appMetadata.getRsocketPorts().entrySet().toArray()[0];
             try {
-                URI serviceUri = URI.create(uri);
-                serviceInstance.setPort(serviceUri.getPort());
-                serviceInstance.setSchema(serviceUri.getScheme());
-                serviceInstance.setUri(uri);
+                serviceInstance.setPort(entry.getKey());
+                serviceInstance.setSchema(entry.getValue());
+                serviceInstance.setUri(entry.getValue() + "://" + appMetadata.getIp() + ":" + entry.getKey());
             } catch (Exception ignore) {
 
             }
