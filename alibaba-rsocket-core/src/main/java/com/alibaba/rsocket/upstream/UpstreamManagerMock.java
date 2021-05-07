@@ -81,6 +81,11 @@ public class UpstreamManagerMock implements UpstreamManager {
     }
 
     @Override
+    public void addP2pService(String serviceId) {
+
+    }
+
+    @Override
     public Collection<UpstreamCluster> findAllClusters() {
         return clusters.values();
     }
