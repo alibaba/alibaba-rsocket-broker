@@ -25,7 +25,7 @@ public class RSocketRemoteServiceBuilder<T> {
     private String group;
     private String service;
     private String version;
-    private Duration timeout = Duration.ofMillis(3000);
+    private Duration timeout = Duration.ofMillis(15000);
     private String endpoint;
     private boolean sticky;
     private Class<T> serviceInterface;
