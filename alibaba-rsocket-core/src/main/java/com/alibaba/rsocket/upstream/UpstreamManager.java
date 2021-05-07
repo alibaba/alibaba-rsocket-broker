@@ -18,6 +18,8 @@ public interface UpstreamManager extends Initializable, Closeable {
 
     void add(UpstreamCluster cluster);
 
+    void remove(UpstreamCluster cluster);
+
     void addP2pService(String serviceId);
 
     Collection<UpstreamCluster> findAllClusters();

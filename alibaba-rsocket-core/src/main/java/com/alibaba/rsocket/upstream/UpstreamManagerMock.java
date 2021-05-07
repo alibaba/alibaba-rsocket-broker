@@ -81,6 +81,11 @@ public class UpstreamManagerMock implements UpstreamManager {
     }
 
     @Override
+    public void remove(UpstreamCluster cluster) {
+        this.clusters.remove(cluster.getServiceId());
+    }
+
+    @Override
     public void addP2pService(String serviceId) {
 
     }

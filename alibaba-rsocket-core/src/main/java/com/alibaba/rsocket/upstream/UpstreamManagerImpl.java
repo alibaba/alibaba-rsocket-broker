@@ -43,6 +43,11 @@ public class UpstreamManagerImpl implements UpstreamManager {
         }
     }
 
+    @Override
+    public void remove(UpstreamCluster cluster) {
+        this.clusters.remove(cluster.getServiceId());
+    }
+
     public void setP2pServices(List<String> p2pServices) {
         this.p2pServices = p2pServices;
     }
