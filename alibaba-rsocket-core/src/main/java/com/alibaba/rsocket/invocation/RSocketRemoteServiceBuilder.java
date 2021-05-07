@@ -4,7 +4,6 @@ import brave.Tracing;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
-import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +27,7 @@ public class RSocketRemoteServiceBuilder<T> {
     private Duration timeout = Duration.ofMillis(15000);
     private String endpoint;
     private boolean sticky;
+    private boolean p2p;
     private Class<T> serviceInterface;
     private RSocketMimeType encodingType = RSocketMimeType.Hessian;
     private RSocketMimeType acceptEncodingType;
@@ -119,8 +119,8 @@ public class RSocketRemoteServiceBuilder<T> {
         return this;
     }
 
-    public RSocketRemoteServiceBuilder<T> upstream(UpstreamCluster upstreamCluster) {
-        this.upstreamManager = upstreamManager;
+    public RSocketRemoteServiceBuilder<T> p2p(boolean p2p) {
+        this.p2p = p2p;
         return this;
     }
 
@@ -166,6 +166,9 @@ public class RSocketRemoteServiceBuilder<T> {
 
     @NotNull
     private RSocketRequesterRpcProxy getRequesterProxy() {
+        if (this.p2p) {
+            this.upstreamManager.addP2pService(ServiceLocator.serviceId(this.group, this.service, this.version));
+        }
         if (this.braveTracing && this.tracing != null) {
             return new RSocketRequesterRpcZipkinProxy(tracing, upstreamManager, group, serviceInterface, service, version,
                     encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, !byteBuddyAvailable);
