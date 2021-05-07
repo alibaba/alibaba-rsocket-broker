@@ -132,7 +132,6 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         appMetadata.setName(appName);
         appMetadata.setIp(NetworkUtil.LOCAL_IP);
         appMetadata.setDevice("SpringBootApp");
-        appMetadata.setRsocketPorts(RSocketAppContext.rsocketPorts);
         //brokers
         appMetadata.setBrokers(properties.getBrokers());
         appMetadata.setTopology(properties.getTopology());
@@ -148,6 +147,11 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         }
         if (appMetadata.getManagementPort() <= 0) {
             appMetadata.setManagementPort(RSocketAppContext.managementPort);
+        }
+        if (RSocketAppContext.rsocketPorts != null) {
+            appMetadata.setRsocketPorts(RSocketAppContext.rsocketPorts);
+        } else if (properties.getPort() != null) {
+            appMetadata.setRsocketPorts(Collections.singletonMap(properties.getPort(), properties.getSchema()));
         }
         //labels
         appMetadata.setMetadata(new HashMap<>());
