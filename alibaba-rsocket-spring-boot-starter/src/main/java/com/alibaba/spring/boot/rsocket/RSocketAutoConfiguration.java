@@ -12,6 +12,7 @@ import com.alibaba.rsocket.observability.MetricsService;
 import com.alibaba.rsocket.route.RoutingEndpoint;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.RSocketResponderHandler;
+import com.alibaba.rsocket.upstream.ServiceInstancesChangedEventConsumer;
 import com.alibaba.rsocket.upstream.UpstreamCluster;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEventConsumer;
 import com.alibaba.rsocket.upstream.UpstreamManager;
@@ -77,6 +78,11 @@ public class RSocketAutoConfiguration {
     @Bean
     public UpstreamClusterChangedEventConsumer upstreamClusterChangedEventConsumer(@Autowired UpstreamManager upstreamManager) {
         return new UpstreamClusterChangedEventConsumer(upstreamManager);
+    }
+
+    @Bean
+    public ServiceInstancesChangedEventConsumer serviceInstancesChangedEventConsumer(@Autowired UpstreamManager upstreamManager) {
+        return new ServiceInstancesChangedEventConsumer(upstreamManager);
     }
 
     @Bean
