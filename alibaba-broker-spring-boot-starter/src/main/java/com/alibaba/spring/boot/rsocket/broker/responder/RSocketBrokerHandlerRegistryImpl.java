@@ -223,6 +223,10 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rsocketBrokerManager.currentBrokers(), appMetadata.getTopology())).subscribe();
         }
         this.notificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
+        //fire p2p service instances notification
+        if (appMetadata.getP2pServices() != null) {
+            responderHandler.fireP2pServiceInstancesChangedEvent();
+        }
     }
 
     @Override
