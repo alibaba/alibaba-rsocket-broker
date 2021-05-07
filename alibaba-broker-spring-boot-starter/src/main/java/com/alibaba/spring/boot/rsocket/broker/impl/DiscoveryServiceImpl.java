@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -94,7 +95,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     @Override
     public Mono<RSocketServiceInstance> getInstance(String appId) {
         RSocketBrokerResponderHandler responderHandler = handlerRegistry.findByUUID(appId);
-        if(responderHandler!=null) {
+        if (responderHandler != null) {
             return Mono.just(constructServiceInstance(responderHandler));
         }
         return Mono.empty();
@@ -115,15 +116,16 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         serviceInstance.setInstanceId(appMetadata.getUuid());
         serviceInstance.setServiceId(appMetadata.getName());
         serviceInstance.setHost(appMetadata.getIp());
-        if (appMetadata.getWebPort() > 0) {
-            serviceInstance.setPort(appMetadata.getWebPort());
-            String schema = "http";
-            serviceInstance.setSecure(appMetadata.isSecure());
-            if (appMetadata.isSecure()) {
-                schema = "https";
+        if (appMetadata.getRsocketPorts() != null && !appMetadata.getRsocketPorts().isEmpty()) {
+            String uri = (String) appMetadata.getRsocketPorts().values().toArray()[0];
+            try {
+                URI serviceUri = URI.create(uri);
+                serviceInstance.setPort(serviceUri.getPort());
+                serviceInstance.setSchema(serviceUri.getScheme());
+                serviceInstance.setUri(uri);
+            } catch (Exception ignore) {
+
             }
-            serviceInstance.setSchema(schema);
-            serviceInstance.setUri(schema + "://" + appMetadata.getIp() + ":" + appMetadata.getWebPort());
         }
         serviceInstance.setMetadata(appMetadata.getMetadata());
         return serviceInstance;
