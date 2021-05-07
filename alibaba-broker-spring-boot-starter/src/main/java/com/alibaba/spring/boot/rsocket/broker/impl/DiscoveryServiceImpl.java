@@ -116,9 +116,9 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         serviceInstance.setInstanceId(appMetadata.getUuid());
         serviceInstance.setServiceId(appMetadata.getName());
         serviceInstance.setHost(appMetadata.getIp());
-        if (appMetadata.getRsocketPorts() != null && !appMetadata.getRsocketPorts().isEmpty()) {
-            @SuppressWarnings("unchecked")
-            Map.Entry<Integer, String> entry = (Map.Entry<Integer, String>) appMetadata.getRsocketPorts().entrySet().toArray()[0];
+        Map<Integer, String> rsocketPorts = appMetadata.getRsocketPorts();
+        if (rsocketPorts != null && !rsocketPorts.isEmpty()) {
+            Map.Entry<Integer, String> entry = rsocketPorts.entrySet().stream().findFirst().get();
             try {
                 serviceInstance.setPort(entry.getKey());
                 serviceInstance.setSchema(entry.getValue());
