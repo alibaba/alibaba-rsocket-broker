@@ -43,6 +43,19 @@ public class ServiceInstancesChangedEventConsumer implements CloudEventsConsumer
             if (upstreamCluster != null) {
                 upstreamCluster.setUris(serviceInstancesChangedEvent.getUris());
                 log.info(RsocketErrorCode.message("RST-300202", serviceId, String.join(",", serviceInstancesChangedEvent.getUris())));
+            } else {
+                try {
+                    upstreamCluster = new UpstreamCluster(serviceInstancesChangedEvent.getGroup(),
+                            serviceInstancesChangedEvent.getService(),
+                            serviceInstancesChangedEvent.getVersion(),
+                            serviceInstancesChangedEvent.getUris());
+                    upstreamCluster.setRsocketAware(upstreamManager.requesterSupport());
+                    upstreamCluster.init();
+                    upstreamManager.add(upstreamCluster);
+                    log.info(RsocketErrorCode.message("RST-300202", serviceId, String.join(",", serviceInstancesChangedEvent.getUris())));
+                } catch (Exception e) {
+                    log.error(RsocketErrorCode.message("RST-400500", String.join(",", serviceInstancesChangedEvent.getUris())), e);
+                }
             }
         }
     }
