@@ -56,6 +56,7 @@ public class AppMetadata implements MetadataAware {
      * connected brokers
      */
     private List<String> brokers;
+    private List<String> p2pServices;
     /**
      * topology, such as intranet or internet
      */
@@ -187,6 +188,14 @@ public class AppMetadata implements MetadataAware {
 
     public void setBrokers(List<String> brokers) {
         this.brokers = brokers;
+    }
+
+    public List<String> getP2pServices() {
+        return p2pServices;
+    }
+
+    public void setP2pServices(List<String> p2pServices) {
+        this.p2pServices = p2pServices;
     }
 
     public String getTopology() {
