@@ -135,6 +135,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         //brokers
         appMetadata.setBrokers(properties.getBrokers());
         appMetadata.setTopology(properties.getTopology());
+        appMetadata.setP2pServices(properties.getP2pServices());
         //web port
         appMetadata.setWebPort(Integer.parseInt(env.getProperty("server.port", "0")));
         appMetadata.setManagementPort(appMetadata.getWebPort());
