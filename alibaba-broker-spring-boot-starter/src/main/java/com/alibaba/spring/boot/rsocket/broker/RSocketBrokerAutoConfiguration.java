@@ -99,14 +99,14 @@ public class RSocketBrokerAutoConfiguration {
                                                                         @Autowired RSocketFilterChain rsocketFilterChain,
                                                                         @Autowired ServiceRoutingSelector routingSelector,
                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") Sinks.Many<CloudEventImpl> eventProcessor,
-                                                                        @Autowired @Qualifier("notificationProcessor") Sinks.Many<String> notificationProcessor,
+                                                                        @Autowired @Qualifier("appNotificationProcessor") Sinks.Many<String> appNotificationProcessor,
                                                                         @Autowired AuthenticationService authenticationService,
                                                                         @Autowired RSocketBrokerManager rSocketBrokerManager,
                                                                         @Autowired ServiceMeshInspector serviceMeshInspector,
                                                                         @Autowired RSocketBrokerProperties properties,
                                                                         @Autowired ApplicationContext applicationContext) {
         return new RSocketBrokerHandlerRegistryImpl(localReactiveServiceCaller, rsocketFilterChain, routingSelector,
-                eventProcessor, notificationProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector,
+                eventProcessor, appNotificationProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector,
                 properties.isAuthRequired(), applicationContext);
     }
 
@@ -201,8 +201,13 @@ public class RSocketBrokerAutoConfiguration {
         return Sinks.many().multicast().onBackpressureBuffer();
     }
 
+    /**
+     * app notification for online and offline
+     *
+     * @return app notification
+     */
     @Bean
-    public Sinks.Many<String> notificationProcessor() {
+    public Sinks.Many<String> appNotificationProcessor() {
         return Sinks.many().multicast().onBackpressureBuffer(8);
     }
 

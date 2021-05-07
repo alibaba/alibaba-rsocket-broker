@@ -43,7 +43,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
     private DnsResolveService resolveService;
     private AuthenticationService authenticationService;
     private RSocketFilterChain filterChain;
-    private Sinks.Many<String> notificationProcessor;
+    private Sinks.Many<String> appNotificationProcessor;
     private Disposable notificationSubscribe = null;
 
     public MainLayout(@Autowired RSocketBrokerHandlerRegistry handlerRegistry,
@@ -52,14 +52,14 @@ public class MainLayout extends AppLayout implements DisposableBean {
                       @Autowired DnsResolveService resolveService,
                       @Autowired AuthenticationService authenticationService,
                       @Autowired RSocketFilterChain filterChain,
-                      @Autowired @Qualifier("notificationProcessor") Sinks.Many<String> notificationProcessor) {
+                      @Autowired @Qualifier("appNotificationProcessor") Sinks.Many<String> appNotificationProcessor) {
         this.handlerRegistry = handlerRegistry;
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.rSocketBrokerManager = rSocketBrokerManager;
         this.resolveService = resolveService;
         this.authenticationService = authenticationService;
         this.filterChain = filterChain;
-        this.notificationProcessor = notificationProcessor;
+        this.appNotificationProcessor = appNotificationProcessor;
         //init the Layout
         Image logo = new Image("/rsocket-logo.svg", "RSocket Logo");
         logo.setHeight("44px");
@@ -182,7 +182,7 @@ public class MainLayout extends AppLayout implements DisposableBean {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         closeSubscribeQuietly();
-        this.notificationSubscribe = this.notificationProcessor.asFlux().subscribe(text -> {
+        this.notificationSubscribe = this.appNotificationProcessor.asFlux().subscribe(text -> {
             attachEvent.getUI().access(() -> {
                 Notification.show(text);
             });

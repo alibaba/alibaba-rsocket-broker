@@ -56,7 +56,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     private LocalReactiveServiceCaller localReactiveServiceCaller;
     private ServiceRoutingSelector routingSelector;
     private Sinks.Many<CloudEventImpl> eventProcessor;
-    private Sinks.Many<String> notificationProcessor;
+    private Sinks.Many<String> appNotificationProcessor;
     private AuthenticationService authenticationService;
     /**
      * connections, key is connection id
@@ -78,7 +78,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     public RSocketBrokerHandlerRegistryImpl(LocalReactiveServiceCaller localReactiveServiceCaller, RSocketFilterChain rsocketFilterChain,
                                             ServiceRoutingSelector routingSelector,
                                             Sinks.Many<CloudEventImpl> eventProcessor,
-                                            Sinks.Many<String> notificationProcessor,
+                                            Sinks.Many<String> appNotificationProcessor,
                                             AuthenticationService authenticationService,
                                             RSocketBrokerManager rsocketBrokerManager,
                                             ServiceMeshInspector serviceMeshInspector,
@@ -88,7 +88,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         this.rsocketFilterChain = rsocketFilterChain;
         this.routingSelector = routingSelector;
         this.eventProcessor = eventProcessor;
-        this.notificationProcessor = notificationProcessor;
+        this.appNotificationProcessor = appNotificationProcessor;
         this.authenticationService = authenticationService;
         this.rsocketBrokerManager = rsocketBrokerManager;
         this.serviceMeshInspector = serviceMeshInspector;
@@ -222,7 +222,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         if (!rsocketBrokerManager.isStandAlone()) {
             responderHandler.fireCloudEventToPeer(getBrokerClustersEvent(rsocketBrokerManager.currentBrokers(), appMetadata.getTopology())).subscribe();
         }
-        this.notificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
+        this.appNotificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
         //fire p2p service instances notification
         if (appMetadata.getP2pServices() != null) {
             responderHandler.fireP2pServiceInstancesChangedEvent();
@@ -238,7 +238,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         log.info(RsocketErrorCode.message("RST-500202"));
         responderHandler.clean();
         eventProcessor.tryEmitNext(appStatusEventCloudEvent(appMetadata, AppStatusEvent.STATUS_STOPPED));
-        this.notificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300204", appMetadata.getName(), appMetadata.getIp()));
+        this.appNotificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300204", appMetadata.getName(), appMetadata.getIp()));
     }
 
     @Override
