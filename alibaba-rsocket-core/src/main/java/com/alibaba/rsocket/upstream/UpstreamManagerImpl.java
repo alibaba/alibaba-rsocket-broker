@@ -10,6 +10,7 @@ import io.rsocket.RSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
+import reactor.util.function.Tuples;
 
 import java.lang.reflect.Proxy;
 import java.time.Duration;
@@ -143,6 +144,27 @@ public class UpstreamManagerImpl implements UpstreamManager {
                         .flatMap(timestamp -> findBrokerDiscoveryService().getInstances("*"))
                         .map(serviceInstances -> serviceInstances.stream().map(RSocketServiceInstance::getUri).collect(Collectors.toList()))
                         .subscribe(uris -> brokerCluster.setUris(uris));
+            }
+            if (p2pServices != null && !p2pServices.isEmpty()) {
+                // interval sync to p2p service instances list
+                Flux.interval(Duration.ofSeconds(120))
+                        .flatMap(timestamp -> {
+                            return Flux.fromIterable(p2pServices).flatMap(serviceId -> {
+                                return findBrokerDiscoveryService().getInstances(serviceId).map(serviceInstances -> {
+                                    List<String> uris = serviceInstances.stream().map(RSocketServiceInstance::getUri).collect(Collectors.toList());
+                                    return Tuples.of(serviceId, uris);
+                                });
+                            });
+                        })
+                        .subscribe(tuple2 -> {
+                            List<String> uris = tuple2.getT2();
+                            if (!uris.isEmpty()) {
+                                UpstreamCluster upstreamCluster = this.clusters.get(tuple2.getT1());
+                                if (upstreamCluster != null) {
+                                    upstreamCluster.setUris(uris);
+                                }
+                            }
+                        });
             }
         }
     }
