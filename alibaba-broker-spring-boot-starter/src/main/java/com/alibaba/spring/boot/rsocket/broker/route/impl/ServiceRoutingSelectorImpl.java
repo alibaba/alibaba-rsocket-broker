@@ -9,6 +9,7 @@ import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,6 +27,8 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
      * distinct Services
      */
     private IntObjectHashMap<ServiceLocator> distinctServices = new IntObjectHashMap<>();
+
+    private FastListMultimap2<String, Integer> p2pServiceConsumers = new FastListMultimap2<>();
 
     /**
      * instance to services
@@ -77,6 +80,20 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
             if (!instanceServices.containsKey(instanceId)) {
                 instanceServices.removeAll(instanceId);
             }
+        }
+    }
+
+    @Override
+    public void registerP2pServiceConsumer(Integer instanceId, List<String> p2pServices) {
+        for (String p2pService : p2pServices) {
+            p2pServiceConsumers.put(p2pService, instanceId);
+        }
+    }
+
+    @Override
+    public void unRegisterP2pServiceConsumer(Integer instanceId, List<String> p2pServices) {
+        for (String p2pService : p2pServices) {
+            p2pServiceConsumers.remove(p2pService, instanceId);
         }
     }
 
