@@ -1,18 +1,18 @@
 package com.alibaba.rsocket.invocation;
 
 import com.alibaba.rsocket.MutableContext;
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import com.alibaba.rsocket.upstream.UpstreamCluster;
+import com.alibaba.rsocket.upstream.UpstreamManager;
 import io.micrometer.core.instrument.Metrics;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.Payload;
-import io.rsocket.RSocket;
 import io.rsocket.frame.FrameType;
 import io.rsocket.util.ByteBufPayload;
 import kotlin.coroutines.Continuation;
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class RSocketRequesterRpcProxy implements InvocationHandler {
     private static Logger log = LoggerFactory.getLogger(RSocketRequesterRpcProxy.class);
-    protected RSocket rsocket;
+    protected UpstreamManager upstreamManager;
     /**
      * service interface
      */
@@ -61,6 +61,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
      * service version
      */
     protected String version;
+    protected String serviceId;
     /**
      * endpoint of service
      */
@@ -94,11 +95,11 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
 
     private boolean jdkProxy;
 
-    public RSocketRequesterRpcProxy(UpstreamCluster upstream,
+    public RSocketRequesterRpcProxy(UpstreamManager upstreamManager,
                                     String group, Class<?> serviceInterface, @Nullable String service, String version,
                                     RSocketMimeType encodingType, @Nullable RSocketMimeType acceptEncodingType,
                                     Duration timeout, @Nullable String endpoint, boolean sticky, URI sourceUri, boolean jdkProxy) {
-        this.rsocket = upstream.getLoadBalancedRSocket();
+        this.upstreamManager = upstreamManager;
         this.serviceInterface = serviceInterface;
         this.service = serviceInterface.getCanonicalName();
         if (service != null && !service.isEmpty()) {
@@ -106,6 +107,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         }
         this.group = group;
         this.version = version;
+        this.serviceId = ServiceLocator.serviceId(this.group, this.service, this.version);
         this.endpoint = endpoint;
         this.sticky = sticky;
         this.sourceUri = sourceUri;
@@ -157,7 +159,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 return ByteBufPayload.create(encodingFacade.encodingResult(obj, encodingType),
                         methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate());
             });
-            Flux<Payload> payloads = rsocket.requestChannel(payloadFlux);
+            Flux<Payload> payloads = upstreamManager.getRSocket(this.serviceId).requestChannel(payloadFlux);
             Flux<Object> fluxReturn = payloads.concatMap(payload -> {
                 try {
                     RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(payload.metadata());
@@ -214,16 +216,16 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     }
 
     protected Flux<Payload> remoteRequestStream(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
-        return rsocket.requestStream(ByteBufPayload.create(bodyBuf, compositeMetadata));
+        return upstreamManager.getRSocket(this.serviceId).requestStream(ByteBufPayload.create(bodyBuf, compositeMetadata));
     }
 
     protected Mono<Void> remoteFireAndForget(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
-        return rsocket.fireAndForget(ByteBufPayload.create(bodyBuf, compositeMetadata));
+        return upstreamManager.getRSocket(this.serviceId).fireAndForget(ByteBufPayload.create(bodyBuf, compositeMetadata));
     }
 
     @NotNull
     protected Mono<Payload> remoteRequestResponse(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
-        return rsocket.requestResponse(ByteBufPayload.create(bodyBuf, compositeMetadata))
+        return upstreamManager.getRSocket(this.serviceId).requestResponse(ByteBufPayload.create(bodyBuf, compositeMetadata))
                 .name(methodMetadata.getFullName())
                 .metrics()
                 .timeout(timeout)
