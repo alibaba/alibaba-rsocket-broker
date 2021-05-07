@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  *
  * @author leijuan
  */
-@SuppressWarnings({"rawtypes", "SpringJavaInjectionPointsAutowiringInspection"})
+@SuppressWarnings({"rawtypes"})
 @Configuration
 @ConditionalOnExpression("${rsocket.disabled:false}==false")
 @EnableConfigurationProperties(RSocketProperties.class)
@@ -142,7 +142,7 @@ public class RSocketAutoConfiguration {
 
     @Bean(initMethod = "init")
     public UpstreamManager rsocketUpstreamManager(@Autowired RSocketRequesterSupport rsocketRequesterSupport) throws JwtTokenNotFoundException {
-        UpstreamManager upstreamManager = new SmartLifecycleUpstreamManagerImpl(rsocketRequesterSupport);
+        SmartLifecycleUpstreamManagerImpl upstreamManager = new SmartLifecycleUpstreamManagerImpl(rsocketRequesterSupport);
         if (properties.getBrokers() != null && !properties.getBrokers().isEmpty()) {
             if (properties.getJwtToken() == null || properties.getJwtToken().isEmpty()) {
                 throw new JwtTokenNotFoundException();
@@ -151,6 +151,7 @@ public class RSocketAutoConfiguration {
             cluster.setUris(properties.getBrokers());
             upstreamManager.add(cluster);
         }
+        upstreamManager.setP2pServices(properties.getP2pServices());
         if (properties.getRoutes() != null && !properties.getRoutes().isEmpty()) {
             for (RoutingEndpoint route : properties.getRoutes()) {
                 UpstreamCluster cluster = new UpstreamCluster(route.getGroup(), route.getService(), route.getVersion());
