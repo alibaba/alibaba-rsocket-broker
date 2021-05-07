@@ -20,6 +20,19 @@ public class ServiceLocator {
     public ServiceLocator() {
     }
 
+    public ServiceLocator(String serviceId) {
+        String temp = serviceId;
+        if (temp.contains("!")) {  //group contained
+            this.group = temp.substring(0, temp.indexOf("!"));
+            temp = temp.substring(temp.indexOf("!") + 1);
+        }
+        if (temp.contains(":")) {  //version contained
+            this.version = temp.substring(temp.indexOf(":") + 1);
+            temp = temp.substring(0, temp.indexOf(":"));
+        }
+        this.service = temp;
+    }
+
     public ServiceLocator(String group, String service, String version) {
         this.group = group;
         this.service = service;
