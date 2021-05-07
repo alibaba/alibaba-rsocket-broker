@@ -58,6 +58,8 @@ public class RSocketProperties {
      * endpoints: interface full name to endpoint url
      */
     private List<RoutingEndpoint> routes;
+    
+    private List<String> p2pServices;
 
     public String getSchema() {
         return schema;
@@ -131,6 +133,14 @@ public class RSocketProperties {
 
     public void setRoutes(List<RoutingEndpoint> routes) {
         this.routes = routes;
+    }
+
+    public List<String> getP2pServices() {
+        return p2pServices;
+    }
+
+    public void setP2pServices(List<String> p2pServices) {
+        this.p2pServices = p2pServices;
     }
 
     public Map<String, String> getMetadata() {
