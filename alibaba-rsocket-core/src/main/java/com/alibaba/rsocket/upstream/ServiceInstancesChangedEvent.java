@@ -1,4 +1,6 @@
-package com.alibaba.rsocket.events;
+package com.alibaba.rsocket.upstream;
+
+import com.alibaba.rsocket.events.CloudEventSupport;
 
 import java.util.List;
 
