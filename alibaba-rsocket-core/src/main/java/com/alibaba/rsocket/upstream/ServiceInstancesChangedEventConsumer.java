@@ -57,17 +57,19 @@ public class ServiceInstancesChangedEventConsumer implements CloudEventsConsumer
                 }
                 log.info(RsocketErrorCode.message("RST-300202", serviceId, String.join(",", serviceInstancesChangedEvent.getUris())));
             } else {
-                try {
-                    UpstreamCluster newUpstreamCluster = new UpstreamCluster(serviceInstancesChangedEvent.getGroup(),
-                            serviceInstancesChangedEvent.getService(),
-                            serviceInstancesChangedEvent.getVersion(),
-                            serviceInstancesChangedEvent.getUris());
-                    newUpstreamCluster.setRsocketAware(upstreamManager.requesterSupport());
-                    newUpstreamCluster.init();
-                    upstreamManager.add(newUpstreamCluster);
-                    log.info(RsocketErrorCode.message("RST-300202", serviceId, String.join(",", serviceInstancesChangedEvent.getUris())));
-                } catch (Exception e) {
-                    log.error(RsocketErrorCode.message("RST-400500", String.join(",", serviceInstancesChangedEvent.getUris())), e);
+                if (!serviceInstancesChangedEvent.getUris().isEmpty()) {
+                    try {
+                        UpstreamCluster newUpstreamCluster = new UpstreamCluster(serviceInstancesChangedEvent.getGroup(),
+                                serviceInstancesChangedEvent.getService(),
+                                serviceInstancesChangedEvent.getVersion(),
+                                serviceInstancesChangedEvent.getUris());
+                        newUpstreamCluster.setRsocketAware(upstreamManager.requesterSupport());
+                        newUpstreamCluster.init();
+                        upstreamManager.add(newUpstreamCluster);
+                        log.info(RsocketErrorCode.message("RST-300202", serviceId, String.join(",", serviceInstancesChangedEvent.getUris())));
+                    } catch (Exception e) {
+                        log.error(RsocketErrorCode.message("RST-400500", String.join(",", serviceInstancesChangedEvent.getUris())), e);
+                    }
                 }
             }
         }
