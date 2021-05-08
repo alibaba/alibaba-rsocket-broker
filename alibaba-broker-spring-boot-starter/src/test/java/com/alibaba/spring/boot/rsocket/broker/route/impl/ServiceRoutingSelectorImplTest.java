@@ -4,6 +4,7 @@ import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Sinks;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
  * @author leijuan
  */
 public class ServiceRoutingSelectorImplTest {
-    ServiceRoutingSelectorImpl routingSelector = new ServiceRoutingSelectorImpl();
+    ServiceRoutingSelectorImpl routingSelector = new ServiceRoutingSelectorImpl(Sinks.many().multicast().onBackpressureBuffer());
 
     @Test
     public void testOperation() {
