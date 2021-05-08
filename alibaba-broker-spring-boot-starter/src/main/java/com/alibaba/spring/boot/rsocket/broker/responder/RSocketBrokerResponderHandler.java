@@ -654,37 +654,5 @@ public class RSocketBrokerResponderHandler extends RSocketResponderSupport imple
         }
         return null;
     }
-
-    public void fireP2pServiceInstancesChangedEvent() {
-        List<String> p2pServices = appMetadata.getP2pServices();
-        if (p2pServices != null && !p2pServices.isEmpty()) {
-            for (String p2pService : p2pServices) {
-                ServiceLocator serviceLocator = new ServiceLocator(p2pService);
-                Collection<Integer> instanceIdList = routingSelector.findHandlers(serviceLocator.getId());
-                if (!instanceIdList.isEmpty()) {
-                    ServiceInstancesChangedEvent event = new ServiceInstancesChangedEvent();
-                    event.setGroup(serviceLocator.getGroup());
-                    event.setService(serviceLocator.getService());
-                    event.setVersion(serviceLocator.getVersion());
-                    event.setType(0);
-                    List<String> uris = new ArrayList<>();
-                    for (Integer handlerId : instanceIdList) {
-                        RSocketBrokerResponderHandler handler = handlerRegistry.findById(handlerId);
-                        if (handler != null) {
-                            Map<Integer, String> rsocketPorts = handler.getAppMetadata().getRsocketPorts();
-                            if (rsocketPorts != null && !rsocketPorts.isEmpty()) {
-                                Map.Entry<Integer, String> entry = rsocketPorts.entrySet().stream().findFirst().get();
-                                String uri = entry.getValue() + "://" + appMetadata.getIp() + ":" + entry.getKey();
-                                uris.add(uri);
-                            }
-                        }
-                    }
-                    if (!uris.isEmpty()) {
-                        event.setUris(uris);
-                        fireCloudEventToPeer(event.toCloudEvent(BrokerAppContext.identity())).subscribe();
-                    }
-                }
-            }
-        }
-    }
+    
 }
