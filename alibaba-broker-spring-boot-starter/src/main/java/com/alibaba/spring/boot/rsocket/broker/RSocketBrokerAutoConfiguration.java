@@ -75,8 +75,8 @@ public class RSocketBrokerAutoConfiguration {
     }
 
     @Bean
-    public ServiceRoutingSelector serviceRoutingSelector() {
-        return new ServiceRoutingSelectorImpl();
+    public ServiceRoutingSelector serviceRoutingSelector(@Autowired @Qualifier("p2pServiceNotificationProcessor") Sinks.Many<String> p2pServiceNotificationProcessor) {
+        return new ServiceRoutingSelectorImpl(p2pServiceNotificationProcessor);
     }
 
     @Bean
@@ -100,13 +100,14 @@ public class RSocketBrokerAutoConfiguration {
                                                                         @Autowired ServiceRoutingSelector routingSelector,
                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") Sinks.Many<CloudEventImpl> eventProcessor,
                                                                         @Autowired @Qualifier("appNotificationProcessor") Sinks.Many<String> appNotificationProcessor,
+                                                                        @Autowired @Qualifier("p2pServiceNotificationProcessor") Sinks.Many<String> p2pServiceNotificationProcessor,
                                                                         @Autowired AuthenticationService authenticationService,
                                                                         @Autowired RSocketBrokerManager rSocketBrokerManager,
                                                                         @Autowired ServiceMeshInspector serviceMeshInspector,
                                                                         @Autowired RSocketBrokerProperties properties,
                                                                         @Autowired ApplicationContext applicationContext) {
         return new RSocketBrokerHandlerRegistryImpl(localReactiveServiceCaller, rsocketFilterChain, routingSelector,
-                eventProcessor, appNotificationProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector,
+                eventProcessor, appNotificationProcessor, p2pServiceNotificationProcessor, authenticationService, rSocketBrokerManager, serviceMeshInspector,
                 properties.isAuthRequired(), applicationContext);
     }
 
@@ -209,6 +210,11 @@ public class RSocketBrokerAutoConfiguration {
     @Bean
     public Sinks.Many<String> appNotificationProcessor() {
         return Sinks.many().multicast().onBackpressureBuffer(8);
+    }
+
+    @Bean
+    public Sinks.Many<String> p2pServiceNotificationProcessor() {
+        return Sinks.many().multicast().onBackpressureBuffer(10000);
     }
 
     @Bean(initMethod = "init")
