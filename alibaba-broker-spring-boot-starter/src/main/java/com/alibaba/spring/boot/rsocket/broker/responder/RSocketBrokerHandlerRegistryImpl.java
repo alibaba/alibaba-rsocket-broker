@@ -113,8 +113,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     }
 
     @Override
-    @Nullable
-    public Mono<RSocket> accept(final ConnectionSetupPayload setupPayload, final RSocket requesterSocket) {
+    public @NotNull Mono<RSocket> accept(final @NotNull ConnectionSetupPayload setupPayload, final @NotNull RSocket requesterSocket) {
         //parse setup payload
         RSocketCompositeMetadata compositeMetadata = null;
         AppMetadata appMetadata = null;
