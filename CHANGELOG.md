@@ -10,10 +10,12 @@ Alibaba RSocket Broker变更记录
 
 * Remove SMI beans：service meshes将调整到Kubernetes对接中 https://smi-spec.io/
 * Config Server功能：从Broker中迁移到外部服务加载方式
+* HTTP DNS的功能移除
 
 ### 特性调整
 
 * CloudEventsNotifyService： 可以给集群中任意应用或者任意应用实例列表发送CloudEvents事件
+* 服务直连支持： 服务消费方通过Broker获取服务地址列表，然后直接给服务提供方通讯，Broker会提供对应的地址列表更新通知 https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-P2P
 
 ## 1.1.0
 
