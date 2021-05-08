@@ -25,6 +25,7 @@ import reactor.util.context.Context;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * RSocket responder handler implementation, not singleton, per handler per connection
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
  */
 @SuppressWarnings("Duplicates")
 public class RSocketResponderHandler extends RSocketResponderSupport implements CloudEventRSocket {
+    public static final AtomicInteger CONNECTION_COUNTER = new AtomicInteger();
     /**
      * requester from peer
      */
@@ -55,6 +57,9 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
         this.eventProcessor = eventProcessor;
         this.requester = requester;
         this.comboOnClose = Mono.first(super.onClose(), requester.onClose());
+        this.comboOnClose.subscribe(unused -> {
+            CONNECTION_COUNTER.decrementAndGet();
+        });
         //parse composite metadata
         RSocketCompositeMetadata compositeMetadata = RSocketCompositeMetadata.from(setupPayload.metadata());
         if (compositeMetadata.contains(RSocketMimeType.Application)) {
@@ -67,6 +72,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
                 }
             }
         }
+        CONNECTION_COUNTER.incrementAndGet();
         try {
             Class.forName("brave.propagation.TraceContext");
         } catch (ClassNotFoundException e) {
