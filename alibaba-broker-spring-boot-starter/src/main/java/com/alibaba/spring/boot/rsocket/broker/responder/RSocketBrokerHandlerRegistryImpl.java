@@ -1,5 +1,6 @@
 package com.alibaba.spring.boot.rsocket.broker.responder;
 
+import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.RSocketCloudEventBuilder;
 import com.alibaba.rsocket.events.AppStatusEvent;
@@ -10,6 +11,7 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
+import com.alibaba.rsocket.upstream.ServiceInstancesChangedEvent;
 import com.alibaba.rsocket.upstream.UpstreamClusterChangedEvent;
 import com.alibaba.rsocket.utils.MurmurHash3;
 import com.alibaba.spring.boot.rsocket.broker.BrokerAppContext;
@@ -57,6 +59,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
     private ServiceRoutingSelector routingSelector;
     private Sinks.Many<CloudEventImpl> eventProcessor;
     private Sinks.Many<String> appNotificationProcessor;
+    private Sinks.Many<String> p2pServiceNotificationProcessor;
     private AuthenticationService authenticationService;
     /**
      * connections, key is connection id
@@ -79,6 +82,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                                             ServiceRoutingSelector routingSelector,
                                             Sinks.Many<CloudEventImpl> eventProcessor,
                                             Sinks.Many<String> appNotificationProcessor,
+                                            Sinks.Many<String> p2pServiceNotificationProcessor,
                                             AuthenticationService authenticationService,
                                             RSocketBrokerManager rsocketBrokerManager,
                                             ServiceMeshInspector serviceMeshInspector,
@@ -89,6 +93,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         this.routingSelector = routingSelector;
         this.eventProcessor = eventProcessor;
         this.appNotificationProcessor = appNotificationProcessor;
+        this.p2pServiceNotificationProcessor = p2pServiceNotificationProcessor;
         this.authenticationService = authenticationService;
         this.rsocketBrokerManager = rsocketBrokerManager;
         this.serviceMeshInspector = serviceMeshInspector;
@@ -101,6 +106,10 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         Metrics.globalRegistry.gauge("broker.apps.count", this, (DoubleFunction<RSocketBrokerHandlerRegistryImpl>) handlerRegistry -> handlerRegistry.appHandlers.size());
         Metrics.globalRegistry.gauge("broker.service.provider.count", this, (DoubleFunction<RSocketBrokerHandlerRegistryImpl>) handlerRegistry -> handlerRegistry.appHandlers.valuesView().sumOfInt(handler -> handler.getPeerServices() == null ? 0 : 1));
         Metrics.globalRegistry.gauge("broker.service.count", this.routingSelector, (DoubleFunction<ServiceRoutingSelector>) ServiceRoutingSelector::getDistinctServiceCount);
+        // subscriber
+        this.p2pServiceNotificationProcessor.asFlux().subscribe(serviceId -> {
+            Flux.defer(() -> broadcastServiceInstancesChanged(serviceId)).delaySubscription(Duration.ofSeconds(3)).subscribe();
+        });
     }
 
     @Override
@@ -225,8 +234,10 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
         this.appNotificationProcessor.tryEmitNext(RsocketErrorCode.message("RST-300203", appMetadata.getName(), appMetadata.getIp()));
         //fire p2p service instances notification
         if (appMetadata.getP2pServices() != null) {
-            responderHandler.fireP2pServiceInstancesChangedEvent();
             routingSelector.registerP2pServiceConsumer(responderHandler.getId(), appMetadata.getP2pServices());
+            for (String p2pService : appMetadata.getP2pServices()) {
+                responderHandler.fireCloudEventToPeer(getServiceInstancesChangedEvent(p2pService)).subscribe();
+            }
         }
     }
 
@@ -322,6 +333,31 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
                 .build();
     }
 
+    @Nullable
+    private CloudEventImpl<ServiceInstancesChangedEvent> getServiceInstancesChangedEvent(String serviceId) {
+        ServiceLocator serviceLocator = new ServiceLocator(serviceId);
+        Collection<Integer> instanceIdList = routingSelector.findHandlers(serviceLocator.getId());
+        ServiceInstancesChangedEvent event = new ServiceInstancesChangedEvent();
+        event.setGroup(serviceLocator.getGroup());
+        event.setService(serviceLocator.getService());
+        event.setVersion(serviceLocator.getVersion());
+        event.setType(0);
+        List<String> uris = new ArrayList<>();
+        for (Integer handlerId : instanceIdList) {
+            RSocketBrokerResponderHandler handler = this.findById(handlerId);
+            if (handler != null) {
+                Map<Integer, String> rsocketPorts = handler.getAppMetadata().getRsocketPorts();
+                if (rsocketPorts != null && !rsocketPorts.isEmpty()) {
+                    Map.Entry<Integer, String> entry = rsocketPorts.entrySet().stream().findFirst().get();
+                    String uri = entry.getValue() + "://" + handler.getAppMetadata().getIp() + ":" + entry.getKey();
+                    uris.add(uri);
+                }
+            }
+        }
+        event.setUris(uris);
+        return event.toCloudEvent(BrokerAppContext.identity());
+    }
+
     private Flux<Void> broadcastClusterTopology(Collection<RSocketBroker> rSocketBrokers) {
         final CloudEventImpl<UpstreamClusterChangedEvent> brokerClustersEvent = getBrokerClustersEvent(rSocketBrokers, "intranet");
         final CloudEventImpl<UpstreamClusterChangedEvent> brokerClusterAliasesEvent = getBrokerClustersEvent(rSocketBrokers, "internet");
@@ -343,7 +379,21 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
             } else { //consume services
                 return fireEvent.delayElement(Duration.ofSeconds(30));
             }
-        });
+        }).subscribeOn(Schedulers.parallel());
+    }
+
+    private Flux<Void> broadcastServiceInstancesChanged(String serviceId) {
+        CloudEventImpl<ServiceInstancesChangedEvent> serviceInstancesChangedEvent = getServiceInstancesChangedEvent(serviceId);
+        List<Integer> consumers = routingSelector.findP2pServiceConsumers(serviceId);
+        return Flux.fromIterable(consumers)
+                .flatMap(handlerId -> {
+                    RSocketBrokerResponderHandler consumerHandler = findById(handlerId);
+                    if (consumerHandler != null) {
+                        return consumerHandler.fireCloudEventToPeer(serviceInstancesChangedEvent);
+                    } else {
+                        return Mono.empty();
+                    }
+                }).subscribeOn(Schedulers.parallel());
     }
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
