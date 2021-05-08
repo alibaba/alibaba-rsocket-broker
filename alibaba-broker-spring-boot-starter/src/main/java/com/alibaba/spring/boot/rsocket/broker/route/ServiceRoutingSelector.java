@@ -27,7 +27,9 @@ public interface ServiceRoutingSelector {
     void registerP2pServiceConsumer(Integer instanceId, List<String> p2pServices);
 
     void unRegisterP2pServiceConsumer(Integer instanceId, List<String> p2pServices);
-    
+
+    List<Integer> findP2pServiceConsumers(String p2pService);
+
     boolean containInstance(Integer instanceId);
 
     boolean containService(Integer serviceId);

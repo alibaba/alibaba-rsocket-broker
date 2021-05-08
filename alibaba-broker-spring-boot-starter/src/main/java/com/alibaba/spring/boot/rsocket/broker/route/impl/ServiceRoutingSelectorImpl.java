@@ -98,6 +98,11 @@ public class ServiceRoutingSelectorImpl implements ServiceRoutingSelector {
     }
 
     @Override
+    public List<Integer> findP2pServiceConsumers(String p2pService) {
+        return p2pServiceConsumers.get(p2pService);
+    }
+
+    @Override
     public boolean containInstance(Integer instanceId) {
         return instanceServices.containsKey(instanceId);
     }
