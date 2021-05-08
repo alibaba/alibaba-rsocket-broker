@@ -1,6 +1,5 @@
 package com.alibaba.rsocket.broker.web.ui;
 
-import com.alibaba.rsocket.broker.dns.DnsResolveService;
 import com.alibaba.rsocket.route.RSocketFilterChain;
 import com.alibaba.spring.boot.rsocket.broker.cluster.RSocketBrokerManager;
 import com.alibaba.spring.boot.rsocket.broker.responder.RSocketBrokerHandlerRegistry;
@@ -40,7 +39,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
     private RSocketBrokerHandlerRegistry handlerRegistry;
     private ServiceRoutingSelector serviceRoutingSelector;
     private RSocketBrokerManager rSocketBrokerManager;
-    private DnsResolveService resolveService;
     private AuthenticationService authenticationService;
     private RSocketFilterChain filterChain;
     private Sinks.Many<String> appNotificationProcessor;
@@ -49,14 +47,12 @@ public class MainLayout extends AppLayout implements DisposableBean {
     public MainLayout(@Autowired RSocketBrokerHandlerRegistry handlerRegistry,
                       @Autowired ServiceRoutingSelector serviceRoutingSelector,
                       @Autowired RSocketBrokerManager rSocketBrokerManager,
-                      @Autowired DnsResolveService resolveService,
                       @Autowired AuthenticationService authenticationService,
                       @Autowired RSocketFilterChain filterChain,
                       @Autowired @Qualifier("appNotificationProcessor") Sinks.Many<String> appNotificationProcessor) {
         this.handlerRegistry = handlerRegistry;
         this.serviceRoutingSelector = serviceRoutingSelector;
         this.rSocketBrokerManager = rSocketBrokerManager;
-        this.resolveService = resolveService;
         this.authenticationService = authenticationService;
         this.filterChain = filterChain;
         this.appNotificationProcessor = appNotificationProcessor;
@@ -68,7 +64,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
 
         final Tabs tabs = new Tabs(dashBoard(),
                 apps(),
-                dns(),
                 services(),
                 serviceTesting(),
                 //serviceMesh(),
@@ -101,14 +96,6 @@ public class MainLayout extends AppLayout implements DisposableBean {
         final Icon icon = BULLETS.create();
         final Tab tab = new Tab(new HorizontalLayout(icon, label));
         tab2Workspace.put(tab, new AppsView(this.handlerRegistry));
-        return tab;
-    }
-
-    private Tab dns() {
-        final Span label = new Span("DNS");
-        final Icon icon = RECORDS.create();
-        final Tab tab = new Tab(new HorizontalLayout(icon, label));
-        tab2Workspace.put(tab, new DNSView(this.resolveService));
         return tab;
     }
 
