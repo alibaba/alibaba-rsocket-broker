@@ -128,6 +128,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
      */
     @Override
     public Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent) {
+        cloudEvent.setSourcing(this.sourcing);
         return Mono.fromRunnable(() -> eventProcessor.onNext(cloudEvent));
     }
 
