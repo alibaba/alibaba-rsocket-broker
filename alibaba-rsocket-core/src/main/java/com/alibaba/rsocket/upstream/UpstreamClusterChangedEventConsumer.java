@@ -25,7 +25,9 @@ public class UpstreamClusterChangedEventConsumer implements CloudEventsConsumer 
     @Override
     public boolean shouldAccept(CloudEventImpl<?> cloudEvent) {
         String type = cloudEvent.getAttributes().getType();
-        return UpstreamClusterChangedEvent.class.getCanonicalName().equalsIgnoreCase(type);
+        String sourcing = cloudEvent.getSourcing();
+        return UpstreamClusterChangedEvent.class.getCanonicalName().equalsIgnoreCase(type)
+                && sourcing != null && sourcing.startsWith("upstream:broker:");
     }
 
     @Override
