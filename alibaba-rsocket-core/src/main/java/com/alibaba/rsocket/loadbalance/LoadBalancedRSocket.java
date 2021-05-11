@@ -7,6 +7,7 @@ import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.cloudevents.EventReply;
 import com.alibaba.rsocket.events.ServicesExposedEvent;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
+import com.alibaba.rsocket.listen.RSocketResponderSupport;
 import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
@@ -402,7 +403,19 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
                     .setupPayload(payload)
                     .metadataMimeType(RSocketMimeType.CompositeMetadata.getType())
                     .dataMimeType(RSocketMimeType.Hessian.getType())
-                    .acceptor(requesterSupport.socketAcceptor())
+                    .acceptor((setup, sendingSocket) -> {
+                        return requesterSupport.socketAcceptor().accept(setup, sendingSocket).doOnNext(responder -> {
+                            if (responder instanceof RSocketResponderSupport) {
+                                String sourcing = "upstream:";
+                                if (this.serviceId.equals("*")) {
+                                    sourcing = sourcing + "broker:*";
+                                } else {
+                                    sourcing = sourcing + ":" + serviceId;
+                                }
+                                ((RSocketResponderSupport) responder).setSourcing(sourcing);
+                            }
+                        });
+                    })
                     .connect(UriTransportRegistry.clientForUri(uri));
         } catch (Exception e) {
             log.error(RsocketErrorCode.message("RST-400500", uri), e);

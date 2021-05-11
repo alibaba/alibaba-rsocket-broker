@@ -27,7 +27,16 @@ import reactor.core.publisher.Mono;
 public abstract class RSocketResponderSupport extends AbstractRSocket {
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     protected LocalReactiveServiceCaller localServiceCaller;
+    /**
+     * responder for sourcing, such as upstream, downstream from listener
+     * data format as upstream/downstream + app_name + service names, such as upstream:broker:*, downstream:app-name:*
+     */
+    protected String sourcing;
     public static final RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
+
+    public void setSourcing(String sourcing) {
+        this.sourcing = sourcing;
+    }
 
     protected Mono<Payload> localRequestResponse(GSVRoutingMetadata routing,
                                                  MessageMimeTypeMetadata dataEncodingMetadata,

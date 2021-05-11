@@ -2,6 +2,7 @@ package com.alibaba.rsocket.listen.impl;
 
 import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.listen.RSocketListener;
+import com.alibaba.rsocket.listen.RSocketResponderSupport;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.handler.ssl.OpenSsl;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -142,7 +143,13 @@ public class RSocketListenerImpl implements RSocketListener {
                     });
                 }
                 Disposable disposable = rsocketServer
-                        .acceptor(acceptor)
+                        .acceptor((setup, sendingSocket) -> {
+                            return acceptor.accept(setup, sendingSocket).doOnNext(responder -> {
+                                if (responder instanceof RSocketResponderSupport) {
+                                    ((RSocketResponderSupport) responder).setSourcing("downstream::*");
+                                }
+                            });
+                        })
                         .bind(transport)
                         .onTerminateDetach()
                         .subscribe();
