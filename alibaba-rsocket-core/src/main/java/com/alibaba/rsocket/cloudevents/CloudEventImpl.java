@@ -13,6 +13,7 @@ import java.util.Optional;
 public class CloudEventImpl<T> {
     private final T data;
     private CloudEvent cloudEvent;
+    private String sourcing;
 
     public CloudEventImpl(T data, CloudEvent cloudEvent) {
         this.data = data;
@@ -30,5 +31,13 @@ public class CloudEventImpl<T> {
 
     public CloudEvent getCloudEvent() {
         return cloudEvent;
+    }
+
+    public String getSourcing() {
+        return sourcing;
+    }
+
+    public void setSourcing(String sourcing) {
+        this.sourcing = sourcing;
     }
 }
