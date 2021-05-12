@@ -16,6 +16,9 @@ Alibaba RSocket Broker变更记录
 
 * CloudEventsNotifyService： 可以给集群中任意应用或者任意应用实例列表发送CloudEvents事件
 * 服务直连支持： 服务消费方通过Broker获取服务地址列表，然后直接给服务提供方通讯，Broker会提供对应的地址列表更新通知 https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-P2P
+* CloudEvents Java SDK升级至2.1
+* 添加对等通讯的能力，详细请参考： https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-P2P
+* CloudEventImpl中添加事件来源，这样事件消费可以增加来源判断
 
 ## 1.1.0
 
