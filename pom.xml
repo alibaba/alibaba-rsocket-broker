@@ -46,7 +46,7 @@
         <protostuff.version>1.7.4</protostuff.version>
         <avro.version>1.10.2</avro.version>
         <eclipse-collections.version>10.4.0</eclipse-collections.version>
-        <spring-cloud-release.version>2020.0.2</spring-cloud-release.version>
+        <spring-cloud-release.version>2020.0.3</spring-cloud-release.version>
         <cloudevents.version>2.1.1</cloudevents.version>
         <zipkin-brave.version>5.13.3</zipkin-brave.version>
         <junit5.version>5.7.2</junit5.version>
