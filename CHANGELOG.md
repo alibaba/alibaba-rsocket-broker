@@ -2,6 +2,7 @@ Alibaba RSocket Broker变更记录
 ==========================
 
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
+<!-- Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security, Document -->
 
 ## [Unreleased]
 
