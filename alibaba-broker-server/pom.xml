@@ -13,7 +13,7 @@
     <description>Alibaba RSocket Broker with Web Console</description>
 
     <properties>
-        <vaadin.version>19.0.8</vaadin.version>
+        <vaadin.version>20.0.0</vaadin.version>
         <flexmark-all.version>0.62.2</flexmark-all.version>
         <undertow.version>2.2.8.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
-            <artifactId>vaadin</artifactId>
+            <artifactId>vaadin-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
