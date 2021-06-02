@@ -27,8 +27,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.4.6</spring-boot.version>
-        <bytebuddy.version>1.11.0</bytebuddy.version>
+        <bytebuddy.version>1.11.1</bytebuddy.version>
         <micrometer.version>1.7.0</micrometer.version>
         <reactor-bom.version>2020.0.7</reactor-bom.version>
         <netty.version>4.1.65.Final</netty.version>
@@ -37,7 +39,7 @@
         <kotlinx-serialization.version>1.2.1</kotlinx-serialization.version>
         <kotlinx-coroutines.version>1.5.0</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
-        <rxjava3.version>3.0.12</rxjava3.version>
+        <rxjava3.version>3.0.13</rxjava3.version>
         <caffeine.version>2.9.1</caffeine.version>
         <roaring-bitmap.version>0.9.10</roaring-bitmap.version>
         <protobuf-java.version>3.17.0</protobuf-java.version>
