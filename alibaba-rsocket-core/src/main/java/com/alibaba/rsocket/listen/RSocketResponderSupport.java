@@ -2,13 +2,12 @@ package com.alibaba.rsocket.listen;
 
 import com.alibaba.rsocket.AbstractRSocket;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
-import com.alibaba.rsocket.metadata.GSVRoutingMetadata;
-import com.alibaba.rsocket.metadata.MessageAcceptMimeTypesMetadata;
-import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
-import com.alibaba.rsocket.metadata.RSocketMimeType;
+import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.ReactiveMethodHandler;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 import io.rsocket.Payload;
 import io.rsocket.exceptions.InvalidException;
@@ -18,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * rsocket responder support for both sides, supply some base api
@@ -33,6 +35,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
      */
     protected String sourcing;
     public static final RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
+    private Map<String, ByteBuf> compositeMetadataForMimeTypes = new HashMap<>();
 
     public void setSourcing(String sourcing) {
         this.sourcing = sourcing;
@@ -78,7 +81,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 }
                 return monoResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()));
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, getCompositeMetadataWithEncoding(resultEncodingType.getType())));
             } else {
                 ReferenceCountUtil.safeRelease(payload);
                 return Mono.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
@@ -138,7 +141,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 RSocketMimeType resultEncodingType = resultEncodingType(messageAcceptMimeTypesMetadata, dataEncodingMetadata.getRSocketMimeType(), methodHandler);
                 return fluxResult
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()));
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, getCompositeMetadataWithEncoding(resultEncodingType.getType())));
             } else {
                 ReferenceCountUtil.safeRelease(payload);
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
@@ -185,7 +188,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
                 //result return
                 return ((Flux<?>) result)
                         .map(object -> encodingFacade.encodingResult(object, resultEncodingType))
-                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, encodingFacade.getDefaultCompositeMetadataByteBuf(resultEncodingType).retainedDuplicate()));
+                        .map(dataByteBuf -> ByteBufPayload.create(dataByteBuf, getCompositeMetadataWithEncoding(resultEncodingType.getType())));
             } else {
                 return Flux.error(new InvalidException(RsocketErrorCode.message("RST-201404", routing.getService(), routing.getMethod())));
             }
@@ -234,5 +237,15 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
             }
         }
         return defaultEncodingType;
+    }
+
+    protected ByteBuf getCompositeMetadataWithEncoding(String mimeType) {
+        if (!this.compositeMetadataForMimeTypes.containsKey(mimeType)) {
+            RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(mimeType));
+            ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
+            this.compositeMetadataForMimeTypes.put(mimeType, Unpooled.copiedBuffer(compositeMetadataContent));
+            ReferenceCountUtil.safeRelease(compositeMetadataContent);
+        }
+        return compositeMetadataForMimeTypes.get(mimeType).retainedDuplicate();
     }
 }
