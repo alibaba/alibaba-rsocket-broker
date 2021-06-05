@@ -26,14 +26,6 @@ public interface RSocketEncodingFacade {
     Object decodeResult(RSocketMimeType encodingType, @Nullable ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException;
 
     /**
-     * get default composite metadata ByteBuf with message mime type. please use .retainedDuplicate() if necessary
-     *
-     * @param messageMimeType message mime type
-     * @return composite metadata ByteBuf
-     */
-    ByteBuf getDefaultCompositeMetadataByteBuf(RSocketMimeType messageMimeType);
-
-    /**
      * get RSocket encoding facade singleton
      *
      * @return encoding facade
