@@ -110,7 +110,7 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
 
     @Override
     public SocketAcceptor socketAcceptor() {
-        return (setupPayload, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload));
+        return (setupPayload, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload,null));
     }
 
     @Override

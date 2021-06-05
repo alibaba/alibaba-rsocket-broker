@@ -7,6 +7,8 @@ import com.alibaba.rsocket.RSocketAppContext;
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.cloudevents.CloudEventRSocket;
 import com.alibaba.rsocket.cloudevents.EventReply;
+import com.alibaba.rsocket.invocation.RSocketMimeTypeHandler;
+import com.alibaba.rsocket.invocation.RSocketMimeTypeHandler.ByteBufResponse;
 import com.alibaba.rsocket.listen.RSocketResponderSupport;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
@@ -15,6 +17,7 @@ import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.exceptions.InvalidException;
+import io.rsocket.util.DefaultPayload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
@@ -25,6 +28,9 @@ import reactor.util.context.Context;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -48,14 +54,22 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     protected TopicProcessor<CloudEventImpl> eventProcessor;
     private boolean braveTracing = true;
     private Tracer tracer;
+    Map<String, RSocketMimeTypeHandler> mimeTypeHandlerMap;
 
     public RSocketResponderHandler(LocalReactiveServiceCaller serviceCall,
                                    TopicProcessor<CloudEventImpl> eventProcessor,
                                    RSocket requester,
-                                   ConnectionSetupPayload setupPayload) {
+                                   ConnectionSetupPayload setupPayload,
+                                   @Nullable List<RSocketMimeTypeHandler> mimeTypeHandlers) {
         this.localServiceCaller = serviceCall;
         this.eventProcessor = eventProcessor;
         this.requester = requester;
+        if (mimeTypeHandlers != null && !mimeTypeHandlers.isEmpty()) {
+            mimeTypeHandlerMap = new HashMap<>();
+            for (RSocketMimeTypeHandler mimeTypeHandler : mimeTypeHandlers) {
+                mimeTypeHandlerMap.put(mimeTypeHandler.contentType(), mimeTypeHandler);
+            }
+        }
         this.comboOnClose = Mono.first(super.onClose(), requester.onClose());
         this.comboOnClose.subscribe(unused -> {
             CONNECTION_COUNTER.decrementAndGet();
@@ -98,7 +112,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
         }
-        Mono<Payload> result = localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        Mono<Payload> result;
+        if (mimeTypeHandlerMap != null && mimeTypeHandlerMap.containsKey(dataEncodingMetadata.getMimeType())) {
+            RSocketMimeTypeHandler mimeTypeHandler = mimeTypeHandlerMap.get(dataEncodingMetadata.getMimeType());
+            Mono<ByteBufResponse> response = (Mono<ByteBufResponse>) mimeTypeHandler.invoke(routingMetaData.getService(), routingMetaData.getMethod(), payload.data());
+            result = response.map(byteBufResponse -> DefaultPayload.create(byteBufResponse.getData(), new MessageMimeTypeMetadata(byteBufResponse.getContentType()).getContent()));
+        } else {
+            result = localRequestResponse(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        }
         return injectTraceContext(result, compositeMetadata);
     }
 
@@ -116,7 +137,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             ReferenceCountUtil.safeRelease(payload);
             return Mono.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
         }
-        Mono<Void> result = localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
+        Mono<Void> result;
+        if (mimeTypeHandlerMap != null && mimeTypeHandlerMap.containsKey(dataEncodingMetadata.getMimeType())) {
+            RSocketMimeTypeHandler mimeTypeHandler = mimeTypeHandlerMap.get(dataEncodingMetadata.getMimeType());
+            Mono<ByteBufResponse> response = (Mono<ByteBufResponse>) mimeTypeHandler.invoke(routingMetaData.getService(), routingMetaData.getMethod(), payload.data());
+            result = response.then();
+        } else {
+            result = localFireAndForget(routingMetaData, dataEncodingMetadata, payload);
+        }
         return injectTraceContext(result, compositeMetadata);
     }
 
@@ -151,7 +179,14 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
             ReferenceCountUtil.safeRelease(payload);
             return Flux.error(new InvalidException(RsocketErrorCode.message("RST-700404")));
         }
-        Flux<Payload> result = localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        Flux<Payload> result;
+        if (mimeTypeHandlerMap != null && mimeTypeHandlerMap.containsKey(dataEncodingMetadata.getMimeType())) {
+            RSocketMimeTypeHandler mimeTypeHandler = mimeTypeHandlerMap.get(dataEncodingMetadata.getMimeType());
+            Flux<ByteBufResponse> response = (Flux<ByteBufResponse>) mimeTypeHandler.invoke(routingMetaData.getService(), routingMetaData.getMethod(), payload.data());
+            result = response.map(byteBufResponse -> DefaultPayload.create(byteBufResponse.getData(), new MessageMimeTypeMetadata(byteBufResponse.getContentType()).getContent()));
+        } else {
+            result = localRequestStream(routingMetaData, dataEncodingMetadata, compositeMetadata.getAcceptMimeTypesMetadata(), payload);
+        }
         return injectTraceContext(result, compositeMetadata);
     }
 
