@@ -102,14 +102,23 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         //param encoding type
         this.paramEncoding = dataEncodingType;
         this.acceptEncodingTypes = acceptEncodingTypes;
+        //byte buffer binary encoding
+        if (paramCount == 1) {
+            Class<?> parameterType = method.getParameterTypes()[0];
+            if (BINARY_CLASS_LIST.contains(parameterType)) {
+                this.paramEncoding = RSocketMimeType.Binary;
+            } else if (parameterType.equals(CloudEvent.class)) {
+                this.paramEncoding = RSocketMimeType.CloudEventsJson;
+            }
+        }
         //deal with @ServiceMapping for method
         ServiceMapping serviceMapping = method.getAnnotation(ServiceMapping.class);
         if (serviceMapping != null) {
             initServiceMapping(serviceMapping);
         }
         //CloudEvent detection
-        if(inferredClassForReturn.equals(CloudEvent.class)) {
-            this.acceptEncodingTypes = new RSocketMimeType[] {RSocketMimeType.CloudEventsJson};
+        if (inferredClassForReturn.equals(CloudEvent.class)) {
+            this.acceptEncodingTypes = new RSocketMimeType[]{RSocketMimeType.CloudEventsJson};
         }
         //RSocketRemoteServiceBuilder has higher priority with group,version,endpoint than @ServiceMapping from RSocketRemoteServiceBuilder
         this.group = group;
@@ -120,15 +129,6 @@ public class ReactiveMethodMetadata extends ReactiveMethodSupport {
         this.fullName = this.service + "." + this.name;
         this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(this.group, this.service, this.version));
         this.handlerId = MurmurHash3.hash32(service + "." + name);
-        //byte buffer binary encoding
-        if (paramCount == 1) {
-            Class<?> parameterType = method.getParameterTypes()[0];
-            if (BINARY_CLASS_LIST.contains(parameterType)) {
-                this.paramEncoding = RSocketMimeType.Binary;
-            }  else if(parameterType.equals(CloudEvent.class)) {
-                this.paramEncoding = RSocketMimeType.CloudEventsJson;
-            }
-        }
         //init composite metadata for invocation
         initCompositeMetadata(origin);
         //bi direction check: param's type is Flux for 1st param or 2nd param
