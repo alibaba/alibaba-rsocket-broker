@@ -7,7 +7,6 @@ import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.events.CloudEventsConsumer;
 import com.alibaba.rsocket.events.CloudEventsProcessor;
 import com.alibaba.rsocket.health.RSocketServiceHealth;
-import com.alibaba.rsocket.invocation.RSocketMimeTypeHandler;
 import com.alibaba.rsocket.listen.RSocketResponderHandlerFactory;
 import com.alibaba.rsocket.observability.MetricsService;
 import com.alibaba.rsocket.route.RoutingEndpoint;
@@ -42,7 +41,6 @@ import org.springframework.core.env.Environment;
 import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -108,19 +106,17 @@ public class RSocketAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(type = {"brave.Tracing", "com.alibaba.rsocket.listen.RSocketResponderHandlerFactory"})
     public RSocketResponderHandlerFactory rsocketResponderHandlerFactory(@Autowired LocalReactiveServiceCaller serviceCaller,
-                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
-                                                                         @Autowired(required = false) List<RSocketMimeTypeHandler> mimeTypeHandlers) {
-        return (setupPayload, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload,mimeTypeHandlers));
+                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
+        return (setupPayload, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload));
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(type = "brave.Tracing")
     public RSocketResponderHandlerFactory rsocketResponderHandlerFactoryWithZipkin(@Autowired LocalReactiveServiceCaller serviceCaller,
-                                                                                   @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
-                                                                                   @Autowired(required = false) List<RSocketMimeTypeHandler> mimeTypeHandlers) {
+                                                                                   @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
         return (setupPayload, requester) -> Mono.fromCallable(() -> {
-            RSocketResponderHandler responderHandler = new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload,mimeTypeHandlers);
+            RSocketResponderHandler responderHandler = new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload);
             Tracing tracing = applicationContext.getBean(Tracing.class);
             responderHandler.setTracer(tracing.tracer());
             return responderHandler;
