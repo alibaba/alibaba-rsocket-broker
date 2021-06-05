@@ -77,6 +77,10 @@ public class MessageMimeTypeMetadata implements MetadataAware {
         return RSocketMimeType.valueOfType(this.mimeType);
     }
 
+    public WellKnownMimeType getWellKnowMimeType() {
+        return WellKnownMimeType.fromString(this.mimeType);
+    }
+
     public static MessageMimeTypeMetadata from(ByteBuf content) {
         MessageMimeTypeMetadata temp = new MessageMimeTypeMetadata();
         temp.load(content);
