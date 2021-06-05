@@ -3,13 +3,9 @@ package com.alibaba.rsocket.encoding.impl;
 import com.alibaba.rsocket.encoding.EncodingException;
 import com.alibaba.rsocket.encoding.ObjectEncodingHandler;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
-import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
-import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.util.ReferenceCountUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -33,8 +29,6 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     /**
      * composite metadata ByteBuf for message mime types
      */
-    private Map<RSocketMimeType, ByteBuf> compositeMetadataForMimeTypes = new HashMap<>();
-
     public static final RSocketEncodingFacade instance = new RSocketEncodingFacadeImpl();
 
     public RSocketEncodingFacadeImpl() {
@@ -53,10 +47,6 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     private void addEncodingHandler(ObjectEncodingHandler objectEncodingHandler) {
         RSocketMimeType mimeType = objectEncodingHandler.mimeType();
         handlerMap.put(mimeType, objectEncodingHandler);
-        RSocketCompositeMetadata resultCompositeMetadata = RSocketCompositeMetadata.from(new MessageMimeTypeMetadata(mimeType));
-        ByteBuf compositeMetadataContent = resultCompositeMetadata.getContent();
-        this.compositeMetadataForMimeTypes.put(mimeType, Unpooled.copiedBuffer(compositeMetadataContent));
-        ReferenceCountUtil.safeRelease(compositeMetadataContent);
     }
 
     @NotNull
@@ -108,11 +98,6 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
             log.error(RsocketErrorCode.message("RST-700501", encodingType.getName(), targetClass != null ? targetClass.getName() : "Null"), e);
             return null;
         }
-    }
-
-    @Override
-    public ByteBuf getDefaultCompositeMetadataByteBuf(RSocketMimeType messageMimeType) {
-        return this.compositeMetadataForMimeTypes.get(messageMimeType);
     }
 
     //check encoding type exist or not
