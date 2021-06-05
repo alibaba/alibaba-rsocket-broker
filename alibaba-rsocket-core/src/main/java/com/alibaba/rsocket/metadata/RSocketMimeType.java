@@ -13,6 +13,7 @@ import java.util.stream.Stream;
  * @author leijuan
  */
 public enum RSocketMimeType {
+    GRAPHQL("GraphQL", WellKnownMimeType.APPLICATION_GRAPHQL),
     Json("Json", WellKnownMimeType.APPLICATION_JSON),
     Protobuf("Protobuf", WellKnownMimeType.APPLICATION_PROTOBUF),
     Avor("Avor", WellKnownMimeType.APPLICATION_AVRO),
@@ -72,7 +73,7 @@ public enum RSocketMimeType {
     public String getType() {
         return type;
     }
-    
+
     public static RSocketMimeType valueOf(byte id) {
         return MIME_TYPE_MAP.get(id);
     }
