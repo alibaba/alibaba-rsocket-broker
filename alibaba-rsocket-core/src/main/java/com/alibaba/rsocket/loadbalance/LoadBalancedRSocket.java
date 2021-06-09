@@ -286,7 +286,7 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         for (RSocket rsocket : activeSockets.values()) {
             try {
                 if (!rsocket.isDisposed()) {
-                    rsocket.isDisposed();
+                    rsocket.dispose();
                 }
             } catch (Exception ignore) {
 
