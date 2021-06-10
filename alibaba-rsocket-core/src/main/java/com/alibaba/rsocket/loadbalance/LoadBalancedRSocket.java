@@ -306,6 +306,10 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
         return activeSockets;
     }
 
+    public String getActiveUris() {
+        return String.join(",", this.activeSockets.keySet());
+    }
+
     public void refreshUnHealthyUris() {
         for (String unHealthyUri : unHealthyUriSet) {
             tryToReconnect(unHealthyUri, null);
