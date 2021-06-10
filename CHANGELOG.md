@@ -4,7 +4,7 @@ Alibaba RSocket Broker变更记录
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 <!-- Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security, Document -->
 
-## [Unreleased]
+## [1.1.1] - 2021-06-10
 
 从1.1.1版本开始，我们决定对RSocket Broker进行瘦身，一味地叠加特性不是好的设计策略，而是将功能做的更可靠，提供更好的扩展才是好的策略。
 所以接下来我们会所有的特性进行review，将其中一些不需要的特性进行删除，同时会增加一些基础特性，方便开发者在核心功能上进行扩展。
@@ -12,7 +12,7 @@ Alibaba RSocket Broker变更记录
 目前要移除的功能如下：
 
 * Remove SMI beans：service meshes将调整到Kubernetes对接中 https://smi-spec.io/
-* Config Server功能：从Broker中迁移到外部服务加载方式
+* Config Server功能：从Broker中迁移到外部服务加载方式  https://github.com/alibaba-rsocket-broker/rsocket-broker-config-server-service
 * HTTP DNS的功能移除
 
 ### 特性调整
@@ -22,6 +22,10 @@ Alibaba RSocket Broker变更记录
 * CloudEvents Java SDK升级至2.1
 * 添加对等通讯的能力，详细请参考： https://github.com/alibaba/alibaba-rsocket-broker/wiki/RSocket-P2P
 * CloudEventImpl中添加事件来源，这样事件消费可以增加来源判断
+* 添加GraphQL样例：https://github.com/alibaba-rsocket-broker/rsocket-graphql-gateway
+* RSocket Broker控制台: Vaadin升级至20.0
+* RSocket Java SDK升级至1.1.1
+* Spring Boot 2.4.7/2.5.1兼容测试
 
 ## [1.1.0] - 2021-04-23
 
