@@ -19,6 +19,7 @@ import io.rsocket.transport.netty.server.WebsocketServerTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
+import reactor.core.publisher.Hooks;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.TcpServer;
 
@@ -88,6 +89,9 @@ public class RSocketListenerImpl implements RSocketListener {
 
     @Override
     public void start() throws Exception {
+        // https://github.com/rsocket/rsocket-java/issues/1018
+        Hooks.onErrorDropped(e -> {
+        });
         if (status != 1) {
             for (Map.Entry<Integer, String> entry : schemas.entrySet()) {
                 String schema = entry.getValue();
