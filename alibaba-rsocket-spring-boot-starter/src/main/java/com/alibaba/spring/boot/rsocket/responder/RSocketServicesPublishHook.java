@@ -43,7 +43,6 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
                 .builder(new AppStatusEvent(RSocketAppContext.ID, AppStatusEvent.STATUS_SERVING))
                 .build();
         LoadBalancedRSocket loadBalancedRSocket = brokerCluster.getLoadBalancedRSocket();
-        String brokers = String.join(",", loadBalancedRSocket.getActiveSockets().keySet());
         //ports update
         ConfigurableEnvironment env = applicationReadyEvent.getApplicationContext().getEnvironment();
         int serverPort = Integer.parseInt(env.getProperty("server.port", "0"));
@@ -58,20 +57,20 @@ public class RSocketServicesPublishHook implements ApplicationListener<Applicati
                         .builder(portsUpdateEvent)
                         .build();
                 loadBalancedRSocket.fireCloudEventToUpstreamAll(portsUpdateCloudEvent)
-                        .doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", brokers)))
+                        .doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", loadBalancedRSocket.getActiveUris())))
                         .subscribe();
             }
         }
         // app status
         loadBalancedRSocket.fireCloudEventToUpstreamAll(appStatusEventCloudEvent)
-                .doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", brokers)))
+                .doOnSuccess(aVoid -> log.info(RsocketErrorCode.message("RST-301200", loadBalancedRSocket.getActiveUris())))
                 .subscribe();
         // service exposed
         CloudEventImpl<ServicesExposedEvent> servicesExposedEventCloudEvent = rsocketRequesterSupport.servicesExposedEvent().get();
         if (servicesExposedEventCloudEvent != null) {
             loadBalancedRSocket.fireCloudEventToUpstreamAll(servicesExposedEventCloudEvent).doOnSuccess(aVoid -> {
                 String exposedServices = rsocketRequesterSupport.exposedServices().get().stream().map(ServiceLocator::getGsv).collect(Collectors.joining(","));
-                log.info(RsocketErrorCode.message("RST-301201", exposedServices, brokers));
+                log.info(RsocketErrorCode.message("RST-301201", exposedServices, loadBalancedRSocket.getActiveUris()));
             }).subscribe();
         }
     }
