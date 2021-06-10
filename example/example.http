@@ -1,6 +1,9 @@
 ### get user info
 GET http://localhost:8181/user/2
 
+### get user info
+GET http://localhost:8181/user2/2
+
 ### get user info from Spring RSocketRequester
 GET http://localhost:8181/user/requester/2
 
