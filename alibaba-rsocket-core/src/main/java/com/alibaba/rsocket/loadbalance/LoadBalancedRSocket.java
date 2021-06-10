@@ -29,6 +29,7 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -91,6 +92,12 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
      * connection error predicate
      */
     private static Predicate<? super Throwable> CONNECTION_ERROR_PREDICATE = e -> e instanceof ClosedChannelException || e instanceof ConnectionErrorException || e instanceof ConnectException;
+
+    static {
+        // https://github.com/rsocket/rsocket-java/issues/1018
+        Hooks.onErrorDropped(e -> {
+        });
+    }
 
     public LoadBalancedRSocket(String serviceId, Flux<Collection<String>> urisFactory,
                                RSocketRequesterSupport requesterSupport) {
