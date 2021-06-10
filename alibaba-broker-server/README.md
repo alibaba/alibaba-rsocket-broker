@@ -20,7 +20,7 @@ RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控
 version: "3"
 services:
   alibaba-rsocket-broker:
-    image: linuxchina/alibaba-rsocket-broker:1.0.1
+    image: linuxchina/alibaba-rsocket-broker:1.1.1
     ports:
       - "9997:9997"
       - "9998:9998"
