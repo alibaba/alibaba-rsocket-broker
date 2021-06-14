@@ -13,7 +13,7 @@
     <description>Alibaba RSocket Broker with Web Console</description>
 
     <properties>
-        <vaadin.version>20.0.1</vaadin.version>
+        <vaadin.version>20.0.2</vaadin.version>
         <flexmark-all.version>0.62.2</flexmark-all.version>
         <undertow.version>2.2.8.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
@@ -178,7 +178,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>
@@ -199,7 +199,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 
