@@ -14,10 +14,10 @@
 
     <name>user-service-api</name>
     <properties>
-        <protobuf-java.version>3.17.0</protobuf-java.version>
+        <protobuf-java.version>3.17.3</protobuf-java.version>
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.0.13</rxjava3.version>
-        <cloudevents-sdk.version>2.1.1</cloudevents-sdk.version>
+        <cloudevents-sdk.version>2.2.0</cloudevents-sdk.version>
         <junit5.version>5.7.2</junit5.version>
     </properties>
 
