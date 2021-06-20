@@ -30,7 +30,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.5.1</spring-boot.version>
-        <bytebuddy.version>1.11.1</bytebuddy.version>
+        <bytebuddy.version>1.11.5</bytebuddy.version>
         <micrometer.version>1.7.0</micrometer.version>
         <reactor-bom.version>2020.0.7</reactor-bom.version>
         <netty.version>4.1.65.Final</netty.version>
@@ -108,7 +108,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.20.1</version>
+            <version>3.20.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
