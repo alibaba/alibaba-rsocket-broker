@@ -102,17 +102,25 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
                     .filter(bean -> !(bean instanceof RSocketServiceHealth || bean instanceof MetricsService))
                     .map(o -> {
                         Class<?> managedBeanClass = AopUtils.isAopProxy(o) ? AopUtils.getTargetClass(o) : o.getClass();
-                        RSocketService rSocketService = AnnotationUtils.findAnnotation(managedBeanClass, RSocketService.class);
+                        RSocketService rsocketService = AnnotationUtils.findAnnotation(managedBeanClass, RSocketService.class);
                         //noinspection ConstantConditions
-                        String serviceName = rSocketService.serviceInterface().getCanonicalName();
-                        if (!rSocketService.name().isEmpty()) {
-                            serviceName = rSocketService.name();
+                        String serviceName = rsocketService.serviceInterface().getCanonicalName();
+                        if (!rsocketService.name().isEmpty()) {
+                            serviceName = rsocketService.name();
+                        }
+                        String group = properties.getGroup();
+                        if (group == null || group.isEmpty()) {
+                            group = rsocketService.group();
+                        }
+                        String version = properties.getVersion();
+                        if (version == null || group.isEmpty()) {
+                            version = rsocketService.version();
                         }
                         return new ServiceLocator(
-                                properties.getGroup(),
+                                group,
                                 serviceName,
-                                properties.getVersion(),
-                                rSocketService.tags()
+                                version,
+                                rsocketService.tags()
                         );
                     }).collect(Collectors.toSet());
         };
