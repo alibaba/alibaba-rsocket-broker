@@ -22,14 +22,21 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.FileCopyUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 /**
@@ -46,6 +53,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
     protected SocketAcceptor socketAcceptor;
     protected List<RSocketInterceptor> responderInterceptors = new ArrayList<>();
     protected List<RSocketInterceptor> requestInterceptors = new ArrayList<>();
+    private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
     public RSocketRequesterSupportImpl(RSocketProperties properties, Properties env,
                                        SocketAcceptor socketAcceptor) {
@@ -159,7 +167,16 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         env.stringPropertyNames().forEach(key -> {
             if (key.startsWith("rsocket.metadata.")) {
                 String[] parts = key.split("[=:]", 2);
-                appMetadata.getMetadata().put(parts[0].trim().replace("rsocket.metadata.", ""), env.getProperty(key));
+                final String name = parts[0].trim().replace("rsocket.metadata.", "");
+                String value = env.getProperty(key);
+                if (value.startsWith("classpath:")) {
+                    try (InputStream inputStream = resourceLoader.getResource(value).getInputStream()) {
+                        value = inputStreamToString(inputStream);
+                    } catch (Exception ignore) {
+
+                    }
+                }
+                appMetadata.getMetadata().put(name, value);
             }
         });
         //power unit
@@ -170,10 +187,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
         URL humansMd = this.getClass().getResource("/humans.md");
         if (humansMd != null) {
             try (InputStream inputStream = humansMd.openStream()) {
-                byte[] bytes = new byte[inputStream.available()];
-                inputStream.read(bytes);
-                inputStream.close();
-                appMetadata.setHumansMd(new String(bytes, StandardCharsets.UTF_8));
+                appMetadata.setHumansMd(inputStreamToString(inputStream));
             } catch (Exception ignore) {
 
             }
@@ -207,5 +221,13 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
     @Override
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    public String inputStreamToString(InputStream inputStream) {
+        try (Reader reader = new InputStreamReader(inputStream, UTF_8)) {
+            return FileCopyUtils.copyToString(reader);
+        } catch (IOException e) {
+            return null;
+        }
     }
 }
