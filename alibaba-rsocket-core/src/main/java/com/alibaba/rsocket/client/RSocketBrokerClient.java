@@ -41,7 +41,7 @@ public class RSocketBrokerClient {
     private SimpleRSocketRequesterSupport rsocketRequesterSupport;
     private CloudEventsProcessor cloudEventsProcessor;
 
-    public RSocketBrokerClient(String appName, List<String> brokers,
+    public RSocketBrokerClient(String appName, List<String> brokers, String topology,
                                RSocketMimeType dataMimeType, char[] jwtToken,
                                LocalReactiveServiceCaller serviceCaller) {
         this.appName = appName;
@@ -54,6 +54,7 @@ public class RSocketBrokerClient {
                 RSocketServiceHealth.class, (RSocketServiceHealth) serviceName -> Mono.just(1));
         this.rsocketRequesterSupport = new SimpleRSocketRequesterSupport(appName, jwtToken, this.brokers,
                 this.serviceCaller, this.eventProcessor);
+        this.rsocketRequesterSupport.setTopology(topology);
         this.cloudEventsProcessor = new CloudEventsProcessor(eventProcessor, new ArrayList<>());
         initUpstreamManager();
     }
