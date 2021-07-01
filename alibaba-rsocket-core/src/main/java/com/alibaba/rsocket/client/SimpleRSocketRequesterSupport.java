@@ -55,6 +55,10 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
         this.serviceCaller = serviceCaller;
     }
 
+    public void setTopology(String topology) {
+        this.topology = topology;
+    }
+
     @Override
     public URI originUri() {
         return URI.create("tcp://" + NetworkUtil.LOCAL_IP + "?appName=" + appName + "&uuid=" + RSocketAppContext.ID);
