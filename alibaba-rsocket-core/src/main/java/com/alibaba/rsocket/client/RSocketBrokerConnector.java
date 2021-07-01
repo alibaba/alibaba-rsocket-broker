@@ -17,6 +17,7 @@ public class RSocketBrokerConnector {
     private char[] jwtToken;
     private List<String> brokers;
     private String appName = "MockApp";
+    private String topology = "intranet";
     private RSocketMimeType dataMimeType = RSocketMimeType.Hessian;
     LocalReactiveServiceCaller serviceCaller = new LocalReactiveServiceCallerImpl();
 
@@ -34,6 +35,11 @@ public class RSocketBrokerConnector {
 
     public RSocketBrokerConnector appName(String appName) {
         this.appName = appName;
+        return this;
+    }
+
+    public RSocketBrokerConnector topology(String topology) {
+        this.topology = topology;
         return this;
     }
 
@@ -58,7 +64,7 @@ public class RSocketBrokerConnector {
     }
 
     public RSocketBrokerClient connect() {
-        return new RSocketBrokerClient(this.appName, this.brokers, this.dataMimeType, this.jwtToken, this.serviceCaller);
+        return new RSocketBrokerClient(this.appName, this.brokers, topology, this.dataMimeType, this.jwtToken, this.serviceCaller);
     }
 
     public RSocketBrokerClient connect(List<String> brokers) {
