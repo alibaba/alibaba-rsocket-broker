@@ -44,7 +44,7 @@
         <roaring-bitmap.version>0.9.15</roaring-bitmap.version>
         <protobuf-java.version>3.17.3</protobuf-java.version>
         <hessian.version>4.0.65</hessian.version>
-        <jackson.version>2.12.3</jackson.version>
+        <jackson.version>2.12.4</jackson.version>
         <protostuff.version>1.7.4</protostuff.version>
         <avro.version>1.10.2</avro.version>
         <eclipse-collections.version>10.4.0</eclipse-collections.version>
