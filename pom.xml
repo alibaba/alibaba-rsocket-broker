@@ -36,7 +36,7 @@
         <netty.version>4.1.65.Final</netty.version>
         <rsocket.version>1.1.1</rsocket.version>
         <kotlin.version>1.5.20</kotlin.version>
-        <kotlinx-serialization.version>1.2.1</kotlinx-serialization.version>
+        <kotlinx-serialization.version>1.2.2</kotlinx-serialization.version>
         <kotlinx-coroutines.version>1.5.1</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.0.13</rxjava3.version>
