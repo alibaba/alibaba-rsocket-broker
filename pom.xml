@@ -32,10 +32,10 @@
         <spring-boot.version>2.5.2</spring-boot.version>
         <bytebuddy.version>1.11.6</bytebuddy.version>
         <micrometer.version>1.7.1</micrometer.version>
-        <reactor-bom.version>2020.0.8</reactor-bom.version>
+        <reactor-bom.version>2020.0.9</reactor-bom.version>
         <netty.version>4.1.65.Final</netty.version>
         <rsocket.version>1.1.1</rsocket.version>
-        <kotlin.version>1.5.20</kotlin.version>
+        <kotlin.version>1.5.21</kotlin.version>
         <kotlinx-serialization.version>1.2.2</kotlinx-serialization.version>
         <kotlinx-coroutines.version>1.5.1</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
