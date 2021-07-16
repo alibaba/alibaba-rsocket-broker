@@ -30,8 +30,8 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.5.2</spring-boot.version>
-        <bytebuddy.version>1.11.7</bytebuddy.version>
-        <micrometer.version>1.7.1</micrometer.version>
+        <bytebuddy.version>1.11.8</bytebuddy.version>
+        <micrometer.version>1.7.2</micrometer.version>
         <reactor-bom.version>2020.0.9</reactor-bom.version>
         <netty.version>4.1.65.Final</netty.version>
         <rsocket.version>1.1.1</rsocket.version>
