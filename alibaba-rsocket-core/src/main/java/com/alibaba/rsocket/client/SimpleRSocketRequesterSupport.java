@@ -24,10 +24,7 @@ import reactor.core.publisher.Mono;
 import reactor.extra.processor.TopicProcessor;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -42,6 +39,7 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
     private List<String> brokers;
     private String appName;
     private String topology = "intranet";
+    private Map<String, String> metadata;
     private LocalReactiveServiceCaller serviceCaller;
     private TopicProcessor<CloudEventImpl> eventProcessor;
 
@@ -57,6 +55,10 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
 
     public void setTopology(String topology) {
         this.topology = topology;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     @Override
@@ -137,6 +139,7 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
         appMetadata.setDevice(appName);
         appMetadata.setBrokers(brokers);
         appMetadata.setTopology(this.topology);
+        appMetadata.setMetadata(this.metadata);
         return appMetadata;
     }
 }

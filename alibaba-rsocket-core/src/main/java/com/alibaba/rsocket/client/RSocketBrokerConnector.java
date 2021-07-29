@@ -4,7 +4,9 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCallerImpl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -18,6 +20,7 @@ public class RSocketBrokerConnector {
     private List<String> brokers;
     private String appName = "MockApp";
     private String topology = "intranet";
+    private Map<String, String> metadata;
     private RSocketMimeType dataMimeType = RSocketMimeType.Hessian;
     LocalReactiveServiceCaller serviceCaller = new LocalReactiveServiceCallerImpl();
 
@@ -63,8 +66,16 @@ public class RSocketBrokerConnector {
         return this;
     }
 
+    public RSocketBrokerConnector metadata(String name, String value) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(name, value);
+        return this;
+    }
+
     public RSocketBrokerClient connect() {
-        return new RSocketBrokerClient(this.appName, this.brokers, topology, this.dataMimeType, this.jwtToken, this.serviceCaller);
+        return new RSocketBrokerClient(this.appName, this.brokers, topology, metadata, this.dataMimeType, this.jwtToken, this.serviceCaller);
     }
 
     public RSocketBrokerClient connect(List<String> brokers) {

@@ -22,6 +22,7 @@ import reactor.extra.processor.TopicProcessor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +42,8 @@ public class RSocketBrokerClient {
     private SimpleRSocketRequesterSupport rsocketRequesterSupport;
     private CloudEventsProcessor cloudEventsProcessor;
 
-    public RSocketBrokerClient(String appName, List<String> brokers, String topology,
+    public RSocketBrokerClient(String appName, List<String> brokers,
+                               String topology, Map<String, String> metadata,
                                RSocketMimeType dataMimeType, char[] jwtToken,
                                LocalReactiveServiceCaller serviceCaller) {
         this.appName = appName;
@@ -55,6 +57,7 @@ public class RSocketBrokerClient {
         this.rsocketRequesterSupport = new SimpleRSocketRequesterSupport(appName, jwtToken, this.brokers,
                 this.serviceCaller, this.eventProcessor);
         this.rsocketRequesterSupport.setTopology(topology);
+        this.rsocketRequesterSupport.setMetadata(metadata);
         this.cloudEventsProcessor = new CloudEventsProcessor(eventProcessor, new ArrayList<>());
         initUpstreamManager();
     }
