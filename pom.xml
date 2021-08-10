@@ -39,7 +39,7 @@
         <kotlinx-serialization.version>1.2.2</kotlinx-serialization.version>
         <kotlinx-coroutines.version>1.5.1</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
-        <rxjava3.version>3.0.13</rxjava3.version>
+        <rxjava3.version>3.1.0</rxjava3.version>
         <caffeine.version>2.9.2</caffeine.version>
         <roaring-bitmap.version>0.9.15</roaring-bitmap.version>
         <protobuf-java.version>3.17.3</protobuf-java.version>
