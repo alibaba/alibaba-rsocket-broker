@@ -13,7 +13,7 @@ keywords:
   - Broker
 license: Apache-2.0
 url: "https://alibroker.info/"
-repository: "https://repo1.maven.org/maven2/com/alibaba/rsocket/"
+repository-artifact: "https://repo1.maven.org/maven2/com/alibaba/rsocket/"
 repository-code: "https://github.com/alibaba/alibaba-rsocket-broker"
 references:
   - type: software
