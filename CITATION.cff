@@ -1,9 +1,14 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it using these metadata"
 title: Alibaba RSocket Broker
-authors:
-  - family-names: Libing
-    given-names: Chen
+abstract: "Alibaba RSocket Broker是一款基于RSocket协议的反应式对等通讯系统，为通讯多方构建分布式的RPC, Pub/Sub, Streaming等通讯支持"
+type: software
+license: Apache-2.0
+url: "https://alibroker.info/"
+repository-artifact: "https://repo1.maven.org/maven2/com/alibaba/rsocket/"
+repository-code: "https://github.com/alibaba/alibaba-rsocket-broker"
+version: 1.1.1
+date-released: "2021-06-10"
+message: "If you use this software, please cite it using the metadata from this file."
 keywords:
   - RSocket
   - Reactive
@@ -11,10 +16,9 @@ keywords:
   - CloudEvents
   - Streaming
   - Broker
-license: Apache-2.0
-url: "https://alibroker.info/"
-repository-artifact: "https://repo1.maven.org/maven2/com/alibaba/rsocket/"
-repository-code: "https://github.com/alibaba/alibaba-rsocket-broker"
+authors:
+  - family-names: Chen
+    given-names: Libing
 references:
   - type: software
     authors:
@@ -23,8 +27,11 @@ references:
     url: https://rsocket.io
   - type: software
     authors:
-      - name: RSocket Java SDK
+      - name: RSocket Team
     title: RSocket Java SDK
     url: https://github.com/rsocket/rsocket-java
-version: 1.1.1
-date-released: "2021-06-10"
+  - type: software
+    authors:
+      - name: Spring Team
+    title: Spring Boot
+    url: https://github.com/spring-projects/spring-boot/
