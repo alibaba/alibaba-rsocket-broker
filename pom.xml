@@ -33,7 +33,7 @@
         <bytebuddy.version>1.11.13</bytebuddy.version>
         <micrometer.version>1.7.3</micrometer.version>
         <reactor-bom.version>2020.0.10</reactor-bom.version>
-        <netty.version>4.1.66.Final</netty.version>
+        <netty.version>4.1.67.Final</netty.version>
         <rsocket.version>1.1.1</rsocket.version>
         <kotlin.version>1.5.30</kotlin.version>
         <kotlinx-serialization.version>1.2.2</kotlinx-serialization.version>
