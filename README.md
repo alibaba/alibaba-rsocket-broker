@@ -68,9 +68,9 @@ Broker完全是异步化的，你不需要关心线程池这些概念，而且�
 
 ### 开发环境要求
 
-* JDK 1.8.0+
+* JDK 1.8.0+: Alibaba RSocket Broker目前支持JDK 1.8, 11 和 17
 * Maven 3.5.x
-* Node 10+: RSocket Broker采用Vaadin 14构建控制界面，所以你需要安装Node 10以上版本
+* Node 14+: RSocket Broker采用Vaadin 21.0版本构建控制界面，所以你需要安装Node 14以上版本
 
 ### 如何运行Example?
 
