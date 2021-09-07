@@ -4,6 +4,14 @@ Alibaba RSocket Broker变更记录
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 <!-- Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security, Document -->
 
+## [unreleased]
+
+### 特性调整
+
+* Vaadin 21.0
+* JDK 17兼容
+* JSON序列化增加了对RSocketRequest支持，兼容单参函数的调用
+
 ## [1.1.1] - 2021-06-10
 
 从1.1.1版本开始，我们决定对RSocket Broker进行瘦身，一味地叠加特性不是好的设计策略，而是将功能做的更可靠，提供更好的扩展才是好的策略。
