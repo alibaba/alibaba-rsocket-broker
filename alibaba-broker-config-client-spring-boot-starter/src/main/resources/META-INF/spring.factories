@@ -1,4 +1,0 @@
-org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.alibaba.rsocket.config.bootstrap.RSocketConfigPropertySourceLocator
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.alibaba.rsocket.config.client.RSocketCloudConfigAutoConfiguration
