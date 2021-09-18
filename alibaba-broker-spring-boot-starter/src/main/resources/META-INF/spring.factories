@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.alibaba.spring.boot.rsocket.broker.RSocketBrokerAutoConfiguration
