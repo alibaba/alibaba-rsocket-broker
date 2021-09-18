@@ -1,9 +1,0 @@
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerJsonImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerHessianImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerProtobufImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerCborImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerSerializationImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerAvorImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerTextImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerBinaryImpl
-com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerCloudEventsImpl
