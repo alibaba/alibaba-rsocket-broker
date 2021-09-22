@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-commons</artifactId>
-            <version>3.0.3</version>
+            <version>3.0.4</version>
         </dependency>
         <!--unit test-->
         <dependency>
