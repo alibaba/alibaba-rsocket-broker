@@ -15,7 +15,7 @@
     <properties>
         <vaadin.version>21.0.1</vaadin.version>
         <flexmark-all.version>0.62.2</flexmark-all.version>
-        <undertow.version>2.2.11.Final</undertow.version>
+        <undertow.version>2.2.12.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
