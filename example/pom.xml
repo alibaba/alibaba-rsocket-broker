@@ -24,7 +24,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.5.5</spring-boot.version>
         <reactor-bom.version>2020.0.11</reactor-bom.version>
-        <netty.version>4.1.68.Final</netty.version>
+        <netty.version>4.1.69.Final</netty.version>
         <rsocket.version>1.1.1</rsocket.version>
         <alibaba-rsocket.version>1.1.2-SNAPSHOT</alibaba-rsocket.version>
         <junit5.version>5.8.1</junit5.version>
@@ -57,11 +57,6 @@
                 <version>${netty.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-tcnative-boringssl-static</artifactId>
-                <version>2.0.43.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
