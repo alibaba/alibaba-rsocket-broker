@@ -29,7 +29,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot.version>2.5.6</spring-boot.version>
+        <spring-boot.version>2.5.7</spring-boot.version>
         <bytebuddy.version>1.12.1</bytebuddy.version>
         <micrometer.version>1.7.5</micrometer.version>
         <reactor-bom.version>2020.0.12</reactor-bom.version>
