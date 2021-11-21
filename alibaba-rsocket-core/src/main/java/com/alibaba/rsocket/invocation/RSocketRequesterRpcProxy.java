@@ -127,6 +127,8 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
         //interface default method validation for JDK Proxy only, not necessary for ByteBuddy
         if (jdkProxy && method.isDefault()) {
             return DefaultMethodHandler.getMethodHandle(method, serviceInterface).bindTo(proxy).invokeWithArguments(allArguments);
+        } else if (method.getDeclaringClass().equals(Object.class)) { //delegate hashCode, equals, or toString methods to this
+            return method.invoke(this);
         }
         MutableContext mutableContext = new MutableContext();
         if (!methodMetadataMap.containsKey(method)) {
