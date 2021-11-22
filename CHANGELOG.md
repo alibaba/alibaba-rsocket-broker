@@ -6,6 +6,12 @@ Alibaba RSocket Broker变更记录
 
 ## [unreleased]
 
+## [1.1.2] - 2021-11-20
+           
+### Bug fix
+
+* 修复RSocketRequesterRpcProxy忽略hashCode, equals, toString函数错误
+
 ### 特性调整
 
 * Vaadin 21.0
