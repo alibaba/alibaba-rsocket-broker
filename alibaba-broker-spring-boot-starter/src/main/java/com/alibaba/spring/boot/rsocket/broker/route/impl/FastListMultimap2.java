@@ -1,10 +1,12 @@
 package com.alibaba.spring.boot.rsocket.broker.route.impl;
 
+import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.multimap.Multimap;
 import org.eclipse.collections.api.multimap.bag.MutableBagMultimap;
+import org.eclipse.collections.api.multimap.list.MutableListMultimap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -117,12 +119,12 @@ public class FastListMultimap2<K, V> extends AbstractMutableListMultimap<K, V> i
     }
 
     @Override
-    public FastListMultimap<K, V> selectKeysMultiValues(Predicate2<? super K, ? super Iterable<V>> predicate) {
+    public MutableListMultimap<K, V> selectKeysMultiValues(Predicate2<? super K, ? super RichIterable<V>> predicate) {
         return this.selectKeysMultiValues(predicate, this.newEmpty());
     }
 
     @Override
-    public FastListMultimap<K, V> rejectKeysMultiValues(Predicate2<? super K, ? super Iterable<V>> predicate) {
+    public MutableListMultimap<K, V> rejectKeysMultiValues(Predicate2<? super K, ? super RichIterable<V>> predicate) {
         return this.rejectKeysMultiValues(predicate, this.newEmpty());
     }
 
