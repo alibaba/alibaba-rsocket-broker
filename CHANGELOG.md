@@ -6,6 +6,10 @@ Alibaba RSocket Broker变更记录
 
 ## [unreleased]
 
+### 特性调整
+
+* Eclipse Collections 11.0
+
 ## [1.1.2] - 2021-11-20
            
 ### Bug fix
