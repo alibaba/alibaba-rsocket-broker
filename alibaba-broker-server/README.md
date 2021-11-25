@@ -4,7 +4,7 @@ RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控
 
 ### JDK 要求
 
-* Alibaba RSocket Broker兼容Java 8, 11、15和最新的16。 如果你使用Java 11、15和16，在运行时添加以下JVM参数。
+* Alibaba RSocket Broker兼容Java 8, 11和17。 如果你使用Java 11，在运行时添加以下JVM参数。
 
 ```
  --illegal-access=permit -Dio.netty.tryReflectionSetAccessible=true --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
@@ -13,8 +13,16 @@ RSocket Broker Server，主要包括RSocket Broker的核心功能和图形化控
 如果Maven编译问题，请添加`MAVEN_OPTS=--illegal-access=permit` 和 JVM参数 `--illegal-access=permit` 然后进行编译。 
 
 ### 日常开发和测试
+目前你可以使用两种方式启动本地RSocket Broker进行测试： jbang和Docker Compose。
 
-如果用于日常开发和测试，如果你已经使用Docker的话，你只需要创建一个对应的docker-compose.yml然后启动即可。
+* jbang: jbang的安装请参考 https://www.jbang.dev/download/
+
+```
+jbang rsocket-broker@alibaba-rsocket-broker
+```
+
+* Docker Compose: 如果你已经使用Docker的话，你只需要创建一个对应的docker-compose.yml然后启动即可
+
 
 ```yaml
 version: "3"
@@ -28,7 +36,6 @@ services:
 ```
 
 RSocket Broker的控制台地址为 http://localhost:9998/
-
 
 ### UI
 RSocket Broker控制台默认采用Vaadin 14编写，主要是基于以下考虑：
