@@ -15,9 +15,8 @@
   <a href="https://www.apache.org/licenses/LICENSE-2.0.txt">
     <img alt = "Apache License 2" src="https://img.shields.io/badge/license-ASF2-blue.svg"></a>
   <a href="https://github.com/alibaba/alibaba-rsocket-broker/blob/master/README-en.md">
-    <img src="https://img.shields.io/badge/EN-README-brightgreen"></a>
+    <img alt="" src="https://img.shields.io/badge/EN-README-brightgreen"></a>
 </p>
-    
 
 
 Alibaba RSocket Broker是一款基于RSocket协议的反应式对等通讯系统，为通讯多方构建分布式的RPC, Pub/Sub, Streaming等通讯支持。
@@ -35,11 +34,9 @@ Alibaba RSocket Broker是一款基于RSocket协议的反应式对等通讯系统
 * Github Discussions讨论区: https://github.com/alibaba/alibaba-rsocket-broker/discussions
 
 ### RSocket Broker工作原理
-RSocket Broker桥接应用间通讯的双方，相当于一个中间人的角色。
-应用在启动后，和Broker创建一个长连接，在连接创建的时候需要标明自己的身份，如果是服务提供者，会注册自己能提供的服务信息。
-Broker会针对所有的连接和服务列表建立对应的映射关系。
-当一个应用需要调用其他服务时，应用会将请求以消息的方式发给Broker，然后Broker会解析消息的元信息，然后根据路由表将请求转发给服务提供者，然后将处理结果后的消息再转发给调用方。
-Broker完全是异步化的，你不需要关心线程池这些概念，而且消息转发都是基于Zero Copy，所以性能非常高，这也是为何不用担心中心化Broker成为性能瓶颈的主要原因。
+
+RSocket Broker桥接应用间通讯的双方，相当于一个中间人的角色。 应用在启动后，和Broker创建一个长连接，在连接创建的时候需要标明自己的身份，如果是服务提供者，会注册自己能提供的服务信息。 Broker会针对所有的连接和服务列表建立对应的映射关系。
+当一个应用需要调用其他服务时，应用会将请求以消息的方式发给Broker，然后Broker会解析消息的元信息，然后根据路由表将请求转发给服务提供者，然后将处理结果后的消息再转发给调用方。 Broker完全是异步化的，你不需要关心线程池这些概念，而且消息转发都是基于Zero Copy，所以性能非常高，这也是为何不用担心中心化Broker成为性能瓶颈的主要原因。
 
 ![RSocket Broker Structure](https://github.com/alibaba/alibaba-rsocket-broker/raw/master/alibaba-rsocket-broker-structure.png)
 
@@ -74,18 +71,16 @@ Broker完全是异步化的，你不需要关心线程池这些概念，而且�
 
 ### 如何运行Example?
 
-**注意:** 样例代码中的AccountService接口采用了Protobuf进行序列化，使用了protobuf-maven-plugin生成对应的Protobuf,
-建议使用IDE导入项目之前，首先在项目的根目录下执行一下"mvn -DskipTests package"完成Protobuf对应的代码生成，不然直接在IDE中编译可能出现编译不通过的情况。
+**注意:** 样例代码中的AccountService接口采用了Protobuf进行序列化，使用了protobuf-maven-plugin生成对应的Protobuf, 建议使用IDE导入项目之前，首先在项目的根目录下执行一下"mvn -DskipTests package"
+完成Protobuf对应的代码生成，不然直接在IDE中编译可能出现编译不通过的情况。
 
 项目提供了完成的样例，你可以在[example模块](/example/)下找到，包括服务接口定义、服务实现和服务调用三个部分。
 
-##### Docker Compose运行RSocket Broker
+##### 启动RSocket Broker
 
-如果你本机已经安装了Docker和Docker Compose，建议直接运行 'docker-compose up -d' 启动RSocket Broker，当然你也可以手动运行RSocket Broker.
-
-##### 手动运行RSocket Broker
-
-* 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker
+* [Jbang](https://www.jbang.dev/download/)方式启动: 通过`jbang rsocket-broker@alibaba-rsocket-broker` 命令启动RSocket Broker
+* Docker Compose运行RSocket Broker: 在RSocket Broker项目目录下执行 'docker-compose up -d' 启动RSocket Broke
+* 在IDE中运行RSocket Broker: 找到AlibabaRSocketBrokerServer类，运行main函数，启动RSocket Broker
 
 ##### 运行 RSocket Responder & Requester
 
@@ -100,6 +95,7 @@ $ curl http://localhost:8181/user/2
 样例的详细介绍请访问 [Example](example)
 
 ### RSocket服务编写流程
+
 包括如何创建一个Reactive服务接口，在Responder端实现该接口，在Requester完成Reactive服务调用，以及通讯双方是如何和Broker交互的。
 
 * 创建一个RSocket服务接口，你可以创建一个单独的Maven Module存放这些接口，如user-service-api，样例代码如下：
@@ -113,6 +109,7 @@ public interface UserService {
 * 在RSocket Responder端实现该接口，同时给实现类添加 @RSocketService annotation，如下：
 
 ```java
+
 @RSocketService(serviceInterface = UserService.class)
 @Service
 public class UserServiceImpl implements UserService {
@@ -140,6 +137,7 @@ public class UserServiceImpl implements UserService {
 * 在RSocket Requester端，进行代码调用，如HTTP REST API提供给:
 
 ```java
+
 @RestController
 public class PortalController {
     @Autowired
