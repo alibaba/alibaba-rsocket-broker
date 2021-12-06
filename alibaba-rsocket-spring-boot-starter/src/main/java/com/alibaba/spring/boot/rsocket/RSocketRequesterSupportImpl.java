@@ -113,7 +113,7 @@ public class RSocketRequesterSupportImpl implements RSocketRequesterSupport, App
                             group = rsocketService.group();
                         }
                         String version = properties.getVersion();
-                        if (version == null || group.isEmpty()) {
+                        if (version == null || version.isEmpty()) {
                             version = rsocketService.version();
                         }
                         return new ServiceLocator(
