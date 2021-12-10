@@ -24,7 +24,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.6.1</spring-boot.version>
         <reactor-bom.version>2020.0.13</reactor-bom.version>
-        <netty.version>4.1.71.Final</netty.version>
+        <netty.version>4.1.70.Final</netty.version>
         <rsocket.version>1.1.1</rsocket.version>
         <alibaba-rsocket.version>1.1.3-SNAPSHOT</alibaba-rsocket.version>
         <junit5.version>5.8.2</junit5.version>
