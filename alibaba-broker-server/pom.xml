@@ -85,16 +85,8 @@
             <artifactId>vaadin-core</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>io.swagger.codegen.v3</groupId>
-                    <artifactId>swagger-codegen</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.swagger.codegen.v3</groupId>
-                    <artifactId>swagger-codegen-generators</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.github.javaparser</groupId>
-                    <artifactId>javaparser-symbol-solver-core</artifactId>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>fusion-endpoint</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
