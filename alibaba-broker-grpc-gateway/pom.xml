@@ -10,7 +10,7 @@
 
     <properties>
         <protobuf-java.version>3.19.1</protobuf-java.version>
-        <grpc.version>1.42.0</grpc.version>
+        <grpc.version>1.43.0</grpc.version>
         <reactive-grpc.version>1.2.3</reactive-grpc.version>
         <grpc-spring-boot-starter.version>4.5.10</grpc-spring-boot-starter.version>
     </properties>
@@ -51,10 +51,6 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java-util</artifactId>
-        </dependency>
         <!--gRPC-->
         <dependency>
             <groupId>io.grpc</groupId>
@@ -63,14 +59,6 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-stub</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-grpclb</artifactId>
         </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>
