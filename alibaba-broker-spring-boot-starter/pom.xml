@@ -82,6 +82,7 @@
             <groupId>io.scalecube</groupId>
             <artifactId>scalecube-cluster-testlib</artifactId>
             <version>${scalecube-cluster.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
