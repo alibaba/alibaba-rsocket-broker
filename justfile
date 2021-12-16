@@ -31,6 +31,9 @@ updates:
 dependency-tree:
    mvn clean compile com.github.ferstl:depgraph-maven-plugin:3.3.0:aggregate -DgraphFormat=text -Dscope=compile -DshowVersions=true
 
+dependencies:
+   mvn compile dependency:tree > dependencies.txt
+
 deploy-artifacts:
   mvn -P release -pl .,alibaba-rsocket-service-common,alibaba-rsocket-core,alibaba-rsocket-spring-boot-starter,alibaba-broker-spring-boot-starter -DskipTests clean package deploy
 
