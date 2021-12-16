@@ -92,6 +92,10 @@
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-generators</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.github.javaparser</groupId>
+                    <artifactId>javaparser-symbol-solver-core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -121,6 +125,10 @@
                 <exclusion>
                     <groupId>io.projectreactor.netty.incubator</groupId>
                     <artifactId>reactor-netty-incubator-quic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.projectreactor.netty</groupId>
+                    <artifactId>reactor-netty-http-brave</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
