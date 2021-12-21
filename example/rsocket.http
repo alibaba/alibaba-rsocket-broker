@@ -1,0 +1,7 @@
+### find user by id
+RSOCKET com.alibaba.user.UserService.findById
+X-AliBroker: true
+Host: 127.0.0.1:9999
+Content-Type: application/json
+
+[1]
