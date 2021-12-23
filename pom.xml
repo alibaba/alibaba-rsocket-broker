@@ -50,7 +50,7 @@
         <eclipse-collections.version>11.0.0</eclipse-collections.version>
         <spring-cloud-release.version>2021.0.0</spring-cloud-release.version>
         <cloudevents.version>2.2.0</cloudevents.version>
-        <zipkin-brave.version>5.13.5</zipkin-brave.version>
+        <zipkin-brave.version>5.13.6</zipkin-brave.version>
         <junit5.version>5.8.2</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
