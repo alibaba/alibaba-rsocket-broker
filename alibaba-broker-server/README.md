@@ -105,14 +105,14 @@ $ openssl rsa -in jwt_private_key.pem -pubout -outform DER -out jwt_rsa.pub
 RSocket Broker 默认是不开启TLS的，如果你需要启动TLS，则需要为RSocket Broker生成一个key store文件，如下：
 
 ```
-$ keytool -genkey -alias rsocket-broker -keyalg RSA –keysize 2048 -keypass changeit -storepass changeit -keystore rsocket.p12
+$ keytool -genkey -alias rsocket-broker -keyalg RSA -keysize 2048 -keypass changeit -storepass changeit -keystore rsocket.p12
 $ cp rsocket.p12 ~/.rsocket/
 ```
 
 然后将rsocket.p12文件拷贝到用户根目录的".rsocket" 子目录下，接下来在application.properties开启ssl就可以，如下：
 
 ```
-rsocket.broker.ssl.enable=true
+rsocket.broker.ssl.enabled=true
 ```
 
 ### Gossip广播设置和监听端口号42254
