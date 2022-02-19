@@ -31,8 +31,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.6.3</spring-boot.version>
         <bytebuddy.version>1.12.8</bytebuddy.version>
-        <micrometer.version>1.8.2</micrometer.version>
-        <reactor-bom.version>2020.0.15</reactor-bom.version>
+        <micrometer.version>1.8.3</micrometer.version>
+        <reactor-bom.version>2020.0.16</reactor-bom.version>
         <netty.version>4.1.74.Final</netty.version>
         <rsocket.version>1.1.1</rsocket.version>
         <kotlin.version>1.6.10</kotlin.version>
@@ -48,7 +48,7 @@
         <protostuff.version>1.7.4</protostuff.version>
         <avro.version>1.11.0</avro.version>
         <eclipse-collections.version>11.0.0</eclipse-collections.version>
-        <spring-cloud-release.version>2021.0.0</spring-cloud-release.version>
+        <spring-cloud-release.version>2021.0.1</spring-cloud-release.version>
         <cloudevents-sdk.version>2.3.0</cloudevents-sdk.version>
         <zipkin-brave.version>5.13.7</zipkin-brave.version>
         <junit5.version>5.8.2</junit5.version>
@@ -270,7 +270,7 @@
                 <plugin>
                     <groupId>com.google.cloud.tools</groupId>
                     <artifactId>jib-maven-plugin</artifactId>
-                    <version>3.1.4</version>
+                    <version>3.2.0</version>
                     <configuration>
                         <allowInsecureRegistries>true</allowInsecureRegistries>
                         <from>
