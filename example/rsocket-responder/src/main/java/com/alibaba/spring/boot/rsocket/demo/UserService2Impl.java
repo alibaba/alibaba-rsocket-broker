@@ -3,7 +3,7 @@ package com.alibaba.spring.boot.rsocket.demo;
 import com.alibaba.rsocket.RSocketService;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService2;
-import com.github.javafaker.Faker;
+import net.datafaker.Faker;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

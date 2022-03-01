@@ -3,11 +3,11 @@ package com.alibaba.spring.boot.rsocket.demo;
 import com.alibaba.rsocket.RSocketService;
 import com.alibaba.user.RxUserService;
 import com.alibaba.user.User;
-import com.github.javafaker.Faker;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

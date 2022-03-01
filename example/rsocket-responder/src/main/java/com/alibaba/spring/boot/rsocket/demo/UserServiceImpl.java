@@ -4,12 +4,11 @@ import com.alibaba.rsocket.RSocketService;
 import com.alibaba.rsocket.util.ByteBufTuples;
 import com.alibaba.user.User;
 import com.alibaba.user.UserService;
-import com.github.javafaker.Faker;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.apache.commons.lang3.RandomUtils;
+import net.datafaker.Faker;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -64,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<Integer> save(User user) {
-        return Mono.just(RandomUtils.nextInt());
+        return Mono.just(new Random().nextInt());
     }
 
     @Override
