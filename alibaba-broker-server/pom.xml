@@ -13,8 +13,11 @@
     <description>Alibaba RSocket Broker with Web Console</description>
 
     <properties>
-        <vaadin.version>22.0.6</vaadin.version>
-        <flexmark-all.version>0.62.2</flexmark-all.version>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <vaadin.version>23.0.0</vaadin.version>
+        <flexmark-all.version>0.64.0</flexmark-all.version>
         <undertow.version>2.2.16.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
@@ -150,6 +153,14 @@
         <finalName>alibaba-rsocket-broker</finalName>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.9.0</version>
+                <configuration>
+                    <parameters>true</parameters>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
@@ -166,7 +177,7 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
                     <from>
-                        <image>adoptopenjdk:8-jdk-hotspot</image>
+                        <image>adoptopenjdk:11-jdk-hotspot</image>
                     </from>
                     <to>
                         <image>linuxchina/alibaba-rsocket-broker:${project.version}</image>
@@ -240,7 +251,7 @@
                 <dependency>
                     <groupId>org.springframework.cloud</groupId>
                     <artifactId>spring-cloud-starter-kubernetes-fabric8</artifactId>
-                    <version>2.1.0</version>
+                    <version>2.1.1</version>
                 </dependency>
             </dependencies>
 
