@@ -1,7 +1,0 @@
-language: java
-jdk:
-  - openjdk11
-before_install:
-  - nvm install 16
-script:
-  - ./mvnw -U -DskipTests clean package
