@@ -65,9 +65,9 @@ RSocket Broker桥接应用间通讯的双方，相当于一个中间人的角色
 
 ### 开发环境要求
 
-* JDK 1.8.0+: Alibaba RSocket Broker目前支持JDK 1.8, 11 和 17
+* JDK 11: RSocket Broker Server基于Java 11，但是Broker Client等是Java 8兼容的
 * Maven 3.5.x
-* Node 14+: RSocket Broker采用Vaadin 21.0版本构建控制界面，所以你需要安装Node 14以上版本
+* Node 16+: RSocket Broker采用Vaadin 23.0版本构建控制界面，所以你需要安装Node 16以上版本
 
 ### 如何运行Example?
 
