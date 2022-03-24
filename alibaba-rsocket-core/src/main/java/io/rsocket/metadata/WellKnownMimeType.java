@@ -72,6 +72,7 @@ public enum WellKnownMimeType {
     APPLICATION_CLOUDEVENTS_JSON("application/cloudevents+json", (byte) 0x28),
     APPLICATION_CAPNP("application/x-capnp", (byte) 0x29),
     APPLICATION_FLATBUFFERS("application/x-flatbuffers", (byte) 0x2A),
+    APPLICATION_GRAPHQL_JSON("application/graphql+json", (byte) 0x2B),
     //customized data type
     //customized rsocket related types
     MESSAGE_RSOCKET_BINARY_ROUTING("message/x.rsocket.binary-routing.v0", (byte) 0x50),
