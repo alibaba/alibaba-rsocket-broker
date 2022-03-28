@@ -89,9 +89,6 @@ public class RSocketListenerImpl implements RSocketListener {
 
     @Override
     public void start() throws Exception {
-        // https://github.com/rsocket/rsocket-java/issues/1018
-        Hooks.onErrorDropped(e -> {
-        });
         if (status != 1) {
             for (Map.Entry<Integer, String> entry : schemas.entrySet()) {
                 String schema = entry.getValue();

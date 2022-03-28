@@ -93,12 +93,6 @@ public class LoadBalancedRSocket extends AbstractRSocket implements CloudEventRS
      */
     private static Predicate<? super Throwable> CONNECTION_ERROR_PREDICATE = e -> e instanceof ClosedChannelException || e instanceof ConnectionErrorException || e instanceof ConnectException;
 
-    static {
-        // https://github.com/rsocket/rsocket-java/issues/1018
-        Hooks.onErrorDropped(e -> {
-        });
-    }
-
     public LoadBalancedRSocket(String serviceId, Flux<Collection<String>> urisFactory,
                                RSocketRequesterSupport requesterSupport) {
         this.serviceId = serviceId;
