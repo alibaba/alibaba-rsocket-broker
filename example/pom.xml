@@ -26,7 +26,7 @@
         <reactor-bom.version>2020.0.17</reactor-bom.version>
         <netty.version>4.1.75.Final</netty.version>
         <rsocket.version>1.1.2</rsocket.version>
-        <alibaba-rsocket.version>1.1.3-SNAPSHOT</alibaba-rsocket.version>
+        <alibaba-rsocket.version>1.1.3</alibaba-rsocket.version>
         <junit5.version>5.8.2</junit5.version>
     </properties>
 
