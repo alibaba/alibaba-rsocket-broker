@@ -9,7 +9,7 @@
     <groupId>com.alibaba.rsocket</groupId>
     <artifactId>alibaba-rsocket-broker-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.3</version>
+    <version>1.1.4-SNAPSHOT</version>
 
     <modules>
         <module>alibaba-rsocket-core</module>
@@ -81,7 +81,7 @@
         <connection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</connection>
         <developerConnection>scm:git:git@github.com:alibaba/alibaba-rsocket-broker.git</developerConnection>
         <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
-        <tag>1.1.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
