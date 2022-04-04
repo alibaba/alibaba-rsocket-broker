@@ -1,4 +1,5 @@
 com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerJsonImpl
+com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerGraphQLJsonImpl
 com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerHessianImpl
 com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerProtobufImpl
 com.alibaba.rsocket.encoding.impl.ObjectEncodingHandlerCborImpl
