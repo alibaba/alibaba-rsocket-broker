@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 public enum RSocketMimeType {
     GRAPHQL("GraphQL", WellKnownMimeType.APPLICATION_GRAPHQL),
     Json("Json", WellKnownMimeType.APPLICATION_JSON),
+    GraphQLJson("GraphQLJson", WellKnownMimeType.APPLICATION_GRAPHQL_JSON),
     Protobuf("Protobuf", WellKnownMimeType.APPLICATION_PROTOBUF),
     Avor("Avor", WellKnownMimeType.APPLICATION_AVRO),
     Hessian("Hessian", WellKnownMimeType.APPLICATION_HESSIAN),
