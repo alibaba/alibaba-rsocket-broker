@@ -37,18 +37,18 @@
         <rsocket.version>1.1.2</rsocket.version>
         <kotlin.version>1.6.21</kotlin.version>
         <kotlinx-serialization.version>1.3.3</kotlinx-serialization.version>
-        <kotlinx-coroutines.version>1.6.1</kotlinx-coroutines.version>
+        <kotlinx-coroutines.version>1.6.2</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.4</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
         <roaring-bitmap.version>0.9.28</roaring-bitmap.version>
-        <protobuf-java.version>3.20.1</protobuf-java.version>
+        <protobuf-java.version>3.21.0</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
         <jackson.version>2.13.3</jackson.version>
         <protostuff.version>1.8.0</protostuff.version>
         <avro.version>1.11.0</avro.version>
         <eclipse-collections.version>11.0.0</eclipse-collections.version>
-        <spring-cloud-release.version>2021.0.2</spring-cloud-release.version>
+        <spring-cloud-release.version>2021.0.3</spring-cloud-release.version>
         <cloudevents-sdk.version>2.3.0</cloudevents-sdk.version>
         <zipkin-brave.version>5.13.9</zipkin-brave.version>
         <junit5.version>5.8.2</junit5.version>
