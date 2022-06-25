@@ -29,8 +29,8 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot.version>2.6.8</spring-boot.version>
-        <bytebuddy.version>1.12.10</bytebuddy.version>
+        <spring-boot.version>2.6.9</spring-boot.version>
+        <bytebuddy.version>1.12.12</bytebuddy.version>
         <micrometer.version>1.9.1</micrometer.version>
         <reactor-bom.version>2020.0.20</reactor-bom.version>
         <netty.version>4.1.77.Final</netty.version>
@@ -41,7 +41,7 @@
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.5</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
-        <roaring-bitmap.version>0.9.28</roaring-bitmap.version>
+        <roaring-bitmap.version>0.9.30</roaring-bitmap.version>
         <protobuf-java.version>3.21.1</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
         <jackson.version>2.13.3</jackson.version>
@@ -246,7 +246,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.5.3.0</version>
+                <version>4.7.0.0</version>
                 <configuration>
                     <failOnError>false</failOnError>
                 </configuration>
