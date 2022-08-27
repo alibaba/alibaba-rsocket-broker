@@ -14,7 +14,7 @@
 
     <name>user-service-api</name>
     <properties>
-        <protobuf-java.version>3.21.2</protobuf-java.version>
+        <protobuf-java.version>3.21.5</protobuf-java.version>
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.5</rxjava3.version>
         <cloudevents-sdk.version>2.3.0</cloudevents-sdk.version>
