@@ -33,7 +33,7 @@
         <bytebuddy.version>1.12.14</bytebuddy.version>
         <micrometer.version>1.9.3</micrometer.version>
         <reactor-bom.version>2020.0.22</reactor-bom.version>
-        <netty.version>4.1.79.Final</netty.version>
+        <netty.version>4.1.80.Final</netty.version>
         <rsocket.version>1.1.2</rsocket.version>
         <kotlin.version>1.7.10</kotlin.version>
         <kotlinx-serialization.version>1.4.0</kotlinx-serialization.version>
@@ -50,7 +50,7 @@
         <eclipse-collections.version>11.1.0</eclipse-collections.version>
         <spring-cloud-release.version>2021.0.3</spring-cloud-release.version>
         <cloudevents-sdk.version>2.3.0</cloudevents-sdk.version>
-        <zipkin-brave.version>5.13.9</zipkin-brave.version>
+        <zipkin-brave.version>5.13.11</zipkin-brave.version>
         <junit5.version>5.9.0</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
