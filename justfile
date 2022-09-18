@@ -74,6 +74,9 @@ clean:
    rm -rf alibaba-broker-server/node_modules
    rm -rf alibaba-broker-server/package*.json
    rm -rf alibaba-broker-server/webpack*.js
+   rm -rf alibaba-broker-server/vite*.ts
+   rm -rf alibaba-broker-server/tsconfig.json
+   rm -rf alibaba-broker-server/types.d.ts
 
 # install rsocket-cli
 setup-mac:
