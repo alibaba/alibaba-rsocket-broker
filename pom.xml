@@ -30,10 +30,10 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.6.11</spring-boot.version>
-        <bytebuddy.version>1.12.14</bytebuddy.version>
+        <bytebuddy.version>1.12.17</bytebuddy.version>
         <micrometer.version>1.9.4</micrometer.version>
-        <reactor-bom.version>2020.0.22</reactor-bom.version>
-        <netty.version>4.1.80.Final</netty.version>
+        <reactor-bom.version>2020.0.23</reactor-bom.version>
+        <netty.version>4.1.82.Final</netty.version>
         <rsocket.version>1.1.3</rsocket.version>
         <kotlin.version>1.7.10</kotlin.version>
         <kotlinx-serialization.version>1.4.0</kotlinx-serialization.version>
@@ -51,7 +51,7 @@
         <spring-cloud-release.version>2021.0.4</spring-cloud-release.version>
         <cloudevents-sdk.version>2.4.0</cloudevents-sdk.version>
         <zipkin-brave.version>5.13.11</zipkin-brave.version>
-        <junit5.version>5.9.0</junit5.version>
+        <junit5.version>5.9.1</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
 
