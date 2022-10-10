@@ -16,9 +16,9 @@
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <vaadin.version>23.2.2</vaadin.version>
+        <vaadin.version>23.2.3</vaadin.version>
         <flexmark-all.version>0.64.0</flexmark-all.version>
-        <undertow.version>2.2.19.Final</undertow.version>
+        <undertow.version>2.2.20.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
