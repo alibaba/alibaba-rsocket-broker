@@ -18,6 +18,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <vaadin.version>23.2.3</vaadin.version>
         <flexmark-all.version>0.64.0</flexmark-all.version>
+        <!-- undertow 2.3.0 uses Jakarta EE 10, and not compatible with Spring Boot 2.x -->
         <undertow.version>2.2.20.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
