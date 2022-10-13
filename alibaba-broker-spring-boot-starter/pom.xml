@@ -15,7 +15,7 @@
 
     <properties>
         <scalecube-cluster.version>2.6.13</scalecube-cluster.version>
-        <java-jwt.version>4.0.0</java-jwt.version>
+        <java-jwt.version>4.1.0</java-jwt.version>
     </properties>
 
     <dependencies>
