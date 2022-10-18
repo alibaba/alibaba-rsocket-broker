@@ -9,10 +9,10 @@
     </parent>
 
     <properties>
-        <protobuf-java.version>3.21.6</protobuf-java.version>
-        <grpc.version>1.49.1</grpc.version>
+        <protobuf-java.version>3.21.7</protobuf-java.version>
+        <grpc.version>1.50.0</grpc.version>
         <reactive-grpc.version>1.2.3</reactive-grpc.version>
-        <grpc-spring-boot-starter.version>4.8.1</grpc-spring-boot-starter.version>
+        <grpc-spring-boot-starter.version>4.9.0</grpc-spring-boot-starter.version>
     </properties>
 
     <artifactId>alibaba-broker-grpc-gateway</artifactId>
