@@ -16,7 +16,7 @@
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <vaadin.version>23.2.4</vaadin.version>
+        <vaadin.version>23.2.6</vaadin.version>
         <flexmark-all.version>0.64.0</flexmark-all.version>
         <!-- undertow 2.3.0 uses Jakarta EE 10, and not compatible with Spring Boot 2.x -->
         <undertow.version>2.2.20.Final</undertow.version>
