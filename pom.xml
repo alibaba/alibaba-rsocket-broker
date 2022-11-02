@@ -41,7 +41,7 @@
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.5</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
-        <roaring-bitmap.version>0.9.33</roaring-bitmap.version>
+        <roaring-bitmap.version>0.9.35</roaring-bitmap.version>
         <protobuf-java.version>3.21.7</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
         <jackson.version>2.13.4</jackson.version>
