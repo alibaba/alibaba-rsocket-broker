@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 @SpringBootTest
 @Import(SpringBootBaseTest.RSocketTestConfig.class)
@@ -25,8 +25,8 @@ public abstract class SpringBootBaseTest {
         }
 
         @Bean
-        public TopicProcessor<CloudEventImpl> reactiveCloudEventProcessor() {
-            return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
+        public Sinks.Many<CloudEventImpl> reactiveCloudEventProcessor() {
+            return Sinks.many().multicast().onBackpressureBuffer();
         }
 
     }
