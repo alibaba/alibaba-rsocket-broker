@@ -16,10 +16,9 @@ public class MutableContextTest {
         MutableContext mutableContext = new MutableContext();
         mutableContext.put("welcome", "Hello ");
         Mono<String> mono = Mono.just("demo")
-                .flatMap(text -> Mono.subscriberContext()
-                        .map(ctx -> ctx.get("welcome.cn") + text))
-                .subscriberContext(context -> context.put("welcome.cn", "你好"))
-                .subscriberContext(mutableContext::putAll);
+                .flatMap(text -> Mono.deferContextual(ctx -> Mono.just(ctx.get("welcome.cn") + text)))
+                .contextWrite(context -> context.put("welcome.cn", "你好"))
+                .contextWrite(mutableContext::putAll);
         StepVerifier.create(mono).expectNext("你好demo").verifyComplete();
     }
 }
