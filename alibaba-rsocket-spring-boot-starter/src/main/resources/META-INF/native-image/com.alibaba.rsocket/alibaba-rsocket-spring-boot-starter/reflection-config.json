@@ -60,14 +60,14 @@
         "name": "rsocketResponderHandlerFactory",
         "parameterTypes": [
           "com.alibaba.rsocket.rpc.LocalReactiveServiceCaller",
-          "reactor.extra.processor.TopicProcessor"
+          "reactor.core.publisher.Sinks.Many"
         ]
       },
       {
         "name": "rsocketResponderHandlerFactoryWithZipkin",
         "parameterTypes": [
           "com.alibaba.rsocket.rpc.LocalReactiveServiceCaller",
-          "reactor.extra.processor.TopicProcessor"
+          "reactor.core.publisher.Sinks.Many"
         ]
       },
       {
@@ -88,7 +88,7 @@
         "name": "upstreamClusterChangedEventProcessor",
         "parameterTypes": [
           "com.alibaba.rsocket.upstream.UpstreamManager",
-          "reactor.extra.processor.TopicProcessor"
+          "reactor.core.publisher.Sinks.Many"
         ]
       },
       {
