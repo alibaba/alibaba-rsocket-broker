@@ -1,0 +1,2 @@
+com.alibaba.spring.boot.rsocket.RSocketAutoConfiguration
+com.alibaba.spring.boot.rsocket.RSocketListenerAutoConfiguration
