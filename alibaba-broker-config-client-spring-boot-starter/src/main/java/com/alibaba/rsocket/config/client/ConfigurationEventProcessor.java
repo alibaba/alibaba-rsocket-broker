@@ -7,11 +7,11 @@ import com.alibaba.rsocket.events.ConfigEvent;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Sinks;
 
-import javax.annotation.PostConstruct;
 import java.io.StringReader;
 import java.util.Properties;
 
@@ -22,7 +22,7 @@ import java.util.Properties;
  */
 @SuppressWarnings("rawtypes")
 @Component
-public class ConfigurationEventProcessor {
+public class ConfigurationEventProcessor implements InitializingBean {
     private Logger log = LoggerFactory.getLogger(ConfigurationEventProcessor.class);
     private ContextRefresher contextRefresher;
     private String applicationName;
@@ -34,8 +34,8 @@ public class ConfigurationEventProcessor {
         this.applicationName = applicationName;
     }
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void afterPropertiesSet() throws Exception {
         eventProcessor.asFlux().subscribe(cloudEvent -> {
             String type = cloudEvent.getAttributes().getType();
             if (ConfigEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
@@ -49,7 +49,7 @@ public class ConfigurationEventProcessor {
         // cloudEvent.getExtensions().get("replyto"); rsocket:///REQUEST_FNF/com.xxxx.XxxService#method
         ConfigEvent configEvent = CloudEventSupport.unwrapData(cloudEvent, ConfigEvent.class);
         // validate config content
-        if (configEvent!=null && applicationName.equalsIgnoreCase(configEvent.getAppName())
+        if (configEvent != null && applicationName.equalsIgnoreCase(configEvent.getAppName())
                 && !RSocketConfigPropertySourceLocator.getLastConfigText().equals(configEvent.getContent())) {
             Properties configProperties = RSocketConfigPropertySourceLocator.CONFIG_PROPERTIES.get(applicationName);
             if (configProperties != null) {
