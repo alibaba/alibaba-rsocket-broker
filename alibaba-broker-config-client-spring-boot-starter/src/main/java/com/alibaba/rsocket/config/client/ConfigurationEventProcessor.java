@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.stereotype.Component;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import javax.annotation.PostConstruct;
 import java.io.StringReader;
@@ -26,9 +26,9 @@ public class ConfigurationEventProcessor {
     private Logger log = LoggerFactory.getLogger(ConfigurationEventProcessor.class);
     private ContextRefresher contextRefresher;
     private String applicationName;
-    private TopicProcessor<CloudEventImpl> eventProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
 
-    public ConfigurationEventProcessor(TopicProcessor<CloudEventImpl> eventProcessor, ContextRefresher contextRefresher, String applicationName) {
+    public ConfigurationEventProcessor(Sinks.Many<CloudEventImpl> eventProcessor, ContextRefresher contextRefresher, String applicationName) {
         this.eventProcessor = eventProcessor;
         this.contextRefresher = contextRefresher;
         this.applicationName = applicationName;
@@ -36,7 +36,7 @@ public class ConfigurationEventProcessor {
 
     @PostConstruct
     public void init() {
-        eventProcessor.subscribe(cloudEvent -> {
+        eventProcessor.asFlux().subscribe(cloudEvent -> {
             String type = cloudEvent.getAttributes().getType();
             if (ConfigEvent.class.getCanonicalName().equalsIgnoreCase(type)) {
                 handleConfigurationEvent(cloudEvent);
