@@ -41,7 +41,7 @@ public class ReactiveAdapterFuture implements ReactiveAdapter {
 
     @Override
     public Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext) {
-        return flux.subscriberContext(mutableContext::putAll);
+        return flux.contextWrite(mutableContext::putAll);
     }
 
     @Override

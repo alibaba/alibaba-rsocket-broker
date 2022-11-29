@@ -169,7 +169,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
                 } catch (Exception e) {
                     return Flux.error(e);
                 }
-            }).subscriberContext(mutableContext::putAll);
+            }).contextWrite(mutableContext::putAll);
             if (methodMetadata.isMonoChannel()) {
                 return fluxReturn.last();
             } else {

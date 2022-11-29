@@ -39,7 +39,7 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
 
     @NotNull
     protected Mono<Payload> remoteRequestResponse(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
-        return Mono.deferWithContext(context -> {
+        return Mono.deferContextual(context -> {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
@@ -54,7 +54,7 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
 
     @Override
     protected Mono<Void> remoteFireAndForget(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
-        return Mono.deferWithContext(context -> {
+        return Mono.deferContextual(context -> {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());
@@ -69,7 +69,7 @@ public class RSocketRequesterRpcZipkinProxy extends RSocketRequesterRpcProxy {
 
     @Override
     protected Flux<Payload> remoteRequestStream(ReactiveMethodMetadata methodMetadata, ByteBuf compositeMetadata, ByteBuf bodyBuf) {
-        return Flux.deferWithContext(context -> {
+        return Flux.deferContextual(context -> {
             TraceContext traceContext = context.getOrDefault(TraceContext.class, null);
             if (traceContext != null) {
                 CompositeByteBuf newCompositeMetadata = new CompositeByteBuf(PooledByteBufAllocator.DEFAULT, true, 2, compositeMetadata, tracingMetadata(traceContext).getContent());

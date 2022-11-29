@@ -52,12 +52,12 @@ public class ReactiveAdapterDefault implements ReactiveAdapter {
 
     @Override
     public Object fromPublisher(Mono<?> mono, Class<?> returnType, MutableContext mutableContext) {
-        return mono.subscriberContext(mutableContext::putAll);
+        return mono.contextWrite(mutableContext::putAll);
     }
 
     @Override
     public Object fromPublisher(Flux<?> flux, Class<?> returnType, MutableContext mutableContext) {
-        return flux.subscriberContext(mutableContext::putAll);
+        return flux.contextWrite(mutableContext::putAll);
     }
 
     @Override

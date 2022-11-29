@@ -269,7 +269,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
                 return payloadMono
                         .doOnError(span::error)
                         .doOnSuccess(payload -> span.finish())
-                        .subscriberContext(Context.of(TraceContext.class, traceContext));
+                        .contextWrite(Context.of(TraceContext.class, traceContext));
             }
         }
         return payloadMono;
@@ -284,7 +284,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
                 return payloadFlux
                         .doOnError(span::error)
                         .doOnComplete(span::finish)
-                        .subscriberContext(Context.of(TraceContext.class, traceContext));
+                        .contextWrite(Context.of(TraceContext.class, traceContext));
             }
         }
         return payloadFlux;
