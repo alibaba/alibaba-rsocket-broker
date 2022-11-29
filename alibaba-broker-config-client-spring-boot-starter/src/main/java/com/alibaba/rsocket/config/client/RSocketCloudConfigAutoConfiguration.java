@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 /**
  * RSocket cloud config auto configuration
@@ -22,7 +22,7 @@ public class RSocketCloudConfigAutoConfiguration {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Bean
     public ConfigurationEventProcessor rSocketConfigListener(@Autowired ContextRefresher contextRefresher,
-                                                             @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
+                                                             @Autowired @Qualifier("reactiveCloudEventProcessor") Sinks.Many<CloudEventImpl> eventProcessor) {
         return new ConfigurationEventProcessor(eventProcessor, contextRefresher, applicationName);
     }
 }
