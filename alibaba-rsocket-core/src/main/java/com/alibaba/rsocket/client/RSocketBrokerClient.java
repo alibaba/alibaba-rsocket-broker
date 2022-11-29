@@ -17,7 +17,7 @@ import com.alibaba.rsocket.upstream.UpstreamManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public class RSocketBrokerClient {
     private RSocketMimeType dataMimeType;
     private UpstreamManager upstreamManager;
     private LocalReactiveServiceCaller serviceCaller;
-    private TopicProcessor<CloudEventImpl> eventProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
     private SimpleRSocketRequesterSupport rsocketRequesterSupport;
     private CloudEventsProcessor cloudEventsProcessor;
 
@@ -49,7 +49,7 @@ public class RSocketBrokerClient {
         this.appName = appName;
         this.brokers = brokers;
         this.dataMimeType = dataMimeType;
-        this.eventProcessor = TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
+        this.eventProcessor = Sinks.many().multicast().onBackpressureBuffer();
         this.serviceCaller = serviceCaller;
         // add health check
         this.serviceCaller.addProvider("", RSocketServiceHealth.class.getCanonicalName(), "",

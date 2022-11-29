@@ -21,7 +21,7 @@ import io.rsocket.SocketAcceptor;
 import io.rsocket.plugins.RSocketInterceptor;
 import io.rsocket.util.ByteBufPayload;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.net.URI;
 import java.util.*;
@@ -41,11 +41,11 @@ public class SimpleRSocketRequesterSupport implements RSocketRequesterSupport {
     private String topology = "intranet";
     private Map<String, String> metadata;
     private LocalReactiveServiceCaller serviceCaller;
-    private TopicProcessor<CloudEventImpl> eventProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
 
     public SimpleRSocketRequesterSupport(String appName, char[] jwtToken, List<String> brokers,
                                          LocalReactiveServiceCaller serviceCaller,
-                                         TopicProcessor<CloudEventImpl> eventProcessor) {
+                                         Sinks.Many<CloudEventImpl> eventProcessor) {
         this.appName = appName;
         this.jwtToken = jwtToken;
         this.brokers = brokers;

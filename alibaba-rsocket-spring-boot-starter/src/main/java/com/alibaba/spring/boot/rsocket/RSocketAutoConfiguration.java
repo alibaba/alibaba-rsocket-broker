@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.stream.Collectors;
 
@@ -65,12 +65,12 @@ public class RSocketAutoConfiguration {
 
     // section cloudevents processor
     @Bean
-    public TopicProcessor<CloudEventImpl> reactiveCloudEventProcessor() {
-        return TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build();
+    public Sinks.Many<CloudEventImpl> reactiveCloudEventProcessor() {
+        return Sinks.many().multicast().onBackpressureBuffer();
     }
 
     @Bean(initMethod = "init")
-    public CloudEventsProcessor cloudEventsProcessor(@Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor,
+    public CloudEventsProcessor cloudEventsProcessor(@Autowired @Qualifier("reactiveCloudEventProcessor") Sinks.Many<CloudEventImpl> eventProcessor,
                                                      ObjectProvider<CloudEventsConsumer> consumers) {
         return new CloudEventsProcessor(eventProcessor, consumers.stream().collect(Collectors.toList()));
     }
@@ -106,7 +106,7 @@ public class RSocketAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(type = {"brave.Tracing", "com.alibaba.rsocket.listen.RSocketResponderHandlerFactory"})
     public RSocketResponderHandlerFactory rsocketResponderHandlerFactory(@Autowired LocalReactiveServiceCaller serviceCaller,
-                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
+                                                                         @Autowired @Qualifier("reactiveCloudEventProcessor") Sinks.Many<CloudEventImpl> eventProcessor) {
         return (setupPayload, requester) -> Mono.fromCallable(() -> new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload));
     }
 
@@ -114,7 +114,7 @@ public class RSocketAutoConfiguration {
     @ConditionalOnMissingBean
     @ConditionalOnBean(type = "brave.Tracing")
     public RSocketResponderHandlerFactory rsocketResponderHandlerFactoryWithZipkin(@Autowired LocalReactiveServiceCaller serviceCaller,
-                                                                                   @Autowired @Qualifier("reactiveCloudEventProcessor") TopicProcessor<CloudEventImpl> eventProcessor) {
+                                                                                   @Autowired @Qualifier("reactiveCloudEventProcessor") Sinks.Many<CloudEventImpl> eventProcessor) {
         return (setupPayload, requester) -> Mono.fromCallable(() -> {
             RSocketResponderHandler responderHandler = new RSocketResponderHandler(serviceCaller, eventProcessor, requester, setupPayload);
             Tracing tracing = applicationContext.getBean(Tracing.class);

@@ -2,7 +2,7 @@ package com.alibaba.rsocket.events;
 
 import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import reactor.core.publisher.Flux;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.List;
 
@@ -15,15 +15,15 @@ import java.util.List;
 public class CloudEventsProcessor {
     private List<CloudEventsConsumer> consumers;
 
-    private TopicProcessor<CloudEventImpl> eventProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
 
-    public CloudEventsProcessor(TopicProcessor<CloudEventImpl> eventProcessor, List<CloudEventsConsumer> consumers) {
+    public CloudEventsProcessor(Sinks.Many<CloudEventImpl> eventProcessor, List<CloudEventsConsumer> consumers) {
         this.eventProcessor = eventProcessor;
         this.consumers = consumers;
     }
 
     public void init() {
-        eventProcessor.subscribe(cloudEvent -> {
+        eventProcessor.asFlux().subscribe(cloudEvent -> {
             Flux.fromIterable(consumers)
                     .filter(consumer -> consumer.shouldAccept(cloudEvent))
                     .flatMap(consumer -> consumer.accept(cloudEvent))

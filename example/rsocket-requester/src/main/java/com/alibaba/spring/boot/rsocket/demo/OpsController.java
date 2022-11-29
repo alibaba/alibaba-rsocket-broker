@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Sinks;
 import reactor.extra.processor.TopicProcessor;
 
 import java.util.Arrays;
@@ -19,7 +20,7 @@ import java.util.Arrays;
 @RestController
 public class OpsController {
     @Autowired
-    private TopicProcessor<CloudEventImpl> eventProcessor;
+    private Sinks.Many<CloudEventImpl> eventProcessor;
 
     @PostMapping("/upstream/update")
     public String updateUpstream(@RequestBody String uris) throws Exception {
@@ -33,7 +34,7 @@ public class OpsController {
         final CloudEventImpl<UpstreamClusterChangedEvent> cloudEvent = RSocketCloudEventBuilder
                 .builder(upstreamClusterChangedEvent)
                 .build();
-        eventProcessor.onNext(cloudEvent);
+        eventProcessor.tryEmitNext(cloudEvent);
         return "success";
     }
 }

@@ -2,7 +2,6 @@ package com.alibaba.rsocket.upstream;
 
 import com.alibaba.rsocket.RSocketRequesterSupport;
 import com.alibaba.rsocket.client.SimpleRSocketRequesterSupport;
-import com.alibaba.rsocket.cloudevents.CloudEventImpl;
 import com.alibaba.rsocket.discovery.DiscoveryService;
 import com.alibaba.rsocket.discovery.RSocketServiceInstance;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCallerImpl;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 
 import java.util.*;
 
@@ -31,7 +30,7 @@ public class UpstreamManagerMock implements UpstreamManager {
         this.rsocketRequesterSupport = new SimpleRSocketRequesterSupport("MockApp", "".toCharArray(),
                 Collections.EMPTY_LIST,
                 new LocalReactiveServiceCallerImpl(),
-                TopicProcessor.<CloudEventImpl>builder().name("cloud-events-processor").build());
+                Sinks.many().multicast().onBackpressureBuffer());
         mockRSocket = new RSocket() {
             @Override
             @NotNull

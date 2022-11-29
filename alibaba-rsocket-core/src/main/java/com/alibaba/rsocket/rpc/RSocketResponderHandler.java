@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.TopicProcessor;
+import reactor.core.publisher.Sinks;
 import reactor.util.context.Context;
 
 import java.net.URI;
@@ -45,12 +45,12 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
      * combo onClose from responder and requester
      */
     private Mono<Void> comboOnClose;
-    protected TopicProcessor<CloudEventImpl> eventProcessor;
+    protected Sinks.Many<CloudEventImpl> eventProcessor;
     private boolean braveTracing = true;
     private Tracer tracer;
 
     public RSocketResponderHandler(LocalReactiveServiceCaller serviceCall,
-                                   TopicProcessor<CloudEventImpl> eventProcessor,
+                                   Sinks.Many<CloudEventImpl> eventProcessor,
                                    RSocket requester,
                                    ConnectionSetupPayload setupPayload) {
         this.localServiceCaller = serviceCall;
@@ -129,7 +129,7 @@ public class RSocketResponderHandler extends RSocketResponderSupport implements 
     @Override
     public Mono<Void> fireCloudEvent(CloudEventImpl<?> cloudEvent) {
         cloudEvent.setSourcing(this.sourcing);
-        return Mono.fromRunnable(() -> eventProcessor.onNext(cloudEvent));
+        return Mono.fromRunnable(() -> eventProcessor.tryEmitNext(cloudEvent));
     }
 
     @Override
