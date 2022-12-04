@@ -23,11 +23,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.cache</groupId>
-            <artifactId>cache-api</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
             <groupId>io.cloudevents</groupId>
             <artifactId>cloudevents-core</artifactId>
             <version>${cloudevents-sdk.version}</version>
