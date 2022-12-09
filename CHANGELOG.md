@@ -13,6 +13,7 @@ Alibaba RSocket Broker变更记录
 ### 依赖更新
 
 * Spring Boot 2.7.6
+* RSocket 1.1.3
 * Other dependencies update
 
 ## [1.1.3]
