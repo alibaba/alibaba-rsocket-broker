@@ -4,30 +4,41 @@ Alibaba RSocket Broker变更记录
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 <!-- Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security, Document -->
 
+## [1.1.4]
+
+### 特性调整
+
+* Spring Boot 3.0 compatible
+
+### 依赖更新
+
+* Spring Boot 2.7.6
+* Other dependencies update
+
 ## [1.1.3]
 
 ### 特性调整
 
-* Java 11 for RSocket Broker   
+* Java 11 for RSocket Broker
 * Add @RSocketServiceInterface in alibaba-rsocket-service-common for RSocket Service Interface
-* Remove unnecessary dependencies for RSocket Broker Server:  from 108M(1.1.2) to 71M(1.1.3)  
+* Remove unnecessary dependencies for RSocket Broker Server:  from 108M(1.1.2) to 71M(1.1.3)
 * RxJava 3.1.x compatible: Inline some RxJava 3 interfaces into alibaba-rsocket-core, please refer https://github.com/ReactiveX/RxJava/releases/tag/v3.1.1
 
 ### 依赖更新
-             
+
 * Spring Boot 2.6.6
 * RSocket 1.1.2
 * Vaadin 23.0
 * Eclipse Collections 11.0
 * Other dependencies update
 
-### 其他 
+### 其他
 
 * RSocket JetBrains Plugin: you can test services registered on Broker Server https://plugins.jetbrains.com/plugin/18195-rsocket-requests-in-http-client
 * Alibaba RSocket Broker JBang Catalog: https://github.com/alibaba-rsocket-broker/jbang-catalog
 
 ## [1.1.2] - 2021-11-20
-           
+
 ### Bug fix
 
 * 修复RSocketRequesterRpcProxy忽略hashCode, equals, toString函数错误
