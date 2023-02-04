@@ -35,22 +35,22 @@
         <reactor-bom.version>2020.0.27</reactor-bom.version>
         <netty.version>4.1.87.Final</netty.version>
         <rsocket.version>1.1.3</rsocket.version>
-        <kotlin.version>1.8.0</kotlin.version>
+        <kotlin.version>1.8.10</kotlin.version>
         <kotlinx-serialization.version>1.4.1</kotlinx-serialization.version>
         <kotlinx-coroutines.version>1.6.4</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.6</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
-        <roaring-bitmap.version>0.9.38</roaring-bitmap.version>
-        <protobuf-java.version>3.21.9</protobuf-java.version>
+        <roaring-bitmap.version>0.9.39</roaring-bitmap.version>
+        <protobuf-java.version>3.21.12</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
-        <jackson.version>2.14.1</jackson.version>
+        <jackson.version>2.14.2</jackson.version>
         <protostuff.version>1.8.0</protostuff.version>
         <avro.version>1.11.1</avro.version>
         <eclipse-collections.version>11.1.0</eclipse-collections.version>
         <spring-cloud-release.version>2021.0.5</spring-cloud-release.version>
         <cloudevents-sdk.version>2.4.1</cloudevents-sdk.version>
-        <zipkin-brave.version>5.14.1</zipkin-brave.version>
+        <zipkin-brave.version>5.15.0</zipkin-brave.version>
         <junit5.version>5.9.2</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
