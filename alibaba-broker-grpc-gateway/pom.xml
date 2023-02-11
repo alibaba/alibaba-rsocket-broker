@@ -9,8 +9,8 @@
     </parent>
 
     <properties>
-        <protobuf-java.version>3.21.7</protobuf-java.version>
-        <grpc.version>1.50.2</grpc.version>
+        <protobuf-java.version>3.21.12</protobuf-java.version>
+        <grpc.version>1.53.0</grpc.version>
         <reactive-grpc.version>1.2.3</reactive-grpc.version>
         <grpc-spring-boot-starter.version>4.9.1</grpc-spring-boot-starter.version>
     </properties>
