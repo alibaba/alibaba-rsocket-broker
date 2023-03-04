@@ -49,7 +49,7 @@
         <avro.version>1.11.1</avro.version>
         <eclipse-collections.version>11.1.0</eclipse-collections.version>
         <spring-cloud-release.version>2021.0.5</spring-cloud-release.version>
-        <cloudevents-sdk.version>2.4.1</cloudevents-sdk.version>
+        <cloudevents-sdk.version>2.4.2</cloudevents-sdk.version>
         <zipkin-brave.version>5.15.0</zipkin-brave.version>
         <junit5.version>5.9.2</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.0.0</version>
+            <version>24.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -205,7 +205,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
