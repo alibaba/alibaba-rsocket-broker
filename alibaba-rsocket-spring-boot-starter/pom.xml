@@ -37,6 +37,11 @@
             <artifactId>brave</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.33</version>
+        </dependency>
         <!--unit test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
