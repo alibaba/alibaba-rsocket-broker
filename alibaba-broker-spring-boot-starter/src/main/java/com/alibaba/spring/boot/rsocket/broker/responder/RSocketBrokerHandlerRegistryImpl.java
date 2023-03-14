@@ -415,7 +415,7 @@ public class RSocketBrokerHandlerRegistryImpl implements RSocketBrokerHandlerReg
      */
     private Mono<RSocket> returnRejectedRSocket(@NotNull String errorMsg, @NotNull RSocket requesterSocket) {
         return Mono.<RSocket>error(new RejectedSetupException(errorMsg)).doFinally((signalType -> {
-            if (requesterSocket.isDisposed()) {
+            if (!requesterSocket.isDisposed()) {
                 requesterSocket.dispose();
             }
         }));
