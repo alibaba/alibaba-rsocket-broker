@@ -3,6 +3,7 @@ package com.alibaba.rsocket.invocation;
 import com.alibaba.rsocket.MutableContext;
 import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
+import com.alibaba.rsocket.encoding.impl.RSocketEncodingFacadeImpl;
 import com.alibaba.rsocket.metadata.MessageMimeTypeMetadata;
 import com.alibaba.rsocket.metadata.RSocketCompositeMetadata;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
@@ -87,7 +88,7 @@ public class RSocketRequesterRpcProxy implements InvocationHandler {
     /**
      * encoding facade
      */
-    protected RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
+    protected RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance(new RSocketEncodingFacadeImpl());
     /**
      * java method metadata map cache for performance
      */
