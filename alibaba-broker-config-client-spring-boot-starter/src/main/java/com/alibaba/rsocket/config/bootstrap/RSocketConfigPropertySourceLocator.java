@@ -57,6 +57,10 @@ public class RSocketConfigPropertySourceLocator implements PropertySourceLocator
                             .bodyToMono(String.class)
                             .block();
                     if (configText != null && !configText.isEmpty()) {
+                        //trim double quotes if JSON serialization
+                        if (configText.startsWith("\"")) {
+                            configText = configText.substring(1, configText.length() - 1);
+                        }
                         LAST_CONFIG_TEXT = configText;
                         configProperties.load(new StringReader(LAST_CONFIG_TEXT));
                         CONFIG_PROPERTIES.put(applicationName, configProperties);
