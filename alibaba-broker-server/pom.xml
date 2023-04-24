@@ -13,13 +13,13 @@
     <description>Alibaba RSocket Broker with Web Console</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <vaadin.version>23.3.8</vaadin.version>
+        <spring-boot.version>3.0.6</spring-boot.version>
+        <vaadin.version>24.0.4</vaadin.version>
         <flexmark-all.version>0.64.0</flexmark-all.version>
-        <!-- undertow 2.3.0 uses Jakarta EE 10, and not compatible with Spring Boot 2.x -->
-        <undertow.version>2.2.22.Final</undertow.version>
+        <undertow.version>2.3.5.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
@@ -34,6 +34,11 @@
             <groupId>com.alibaba.rsocket</groupId>
             <artifactId>alibaba-broker-spring-boot-starter</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-commons</artifactId>
+            <version>4.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -141,6 +146,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
                 <version>${vaadin.version}</version>
@@ -164,6 +176,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>${mainClass}</mainClass>
                     <jvmArguments>-Dvaadin.productionMode</jvmArguments>
@@ -252,7 +265,7 @@
                 <dependency>
                     <groupId>org.springframework.cloud</groupId>
                     <artifactId>spring-cloud-starter-kubernetes-fabric8</artifactId>
-                    <version>2.1.5</version>
+                    <version>3.0.2</version>
                 </dependency>
             </dependencies>
 
@@ -263,7 +276,7 @@
                         <artifactId>jib-maven-plugin</artifactId>
                         <configuration>
                             <from>
-                                <image>adoptopenjdk:11-jdk-hotspot</image>
+                                <image>eclipse-temurin:17-jdk-focal</image>
                             </from>
                             <to>
                                 <image>linuxchina/alibaba-rsocket-broker:${project.version}-k8s</image>
