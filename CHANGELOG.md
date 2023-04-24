@@ -4,6 +4,16 @@ Alibaba RSocket Broker变更记录
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 <!-- Types of changes: Added, Changed, Deprecated, Removed, Fixed, Security, Document -->
 
+## [1.1.5]
+
+### 特性调整
+
+* Java 17 and Spring Boot 3 for RSocket Broker
+
+# Bug修复
+
+* broker 拒绝 accept 连接时，是否未关闭 requesterSocket #224
+
 ## [1.1.4]
 
 ### 特性调整
