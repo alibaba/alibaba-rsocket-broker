@@ -81,12 +81,22 @@ public class GrpcReactiveCallInterceptor implements RSocketGrpcSupport {
         }
         ReactiveGrpcMethodMetadata methodMetadata = methodMetadataMap.get(method);
         if (methodMetadata.getRpcType().equals(ReactiveGrpcMethodMetadata.UNARY)) {
-            Mono<GeneratedMessageV3> monoParam = (Mono<GeneratedMessageV3>) params[0];
+            Mono<GeneratedMessageV3> monoParam;
+            if (params[0] instanceof GeneratedMessageV3) {
+                monoParam = Mono.just((GeneratedMessageV3) params[0]);
+            } else {
+                monoParam = (Mono<GeneratedMessageV3>) params[0];
+            }
             return monoParam
                     .map(param -> ByteBufPayload.create(Unpooled.wrappedBuffer(param.toByteArray()), methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()))
                     .flatMap(requestPayload -> rsocketRpc(rsocket, requestPayload, methodMetadata.getInferredClassForReturn()).timeout(this.timeout));
         } else if (methodMetadata.getRpcType().equals(ReactiveGrpcMethodMetadata.SERVER_STREAMING)) {
-            Mono<GeneratedMessageV3> monoParam = (Mono<GeneratedMessageV3>) params[0];
+            Mono<GeneratedMessageV3> monoParam;
+            if (params[0] instanceof GeneratedMessageV3) {
+                monoParam = Mono.just((GeneratedMessageV3) params[0]);
+            } else {
+                monoParam = (Mono<GeneratedMessageV3>) params[0];
+            }
             return monoParam
                     .map(param -> ByteBufPayload.create(Unpooled.wrappedBuffer(param.toByteArray()), methodMetadata.getCompositeMetadataByteBuf().retainedDuplicate()))
                     .flatMapMany(requestPayload -> rsocketStream(rsocket, requestPayload, methodMetadata.getInferredClassForReturn()));
