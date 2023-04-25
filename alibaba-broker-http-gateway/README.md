@@ -34,7 +34,7 @@ RSocket HTTP Gateway默认不启动REST API安全验证，如果想启动REST AP
 请求发发起请求，需要提供对应的JWT Token， HTTP REST API许请求格式如下：
 
 ```
-POST http://127.0.0.1:8282/com.alibaba.user.UserService/findById
+POST http://127.0.0.1:8282/api/com.alibaba.user.UserService/findById
 Authorization: Bearer jwt_token
 Content-Type: application/json
 
