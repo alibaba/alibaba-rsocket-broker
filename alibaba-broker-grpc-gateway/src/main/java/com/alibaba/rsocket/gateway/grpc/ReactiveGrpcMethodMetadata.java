@@ -31,13 +31,13 @@ public class ReactiveGrpcMethodMetadata {
     public static final Integer BIDIRECTIONAL_STREAMING = 4;
 
     protected Class<?> inferredClassForReturn;
-    private Class<?> returnType;
-    private Integer rpcType;
-    private String serviceName;
-    private String name;
-    private Integer serviceId;
-    private Integer handlerId;
-    private ByteBuf compositeMetadataByteBuf;
+    private final Class<?> returnType;
+    private final Integer rpcType;
+    private final String serviceName;
+    private final String name;
+    private final Integer serviceId;
+    private final Integer handlerId;
+    private final ByteBuf compositeMetadataByteBuf;
 
     public ReactiveGrpcMethodMetadata(Method method, String group, String serviceName, String version) {
         this.serviceName = serviceName;
@@ -45,14 +45,14 @@ public class ReactiveGrpcMethodMetadata {
         this.returnType = method.getReturnType();
         this.inferredClassForReturn = getInferredClassForGeneric(method.getGenericReturnType());
         Class<?> parameterType = method.getParameterTypes()[0];
-        if (parameterType.isAssignableFrom(Mono.class) && returnType.isAssignableFrom(Mono.class)) {
-            this.rpcType = UNARY;
-        } else if (parameterType.isAssignableFrom(Mono.class) && returnType.isAssignableFrom(Flux.class)) {
-            this.rpcType = SERVER_STREAMING;
-        } else if (parameterType.isAssignableFrom(Flux.class) && returnType.isAssignableFrom(Mono.class)) {
+        if (parameterType.isAssignableFrom(Flux.class) && returnType.isAssignableFrom(Mono.class)) {
             this.rpcType = CLIENT_STREAMING;
         } else if (parameterType.isAssignableFrom(Flux.class) && returnType.isAssignableFrom(Flux.class)) {
             this.rpcType = BIDIRECTIONAL_STREAMING;
+        } else if (returnType.isAssignableFrom(Flux.class)) {
+            this.rpcType = SERVER_STREAMING;
+        } else {
+            this.rpcType = UNARY;
         }
         this.serviceId = MurmurHash3.hash32(ServiceLocator.serviceId(group, serviceName, version));
         this.handlerId = MurmurHash3.hash32(serviceName + "." + name);
