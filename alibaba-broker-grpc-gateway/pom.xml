@@ -9,10 +9,14 @@
     </parent>
 
     <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <spring-boot.version>3.0.6</spring-boot.version>
         <protobuf-java.version>3.22.3</protobuf-java.version>
         <grpc.version>1.54.1</grpc.version>
         <reactive-grpc.version>1.2.4</reactive-grpc.version>
-        <grpc-spring-boot-starter.version>4.9.1</grpc-spring-boot-starter.version>
+        <grpc-spring-boot-starter.version>5.1.1</grpc-spring-boot-starter.version>
     </properties>
 
     <artifactId>alibaba-broker-grpc-gateway</artifactId>
@@ -90,16 +94,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -118,6 +112,13 @@
                 <version>${grpc.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
