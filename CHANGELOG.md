@@ -8,11 +8,17 @@ Alibaba RSocket Broker变更记录
 
 ### 特性调整
 
-* Java 17 and Spring Boot 3 for RSocket Broker
+* Java 17 and Spring Boot 3 for RSocket Broker, gRPC gateway, HTTP Gateway
 
 # Bug修复
 
-* broker 拒绝 accept 连接时，是否未关闭 requesterSocket #224
+* RSocket Broker 拒绝 accept 连接时，是否未关闭 requesterSocket #224
+* gRPC gateway的RPC类型判断错误
+
+### 依赖更新
+
+* Spring Boot 3 for Broker Service, gRPC gateway, HTTP Gateway
+* Vaadin 24
 
 ## [1.1.4]
 
