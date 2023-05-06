@@ -19,6 +19,7 @@ Alibaba RSocket Broker变更记录
 
 * Spring Boot 3 for Broker Service, gRPC gateway, HTTP Gateway
 * Vaadin 24
+* Kotlin 1.8.21 & Kotlin coroutines 1.7.0
 
 ## [1.1.4]
 
