@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.alibaba.rsocket</groupId>
         <artifactId>alibaba-rsocket-broker-parent</artifactId>
-        <version>1.1.6-SNAPSHOT</version>
+        <version>1.1.5</version>
     </parent>
 
     <artifactId>alibaba-broker-http-gateway</artifactId>
