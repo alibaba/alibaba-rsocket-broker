@@ -13,8 +13,8 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>3.0.7</spring-boot.version>
-        <protobuf-java.version>3.23.1</protobuf-java.version>
-        <grpc.version>1.55.1</grpc.version>
+        <protobuf-java.version>3.23.3</protobuf-java.version>
+        <grpc.version>1.56.0</grpc.version>
         <reactive-grpc.version>1.2.4</reactive-grpc.version>
         <grpc-spring-boot-starter.version>5.1.2</grpc-spring-boot-starter.version>
     </properties>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.0.0-jre</version>
+            <version>32.0.1-jre</version>
         </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>
