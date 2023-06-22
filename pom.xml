@@ -35,14 +35,14 @@
         <reactor-bom.version>2020.0.32</reactor-bom.version>
         <netty.version>4.1.93.Final</netty.version>
         <rsocket.version>1.1.4</rsocket.version>
-        <kotlin.version>1.8.21</kotlin.version>
+        <kotlin.version>1.8.22</kotlin.version>
         <kotlinx-serialization.version>1.5.1</kotlinx-serialization.version>
-        <kotlinx-coroutines.version>1.7.0</kotlinx-coroutines.version>
+        <kotlinx-coroutines.version>1.7.1</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.6</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
         <roaring-bitmap.version>0.9.44</roaring-bitmap.version>
-        <protobuf-java.version>3.22.3</protobuf-java.version>
+        <protobuf-java.version>3.22.2</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
         <jackson.version>2.15.2</jackson.version>
         <protostuff.version>1.8.0</protostuff.version>
