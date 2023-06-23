@@ -16,7 +16,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot.version>3.0.8</spring-boot.version>
+        <spring-boot.version>3.1.1</spring-boot.version>
         <vaadin.version>24.1.1</vaadin.version>
         <flexmark-all.version>0.64.8</flexmark-all.version>
         <undertow.version>2.3.5.Final</undertow.version>
