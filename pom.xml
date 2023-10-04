@@ -29,24 +29,24 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot.version>2.7.14</spring-boot.version>
-        <bytebuddy.version>1.14.4</bytebuddy.version>
-        <micrometer.version>1.11.3</micrometer.version>
-        <reactor-bom.version>2020.0.35</reactor-bom.version>
-        <netty.version>4.1.96.Final</netty.version>
+        <spring-boot.version>2.7.16</spring-boot.version>
+        <bytebuddy.version>1.14.8</bytebuddy.version>
+        <micrometer.version>1.11.4</micrometer.version>
+        <reactor-bom.version>2020.0.36</reactor-bom.version>
+        <netty.version>4.1.99.Final</netty.version>
         <rsocket.version>1.1.4</rsocket.version>
         <kotlin.version>1.8.22</kotlin.version>
-        <kotlinx-serialization.version>1.5.1</kotlinx-serialization.version>
-        <kotlinx-coroutines.version>1.7.1</kotlinx-coroutines.version>
+        <c.version>1.5.1</c.version>
+        <kotlinx-coroutines.version>1.7.3</kotlinx-coroutines.version>
         <rxjava2.version>2.2.21</rxjava2.version>
-        <rxjava3.version>3.1.6</rxjava3.version>
+        <rxjava3.version>3.1.8</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
-        <roaring-bitmap.version>0.9.47</roaring-bitmap.version>
+        <roaring-bitmap.version>1.0.0</roaring-bitmap.version>
         <protobuf-java.version>3.24.0</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
         <jackson.version>2.15.2</jackson.version>
         <protostuff.version>1.8.0</protostuff.version>
-        <avro.version>1.11.2</avro.version>
+        <avro.version>1.11.3</avro.version>
         <eclipse-collections.version>11.1.0</eclipse-collections.version>
         <spring-cloud-release.version>2021.0.6</spring-cloud-release.version>
         <cloudevents-sdk.version>2.5.0</cloudevents-sdk.version>
@@ -58,7 +58,7 @@
     <name>Alibaba RSocket Broker Parent</name>
     <description>Alibaba RSocket Broker Maven parent module</description>
     <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
-    <inceptionYear>2022</inceptionYear>
+    <inceptionYear>2023</inceptionYear>
     <licenses>
         <license>
             <name>Apache License</name>
