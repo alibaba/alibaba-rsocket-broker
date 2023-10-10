@@ -5,6 +5,7 @@ import com.alibaba.rsocket.ServiceLocator;
 import com.alibaba.rsocket.ServiceMapping;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.upstream.UpstreamManager;
+import io.micrometer.tracing.Tracer;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Proxy;
@@ -37,6 +38,11 @@ public class RSocketRemoteServiceBuilder<T> {
      */
     private boolean braveTracing = true;
     private Tracing tracing;
+    /**
+     * micrometer tracing client
+     */
+    private boolean micrometerTracing = true;
+    private Tracer tracer;
     public static boolean byteBuddyAvailable = true;
 
     static {
@@ -77,6 +83,11 @@ public class RSocketRemoteServiceBuilder<T> {
             Class.forName("brave.propagation.TraceContext");
         } catch (ClassNotFoundException e) {
             builder.braveTracing = false;
+        }
+        try {
+            Class.forName("io.micrometer.tracing.TraceContext");
+        } catch (ClassNotFoundException e) {
+            builder.micrometerTracing = false;
         }
         return builder;
     }
@@ -171,6 +182,9 @@ public class RSocketRemoteServiceBuilder<T> {
         }
         if (this.braveTracing && this.tracing != null) {
             return new RSocketRequesterRpcZipkinProxy(tracing, upstreamManager, group, serviceInterface, service, version,
+                    encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, !byteBuddyAvailable);
+        } else if (this.micrometerTracing && this.tracer != null) {
+            return new RSocketRequesterRpcMicrometerProxy(tracer, upstreamManager, group, serviceInterface, service, version,
                     encodingType, acceptEncodingType, timeout, endpoint, sticky, sourceUri, !byteBuddyAvailable);
         } else {
             return new RSocketRequesterRpcProxy(upstreamManager, group, serviceInterface, service, version,
