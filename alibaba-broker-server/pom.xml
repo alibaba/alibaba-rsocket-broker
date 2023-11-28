@@ -19,7 +19,7 @@
         <spring-boot.version>3.1.6</spring-boot.version>
         <vaadin.version>24.2.5</vaadin.version>
         <flexmark-all.version>0.64.8</flexmark-all.version>
-        <undertow.version>2.3.8.Final</undertow.version>
+        <undertow.version>2.3.10.Final</undertow.version>
         <vaadin.productionMode>true</vaadin.productionMode>
         <mainClass>com.alibaba.rsocket.broker.AlibabaRSocketBrokerServer</mainClass>
     </properties>
