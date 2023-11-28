@@ -29,11 +29,11 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <spring-boot.version>2.7.16</spring-boot.version>
-        <bytebuddy.version>1.14.8</bytebuddy.version>
-        <micrometer.version>1.11.4</micrometer.version>
-        <reactor-bom.version>2020.0.36</reactor-bom.version>
-        <netty.version>4.1.99.Final</netty.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <bytebuddy.version>1.14.10</bytebuddy.version>
+        <micrometer.version>1.11.6</micrometer.version>
+        <reactor-bom.version>2020.0.38</reactor-bom.version>
+        <netty.version>4.1.101.Final</netty.version>
         <rsocket.version>1.1.4</rsocket.version>
         <kotlin.version>1.8.22</kotlin.version>
         <kotlinx-serialization.version>1.5.1</kotlinx-serialization.version>
@@ -42,16 +42,16 @@
         <rxjava3.version>3.1.8</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
         <roaring-bitmap.version>1.0.0</roaring-bitmap.version>
-        <protobuf-java.version>3.24.0</protobuf-java.version>
+        <protobuf-java.version>3.24.4</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
         <jackson.version>2.15.2</jackson.version>
         <protostuff.version>1.8.0</protostuff.version>
         <avro.version>1.11.3</avro.version>
         <eclipse-collections.version>11.1.0</eclipse-collections.version>
-        <spring-cloud-release.version>2021.0.6</spring-cloud-release.version>
+        <spring-cloud-release.version>2021.0.8</spring-cloud-release.version>
         <cloudevents-sdk.version>2.5.0</cloudevents-sdk.version>
         <zipkin-brave.version>5.15.1</zipkin-brave.version>
-        <junit5.version>5.10.0</junit5.version>
+        <junit5.version>5.10.1</junit5.version>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
 
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
+            <version>24.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
