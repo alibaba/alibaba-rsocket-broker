@@ -160,3 +160,4 @@ public class PortalController {
 * Spring Boot RSocket Starter: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-rsocket
 * Project Reactor: http://projectreactor.io/
 * Reactive Foundation: https://reactive.foundation/
+* NATS Execution Engine: https://docs.nats.io/using-nats/nex
