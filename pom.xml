@@ -31,9 +31,9 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.7.18</spring-boot.version>
         <bytebuddy.version>1.14.10</bytebuddy.version>
-        <micrometer.version>1.11.6</micrometer.version>
+        <micrometer.version>1.12.2</micrometer.version>
         <reactor-bom.version>2020.0.38</reactor-bom.version>
-        <netty.version>4.1.101.Final</netty.version>
+        <netty.version>4.1.106.Final</netty.version>
         <rsocket.version>1.1.4</rsocket.version>
         <kotlin.version>1.8.22</kotlin.version>
         <kotlinx-serialization.version>1.5.1</kotlinx-serialization.version>
@@ -41,7 +41,7 @@
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.8</rxjava3.version>
         <caffeine.version>2.9.3</caffeine.version>
-        <roaring-bitmap.version>1.0.0</roaring-bitmap.version>
+        <roaring-bitmap.version>1.0.1</roaring-bitmap.version>
         <protobuf-java.version>3.24.4</protobuf-java.version>
         <hessian.version>4.0.66</hessian.version>
         <jackson.version>2.15.2</jackson.version>
@@ -108,7 +108,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.24.2</version>
+            <version>3.25.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
