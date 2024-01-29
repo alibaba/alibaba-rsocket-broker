@@ -11,7 +11,7 @@
   <a href="https://github.com/alibaba/alibaba-rsocket-broker/issues">
     <img alt = "Open Issues" src="https://img.shields.io/github/issues-raw/alibaba/alibaba-rsocket-broker.svg"></a>
   <a href="https://github.com/alibaba/alibaba-rsocket-broker/actions/workflows/maven.yml">
-    <img alt = "Build Status" src="https://img.shields.io/github/workflow/status/alibaba/alibaba-rsocket-broker/Java%20CI%20with%20Maven"></a>
+    <img alt = "Build Status" src="https://img.shields.io/github/actions/workflow/status/alibaba/alibaba-rsocket-broker/maven.yml?branch=master"></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0.txt">
     <img alt = "Apache License 2" src="https://img.shields.io/badge/license-ASF2-blue.svg"></a>
   <a href="https://github.com/alibaba/alibaba-rsocket-broker/blob/master/README-en.md">
