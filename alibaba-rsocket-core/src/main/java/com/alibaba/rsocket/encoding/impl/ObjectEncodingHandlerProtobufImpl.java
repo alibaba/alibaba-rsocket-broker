@@ -6,7 +6,7 @@ import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.MessageLite;
 import io.netty.buffer.*;
 import io.netty.util.ReferenceCountUtil;
@@ -94,7 +94,7 @@ public class ObjectEncodingHandlerProtobufImpl implements ObjectEncodingHandler 
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
         if (data.readableBytes() > 0 && targetClass != null) {
             try {
-                if (GeneratedMessageV3.class.isAssignableFrom(targetClass)) {
+                if (AbstractMessage.class.isAssignableFrom(targetClass)) {
                     Method method = parseFromMethodStore.get(targetClass);
                     if (method != null) {
                         return method.invoke(null, data.nioBuffer());
