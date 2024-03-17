@@ -4,7 +4,9 @@ import com.alibaba.rsocket.encoding.EncodingException;
 import com.alibaba.rsocket.encoding.ObjectEncodingHandler;
 import com.alibaba.rsocket.metadata.RSocketMimeType;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
-import com.caucho.hessian.io.*;
+import com.caucho.hessian.io.HessianSerializerInput;
+import com.caucho.hessian.io.HessianSerializerOutput;
+import com.caucho.hessian.io.SerializerFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
@@ -15,8 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * object encoding handler hessian implementation
@@ -24,13 +24,7 @@ import java.util.Set;
  * @author leijuan
  */
 public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
-    public static final Set<String> BLACK_CLASSES = new HashSet<>();
-    public static final SerializerFactory serializerFactory = new SerializerFactoryWithBlackList();
-
-    static {
-        BLACK_CLASSES.add("org.springframework.context.support.ClassPathXmlApplicationContext");
-        BLACK_CLASSES.add("javax.swing.UIDefaults$ProxyLazyValue");
-    }
+    public static final SerializerFactory serializerFactory = new HessianSerializerFactoryWithBlackList();
 
     @NotNull
     @Override
@@ -103,13 +97,4 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     }
 
-    public static class SerializerFactoryWithBlackList extends SerializerFactory {
-        @Override
-        public Deserializer getObjectDeserializer(String type, Class cl) throws HessianProtocolException {
-            if (BLACK_CLASSES.contains(type)) {
-                throw new HessianProtocolException(RsocketErrorCode.message("RST-700401", type));
-            }
-            return super.getObjectDeserializer(type, cl);
-        }
-    }
 }
