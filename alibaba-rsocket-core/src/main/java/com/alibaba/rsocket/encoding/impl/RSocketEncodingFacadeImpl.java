@@ -24,8 +24,8 @@ import static com.alibaba.rsocket.encoding.ObjectEncodingHandler.EMPTY_BUFFER;
  * @author leijuan
  */
 public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
-    private Logger log = LoggerFactory.getLogger(RSocketEncodingFacadeImpl.class);
-    private Map<RSocketMimeType, ObjectEncodingHandler> handlerMap = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(RSocketEncodingFacadeImpl.class);
+    private final Map<RSocketMimeType, ObjectEncodingHandler> handlerMap = new HashMap<>();
     /**
      * composite metadata ByteBuf for message mime types
      */
