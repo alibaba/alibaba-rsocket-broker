@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * object encoding handler hessian implementation
@@ -23,6 +23,17 @@ import java.util.Arrays;
  * @author leijuan
  */
 public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
+    public static final List<String> BLACK_CLASS_PATTERNS = new ArrayList<>();
+    public static final Set<String> BLACK_CLASSES = new HashSet<>();
+
+    static {
+        BLACK_CLASS_PATTERNS.add("javax.swing.");
+        BLACK_CLASS_PATTERNS.add("java.awt.");
+        BLACK_CLASS_PATTERNS.add("javax.naming.");
+        BLACK_CLASS_PATTERNS.add("java.lang.System");
+        BLACK_CLASS_PATTERNS.add("java.lang.Process");
+    }
+
     @NotNull
     @Override
     public RSocketMimeType mimeType() {
@@ -39,6 +50,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeParams(ByteBuf data, @Nullable Class<?>... targetClasses) throws EncodingException {
+        checkDecodingClass(targetClasses[0]);
         if (data.readableBytes() > 0) {
             try {
                 return decode(data);
@@ -60,6 +72,7 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
 
     @Override
     public Object decodeResult(ByteBuf data, @Nullable Class<?> targetClass) throws EncodingException {
+        checkDecodingClass(targetClass);
         if (data.readableBytes() > 0) {
             try {
                 return decode(data);
@@ -89,5 +102,20 @@ public class ObjectEncodingHandlerHessianImpl implements ObjectEncodingHandler {
             return null;
         }
         return new HessianSerializerInput(new ByteBufInputStream(byteBuf)).readObject();
+    }
+
+    protected void checkDecodingClass(Class<?> targetClass) throws EncodingException {
+        if (targetClass != null) {
+            String classFullName = targetClass.getCanonicalName();
+            if (BLACK_CLASSES.contains(classFullName)) {
+                throw new EncodingException(RsocketErrorCode.message("RST-700401", targetClass));
+            }
+            for (String pattern : BLACK_CLASS_PATTERNS) {
+                if (classFullName.startsWith(pattern)) {
+                    BLACK_CLASSES.add(classFullName);
+                    throw new EncodingException(RsocketErrorCode.message("RST-700401", targetClass));
+                }
+            }
+        }
     }
 }
