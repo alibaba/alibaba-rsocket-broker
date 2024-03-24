@@ -58,7 +58,7 @@
     <name>Alibaba RSocket Broker Parent</name>
     <description>Alibaba RSocket Broker Maven parent module</description>
     <url>https://github.com/alibaba/alibaba-rsocket-broker</url>
-    <inceptionYear>2023</inceptionYear>
+    <inceptionYear>2024</inceptionYear>
     <licenses>
         <license>
             <name>Apache License</name>
