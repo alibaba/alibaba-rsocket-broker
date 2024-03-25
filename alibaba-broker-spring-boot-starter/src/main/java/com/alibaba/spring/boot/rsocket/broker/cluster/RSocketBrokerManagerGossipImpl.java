@@ -244,9 +244,11 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
     @Override
     public void start() {
         final String localIp = NetworkUtil.LOCAL_IP;
+        final int syncInterval = 5_000;
+        final int numVirtualNodeReplicas = 12;
         monoCluster = new ClusterImpl()
                 .config(clusterConfig -> clusterConfig.externalHost(localIp).externalPort(gossipListenPort))
-                .membership(membershipConfig -> membershipConfig.seedMembers(seedMembers()).syncInterval(5_000))
+                .membership(membershipConfig -> membershipConfig.seedMembers(seedMembers()).syncInterval(syncInterval))
                 .transportFactory(TcpTransportFactory::new)
                 .transport(transportConfig -> transportConfig.port(gossipListenPort))
                 .handler(cluster1 -> this)
@@ -254,7 +256,7 @@ public class RSocketBrokerManagerGossipImpl implements RSocketBrokerManager, Clu
         //subscribe and start & join the cluster
         monoCluster.subscribe();
         this.localBroker = new RSocketBroker(localIp, brokerProperties.getExternalDomain());
-        this.consistentHash = new KetamaConsistentHash<>(12, Collections.singletonList(localIp));
+        this.consistentHash = new KetamaConsistentHash<>(numVirtualNodeReplicas, Collections.singletonList(localIp));
         brokers.put(localIp, localBroker);
         log.info(RsocketErrorCode.message("RST-300002"));
         Metrics.globalRegistry.gauge("cluster.broker.count", this, (DoubleFunction<RSocketBrokerManagerGossipImpl>) brokerManagerGossip -> brokerManagerGossip.brokers.size());

@@ -29,7 +29,7 @@ public class RSocketEncodingFacadeImpl implements RSocketEncodingFacade {
     /**
      * composite metadata ByteBuf for message mime types
      */
-    public static final RSocketEncodingFacade instance = new RSocketEncodingFacadeImpl();
+//    public static final RSocketEncodingFacade instance = new RSocketEncodingFacadeImpl();
 
     public RSocketEncodingFacadeImpl() {
         String vmName = System.getProperty("java.vm.name");

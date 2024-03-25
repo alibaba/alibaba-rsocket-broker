@@ -30,7 +30,10 @@ public interface RSocketEncodingFacade {
      *
      * @return encoding facade
      */
-    static RSocketEncodingFacade getInstance() {
-        return RSocketEncodingFacadeImpl.instance;
+//    static RSocketEncodingFacade getInstance() {
+//        return RSocketEncodingFacadeImpl.instance;
+//    }
+    static RSocketEncodingFacade getInstance(RSocketEncodingFacadeImpl impl) {
+        return impl;
     }
 }

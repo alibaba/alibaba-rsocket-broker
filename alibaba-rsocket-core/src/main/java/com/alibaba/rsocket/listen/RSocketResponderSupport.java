@@ -2,6 +2,7 @@ package com.alibaba.rsocket.listen;
 
 import com.alibaba.rsocket.AbstractRSocket;
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
+import com.alibaba.rsocket.encoding.impl.RSocketEncodingFacadeImpl;
 import com.alibaba.rsocket.metadata.*;
 import com.alibaba.rsocket.observability.RsocketErrorCode;
 import com.alibaba.rsocket.rpc.LocalReactiveServiceCaller;
@@ -34,7 +35,7 @@ public abstract class RSocketResponderSupport extends AbstractRSocket {
      * data format as upstream/downstream + app_name + service names, such as upstream:broker:*, downstream:app-name:*
      */
     protected String sourcing;
-    public static final RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance();
+    public static final RSocketEncodingFacade encodingFacade = RSocketEncodingFacade.getInstance(new RSocketEncodingFacadeImpl());
     private Map<String, ByteBuf> compositeMetadataForMimeTypes = new HashMap<>();
 
     public void setSourcing(String sourcing) {
