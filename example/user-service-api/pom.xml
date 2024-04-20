@@ -17,7 +17,7 @@
         <protobuf-java.version>3.25.3</protobuf-java.version>
         <rxjava2.version>2.2.21</rxjava2.version>
         <rxjava3.version>3.1.8</rxjava3.version>
-        <cloudevents-sdk.version>2.5.0</cloudevents-sdk.version>
+        <cloudevents-sdk.version>3.0.0</cloudevents-sdk.version>
         <junit5.version>5.10.2</junit5.version>
     </properties>
 
