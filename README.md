@@ -19,6 +19,14 @@
 </p>
 
 
+# 项目存档通知
+
+随着阿里业务发展和技术更新迭代，alibaba-rsocket-broker项目将会进行archive操作（即存档仓库）。
+预计存档时间：2024年7月5日，项目存档后，issue、拉取请求、代码、标签、重要事件、wiki、版本、提交、标记、分支等变成只读状态，项目仍然可以fork以及标星。
+
+目前社区替代的开源项目为 [https://github.com/reactive-rsocket-broker](https://github.com/reactive-rsocket-broker/rsocket-broker) ，欢迎大家继续使用、贡献。
+
+
 Alibaba RSocket Broker是一款基于RSocket协议的反应式对等通讯系统，为通讯多方构建分布式的RPC, Pub/Sub, Streaming等通讯支持。
 
 * 反应式: 无需担心线程模型、全异步化、流式背压支持、独特的对等通讯模式可适应各种内部网络环境和跨云混云的需求。
