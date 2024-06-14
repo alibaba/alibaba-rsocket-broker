@@ -132,23 +132,29 @@ public class AppDetailPanel extends Div {
     }
 
     public void setPorts(int webPort, int managementPort, Map<Integer, String> rsocketPorts, String ip) {
-        if (webPort > 0 || managementPort > 0 || (rsocketPorts != null && !rsocketPorts.isEmpty())) {
+        boolean showPortsInfo = webPort > 0 || managementPort > 0 || (rsocketPorts != null && !rsocketPorts.isEmpty());
+        if (showPortsInfo) {
             this.portsInfoHeader.setVisible(true);
             this.portsInfo.setVisible(true);
-            List<String> ports = new ArrayList<>();
-            if (webPort > 0) {
-                ports.add("Web:" + webPort);
-            }
-            if (managementPort > 0) {
-                ports.add("Management:" + webPort);
-            }
-            if (rsocketPorts != null && !rsocketPorts.isEmpty()) {
-                for (Map.Entry<Integer, String> entry : rsocketPorts.entrySet()) {
-                    ports.add("RSocket: " + entry.getValue() + "://" + ip + ":" + entry.getKey());
-                }
-            }
+            List<String> ports = getPortsInfo(webPort, managementPort, rsocketPorts, ip);
             this.portsInfo.setText(String.join("\r\n", ports));
         }
+    }
+
+    private List<String> getPortsInfo(int webPort, int managementPort, Map<Integer, String> rsocketPorts, String ip) {
+        List<String> ports = new ArrayList<>();
+        if (webPort > 0) {
+            ports.add("Web:" + webPort);
+        }
+        if (managementPort > 0) {
+            ports.add("Management:" + webPort);
+        }
+        if (rsocketPorts != null && !rsocketPorts.isEmpty()) {
+            for (Map.Entry<Integer, String> entry : rsocketPorts.entrySet()) {
+                ports.add("RSocket: " + entry.getValue() + "://" + ip + ":" + entry.getKey());
+            }
+        }
+        return ports;
     }
 
     public void setConsumedServices(Set<String> consumedServices) {

@@ -93,36 +93,40 @@ public class RSocketListenerImpl implements RSocketListener {
             for (Map.Entry<Integer, String> entry : schemas.entrySet()) {
                 String schema = entry.getValue();
                 int port = entry.getKey();
-                ServerTransport<?> transport;
-                if (schema.equals("local")) {
-                    transport = LocalServerTransport.create("unittest");
-                } else if (schema.equals("tcp")) {
-                    transport = TcpServerTransport.create(host, port);
-                } else if (schema.equals("tcps")) {
-                    TcpServer tcpServer = TcpServer.create()
-                            .host(host)
-                            .port(port)
-                            .secure(ssl -> ssl.sslContext(
-                                    SslContextBuilder.forServer(privateKey, (X509Certificate) certificate)
-                                            .protocols(protocols)
-                                            .sslProvider(getSslProvider())
-                            ));
-                    transport = TcpServerTransport.create(tcpServer);
-                } else if (schema.equals("ws")) {
-                    transport = WebsocketServerTransport.create(host, port);
-                } else if (schema.equals("wss")) {
-                    HttpServer httpServer = HttpServer.create()
-                            .host(host)
-                            .port(port)
-                            .secure(ssl -> ssl.sslContext(
-                                    SslContextBuilder.forServer(privateKey, (X509Certificate) certificate)
-                                            .protocols(protocols)
-                                            .sslProvider(getSslProvider())
-                            ));
-                    transport = WebsocketServerTransport.create(httpServer);
-                } else {
-                    transport = TcpServerTransport.create(host, port);
-                }
+                ServerTransportFactory factory = ServerTransportFactory.getFactory(schema);
+                ServerTransport<?> transport = factory.create(host, port, SslContextBuilder.forServer(privateKey, (X509Certificate) certificate)
+                        .protocols(protocols)
+                        .sslProvider(getSslProvider()));
+//                if (schema.equals("local")) {
+//                    transport = LocalServerTransport.create("unittest");
+//                } else if (schema.equals("tcp")) {
+//                    transport = TcpServerTransport.create(host, port);
+//                } else if (schema.equals("tcps")) {
+//                    TcpServer tcpServer = TcpServer.create()
+//                            .host(host)
+//                            .port(port)
+//                            .secure(ssl -> ssl.sslContext(
+//                                    SslContextBuilder.forServer(privateKey, (X509Certificate) certificate)
+//                                            .protocols(protocols)
+//                                            .sslProvider(getSslProvider())
+//                            ));
+//                    transport = TcpServerTransport.create(tcpServer);
+//                } else if (schema.equals("ws")) {
+//                    transport = WebsocketServerTransport.create(host, port);
+//                } else if (schema.equals("wss")) {
+//                    HttpServer httpServer = HttpServer.create()
+//                            .host(host)
+//                            .port(port)
+//                            .secure(ssl -> ssl.sslContext(
+//                                    SslContextBuilder.forServer(privateKey, (X509Certificate) certificate)
+//                                            .protocols(protocols)
+//                                            .sslProvider(getSslProvider())
+//                            ));
+//                    transport = WebsocketServerTransport.create(httpServer);
+//                } else {
+//                    transport = TcpServerTransport.create(host, port);
+//                }
+
                 RSocketServer rsocketServer = RSocketServer.create();
                 //acceptor interceptor
                 for (SocketAcceptorInterceptor acceptorInterceptor : acceptorInterceptors) {

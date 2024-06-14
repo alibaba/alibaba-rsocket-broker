@@ -1,6 +1,7 @@
 package com.alibaba.rsocket.broker;
 
 import com.alibaba.rsocket.encoding.RSocketEncodingFacade;
+import com.alibaba.rsocket.encoding.impl.RSocketEncodingFacadeImpl;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
@@ -31,7 +32,7 @@ public class AlibabaRSocketBrokerServer implements AppShellConfigurator {
     public static void main(String[] args) {
         //checking encoder first
         //noinspection ResultOfMethodCallIgnored
-        RSocketEncodingFacade.getInstance();
+        RSocketEncodingFacade.getInstance(new RSocketEncodingFacadeImpl());
         SpringApplication.run(AlibabaRSocketBrokerServer.class, args);
     }
 
